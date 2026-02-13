@@ -1,0 +1,26 @@
+{
+  "name": "atelier",
+  "private": true,
+  "description": "AI-native animation engine — declarative YAML format authored through MCP tools",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "tsup": "^8.4.0"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,33 @@
+version: '1.0'
+generated: '2026-02-13T20:26:08.664Z'
+structure: {}
+key_files:
+  config:
+    - .paradigm/config.yaml
+  entry: []
+  types: []
+skip_patterns:
+  always:
+    - node_modules/
+    - dist/
+    - build/
+    - .git/
+    - .next/
+    - .nuxt/
+    - .cache/
+    - '*.lock'
+    - '*.log'
+  unless_testing:
+    - '**/*.test.ts'
+    - '**/*.test.tsx'
+    - '**/*.spec.ts'
+    - '**/*.spec.tsx'
+    - __tests__/
+    - test/
+    - tests/
+  unless_docs:
+    - docs/
+    - '*.md'
+    - README*
+    - CHANGELOG*
+symbols: {}

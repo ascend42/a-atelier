@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "paradigm": {
+      "command": "paradigm-mcp",
+      "args": [
+        "."
+      ],
+      "cwd": "/Users/ascend/Documents/GitHub/a-maker"
+    }
+  },
+  "permissions": {
+    "allow": [
+      "Bash(paradigm *)"
+    ]
+  }
+}

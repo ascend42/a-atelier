@@ -1,0 +1,23 @@
+{
+  "name": "@atelier/playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vite dev app for Atelier animation preview",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'no tests yet'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@atelier/types": "workspace:*",
+    "@atelier/core": "workspace:*",
+    "@atelier/canvas": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.1.0"
+  }
+}

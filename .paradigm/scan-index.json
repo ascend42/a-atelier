@@ -1,0 +1,21 @@
+{
+  "$meta": {
+    "version": "1.0.0",
+    "project": "a-maker",
+    "generatedAt": "2026-02-13T20:26:08.661Z",
+    "paradigmVersion": "0.1.0",
+    "sources": {
+      "purposeFiles": 1,
+      "portalFiles": 0,
+      "premiseFiles": 0
+    }
+  },
+  "components": {},
+  "features": {},
+  "flows": {},
+  "state": {},
+  "gates": {},
+  "signals": {},
+  "screens": {},
+  "symbolMap": {}
+}
