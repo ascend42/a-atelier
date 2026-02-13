@@ -172,6 +172,8 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_list_presets");
     expect(toolNames).toContain("atelier_validate");
     expect(toolNames).toContain("atelier_preview");
+    expect(toolNames).toContain("atelier_instantiate_template");
+    expect(toolNames).toContain("atelier_find_variables");
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -972,6 +974,128 @@ describe("MCP Tools", () => {
       expect(info.layerCount).toBe(2);
       expect(info.stateNames).toEqual(["intro"]);
       expect(info.totalDuration).toBe(90);
+    });
+  });
+
+  // ── Template tools ─────────────────────────────────────────
+
+  describe("template tools", () => {
+    let templateId: string;
+
+    beforeEach(async () => {
+      // Create a document with variables (template)
+      const create = await callTool(client, "atelier_create", {
+        name: "Template Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      templateId = create.id;
+
+      // Manually set up the template with variables via the store
+      const doc = store.get(templateId)!;
+      doc.name = "{{title}}";
+      doc.variables = {
+        title: { type: "string", description: "Animation title" },
+        color: { type: "color", default: "#000000" },
+      };
+      doc.layers = [
+        {
+          id: "text",
+          visual: {
+            type: "text" as const,
+            content: "Hello {{title}}",
+            style: { fontFamily: "sans-serif", fontSize: 24, color: "{{color}}" },
+          },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 100, height: 100 },
+        },
+      ];
+    });
+
+    it("atelier_instantiate_template creates a new document", async () => {
+      const result = await callTool(client, "atelier_instantiate_template", {
+        id: templateId,
+        bindings: { title: "My Animation", color: "#FF0000" },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.id).toBeDefined();
+      expect(result.name).toBe("My Animation");
+
+      // Verify the new document
+      const newDoc = store.get(result.id)!;
+      expect(newDoc.name).toBe("My Animation");
+      expect(newDoc.variables).toBeUndefined();
+      const visual = newDoc.layers[0].visual as { content: string; style: { color: string } };
+      expect(visual.content).toBe("Hello My Animation");
+      expect(visual.style.color).toBe("#FF0000");
+    });
+
+    it("atelier_instantiate_template uses defaults", async () => {
+      const result = await callTool(client, "atelier_instantiate_template", {
+        id: templateId,
+        bindings: { title: "Test" },
+      });
+
+      expect(result.success).toBe(true);
+      const newDoc = store.get(result.id)!;
+      const visual = newDoc.layers[0].visual as { style: { color: string } };
+      expect(visual.style.color).toBe("#000000");
+    });
+
+    it("atelier_instantiate_template returns errors for missing required vars", async () => {
+      const result = await callTool(client, "atelier_instantiate_template", {
+        id: templateId,
+        bindings: {},
+      });
+
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("title");
+    });
+
+    it("atelier_instantiate_template returns error for nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_instantiate_template", {
+        id: "nonexistent",
+        bindings: { title: "Test" },
+      });
+
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_find_variables scans for variable patterns", async () => {
+      const result = await callTool(client, "atelier_find_variables", {
+        id: templateId,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.variables).toContain("title");
+      expect(result.variables).toContain("color");
+      expect(result.declared).toContain("title");
+      expect(result.declared).toContain("color");
+    });
+
+    it("atelier_find_variables identifies undeclared variables", async () => {
+      // Add an undeclared variable reference
+      const doc = store.get(templateId)!;
+      doc.description = "Uses {{undeclared}}";
+
+      const result = await callTool(client, "atelier_find_variables", {
+        id: templateId,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.undeclared).toContain("undeclared");
+    });
+
+    it("atelier_find_variables returns error for nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_find_variables", {
+        id: "nonexistent",
+      });
+
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
     });
   });
 });

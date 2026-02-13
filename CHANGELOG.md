@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.6.0] — 2026-02-14
+
+### Added
+- `@atelier/core` — State machine and template system:
+  - `StateMachine` class: tick-based playback, state transitions with history, seek/reset, playThrough
+  - `instantiateTemplate()`: deep substitution of `{{variableName}}` patterns with type preservation
+  - `findTemplateVariables()`: scans document tree for template variable references
+- `@atelier/mcp` — 2 new template tools (27 total):
+  - `atelier_instantiate_template`: creates new document from template + bindings
+  - `atelier_find_variables`: scans document for declared, referenced, and undeclared variables
+- 28 new tests: 21 core (state machine + templates), 7 MCP (181 total across workspace)
+
 ## [0.5.0] — 2026-02-14
 
 ### Added

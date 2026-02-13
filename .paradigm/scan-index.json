@@ -298,6 +298,24 @@
       "description": "Still command — resolves a frame and outputs computed layer states as JSON",
       "tags": ["cli", "render"],
       "source": "packages/cli/.purpose"
+    },
+    "#state-machine": {
+      "file": "packages/core/src/state/state-machine.ts",
+      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
+      "tags": ["state", "playback"],
+      "source": "packages/core/.purpose"
+    },
+    "#template-resolver": {
+      "file": "packages/core/src/templates/template-resolver.ts",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables",
+      "tags": ["templates", "variables"],
+      "source": "packages/core/.purpose"
+    },
+    "#mcp-template-tools": {
+      "file": "packages/mcp/src/tools/templates.ts",
+      "description": "Template MCP tools — instantiate_template, find_variables",
+      "tags": ["tools", "templates"],
+      "source": "packages/mcp/.purpose"
     }
   },
   "features": {},
@@ -388,6 +406,9 @@
     "#mcp-preview-tools": "packages/mcp/src/tools/preview.ts",
     "#cli-validate": "packages/cli/src/commands/validate.ts",
     "#cli-info": "packages/cli/src/commands/info.ts",
-    "#cli-still": "packages/cli/src/commands/still.ts"
+    "#cli-still": "packages/cli/src/commands/still.ts",
+    "#state-machine": "packages/core/src/state/state-machine.ts",
+    "#template-resolver": "packages/core/src/templates/template-resolver.ts",
+    "#mcp-template-tools": "packages/mcp/src/tools/templates.ts"
   }
 }

@@ -30,3 +30,6 @@ components:
   mcp-preview-tools:
     description: Preview tools — validate document schema + overlaps, preview resolved frame data
     file: src/tools/preview.ts
+  mcp-template-tools:
+    description: Template MCP tools — instantiate_template, find_variables
+    file: src/tools/templates.ts

@@ -1,52 +1,72 @@
 version: 1.0.0
-name: "@atelier/core"
 description: Animation engine — delta resolution, builder API, frame computation
 context:
   - This is the heart of Atelier — resolves animation documents at any frame
   - Builder API is the fluent interface for constructing documents programmatically
   - Delta resolver computes interpolated property values per frame
   - No-overlap validation ensures deterministic animation behavior
-
 components:
-  #frame-resolver:
+  '#frame-resolver':
     description: Given document + frame number, computes resolved state of all layers
+    tags:
+      - resolver
+      - engine
     file: src/resolver/frame-resolver.ts
-    tags: [resolver, engine]
-  #delta-resolver:
+  '#delta-resolver':
     description: Per-property interpolation — resolves delta value at a given frame
+    tags:
+      - resolver
+      - interpolation
     file: src/resolver/delta-resolver.ts
-    tags: [resolver, interpolation]
-  #easing-resolver:
+  '#easing-resolver':
     description: Bridges Easing type definitions to executable math functions
+    tags:
+      - resolver
+      - easing
     file: src/resolver/easing-resolver.ts
-    tags: [resolver, easing]
-  #document-builder:
+  '#document-builder':
     description: Fluent API for constructing AtelierDocument objects with validation
+    tags:
+      - builder
+      - api
     file: src/builder/document-builder.ts
-    tags: [builder, api]
-  #overlap-validator:
+  '#overlap-validator':
     description: Validates no overlapping deltas exist on same layer+property
+    tags:
+      - validation
     file: src/validation/overlap-validator.ts
-    tags: [validation]
-  #unit-resolver:
+  '#unit-resolver':
     description: Resolves percentage UnitValues to pixel values given reference dimensions
+    tags:
+      - units
+      - resolution
     file: src/units/resolve-units.ts
-    tags: [units, resolution]
-  #preset-resolver:
+  '#preset-resolver':
     description: Expands preset definitions into concrete deltas for a layer
+    tags:
+      - presets
+      - expansion
     file: src/presets/preset-resolver.ts
-    tags: [presets, expansion]
-
+  state-machine:
+    description: StateMachine class — manages state transitions, tick-based playback, transition history
+    file: src/state/state-machine.ts
+  template-resolver:
+    description: Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns
+    file: src/templates/template-resolver.ts
+gates:
+  ^no-overlap:
+    description: Rejects delta additions that overlap with existing deltas on same property
 flows:
   $frame-resolution:
     description: Document + frame number → computed layer states
     steps:
-      - { component: "#frame-resolver", action: "group deltas by layer+property" }
-      - { component: "#delta-resolver", action: "compute progress and apply easing" }
-      - { component: "#easing-resolver", action: "resolve easing type to math function" }
-      - { component: "#delta-resolver", action: "interpolate value" }
-      - { component: "#frame-resolver", action: "merge into ResolvedFrame" }
-
-gates:
-  ^no-overlap:
-    description: Rejects delta additions that overlap with existing deltas on same property
+      - component: '#frame-resolver'
+        action: group deltas by layer+property
+      - component: '#delta-resolver'
+        action: compute progress and apply easing
+      - component: '#easing-resolver'
+        action: resolve easing type to math function
+      - component: '#delta-resolver'
+        action: interpolate value
+      - component: '#frame-resolver'
+        action: merge into ResolvedFrame

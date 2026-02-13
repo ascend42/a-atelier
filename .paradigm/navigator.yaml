@@ -105,6 +105,9 @@ symbols:
   "#cli-validate": packages/cli/src/commands/validate.ts
   "#cli-info": packages/cli/src/commands/info.ts
   "#cli-still": packages/cli/src/commands/still.ts
+  "#state-machine": packages/core/src/state/state-machine.ts
+  "#template-resolver": packages/core/src/templates/template-resolver.ts
+  "#mcp-template-tools": packages/mcp/src/tools/templates.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose

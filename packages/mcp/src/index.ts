@@ -10,6 +10,7 @@ import { register as registerStateTools } from "./tools/states.js";
 import { register as registerDeltaTools } from "./tools/deltas.js";
 import { register as registerPresetTools } from "./tools/presets.js";
 import { register as registerPreviewTools } from "./tools/preview.js";
+import { register as registerTemplateTools } from "./tools/templates.js";
 
 export { DocumentStore } from "./store.js";
 export { register as registerDocumentTools } from "./tools/document.js";
@@ -19,6 +20,7 @@ export { register as registerStateTools } from "./tools/states.js";
 export { register as registerDeltaTools } from "./tools/deltas.js";
 export { register as registerPresetTools } from "./tools/presets.js";
 export { register as registerPreviewTools } from "./tools/preview.js";
+export { register as registerTemplateTools } from "./tools/templates.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -39,6 +41,7 @@ export function createServer(): { server: McpServer; store: DocumentStore } {
   registerDeltaTools(server, store);
   registerPresetTools(server, store);
   registerPreviewTools(server, store);
+  registerTemplateTools(server, store);
 
   return { server, store };
 }
