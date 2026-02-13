@@ -31,7 +31,16 @@
       "Bash(pnpm --filter @atelier/schema test:*)",
       "mcp__paradigm__paradigm_history_record",
       "mcp__paradigm__paradigm_wisdom_record",
-      "mcp__paradigm__paradigm_pm_postflight"
+      "mcp__paradigm__paradigm_pm_postflight",
+      "Bash(pnpm:*)",
+      "mcp__paradigm__paradigm_history_validate",
+      "Bash(npx paradigm --version)",
+      "Bash(paradigm scan:*)",
+      "mcp__paradigm__paradigm_search",
+      "mcp__paradigm__paradigm_purpose_init",
+      "mcp__paradigm__paradigm_purpose_add_component",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
