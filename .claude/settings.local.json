@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker log --oneline -5)",
+      "WebFetch(domain:www.remotion.dev)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__paradigm__paradigm_status",
+      "WebSearch",
+      "Bash(pnpm -v:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(pnpm config:*)",
+      "Bash(pnpm build:*)",
+      "Bash(ls:*)",
+      "Bash(node -e:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker status)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker diff)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker add .gitignore CHANGELOG.md CLAUDE.md .purpose .paradigm/ .premise .windsurfrules .mcp.json .cursor/ .github/ docs/ package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json turbo.json packages/ apps/)",
+      "Bash(git -C:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "paradigm"
+  ]
+}
