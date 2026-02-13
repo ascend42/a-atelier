@@ -28,11 +28,12 @@ structure:
       description: MCP server — AI authoring interface with 25 tools
     cli:
       path: packages/cli/
-      description: CLI tool — validate, preview, render (stub)
+      purpose: packages/cli/.purpose
+      description: CLI tool — validate, info, still commands
   apps:
     playground:
       path: apps/playground/
-      description: Vite dev app for animation preview (stub)
+      description: Vite dev app — canvas playback with play/pause/scrub
 key_files:
   config:
     - .paradigm/config.yaml
@@ -43,6 +44,7 @@ key_files:
     - packages/core/src/index.ts
     - packages/canvas/src/index.ts
     - packages/mcp/src/index.ts
+    - packages/cli/src/cli.ts
   types:
     - packages/types/src/document.ts
     - packages/types/src/layer.ts
@@ -100,6 +102,9 @@ symbols:
   "#mcp-delta-tools": packages/mcp/src/tools/deltas.ts
   "#mcp-preset-tools": packages/mcp/src/tools/presets.ts
   "#mcp-preview-tools": packages/mcp/src/tools/preview.ts
+  "#cli-validate": packages/cli/src/commands/validate.ts
+  "#cli-info": packages/cli/src/commands/info.ts
+  "#cli-still": packages/cli/src/commands/still.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose

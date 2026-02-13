@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.5.0] — 2026-02-14
+
+### Added
+- `@atelier/cli` — CLI tool with 3 commands:
+  - `atelier validate <file>` — schema validation + delta overlap detection
+  - `atelier info <file>` — document summary (canvas, layers, states, presets)
+  - `atelier still <file> --state <name> --frame <N>` — resolve frame to JSON
+- `apps/playground` — Vite dev app with canvas playback:
+  - Demo animation using DocumentBuilder (4 layers, 7 deltas, easing)
+  - Player class with play/pause/seek/loop via requestAnimationFrame
+  - Dark theme UI with scrubber, frame counter, and keyboard controls
+- 13 new CLI tests (146 total across workspace)
+- `packages/cli/.purpose` with 3 component symbols
+
 ## [0.4.0] — 2026-02-14
 
 ### Added

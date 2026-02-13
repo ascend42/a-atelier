@@ -1,0 +1,17 @@
+version: 1.0.0
+description: CLI tool — validate, info, and still commands for .atelier animation files
+context:
+  - Command-line interface for working with .atelier YAML animation files
+  - Validate command checks schema + delta overlaps
+  - Info command outputs document summary
+  - Still command resolves a frame and outputs JSON
+components:
+  cli-validate:
+    description: Validate command — checks .atelier files for schema validity and delta overlaps
+    file: src/commands/validate.ts
+  cli-info:
+    description: Info command — outputs document summary (canvas, layers, states, presets)
+    file: src/commands/info.ts
+  cli-still:
+    description: Still command — resolves a frame and outputs computed layer states as JSON
+    file: src/commands/still.ts

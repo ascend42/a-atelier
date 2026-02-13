@@ -5,7 +5,7 @@
     "generatedAt": "2026-02-14T00:00:00.000Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 7,
+      "purposeFiles": 8,
       "portalFiles": 0,
       "premiseFiles": 1
     }
@@ -280,6 +280,24 @@
       "description": "Preview tools — validate schema + overlaps, preview resolved frame data",
       "tags": ["tools", "preview", "validation"],
       "source": "packages/mcp/.purpose"
+    },
+    "#cli-validate": {
+      "file": "packages/cli/src/commands/validate.ts",
+      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+      "tags": ["cli", "validation"],
+      "source": "packages/cli/.purpose"
+    },
+    "#cli-info": {
+      "file": "packages/cli/src/commands/info.ts",
+      "description": "Info command — outputs document summary (canvas, layers, states, presets)",
+      "tags": ["cli", "info"],
+      "source": "packages/cli/.purpose"
+    },
+    "#cli-still": {
+      "file": "packages/cli/src/commands/still.ts",
+      "description": "Still command — resolves a frame and outputs computed layer states as JSON",
+      "tags": ["cli", "render"],
+      "source": "packages/cli/.purpose"
     }
   },
   "features": {},
@@ -367,6 +385,9 @@
     "#mcp-state-tools": "packages/mcp/src/tools/states.ts",
     "#mcp-delta-tools": "packages/mcp/src/tools/deltas.ts",
     "#mcp-preset-tools": "packages/mcp/src/tools/presets.ts",
-    "#mcp-preview-tools": "packages/mcp/src/tools/preview.ts"
+    "#mcp-preview-tools": "packages/mcp/src/tools/preview.ts",
+    "#cli-validate": "packages/cli/src/commands/validate.ts",
+    "#cli-info": "packages/cli/src/commands/info.ts",
+    "#cli-still": "packages/cli/src/commands/still.ts"
   }
 }
