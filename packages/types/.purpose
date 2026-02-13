@@ -1,0 +1,46 @@
+version: 1.0.0
+name: "@atelier/types"
+description: Pure TypeScript type definitions for the Atelier animation format — zero runtime
+context:
+  - This is a type-only package — every export is a type or interface
+  - No runtime code, no classes, no functions
+  - All other @atelier packages depend on these types
+  - 44 types across 12 modules
+
+components:
+  #unit-types:
+    description: Pixel, Percentage, and UnitValue type definitions
+    file: src/units.ts
+    tags: [types, units]
+  #coordinate-types:
+    description: Frame, Bounds, AnchorPoint spatial types
+    file: src/coordinates.ts
+    tags: [types, coordinates]
+  #color-types:
+    description: RGBAColor, HSLAColor, HexColor, Color union type
+    file: src/color.ts
+    tags: [types, color]
+  #shape-types:
+    description: Shape primitives (rect, ellipse, path), fill, stroke, text style
+    file: src/shape.ts
+    tags: [types, shapes, visual]
+  #layer-types:
+    description: Layer, Visual union (shape, text, image, group, ref)
+    file: src/layer.ts
+    tags: [types, layers]
+  #easing-types:
+    description: Easing definitions — linear, cubic-bezier, spring, step, presets
+    file: src/easing.ts
+    tags: [types, easing]
+  #delta-types:
+    description: Delta (animation instruction), AnimatableProperty, FrameRange
+    file: src/delta.ts
+    tags: [types, animation]
+  #state-types:
+    description: State (named choreography with duration and deltas)
+    file: src/state.ts
+    tags: [types, state]
+  #document-types:
+    description: AtelierDocument root type, Canvas config
+    file: src/document.ts
+    tags: [types, document]

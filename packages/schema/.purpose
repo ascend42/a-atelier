@@ -1,0 +1,37 @@
+version: 1.0.0
+name: "@atelier/schema"
+description: Zod validation schemas with AI-readable error messages and YAML parsing
+context:
+  - Every Zod schema mirrors an @atelier/types type definition exactly
+  - Validation errors are flat and human/AI-readable (path + message)
+  - YAML parsing uses the yaml package — parseAtelier() and serializeAtelier()
+  - Roundtrip tested: parse -> validate -> serialize -> parse matches
+
+components:
+  #document-schema:
+    description: AtelierDocumentSchema — root Zod schema composing all sub-schemas
+    file: src/document.ts
+    tags: [validation, schema]
+    components: ["#atelier-types"]
+  #layer-schema:
+    description: LayerSchema and Visual discriminated union validation
+    file: src/layer.ts
+    tags: [validation, schema]
+  #delta-schema:
+    description: DeltaSchema with AnimatableProperty enum and FrameRange refinement
+    file: src/delta.ts
+    tags: [validation, schema]
+  #validation-functions:
+    description: validateDocument, validateLayer, validateDelta — typed results with error formatting
+    file: src/validate.ts
+    tags: [validation, api]
+  #yaml-parser:
+    description: parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)
+    file: src/parse.ts
+    tags: [parsing, yaml]
+
+gates:
+  ^valid-document:
+    description: Document passes full Zod schema validation
+  ^valid-delta:
+    description: Delta references valid property and has valid frame range

@@ -1,0 +1,22 @@
+id: '002'
+title: External state management — Atelier is a player, not a controller
+status: accepted
+date: '2026-02-13'
+symbols:
+  - '#atelier-core'
+context: ''
+decision: Owning system drives state transitions, Atelier only plays animation states
+rationale:
+  factors:
+    - Separation of concerns
+    - Simpler v1 surface
+    - No event system needed
+  conclusion: Owning system drives state transitions, Atelier plays them
+consequences:
+  positive:
+    - Simpler core API
+    - Framework agnostic
+  negative:
+    - No built-in state orchestration
+  mitigations:
+    - Can be added in v1.1 as opt-in

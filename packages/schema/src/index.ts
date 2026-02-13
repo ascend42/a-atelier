@@ -1,3 +1,32 @@
 // @atelier/schema — Zod validation schemas with AI-readable error messages
 
-export {};
+// Schemas
+export { PixelSchema, PercentageSchema, UnitValueSchema } from "./units.js";
+export { FrameSchema, BoundsSchema, AnchorPointSchema } from "./coordinates.js";
+export { RGBAColorSchema, HSLAColorSchema, HexColorSchema, ColorSchema } from "./color.js";
+export {
+  PathPointSchema, RectShapeSchema, EllipseShapeSchema, PathShapeSchema, ShapeSchema,
+  GradientStopSchema, SolidFillSchema, LinearGradientFillSchema, RadialGradientFillSchema, FillSchema,
+  StrokeSchema, TextStyleSchema,
+} from "./shape.js";
+export {
+  LinearEasingSchema, CubicBezierEasingSchema, SpringEasingSchema, StepEasingSchema,
+  EasingPresetSchema, EasingSchema,
+} from "./easing.js";
+export {
+  ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, GroupVisualSchema, RefVisualSchema,
+  VisualSchema, LayerSchema,
+} from "./layer.js";
+export { AnimatablePropertySchema, FrameRangeSchema, DeltaSchema } from "./delta.js";
+export { StateSchema } from "./state.js";
+export { PresetDeltaSchema, PresetSchema } from "./preset.js";
+export { VariableTypeSchema, VariableSchema } from "./variable.js";
+export { AssetTypeSchema, AssetSchema } from "./asset.js";
+export { CanvasSchema, AtelierDocumentSchema } from "./document.js";
+
+// Validation functions
+export { validateDocument, validateLayer, validateDelta } from "./validate.js";
+export type { ValidationResult, ValidationError } from "./validate.js";
+
+// YAML parsing
+export { parseAtelier, serializeAtelier } from "./parse.js";

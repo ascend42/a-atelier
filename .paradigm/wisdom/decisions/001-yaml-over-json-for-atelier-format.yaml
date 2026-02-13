@@ -1,0 +1,22 @@
+id: '001'
+title: YAML over JSON for .atelier format
+status: accepted
+date: '2026-02-13'
+symbols:
+  - '#atelier-schema'
+context: ''
+decision: Use YAML as the serialization format for .atelier animation files
+rationale:
+  factors:
+    - MCP handles all writing
+    - Humans only scan/review
+    - YAML more readable
+  conclusion: YAML chosen because AI never writes files directly — MCP tools do
+consequences:
+  positive:
+    - Human-scannable output
+    - Easy diffing in git
+  negative:
+    - YAML parsing quirks with special characters
+  mitigations:
+    - yaml package handles edge cases

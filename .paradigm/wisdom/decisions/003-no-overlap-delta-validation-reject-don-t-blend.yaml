@@ -1,0 +1,23 @@
+id: '003'
+title: No-overlap delta validation (reject, don't blend)
+status: accepted
+date: '2026-02-13'
+symbols:
+  - ^no-overlap
+  - '#atelier-core'
+context: ''
+decision: Overlapping deltas on same layer+property are rejected rather than blended
+rationale:
+  factors:
+    - Deterministic behavior
+    - Easier debugging
+    - AI-friendly errors
+  conclusion: Overlapping deltas on same layer+property rejected at MCP boundary
+consequences:
+  positive:
+    - Deterministic playback
+    - Clear error messages for AI
+  negative:
+    - No additive animation
+  mitigations:
+    - Blend mode can be added later as explicit opt-in

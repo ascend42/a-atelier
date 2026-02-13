@@ -1,0 +1,26 @@
+version: 1.0.0
+name: "@atelier/math"
+description: Pure interpolation engine — easing, lerp, spring, color math
+context:
+  - Zero dependencies on other @atelier packages
+  - All functions are pure, stateless, and side-effect free
+  - Easing functions take t (0-1) and return eased value (0-1)
+  - Spring solver uses damped harmonic oscillator physics
+
+components:
+  #easing-functions:
+    description: Linear, cubic-bezier, ease-in/out/in-out presets, step easing
+    file: src/easing.ts
+    tags: [math, easing]
+  #spring-solver:
+    description: Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped
+    file: src/spring.ts
+    tags: [math, spring, physics]
+  #lerp-functions:
+    description: Linear interpolation, clamp, array lerp, range remap
+    file: src/lerp.ts
+    tags: [math, interpolation]
+  #color-math:
+    description: Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path
+    file: src/color.ts
+    tags: [math, color, interpolation]
