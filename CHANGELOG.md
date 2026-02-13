@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.3.0] — 2026-02-14
+
+### Added
+- `@atelier/canvas` — Canvas 2D renderer with 6 modules:
+  - `renderFrame(ctx, resolvedFrame, doc)` — main entry, clears canvas, iterates layers (painters algorithm), applies transform stack
+  - `renderShape()` — rect (with cornerRadius/roundRect fallback), ellipse, path (with bezier curves)
+  - `renderText()` — text rendering with font string building and color
+  - `buildEffectiveLayer()` — merges computed animation properties over layer defaults, resolves percentage units
+  - `colorToCSS()` / `applyFill()` / `applyStroke()` — solid color + linear/radial gradient support, dash patterns
+  - `RenderContext` interface — minimal Canvas 2D subset, avoids DOM lib dependency
+- 13 new tests for canvas (93 total across workspace)
+- `packages/canvas/.purpose` with 5 component symbols
+
 ## [0.2.0] — 2026-02-13
 
 ### Added

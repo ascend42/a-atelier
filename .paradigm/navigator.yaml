@@ -20,7 +20,8 @@ structure:
       description: Animation engine — delta resolution, builder, validation
     canvas:
       path: packages/canvas/
-      description: Canvas 2D renderer and playback controller (stub)
+      purpose: packages/canvas/.purpose
+      description: Canvas 2D renderer — transforms resolved frames into visual output
     mcp:
       path: packages/mcp/
       description: MCP server — AI authoring interface (stub)
@@ -39,6 +40,7 @@ key_files:
     - packages/math/src/index.ts
     - packages/schema/src/index.ts
     - packages/core/src/index.ts
+    - packages/canvas/src/index.ts
   types:
     - packages/types/src/document.ts
     - packages/types/src/layer.ts
@@ -83,6 +85,11 @@ symbols:
   "#spring-solver": packages/math/src/spring.ts
   "#lerp-functions": packages/math/src/lerp.ts
   "#color-math": packages/math/src/color.ts
+  "#render-frame": packages/canvas/src/render-frame.ts
+  "#shape-renderer": packages/canvas/src/renderers/shape-renderer.ts
+  "#text-renderer": packages/canvas/src/renderers/text-renderer.ts
+  "#apply-properties": packages/canvas/src/apply-properties.ts
+  "#canvas-styles": packages/canvas/src/styles.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose

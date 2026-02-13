@@ -5,7 +5,7 @@
     "generatedAt": "2026-02-14T00:00:00.000Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 5,
+      "purposeFiles": 6,
       "portalFiles": 0,
       "premiseFiles": 1
     }
@@ -202,6 +202,36 @@
       "description": "Expands preset definitions into concrete deltas for a layer",
       "tags": ["presets", "expansion"],
       "source": "packages/core/.purpose"
+    },
+    "#render-frame": {
+      "file": "packages/canvas/src/render-frame.ts",
+      "description": "Main entry — clears canvas, iterates layers, applies transform stack, dispatches to renderers",
+      "tags": ["renderer", "entry"],
+      "source": "packages/canvas/.purpose"
+    },
+    "#shape-renderer": {
+      "file": "packages/canvas/src/renderers/shape-renderer.ts",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path shapes",
+      "tags": ["renderer", "shapes"],
+      "source": "packages/canvas/.purpose"
+    },
+    "#text-renderer": {
+      "file": "packages/canvas/src/renderers/text-renderer.ts",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "tags": ["renderer", "text"],
+      "source": "packages/canvas/.purpose"
+    },
+    "#apply-properties": {
+      "file": "packages/canvas/src/apply-properties.ts",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "tags": ["properties", "resolution"],
+      "source": "packages/canvas/.purpose"
+    },
+    "#canvas-styles": {
+      "file": "packages/canvas/src/styles.ts",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash support",
+      "tags": ["styles", "color"],
+      "source": "packages/canvas/.purpose"
     }
   },
   "features": {},
@@ -276,6 +306,11 @@
     "#easing-functions": "packages/math/src/easing.ts",
     "#spring-solver": "packages/math/src/spring.ts",
     "#lerp-functions": "packages/math/src/lerp.ts",
-    "#color-math": "packages/math/src/color.ts"
+    "#color-math": "packages/math/src/color.ts",
+    "#render-frame": "packages/canvas/src/render-frame.ts",
+    "#shape-renderer": "packages/canvas/src/renderers/shape-renderer.ts",
+    "#text-renderer": "packages/canvas/src/renderers/text-renderer.ts",
+    "#apply-properties": "packages/canvas/src/apply-properties.ts",
+    "#canvas-styles": "packages/canvas/src/styles.ts"
   }
 }
