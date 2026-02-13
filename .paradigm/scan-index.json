@@ -1,21 +1,281 @@
 {
   "$meta": {
     "version": "1.0.0",
-    "project": "a-maker",
-    "generatedAt": "2026-02-13T20:26:08.661Z",
+    "project": "atelier",
+    "generatedAt": "2026-02-14T00:00:00.000Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 1,
+      "purposeFiles": 5,
       "portalFiles": 0,
-      "premiseFiles": 0
+      "premiseFiles": 1
     }
   },
-  "components": {},
+  "components": {
+    "#atelier-types": {
+      "file": "packages/types/src/index.ts",
+      "description": "Pure TypeScript type definitions for the animation format",
+      "tags": ["foundation", "types"],
+      "source": ".purpose"
+    },
+    "#atelier-schema": {
+      "file": "packages/schema/src/index.ts",
+      "description": "Zod validation schemas with AI-readable error messages",
+      "tags": ["validation"],
+      "source": ".purpose"
+    },
+    "#atelier-math": {
+      "file": "packages/math/src/index.ts",
+      "description": "Pure interpolation engine — easing, lerp, spring, color",
+      "tags": ["math", "interpolation"],
+      "source": ".purpose"
+    },
+    "#atelier-core": {
+      "file": "packages/core/src/index.ts",
+      "description": "Animation engine — delta resolution, builder API, state machine",
+      "tags": ["engine", "core"],
+      "source": ".purpose"
+    },
+    "#atelier-canvas": {
+      "file": "packages/canvas/src/index.ts",
+      "description": "Canvas 2D renderer and playback controller",
+      "tags": ["renderer", "canvas"],
+      "source": ".purpose"
+    },
+    "#atelier-mcp": {
+      "file": "packages/mcp/src/index.ts",
+      "description": "MCP server — AI authoring interface for animations",
+      "tags": ["mcp", "ai-interface"],
+      "source": ".purpose"
+    },
+    "#atelier-cli": {
+      "file": "packages/cli/src/index.ts",
+      "description": "CLI tool — validate, preview, render, info commands",
+      "tags": ["cli", "tool"],
+      "source": ".purpose"
+    },
+    "#unit-types": {
+      "file": "packages/types/src/units.ts",
+      "description": "Pixel, Percentage, and UnitValue type definitions",
+      "tags": ["types", "units"],
+      "source": "packages/types/.purpose"
+    },
+    "#coordinate-types": {
+      "file": "packages/types/src/coordinates.ts",
+      "description": "Frame, Bounds, AnchorPoint spatial types",
+      "tags": ["types", "coordinates"],
+      "source": "packages/types/.purpose"
+    },
+    "#color-types": {
+      "file": "packages/types/src/color.ts",
+      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+      "tags": ["types", "color"],
+      "source": "packages/types/.purpose"
+    },
+    "#shape-types": {
+      "file": "packages/types/src/shape.ts",
+      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+      "tags": ["types", "shapes", "visual"],
+      "source": "packages/types/.purpose"
+    },
+    "#layer-types": {
+      "file": "packages/types/src/layer.ts",
+      "description": "Layer, Visual union (shape, text, image, group, ref)",
+      "tags": ["types", "layers"],
+      "source": "packages/types/.purpose"
+    },
+    "#easing-types": {
+      "file": "packages/types/src/easing.ts",
+      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+      "tags": ["types", "easing"],
+      "source": "packages/types/.purpose"
+    },
+    "#delta-types": {
+      "file": "packages/types/src/delta.ts",
+      "description": "Delta (animation instruction), AnimatableProperty, FrameRange",
+      "tags": ["types", "animation"],
+      "source": "packages/types/.purpose"
+    },
+    "#state-types": {
+      "file": "packages/types/src/state.ts",
+      "description": "State (named choreography with duration and deltas)",
+      "tags": ["types", "state"],
+      "source": "packages/types/.purpose"
+    },
+    "#document-types": {
+      "file": "packages/types/src/document.ts",
+      "description": "AtelierDocument root type, Canvas config",
+      "tags": ["types", "document"],
+      "source": "packages/types/.purpose"
+    },
+    "#easing-functions": {
+      "file": "packages/math/src/easing.ts",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "tags": ["math", "easing"],
+      "source": "packages/math/.purpose"
+    },
+    "#spring-solver": {
+      "file": "packages/math/src/spring.ts",
+      "description": "Damped harmonic oscillator spring physics",
+      "tags": ["math", "spring", "physics"],
+      "source": "packages/math/.purpose"
+    },
+    "#lerp-functions": {
+      "file": "packages/math/src/lerp.ts",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "tags": ["math", "interpolation"],
+      "source": "packages/math/.purpose"
+    },
+    "#color-math": {
+      "file": "packages/math/src/color.ts",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation",
+      "tags": ["math", "color", "interpolation"],
+      "source": "packages/math/.purpose"
+    },
+    "#document-schema": {
+      "file": "packages/schema/src/document.ts",
+      "description": "AtelierDocumentSchema — root Zod schema",
+      "tags": ["validation", "schema"],
+      "source": "packages/schema/.purpose"
+    },
+    "#layer-schema": {
+      "file": "packages/schema/src/layer.ts",
+      "description": "LayerSchema and Visual discriminated union validation",
+      "tags": ["validation", "schema"],
+      "source": "packages/schema/.purpose"
+    },
+    "#delta-schema": {
+      "file": "packages/schema/src/delta.ts",
+      "description": "DeltaSchema with AnimatableProperty enum and FrameRange refinement",
+      "tags": ["validation", "schema"],
+      "source": "packages/schema/.purpose"
+    },
+    "#validation-functions": {
+      "file": "packages/schema/src/validate.ts",
+      "description": "validateDocument, validateLayer, validateDelta — typed results",
+      "tags": ["validation", "api"],
+      "source": "packages/schema/.purpose"
+    },
+    "#yaml-parser": {
+      "file": "packages/schema/src/parse.ts",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "tags": ["parsing", "yaml"],
+      "source": "packages/schema/.purpose"
+    },
+    "#frame-resolver": {
+      "file": "packages/core/src/resolver/frame-resolver.ts",
+      "description": "Given document + frame number, computes resolved state of all layers",
+      "tags": ["resolver", "engine"],
+      "source": "packages/core/.purpose"
+    },
+    "#delta-resolver": {
+      "file": "packages/core/src/resolver/delta-resolver.ts",
+      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "tags": ["resolver", "interpolation"],
+      "source": "packages/core/.purpose"
+    },
+    "#easing-resolver": {
+      "file": "packages/core/src/resolver/easing-resolver.ts",
+      "description": "Bridges Easing type definitions to executable math functions",
+      "tags": ["resolver", "easing"],
+      "source": "packages/core/.purpose"
+    },
+    "#document-builder": {
+      "file": "packages/core/src/builder/document-builder.ts",
+      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "tags": ["builder", "api"],
+      "source": "packages/core/.purpose"
+    },
+    "#overlap-validator": {
+      "file": "packages/core/src/validation/overlap-validator.ts",
+      "description": "Validates no overlapping deltas exist on same layer+property",
+      "tags": ["validation"],
+      "source": "packages/core/.purpose"
+    },
+    "#unit-resolver": {
+      "file": "packages/core/src/units/resolve-units.ts",
+      "description": "Resolves percentage UnitValues to pixel values",
+      "tags": ["units", "resolution"],
+      "source": "packages/core/.purpose"
+    },
+    "#preset-resolver": {
+      "file": "packages/core/src/presets/preset-resolver.ts",
+      "description": "Expands preset definitions into concrete deltas for a layer",
+      "tags": ["presets", "expansion"],
+      "source": "packages/core/.purpose"
+    }
+  },
   "features": {},
-  "flows": {},
+  "flows": {
+    "$animation-authoring": {
+      "description": "AI creates animation through MCP tools end-to-end",
+      "source": ".purpose"
+    },
+    "$frame-resolution": {
+      "description": "Document + frame number → computed layer states",
+      "source": ".purpose"
+    },
+    "$render-pipeline": {
+      "description": "Resolved frame → canvas draw calls → pixels",
+      "source": ".purpose"
+    }
+  },
   "state": {},
-  "gates": {},
-  "signals": {},
+  "gates": {
+    "^valid-document": {
+      "description": "Animation document passes Zod schema validation",
+      "source": ".purpose"
+    },
+    "^no-overlap": {
+      "description": "No overlapping deltas on same layer+property+range",
+      "source": ".purpose"
+    },
+    "^valid-delta": {
+      "description": "Delta references existing layer and valid property",
+      "source": ".purpose"
+    }
+  },
+  "signals": {
+    "!animation-created": {
+      "description": "New animation document created via MCP",
+      "category": "system",
+      "source": ".purpose"
+    },
+    "!frame-rendered": {
+      "description": "Frame successfully rendered to canvas",
+      "category": "system",
+      "source": ".purpose"
+    },
+    "!validation-failed": {
+      "description": "Schema validation rejected input",
+      "category": "system",
+      "severity": "warn",
+      "source": ".purpose"
+    }
+  },
   "screens": {},
-  "symbolMap": {}
+  "symbolMap": {
+    "#atelier-types": "packages/types/src/index.ts",
+    "#atelier-schema": "packages/schema/src/index.ts",
+    "#atelier-math": "packages/math/src/index.ts",
+    "#atelier-core": "packages/core/src/index.ts",
+    "#atelier-canvas": "packages/canvas/src/index.ts",
+    "#atelier-mcp": "packages/mcp/src/index.ts",
+    "#atelier-cli": "packages/cli/src/index.ts",
+    "#frame-resolver": "packages/core/src/resolver/frame-resolver.ts",
+    "#delta-resolver": "packages/core/src/resolver/delta-resolver.ts",
+    "#easing-resolver": "packages/core/src/resolver/easing-resolver.ts",
+    "#document-builder": "packages/core/src/builder/document-builder.ts",
+    "#overlap-validator": "packages/core/src/validation/overlap-validator.ts",
+    "#unit-resolver": "packages/core/src/units/resolve-units.ts",
+    "#preset-resolver": "packages/core/src/presets/preset-resolver.ts",
+    "#document-schema": "packages/schema/src/document.ts",
+    "#layer-schema": "packages/schema/src/layer.ts",
+    "#delta-schema": "packages/schema/src/delta.ts",
+    "#validation-functions": "packages/schema/src/validate.ts",
+    "#yaml-parser": "packages/schema/src/parse.ts",
+    "#easing-functions": "packages/math/src/easing.ts",
+    "#spring-solver": "packages/math/src/spring.ts",
+    "#lerp-functions": "packages/math/src/lerp.ts",
+    "#color-math": "packages/math/src/color.ts"
+  }
 }

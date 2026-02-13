@@ -1,33 +1,91 @@
 version: '1.0'
-generated: '2026-02-13T20:26:08.664Z'
-structure: {}
+generated: '2026-02-14T00:00:00.000Z'
+structure:
+  packages:
+    types:
+      path: packages/types/
+      purpose: packages/types/.purpose
+      description: Pure TypeScript type definitions — zero runtime
+    math:
+      path: packages/math/
+      purpose: packages/math/.purpose
+      description: Pure interpolation engine — easing, lerp, spring, color
+    schema:
+      path: packages/schema/
+      purpose: packages/schema/.purpose
+      description: Zod validation schemas + YAML parsing
+    core:
+      path: packages/core/
+      purpose: packages/core/.purpose
+      description: Animation engine — delta resolution, builder, validation
+    canvas:
+      path: packages/canvas/
+      description: Canvas 2D renderer and playback controller (stub)
+    mcp:
+      path: packages/mcp/
+      description: MCP server — AI authoring interface (stub)
+    cli:
+      path: packages/cli/
+      description: CLI tool — validate, preview, render (stub)
+  apps:
+    playground:
+      path: apps/playground/
+      description: Vite dev app for animation preview (stub)
 key_files:
   config:
     - .paradigm/config.yaml
-  entry: []
-  types: []
+  entry:
+    - packages/types/src/index.ts
+    - packages/math/src/index.ts
+    - packages/schema/src/index.ts
+    - packages/core/src/index.ts
+  types:
+    - packages/types/src/document.ts
+    - packages/types/src/layer.ts
+    - packages/types/src/delta.ts
+    - packages/types/src/state.ts
 skip_patterns:
   always:
     - node_modules/
     - dist/
     - build/
     - .git/
-    - .next/
-    - .nuxt/
-    - .cache/
+    - .turbo/
     - '*.lock'
     - '*.log'
   unless_testing:
     - '**/*.test.ts'
-    - '**/*.test.tsx'
     - '**/*.spec.ts'
-    - '**/*.spec.tsx'
     - __tests__/
-    - test/
-    - tests/
   unless_docs:
     - docs/
     - '*.md'
-    - README*
     - CHANGELOG*
-symbols: {}
+symbols:
+  "#atelier-types": packages/types/src/index.ts
+  "#atelier-math": packages/math/src/index.ts
+  "#atelier-schema": packages/schema/src/index.ts
+  "#atelier-core": packages/core/src/index.ts
+  "#atelier-canvas": packages/canvas/src/index.ts
+  "#atelier-mcp": packages/mcp/src/index.ts
+  "#atelier-cli": packages/cli/src/index.ts
+  "#frame-resolver": packages/core/src/resolver/frame-resolver.ts
+  "#delta-resolver": packages/core/src/resolver/delta-resolver.ts
+  "#easing-resolver": packages/core/src/resolver/easing-resolver.ts
+  "#document-builder": packages/core/src/builder/document-builder.ts
+  "#overlap-validator": packages/core/src/validation/overlap-validator.ts
+  "#unit-resolver": packages/core/src/units/resolve-units.ts
+  "#preset-resolver": packages/core/src/presets/preset-resolver.ts
+  "#document-schema": packages/schema/src/document.ts
+  "#validation-functions": packages/schema/src/validate.ts
+  "#yaml-parser": packages/schema/src/parse.ts
+  "#easing-functions": packages/math/src/easing.ts
+  "#spring-solver": packages/math/src/spring.ts
+  "#lerp-functions": packages/math/src/lerp.ts
+  "#color-math": packages/math/src/color.ts
+  "^valid-document": packages/schema/.purpose
+  "^no-overlap": packages/core/.purpose
+  "^valid-delta": packages/schema/.purpose
+  "$animation-authoring": .purpose
+  "$frame-resolution": .purpose
+  "$render-pipeline": .purpose
