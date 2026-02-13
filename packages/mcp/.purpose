@@ -1,0 +1,32 @@
+version: 1.0.0
+description: MCP server — AI authoring interface for Atelier animations with 25 tools
+context:
+  - This is the primary AI interface — all animation authoring goes through these MCP tools
+  - In-memory document store accumulates state across tool calls in a session
+  - Tools provide structured error responses from Zod validation for AI-readable feedback
+  - Preview returns resolved frame data (not rendered image) for AI comprehension
+components:
+  mcp-store:
+    description: In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls
+    file: src/store.ts
+  mcp-document-tools:
+    description: Document lifecycle tools — create, info, load (YAML), export (YAML), list
+    file: src/tools/document.ts
+  mcp-layer-tools:
+    description: Layer management tools — add, edit, remove, list, reorder
+    file: src/tools/layers.ts
+  mcp-shape-tools:
+    description: Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers
+    file: src/tools/shapes.ts
+  mcp-state-tools:
+    description: State management tools — add, edit, remove, list animation states
+    file: src/tools/states.ts
+  mcp-delta-tools:
+    description: Delta animation tools — add, edit, remove deltas with overlap validation, apply presets
+    file: src/tools/deltas.ts
+  mcp-preset-tools:
+    description: Preset tools — define reusable animation presets, list available presets
+    file: src/tools/presets.ts
+  mcp-preview-tools:
+    description: Preview tools — validate document schema + overlaps, preview resolved frame data
+    file: src/tools/preview.ts

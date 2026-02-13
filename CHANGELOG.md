@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.4.0] — 2026-02-14
+
+### Added
+- `@atelier/mcp` — MCP server with 25 tools across 7 categories:
+  - **Document** (5): `atelier_create`, `atelier_info`, `atelier_load`, `atelier_export`, `atelier_list`
+  - **Layer** (5): `atelier_add_layer`, `atelier_edit_layer`, `atelier_remove_layer`, `atelier_list_layers`, `atelier_reorder`
+  - **Shape** (3): `atelier_set_shape`, `atelier_set_fill`, `atelier_set_stroke`
+  - **State** (4): `atelier_add_state`, `atelier_edit_state`, `atelier_remove_state`, `atelier_list_states`
+  - **Delta** (4): `atelier_add_delta`, `atelier_edit_delta`, `atelier_remove_delta`, `atelier_apply_preset`
+  - **Preset** (2): `atelier_define_preset`, `atelier_list_presets`
+  - **Preview** (2): `atelier_validate`, `atelier_preview`
+- In-memory `DocumentStore` for session-scoped animation accumulation
+- Structured error responses with AI-readable Zod validation feedback
+- StdioServerTransport for CLI usage as MCP server binary
+- 43 new tests including full end-to-end workflow (136 total across workspace)
+- `packages/mcp/.purpose` with 8 component symbols
+
 ## [0.3.0] — 2026-02-14
 
 ### Added

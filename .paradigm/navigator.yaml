@@ -24,7 +24,8 @@ structure:
       description: Canvas 2D renderer — transforms resolved frames into visual output
     mcp:
       path: packages/mcp/
-      description: MCP server — AI authoring interface (stub)
+      purpose: packages/mcp/.purpose
+      description: MCP server — AI authoring interface with 25 tools
     cli:
       path: packages/cli/
       description: CLI tool — validate, preview, render (stub)
@@ -41,6 +42,7 @@ key_files:
     - packages/schema/src/index.ts
     - packages/core/src/index.ts
     - packages/canvas/src/index.ts
+    - packages/mcp/src/index.ts
   types:
     - packages/types/src/document.ts
     - packages/types/src/layer.ts
@@ -90,6 +92,14 @@ symbols:
   "#text-renderer": packages/canvas/src/renderers/text-renderer.ts
   "#apply-properties": packages/canvas/src/apply-properties.ts
   "#canvas-styles": packages/canvas/src/styles.ts
+  "#mcp-store": packages/mcp/src/store.ts
+  "#mcp-document-tools": packages/mcp/src/tools/document.ts
+  "#mcp-layer-tools": packages/mcp/src/tools/layers.ts
+  "#mcp-shape-tools": packages/mcp/src/tools/shapes.ts
+  "#mcp-state-tools": packages/mcp/src/tools/states.ts
+  "#mcp-delta-tools": packages/mcp/src/tools/deltas.ts
+  "#mcp-preset-tools": packages/mcp/src/tools/presets.ts
+  "#mcp-preview-tools": packages/mcp/src/tools/preview.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose
