@@ -1,0 +1,52 @@
+version: 1.0.0
+name: "@atelier/core"
+description: Animation engine — delta resolution, builder API, frame computation
+context:
+  - This is the heart of Atelier — resolves animation documents at any frame
+  - Builder API is the fluent interface for constructing documents programmatically
+  - Delta resolver computes interpolated property values per frame
+  - No-overlap validation ensures deterministic animation behavior
+
+components:
+  #frame-resolver:
+    description: Given document + frame number, computes resolved state of all layers
+    file: src/resolver/frame-resolver.ts
+    tags: [resolver, engine]
+  #delta-resolver:
+    description: Per-property interpolation — resolves delta value at a given frame
+    file: src/resolver/delta-resolver.ts
+    tags: [resolver, interpolation]
+  #easing-resolver:
+    description: Bridges Easing type definitions to executable math functions
+    file: src/resolver/easing-resolver.ts
+    tags: [resolver, easing]
+  #document-builder:
+    description: Fluent API for constructing AtelierDocument objects with validation
+    file: src/builder/document-builder.ts
+    tags: [builder, api]
+  #overlap-validator:
+    description: Validates no overlapping deltas exist on same layer+property
+    file: src/validation/overlap-validator.ts
+    tags: [validation]
+  #unit-resolver:
+    description: Resolves percentage UnitValues to pixel values given reference dimensions
+    file: src/units/resolve-units.ts
+    tags: [units, resolution]
+  #preset-resolver:
+    description: Expands preset definitions into concrete deltas for a layer
+    file: src/presets/preset-resolver.ts
+    tags: [presets, expansion]
+
+flows:
+  $frame-resolution:
+    description: Document + frame number → computed layer states
+    steps:
+      - { component: "#frame-resolver", action: "group deltas by layer+property" }
+      - { component: "#delta-resolver", action: "compute progress and apply easing" }
+      - { component: "#easing-resolver", action: "resolve easing type to math function" }
+      - { component: "#delta-resolver", action: "interpolate value" }
+      - { component: "#frame-resolver", action: "merge into ResolvedFrame" }
+
+gates:
+  ^no-overlap:
+    description: Rejects delta additions that overlap with existing deltas on same property

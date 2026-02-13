@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.2.0] — 2026-02-13
+
+### Added
+- `@atelier/core` — animation engine with 7 modules:
+  - `resolveFrame(doc, stateName, frame)` — full frame resolution, computes all layer states
+  - `resolveDeltaValue()` — per-property interpolation with easing
+  - `resolveEasing()` — bridges type definitions to executable math functions
+  - `DocumentBuilder` — fluent API for constructing documents with live validation
+  - `validateNoOverlap()` / `validateAllDeltas()` — delta overlap detection (^no-overlap gate)
+  - `resolveUnit()` — percentage-to-pixel conversion
+  - `expandPreset()` — expands preset definitions into concrete deltas
+- 35 new tests for core (80 total across workspace)
+
 ## [0.1.0] — 2026-02-13
 
 ### Added
