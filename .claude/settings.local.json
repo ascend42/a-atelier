@@ -20,7 +20,18 @@
       "Bash(git -C /Users/ascend/Documents/GitHub/a-maker status)",
       "Bash(git -C /Users/ascend/Documents/GitHub/a-maker diff)",
       "Bash(git -C /Users/ascend/Documents/GitHub/a-maker add .gitignore CHANGELOG.md CLAUDE.md .purpose .paradigm/ .premise .windsurfrules .mcp.json .cursor/ .github/ docs/ package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json turbo.json packages/ apps/)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsup:*)",
+      "Bash(pnpm --filter @atelier/types build:*)",
+      "Bash(pnpm --filter @atelier/schema build:*)",
+      "Bash(pnpm --filter @atelier/schema typecheck:*)",
+      "Bash(pnpm --filter @atelier/schema test:*)",
+      "mcp__paradigm__paradigm_history_record",
+      "mcp__paradigm__paradigm_wisdom_record",
+      "mcp__paradigm__paradigm_pm_postflight"
     ]
   },
   "enableAllProjectMcpServers": true,
