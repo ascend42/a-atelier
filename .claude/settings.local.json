@@ -40,7 +40,9 @@
       "mcp__paradigm__paradigm_purpose_init",
       "mcp__paradigm__paradigm_purpose_add_component",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(python3:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
