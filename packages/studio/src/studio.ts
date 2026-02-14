@@ -5,11 +5,11 @@ import { PropertyPanel } from "./panels/property-panel.js";
 import { YamlPanel } from "./panels/yaml-panel.js";
 import { applyStudioTheme, defaultTheme, type StudioTheme } from "./theme.js";
 
-export type StudioView = "preview" | "yaml" | "editor";
+export type RightTab = "yaml" | "editor";
 
 export interface StudioOptions {
   mode?: "full" | "compact";
-  initialView?: StudioView;
+  initialTab?: RightTab;
   allowSave?: boolean;
   onDocumentChange?: (doc: AtelierDocument) => void;
   onSave?: (doc: AtelierDocument) => void;
@@ -19,8 +19,9 @@ export class AtelierStudio {
   private root: HTMLElement;
   private toolbar: HTMLElement;
   private body: HTMLElement;
+  private rightPanel: HTMLElement;
   private stateSelect!: HTMLSelectElement;
-  private viewBtns: Map<StudioView, HTMLButtonElement> = new Map();
+  private tabBtns: Map<RightTab, HTMLButtonElement> = new Map();
 
   private canvasPanel: CanvasPanel;
   private layerPanel: LayerPanel;
@@ -29,14 +30,14 @@ export class AtelierStudio {
 
   private doc: AtelierDocument | null = null;
   private originalDoc: AtelierDocument | null = null;
-  private currentView: StudioView;
+  private currentTab: RightTab;
   private stateName = "";
 
   constructor(
     private container: HTMLElement,
     private opts: StudioOptions = {},
   ) {
-    this.currentView = opts.initialView ?? "preview";
+    this.currentTab = opts.initialTab ?? "yaml";
 
     // Root
     this.root = document.createElement("div");
@@ -49,31 +50,41 @@ export class AtelierStudio {
     this.buildToolbar();
     this.root.appendChild(this.toolbar);
 
-    // Body
+    // Body — two-column grid: canvas (left) + right panel
     this.body = document.createElement("div");
     this.body.className = "atel-body";
     this.root.appendChild(this.body);
 
-    // Panels (created once, shown/hidden by view)
+    // Right panel container
+    this.rightPanel = document.createElement("div");
+    this.rightPanel.className = "atel-right-panel";
+
+    // Canvas panel → left side of body (always visible)
     this.canvasPanel = new CanvasPanel(this.body, {
       onFrameChange: () => {},
     });
 
-    this.layerPanel = new LayerPanel(this.body, {
+    // Right panel → right side of body
+    this.body.appendChild(this.rightPanel);
+
+    // Layer panel → inside right panel (editor tab)
+    this.layerPanel = new LayerPanel(this.rightPanel, {
       onSelectLayer: (id) => {
         this.propertyPanel.selectLayer(id);
       },
       onDocumentChange: () => this.onDocChange(),
     });
 
-    this.propertyPanel = new PropertyPanel(this.body, {
+    // Property panel → inside right panel (editor tab)
+    this.propertyPanel = new PropertyPanel(this.rightPanel, {
       onPropertyChange: () => this.onDocChange(),
     });
 
-    this.yamlPanel = new YamlPanel(this.body);
+    // YAML panel → inside right panel (yaml tab)
+    this.yamlPanel = new YamlPanel(this.rightPanel);
 
     container.appendChild(this.root);
-    this.applyView();
+    this.applyTab();
   }
 
   loadDocument(doc: AtelierDocument): void {
@@ -109,9 +120,9 @@ export class AtelierStudio {
     applyStudioTheme(this.root, theme);
   }
 
-  setView(view: StudioView): void {
-    this.currentView = view;
-    this.applyView();
+  setTab(tab: RightTab): void {
+    this.currentTab = tab;
+    this.applyTab();
   }
 
   destroy(): void {
@@ -120,33 +131,10 @@ export class AtelierStudio {
   }
 
   private buildToolbar(): void {
-    // View toggle group
-    const group = document.createElement("div");
-    group.className = "atel-toolbar__group";
+    // Left group: state selector + reset
+    const leftGroup = document.createElement("div");
+    leftGroup.className = "atel-toolbar__group atel-toolbar__group--controls";
 
-    const views: { id: StudioView; label: string }[] = [
-      { id: "preview", label: "\u25B6 Preview" },
-      { id: "yaml", label: "{ } YAML" },
-      { id: "editor", label: "\u270E Editor" },
-    ];
-
-    for (const v of views) {
-      const btn = document.createElement("button");
-      btn.className = "atel-toolbar__btn";
-      btn.textContent = v.label;
-      btn.addEventListener("click", () => this.setView(v.id));
-      this.viewBtns.set(v.id, btn);
-      group.appendChild(btn);
-    }
-
-    this.toolbar.appendChild(group);
-
-    // Spacer
-    const spacer = document.createElement("div");
-    spacer.className = "atel-toolbar__spacer";
-    this.toolbar.appendChild(spacer);
-
-    // State selector
     this.stateSelect = document.createElement("select");
     this.stateSelect.className = "atel-toolbar__select";
     this.stateSelect.style.display = "none";
@@ -155,56 +143,76 @@ export class AtelierStudio {
       this.canvasPanel.setStateName(this.stateName);
       this.propertyPanel.setStateName(this.stateName);
     });
-    this.toolbar.appendChild(this.stateSelect);
+    leftGroup.appendChild(this.stateSelect);
 
-    // Reset button
     const resetBtn = document.createElement("button");
     resetBtn.className = "atel-toolbar__btn";
     resetBtn.textContent = "Reset";
     resetBtn.dataset.action = "reset";
     resetBtn.addEventListener("click", () => this.resetDocument());
-    this.toolbar.appendChild(resetBtn);
-  }
+    leftGroup.appendChild(resetBtn);
 
-  private applyView(): void {
-    // Update button states
-    for (const [id, btn] of this.viewBtns) {
-      btn.classList.toggle("atel-toolbar__btn--active", id === this.currentView);
+    this.toolbar.appendChild(leftGroup);
+
+    // Spacer
+    const spacer = document.createElement("div");
+    spacer.className = "atel-toolbar__spacer";
+    this.toolbar.appendChild(spacer);
+
+    // Right group: tab toggle
+    const tabGroup = document.createElement("div");
+    tabGroup.className = "atel-toolbar__group";
+
+    const tabs: { id: RightTab; label: string }[] = [
+      { id: "yaml", label: "{ } YAML" },
+      { id: "editor", label: "\u270E Editor" },
+    ];
+
+    for (const t of tabs) {
+      const btn = document.createElement("button");
+      btn.className = "atel-toolbar__btn";
+      btn.textContent = t.label;
+      btn.addEventListener("click", () => this.setTab(t.id));
+      this.tabBtns.set(t.id, btn);
+      tabGroup.appendChild(btn);
     }
 
-    // Show/hide panels
-    this.canvasPanel.el.style.display = "none";
+    this.toolbar.appendChild(tabGroup);
+  }
+
+  private applyTab(): void {
+    // Update button states
+    for (const [id, btn] of this.tabBtns) {
+      btn.classList.toggle("atel-toolbar__btn--active", id === this.currentTab);
+    }
+
+    // Toggle right panel content
     this.layerPanel.el.style.display = "none";
     this.propertyPanel.el.style.display = "none";
     this.yamlPanel.el.style.display = "none";
 
-    this.body.className = "atel-body";
+    this.rightPanel.className = "atel-right-panel";
 
-    switch (this.currentView) {
-      case "preview":
-        this.body.classList.add("atel-body--preview");
-        this.canvasPanel.el.style.display = "";
-        break;
+    switch (this.currentTab) {
       case "yaml":
-        this.body.classList.add("atel-body--yaml");
+        this.rightPanel.classList.add("atel-right-panel--yaml");
         this.yamlPanel.el.style.display = "";
         this.yamlPanel.refresh();
         break;
       case "editor":
-        this.body.classList.add("atel-body--editor");
+        this.rightPanel.classList.add("atel-right-panel--editor");
         this.layerPanel.el.style.display = "";
-        this.canvasPanel.el.style.display = "";
         this.propertyPanel.el.style.display = "";
         break;
     }
   }
 
   private onDocChange(): void {
-    // Re-render canvas
+    // Re-render canvas (always visible)
     this.canvasPanel.refresh();
 
     // Update YAML if visible
-    if (this.currentView === "yaml") {
+    if (this.currentTab === "yaml") {
       this.yamlPanel.refresh();
     }
 

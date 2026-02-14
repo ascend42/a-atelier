@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.9.0] — 2026-02-14
+
+### Changed
+- `@atelier/studio` — Side-by-side layout: canvas always visible on left, tabbed right panel (YAML / Editor)
+  - Replaced three-way view toggle (`preview` | `yaml` | `editor`) with two-tab right panel (`yaml` | `editor`)
+  - `StudioView` type replaced by `RightTab`; `initialView` option replaced by `initialTab`
+  - Editor tab shows layers list (top) and property inspector (bottom) in a single right column
+- `apps/showcase` — Simplified to always embed studio widget; removed standalone preview mode and view-toggle buttons
+- `@atelier/studio` — CSS now bundled via tsup and explicitly imported (`@atelier/studio/styles.css`)
+
+### Fixed
+- `@atelier/studio` — CSS was not included in build output (`dist/styles.css` never existed); added `import "./styles.css"` to source and updated package.json export to `dist/index.css`
+
 ## [0.8.0] — 2026-02-14
 
 ### Added
