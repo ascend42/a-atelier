@@ -11,26 +11,26 @@ export const easingExamples: Example[] = [
     category: "Easing",
     create: (): AtelierDocument => {
       const rows = [
-        { id: "linear", label: "linear", color: "#e94560", easing: { type: "linear" as const } },
-        { id: "ease-in", label: "ease-in", color: "#0ea5e9", easing: "ease-in" as const },
-        { id: "ease-out", label: "ease-out", color: "#22c55e", easing: "ease-out" as const },
-        { id: "ease-in-out", label: "ease-in-out", color: "#f59e0b", easing: "ease-in-out" as const },
+        { id: "linear", label: "linear", color: "#C75B39", easing: { type: "linear" as const } },
+        { id: "ease-in", label: "ease-in", color: "#4A7C91", easing: "ease-in" as const },
+        { id: "ease-out", label: "ease-out", color: "#7A8B6F", easing: "ease-out" as const },
+        { id: "ease-in-out", label: "ease-in-out", color: "#D4A574", easing: "ease-in-out" as const },
         {
           id: "cubic-bezier",
           label: "cubic-bezier",
-          color: "#533483",
+          color: "#5B4A6F",
           easing: { type: "cubic-bezier" as const, x1: 0.68, y1: -0.55, x2: 0.27, y2: 1.55 },
         },
         {
           id: "spring",
           label: "spring",
-          color: "#0f3460",
+          color: "#3A5A6B",
           easing: { type: "spring" as const, mass: 1, stiffness: 100, damping: 10 },
         },
         {
           id: "step",
           label: "step",
-          color: "#ffffff",
+          color: "#F5F0EB",
           easing: { type: "step" as const, steps: 8 },
         },
       ];
@@ -41,7 +41,7 @@ export const easingExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       });
 
       // Add title
@@ -54,7 +54,7 @@ export const easingExamples: Example[] = [
             fontFamily: "sans-serif",
             fontSize: 20,
             fontWeight: "bold",
-            color: "#ffffff",
+            color: "#F5F0EB",
             textAlign: "center",
           },
         },
@@ -100,7 +100,7 @@ export const easingExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 1 },
-            fill: { type: "solid", color: "#ffffff" },
+            fill: { type: "solid", color: "#F5F0EB" },
           },
           frame: { x: 150, y: y + 10 },
           bounds: { width: 400, height: 2 },
@@ -137,7 +137,7 @@ export const easingExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "label-eased",
@@ -147,7 +147,7 @@ export const easingExamples: Example[] = [
             style: {
               fontFamily: "monospace",
               fontSize: 14,
-              color: "#0ea5e9",
+              color: "#4A7C91",
               textAlign: "center",
             },
           },
@@ -162,7 +162,7 @@ export const easingExamples: Example[] = [
             style: {
               fontFamily: "monospace",
               fontSize: 14,
-              color: "#e94560",
+              color: "#C75B39",
               textAlign: "center",
             },
           },
@@ -174,7 +174,7 @@ export const easingExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#0ea5e9" },
+            fill: { type: "solid", color: "#4A7C91" },
           },
           frame: { x: 140, y: 80 },
           bounds: { width: 60, height: 60 },
@@ -184,7 +184,7 @@ export const easingExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 400, y: 80 },
           bounds: { width: 60, height: 60 },
@@ -194,7 +194,7 @@ export const easingExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: "#ffffff" },
+            fill: { type: "solid", color: "#F5F0EB" },
           },
           frame: { x: 50, y: 340 },
           bounds: { width: 500, height: 2 },

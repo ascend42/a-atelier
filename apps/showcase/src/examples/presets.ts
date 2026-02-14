@@ -22,7 +22,7 @@ export const presetsExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       });
 
       // Register the preset on the document
@@ -30,9 +30,9 @@ export const presetsExamples: Example[] = [
 
       // Three cards to demonstrate the preset
       const cards = [
-        { id: "card-0", x: 70, y: 150, color: "#e94560", label: "Card A" },
-        { id: "card-1", x: 240, y: 150, color: "#0ea5e9", label: "Card B" },
-        { id: "card-2", x: 410, y: 150, color: "#22c55e", label: "Card C" },
+        { id: "card-0", x: 70, y: 150, color: "#C75B39", label: "Card A" },
+        { id: "card-1", x: 240, y: 150, color: "#4A7C91", label: "Card B" },
+        { id: "card-2", x: 410, y: 150, color: "#7A8B6F", label: "Card C" },
       ];
 
       for (const card of cards) {
@@ -57,7 +57,7 @@ export const presetsExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 14,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -118,7 +118,7 @@ export const presetsExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       });
 
       builder.preset("slide-up", slideUp);
@@ -133,7 +133,7 @@ export const presetsExamples: Example[] = [
             fontFamily: "sans-serif",
             fontSize: 28,
             fontWeight: "bold",
-            color: "#ffffff",
+            color: "#F5F0EB",
             textAlign: "center",
           },
         },
@@ -151,7 +151,7 @@ export const presetsExamples: Example[] = [
           style: {
             fontFamily: "sans-serif",
             fontSize: 16,
-            color: "#0ea5e9",
+            color: "#4A7C91",
             textAlign: "center",
           },
         },
@@ -170,8 +170,8 @@ export const presetsExamples: Example[] = [
             type: "linear-gradient",
             angle: 90,
             stops: [
-              { offset: 0, color: "#e94560" },
-              { offset: 1, color: "#533483" },
+              { offset: 0, color: "#C75B39" },
+              { offset: 1, color: "#5B4A6F" },
             ],
           },
         },
@@ -189,7 +189,7 @@ export const presetsExamples: Example[] = [
             fontFamily: "sans-serif",
             fontSize: 14,
             fontWeight: "bold",
-            color: "#ffffff",
+            color: "#F5F0EB",
             textAlign: "center",
           },
         },

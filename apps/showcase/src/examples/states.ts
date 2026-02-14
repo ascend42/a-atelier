@@ -14,7 +14,7 @@ export const statesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         // Decorative background shape
         .addLayer({
@@ -26,8 +26,8 @@ export const statesExamples: Example[] = [
               type: "linear-gradient",
               angle: 135,
               stops: [
-                { offset: 0, color: "#0f3460" },
-                { offset: 1, color: "#16213e" },
+                { offset: 0, color: "#3A5A6B" },
+                { offset: 1, color: "#363636" },
               ],
             },
           },
@@ -44,7 +44,7 @@ export const statesExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 32,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -60,7 +60,7 @@ export const statesExamples: Example[] = [
             style: {
               fontFamily: "sans-serif",
               fontSize: 16,
-              color: "#0ea5e9",
+              color: "#4A7C91",
               textAlign: "center",
             },
           },
@@ -73,7 +73,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 240, y: 240 },
           bounds: { width: 16, height: 16 },
@@ -84,7 +84,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#22c55e" },
+            fill: { type: "solid", color: "#7A8B6F" },
           },
           frame: { x: 290, y: 240 },
           bounds: { width: 16, height: 16 },
@@ -95,7 +95,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#f59e0b" },
+            fill: { type: "solid", color: "#D4A574" },
           },
           frame: { x: 340, y: 240 },
           bounds: { width: 16, height: 16 },
@@ -279,7 +279,7 @@ export const statesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         // Housing
         .addLayer({
@@ -287,8 +287,8 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 20 },
-            fill: { type: "solid", color: "#16213e" },
-            stroke: { color: "#0f3460", width: 2 },
+            fill: { type: "solid", color: "#363636" },
+            stroke: { color: "#3A5A6B", width: 2 },
           },
           frame: { x: 245, y: 30 },
           bounds: { width: 110, height: 340 },
@@ -299,7 +299,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 265, y: 55 },
           bounds: { width: 70, height: 70 },
@@ -311,7 +311,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#f59e0b" },
+            fill: { type: "solid", color: "#D4A574" },
           },
           frame: { x: 265, y: 160 },
           bounds: { width: 70, height: 70 },
@@ -323,7 +323,7 @@ export const statesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#22c55e" },
+            fill: { type: "solid", color: "#7A8B6F" },
           },
           frame: { x: 265, y: 265 },
           bounds: { width: 70, height: 70 },
@@ -339,7 +339,7 @@ export const statesExamples: Example[] = [
               fontFamily: "monospace",
               fontSize: 18,
               fontWeight: "bold",
-              color: "#e94560",
+              color: "#C75B39",
               textAlign: "center",
             },
           },

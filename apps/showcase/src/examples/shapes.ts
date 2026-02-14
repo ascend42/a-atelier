@@ -14,14 +14,14 @@ export const shapesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "rect",
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 80, y: 150 },
           bounds: { width: 120, height: 120 },
@@ -32,7 +32,7 @@ export const shapesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#0ea5e9" },
+            fill: { type: "solid", color: "#4A7C91" },
           },
           frame: { x: 240, y: 150 },
           bounds: { width: 120, height: 120 },
@@ -43,7 +43,7 @@ export const shapesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 24 },
-            fill: { type: "solid", color: "#22c55e" },
+            fill: { type: "solid", color: "#7A8B6F" },
           },
           frame: { x: 400, y: 150 },
           bounds: { width: 120, height: 120 },
@@ -58,7 +58,7 @@ export const shapesExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 24,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -136,7 +136,7 @@ export const shapesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "diamond",
@@ -152,8 +152,8 @@ export const shapesExamples: Example[] = [
               ],
               closed: true,
             },
-            fill: { type: "solid", color: "#533483" },
-            stroke: { color: "#e94560", width: 2 },
+            fill: { type: "solid", color: "#5B4A6F" },
+            stroke: { color: "#C75B39", width: 2 },
           },
           frame: { x: 240, y: 140 },
           bounds: { width: 120, height: 120 },
@@ -223,14 +223,14 @@ export const shapesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "shape",
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 0 },
-            fill: { type: "solid", color: "#f59e0b" },
+            fill: { type: "solid", color: "#D4A574" },
           },
           frame: { x: 225, y: 125 },
           bounds: { width: 150, height: 150 },

@@ -14,7 +14,7 @@ export const stylesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "gradient-bg",
@@ -25,9 +25,9 @@ export const stylesExamples: Example[] = [
               type: "linear-gradient",
               angle: 45,
               stops: [
-                { offset: 0, color: "#e94560" },
-                { offset: 0.5, color: "#533483" },
-                { offset: 1, color: "#0ea5e9" },
+                { offset: 0, color: "#C75B39" },
+                { offset: 0.5, color: "#5B4A6F" },
+                { offset: 1, color: "#4A7C91" },
               ],
             },
           },
@@ -39,7 +39,7 @@ export const stylesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 20 },
-            fill: { type: "solid", color: "#16213e" },
+            fill: { type: "solid", color: "#363636" },
           },
           frame: { x: 150, y: 100 },
           bounds: { width: 300, height: 200 },
@@ -54,7 +54,7 @@ export const stylesExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 22,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -101,14 +101,14 @@ export const stylesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "circle",
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            stroke: { color: "#0ea5e9", width: 1 },
+            stroke: { color: "#4A7C91", width: 1 },
           },
           frame: { x: 100, y: 120 },
           bounds: { width: 140, height: 140 },
@@ -118,7 +118,7 @@ export const stylesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            stroke: { color: "#e94560", width: 1 },
+            stroke: { color: "#C75B39", width: 1 },
           },
           frame: { x: 310, y: 120 },
           bounds: { width: 140, height: 140 },
@@ -137,7 +137,7 @@ export const stylesExamples: Example[] = [
               ],
               closed: true,
             },
-            stroke: { color: "#22c55e", width: 1 },
+            stroke: { color: "#7A8B6F", width: 1 },
           },
           frame: { x: 250, y: 300 },
           bounds: { width: 80, height: 80 },
@@ -209,14 +209,14 @@ export const stylesExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "swatch",
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 16 },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 175, y: 100 },
           bounds: { width: 250, height: 160 },
@@ -230,7 +230,7 @@ export const stylesExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 20,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -243,8 +243,8 @@ export const stylesExamples: Example[] = [
           layer: "swatch",
           property: "visual.fill.color",
           range: [0, 59],
-          from: "#e94560",
-          to: "#0ea5e9",
+          from: "#C75B39",
+          to: "#4A7C91",
           easing: "ease-in-out",
         })
         // Cyan to green
@@ -252,8 +252,8 @@ export const stylesExamples: Example[] = [
           layer: "swatch",
           property: "visual.fill.color",
           range: [60, 119],
-          from: "#0ea5e9",
-          to: "#22c55e",
+          from: "#4A7C91",
+          to: "#7A8B6F",
           easing: "ease-in-out",
         })
         // Green to amber
@@ -261,8 +261,8 @@ export const stylesExamples: Example[] = [
           layer: "swatch",
           property: "visual.fill.color",
           range: [120, 179],
-          from: "#22c55e",
-          to: "#f59e0b",
+          from: "#7A8B6F",
+          to: "#D4A574",
           easing: "ease-in-out",
         })
         // Amber back to red
@@ -270,8 +270,8 @@ export const stylesExamples: Example[] = [
           layer: "swatch",
           property: "visual.fill.color",
           range: [180, 240],
-          from: "#f59e0b",
-          to: "#e94560",
+          from: "#D4A574",
+          to: "#C75B39",
           easing: "ease-in-out",
         })
         // Subtle corner radius animation for extra visual interest

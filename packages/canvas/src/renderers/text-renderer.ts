@@ -14,13 +14,24 @@ export function renderText(ctx: RenderContext, eff: EffectiveLayer): void {
   const fontFamily = style.fontFamily;
   ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
 
-  // Set alignment
-  ctx.textAlign = style.textAlign ?? "left";
+  // Set alignment — position text within its bounding box
+  const align = style.textAlign ?? "left";
+  ctx.textAlign = align;
   ctx.textBaseline = "top";
 
   // Set color
   ctx.fillStyle = colorToCSS(style.color);
 
-  // Draw text
-  ctx.fillText(visual.content, 0, 0);
+  // Canvas 2D textAlign anchors at the draw point, so offset within bounds:
+  // "left" → draw at x=0 (text flows right from left edge)
+  // "center" → draw at x=width/2 (text centers within bounds)
+  // "right" → draw at x=width (text flows left from right edge)
+  let textX = 0;
+  if (align === "center") {
+    textX = eff.width / 2;
+  } else if (align === "right") {
+    textX = eff.width;
+  }
+
+  ctx.fillText(visual.content, textX, 0);
 }

@@ -10,12 +10,12 @@ export const compositionExamples: Example[] = [
       "Five rectangles enter from the bottom with staggered timing, creating a wave effect",
     category: "Composition",
     create: (): AtelierDocument => {
-      const colors = ["#e94560", "#0ea5e9", "#22c55e", "#f59e0b", "#533483"];
+      const colors = ["#C75B39", "#4A7C91", "#7A8B6F", "#D4A574", "#5B4A6F"];
       const builder = createDocument("Stagger Entrance", {
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       });
 
       // Create 5 bars
@@ -73,7 +73,7 @@ export const compositionExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         // Central circle
         .addLayer({
@@ -81,7 +81,7 @@ export const compositionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#0ea5e9" },
+            fill: { type: "solid", color: "#4A7C91" },
           },
           frame: { x: 270, y: 170 },
           bounds: { width: 60, height: 60 },
@@ -93,7 +93,7 @@ export const compositionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 4 },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 300, y: 200 },
           bounds: { width: 40, height: 40 },
@@ -105,7 +105,7 @@ export const compositionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 4 },
-            fill: { type: "solid", color: "#22c55e" },
+            fill: { type: "solid", color: "#7A8B6F" },
           },
           frame: { x: 300, y: 200 },
           bounds: { width: 40, height: 40 },
@@ -117,7 +117,7 @@ export const compositionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 4 },
-            fill: { type: "solid", color: "#f59e0b" },
+            fill: { type: "solid", color: "#D4A574" },
           },
           frame: { x: 300, y: 200 },
           bounds: { width: 40, height: 40 },
@@ -129,7 +129,7 @@ export const compositionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 4 },
-            fill: { type: "solid", color: "#533483" },
+            fill: { type: "solid", color: "#5B4A6F" },
           },
           frame: { x: 300, y: 200 },
           bounds: { width: 40, height: 40 },

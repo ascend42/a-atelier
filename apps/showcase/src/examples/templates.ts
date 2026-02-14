@@ -12,14 +12,14 @@ export const templatesExamples: Example[] = [
     create: (): AtelierDocument => {
       // Template variables define the customizable slots
       const titleText = "Atelier Studio";
-      const brandColor = "#e94560";
-      const accentColor = "#0ea5e9";
+      const brandColor = "#C75B39";
+      const accentColor = "#4A7C91";
 
       return createDocument("Branded Title Card", {
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         // Register template variables so consumers know what to customize
         .variable("title", {
@@ -58,7 +58,7 @@ export const templatesExamples: Example[] = [
               fontFamily: "sans-serif",
               fontSize: 36,
               fontWeight: "bold",
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "center",
             },
           },
@@ -224,13 +224,13 @@ export const templatesExamples: Example[] = [
     category: "Templates",
     create: (): AtelierDocument => {
       const message = "Changes saved successfully";
-      const iconColor = "#22c55e";
+      const iconColor = "#7A8B6F";
 
       return createDocument("Notification Banner", {
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .variable("message", {
           type: "string",
@@ -248,8 +248,8 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 12 },
-            fill: { type: "solid", color: "#16213e" },
-            stroke: { color: "#0f3460", width: 1 },
+            fill: { type: "solid", color: "#363636" },
+            stroke: { color: "#3A5A6B", width: 1 },
           },
           frame: { x: 100, y: -60 },
           bounds: { width: 400, height: 56 },
@@ -271,7 +271,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 2 },
-            fill: { type: "solid", color: "#ffffff" },
+            fill: { type: "solid", color: "#F5F0EB" },
           },
           frame: { x: 127, y: -37 },
           bounds: { width: 12, height: 12 },
@@ -286,7 +286,7 @@ export const templatesExamples: Example[] = [
             style: {
               fontFamily: "sans-serif",
               fontSize: 14,
-              color: "#ffffff",
+              color: "#F5F0EB",
               textAlign: "left",
             },
           },

@@ -14,14 +14,14 @@ export const motionExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "track",
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 2 },
-            fill: { type: "solid", color: "#ffffff" },
+            fill: { type: "solid", color: "#F5F0EB" },
           },
           frame: { x: 50, y: 198 },
           bounds: { width: 500, height: 4 },
@@ -36,8 +36,8 @@ export const motionExamples: Example[] = [
               type: "linear-gradient",
               angle: 135,
               stops: [
-                { offset: 0, color: "#e94560" },
-                { offset: 1, color: "#533483" },
+                { offset: 0, color: "#C75B39" },
+                { offset: 1, color: "#5B4A6F" },
               ],
             },
           },
@@ -75,15 +75,15 @@ export const motionExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "spinner",
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#0ea5e9" },
-            stroke: { color: "#ffffff", width: 3 },
+            fill: { type: "solid", color: "#4A7C91" },
+            stroke: { color: "#F5F0EB", width: 3 },
           },
           frame: { x: 240, y: 140 },
           bounds: { width: 120, height: 120 },
@@ -93,7 +93,7 @@ export const motionExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#e94560" },
+            fill: { type: "solid", color: "#C75B39" },
           },
           frame: { x: 290, y: 148 },
           bounds: { width: 20, height: 20 },
@@ -129,14 +129,14 @@ export const motionExamples: Example[] = [
         width: 600,
         height: 400,
         fps: 60,
-        background: "#141420",
+        background: "#1E1E1E",
       })
         .addLayer({
           id: "ring-outer",
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: "#533483" },
+            fill: { type: "solid", color: "#5B4A6F" },
           },
           frame: { x: 230, y: 130 },
           bounds: { width: 140, height: 140 },
@@ -152,8 +152,8 @@ export const motionExamples: Example[] = [
               center: { x: 0.5, y: 0.5 },
               radius: 0.5,
               stops: [
-                { offset: 0, color: "#22c55e" },
-                { offset: 1, color: "#0f3460" },
+                { offset: 0, color: "#7A8B6F" },
+                { offset: 1, color: "#3A5A6B" },
               ],
             },
           },

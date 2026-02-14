@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.7.2] — 2026-02-14
+
+### Changed
+- `apps/showcase` — Restyle with Cormorant Garamond font and editorial color palette (Deep Charcoal, Paper White, Terracotta, Instructional Blue) across both themes and all 19 examples
+
+### Fixed
+- `@atelier/canvas` — Text layers with `textAlign: "center"` or `"right"` now render correctly within their bounding box. Previously, Canvas 2D alignment anchored at local origin (0,0), pushing right-aligned text off the left edge of the canvas.
+
 ## [0.7.1] — 2026-02-14
 
 ### Fixed
