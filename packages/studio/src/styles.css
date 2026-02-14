@@ -481,6 +481,29 @@
   color: #e55;
 }
 
+.atel-delta-item--expanded {
+  border-color: var(--atel-accent, #C75B39);
+  border-left: 2px solid var(--atel-accent, #C75B39);
+}
+
+.atel-delta-item__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.atel-delta-item__editor-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.atel-delta-item__editor-row--range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
 .atel-delta-actions {
   display: flex;
   gap: 4px;

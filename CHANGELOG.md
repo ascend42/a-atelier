@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.10.0] — 2026-02-14
+
+### Added
+- `@atelier/studio` — Inline delta editor: clicking a delta header expands an editor with property-matched controls
+  - `SliderInput` for opacity (0–1), `ColorPicker` for fill/stroke/style colors, `NumberInput` for position/size/rotation/scale
+  - Property dropdown to change animated property (resets from/to to sensible defaults)
+  - `EasingPicker` for easing selection, dual `NumberInput` for frame range
+  - Only one delta expanded at a time; new deltas auto-expand for immediate editing
+  - All edits mutate delta directly and fire `onDeltaChange()` for live canvas updates
+  - Added `anchorPoint.x` / `anchorPoint.y` to animatable property list
+
 ## [0.9.0] — 2026-02-14
 
 ### Changed

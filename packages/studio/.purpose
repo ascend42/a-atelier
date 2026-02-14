@@ -31,8 +31,14 @@ components:
       - '#delta-panel'
     file: src/panels/property-panel.ts
   delta-panel:
-    description: Delta/animation list for selected layer with add/remove
+    description: Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), property switching, and live canvas updates
     file: src/panels/delta-panel.ts
+    components:
+      - '#number-input'
+      - '#slider-input'
+      - '#color-picker'
+      - '#select-input'
+      - '#easing-picker'
   yaml-panel:
     description: Read-only YAML viewer with syntax highlighting and copy-to-clipboard
     file: src/panels/yaml-panel.ts
