@@ -180,8 +180,8 @@ describe("frame resolver", () => {
   it("resolves frame at end", () => {
     const resolved = resolveFrame(doc, "intro", 30);
     expect(resolved.layers[0].computedProperties.opacity).toBe(1);
-    // frame.x range ends at 15, so at frame 30 it should be undefined (past range)
-    expect(resolved.layers[0].computedProperties["frame.x"]).toBeUndefined();
+    // frame.x range ends at 15, so at frame 30 it holds the final "to" value
+    expect(resolved.layers[0].computedProperties["frame.x"]).toBe(50);
   });
 
   it("throws for unknown state", () => {

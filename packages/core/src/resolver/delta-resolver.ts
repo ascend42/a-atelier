@@ -57,16 +57,33 @@ export function interpolateValue(from: unknown, to: unknown, t: number): unknown
 /**
  * Given multiple deltas for the SAME layer+property, find the active one
  * at a given frame and return its resolved value.
+ *
+ * If no delta is active at this frame, holds the `to` value of the most
+ * recent completed delta (the one whose range ended most recently before
+ * this frame). This prevents properties from reverting after animation ends.
+ *
  * Assumes no overlaps (validated elsewhere).
  */
 export function resolvePropertyAtFrame(
   deltas: Delta[],
   frame: number,
 ): unknown | undefined {
+  // Check for an active delta first
   for (const delta of deltas) {
     if (isFrameInRange(frame, delta.range)) {
       return resolveDeltaValue(delta, frame);
     }
   }
-  return undefined;
+
+  // No active delta — hold the `to` value of the most recently completed delta
+  let lastCompleted: Delta | undefined;
+  for (const delta of deltas) {
+    if (frame > delta.range[1]) {
+      if (!lastCompleted || delta.range[1] > lastCompleted.range[1]) {
+        lastCompleted = delta;
+      }
+    }
+  }
+
+  return lastCompleted?.to;
 }

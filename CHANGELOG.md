@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.7.1] — 2026-02-14
+
+### Fixed
+- `@atelier/core` — Properties no longer revert after a delta's range ends. `resolvePropertyAtFrame` now holds the `to` value of the most recently completed delta, preventing layers from disappearing after their animations finish.
+
 ## [0.7.0] — 2026-02-14
 
 ### Added
