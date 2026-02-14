@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.14.0] — 2026-02-14
+
+### Added
+- `@atelier/types` + `@atelier/schema` — `Shadow` interface and `ShadowSchema` (color, blur, offsetX, offsetY) as an optional layer-level property
+- `@atelier/types` + `@atelier/schema` — 4 new animatable properties: `shadow.color`, `shadow.blur`, `shadow.offsetX`, `shadow.offsetY`
+- `@atelier/canvas` — Shadow rendering via Canvas 2D `shadowColor`/`shadowBlur`/`shadowOffsetX`/`shadowOffsetY`, resolved from layer defaults and animated computed properties
+- `@atelier/canvas` — `drawImage` added to `RenderContext` interface; new `ImageCache` (browser-agnostic with injectable `createImage` factory) and `renderImage()` renderer for image layers
+- `@atelier/types` + `@atelier/schema` — `src?: string` field on `ImageVisual` for direct URL / data-URL rendering
+- `@atelier/studio` — Shadow section in property panel: color picker, blur slider (0–50), offset X/Y inputs, add/remove shadow buttons
+- `@atelier/studio` — Keyboard shortcuts: Space (play/pause), ArrowLeft/Right (frame step), Delete/Backspace (remove selected layer)
+- `@atelier/studio` — Path point editing in property panel for `PathShape`: per-point X/Y inputs, remove button, closed toggle, add point button
+- `@atelier/studio` — Image layer rendering via `ImageCache` integration in canvas panel
+- `@atelier/studio` — Shadow animatable properties in delta panel with proper defaults and configs
+- `@atelier/mcp` — 4 shadow values added to `AnimatablePropertyEnum` for delta tools
+- `@atelier/showcase` — "Glow Pulse" example: circle with animated `shadow.blur` (5→30→5) and `shadow.color` (blue→purple→blue)
+
 ## [0.13.0] — 2026-02-14
 
 ### Added

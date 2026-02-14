@@ -26,6 +26,9 @@ export type {
   TextStyle,
 } from "./shape.js";
 
+// shadow.ts
+export type { Shadow } from "./shadow.js";
+
 // layer.ts
 export type {
   ShapeVisual,

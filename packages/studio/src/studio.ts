@@ -32,6 +32,7 @@ export class AtelierStudio {
   private originalDoc: AtelierDocument | null = null;
   private currentTab: RightTab;
   private stateName = "";
+  private abortController = new AbortController();
 
   constructor(
     private container: HTMLElement,
@@ -85,6 +86,42 @@ export class AtelierStudio {
 
     container.appendChild(this.root);
     this.applyTab();
+
+    // Keyboard shortcuts
+    this.root.tabIndex = 0;
+    this.root.addEventListener("keydown", (e) => this.handleKeydown(e), {
+      signal: this.abortController.signal,
+    });
+  }
+
+  private handleKeydown(e: KeyboardEvent): void {
+    // Don't intercept when typing in inputs
+    if (
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLTextAreaElement ||
+      e.target instanceof HTMLSelectElement
+    ) return;
+
+    switch (e.key) {
+      case " ":
+        e.preventDefault();
+        this.canvasPanel.togglePlay();
+        break;
+      case "ArrowRight":
+        e.preventDefault();
+        this.canvasPanel.stepForward();
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        this.canvasPanel.stepBack();
+        break;
+      case "Delete":
+      case "Backspace":
+        e.preventDefault();
+        this.layerPanel.removeSelectedLayer();
+        this.onDocChange();
+        break;
+    }
   }
 
   loadDocument(doc: AtelierDocument): void {
@@ -126,6 +163,7 @@ export class AtelierStudio {
   }
 
   destroy(): void {
+    this.abortController.abort();
     this.canvasPanel.destroy();
     this.container.removeChild(this.root);
   }

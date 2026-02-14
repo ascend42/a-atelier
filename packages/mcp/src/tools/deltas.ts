@@ -28,6 +28,8 @@ const AnimatablePropertyEnum = z.enum([
   "visual.stroke.color", "visual.stroke.width",
   "visual.stroke.start", "visual.stroke.end",
   "visual.style.fontSize", "visual.style.color",
+  "shadow.color", "shadow.blur",
+  "shadow.offsetX", "shadow.offsetY",
 ]);
 
 const EasingInputSchema = z.union([

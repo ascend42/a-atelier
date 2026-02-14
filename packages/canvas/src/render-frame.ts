@@ -4,6 +4,8 @@ import type { RenderContext } from "./canvas-types.js";
 import { buildEffectiveLayer } from "./apply-properties.js";
 import { renderShape } from "./renderers/shape-renderer.js";
 import { renderText } from "./renderers/text-renderer.js";
+import { renderImage } from "./renderers/image-renderer.js";
+import type { ImageCache } from "./image-cache.js";
 
 /**
  * Render a resolved frame to a Canvas 2D context.
@@ -13,6 +15,7 @@ export function renderFrame(
   ctx: RenderContext,
   resolvedFrame: ResolvedFrame,
   doc: AtelierDocument,
+  imageCache?: ImageCache,
 ): void {
   const { width, height } = doc.canvas;
 
@@ -53,6 +56,14 @@ export function renderFrame(
       ctx.translate(-anchorPixelX, -anchorPixelY);
     }
 
+    // Apply shadow if present
+    if (eff.shadow) {
+      ctx.shadowColor = eff.shadow.color;
+      ctx.shadowBlur = eff.shadow.blur;
+      ctx.shadowOffsetX = eff.shadow.offsetX;
+      ctx.shadowOffsetY = eff.shadow.offsetY;
+    }
+
     // Dispatch to type-specific renderer
     switch (layer.visual.type) {
       case "shape":
@@ -62,7 +73,7 @@ export function renderFrame(
         renderText(ctx, eff);
         break;
       case "image":
-        // Image rendering deferred — needs async asset loading
+        if (imageCache) renderImage(ctx, eff, imageCache);
         break;
       case "group":
         // Groups are structural — children render via parentId (future)

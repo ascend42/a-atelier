@@ -143,6 +143,9 @@ export class PropertyPanel {
       });
     });
 
+    // Shadow
+    this.addShadowSection(layer);
+
     // Visual-specific properties
     this.addVisualSection(layer);
 
@@ -250,6 +253,74 @@ export class PropertyPanel {
           });
         }
       });
+
+      // Path point editing
+      if (visual.shape.type === "path") {
+        this.addSection("Path Points", () => {
+          const points = visual.shape.points;
+          for (let i = 0; i < points.length; i++) {
+            const row = this.makeRow();
+            const label = document.createElement("span");
+            label.className = "atel-control-label";
+            label.textContent = `P${i}`;
+            label.style.minWidth = "24px";
+            row.appendChild(label);
+
+            const idx = i; // capture for closures
+            new NumberInput(row, {
+              label: "X", value: points[idx].x, step: 1,
+              onChange: (v) => { points[idx].x = v; this.opts.onPropertyChange(); },
+            });
+            new NumberInput(row, {
+              label: "Y", value: points[idx].y, step: 1,
+              onChange: (v) => { points[idx].y = v; this.opts.onPropertyChange(); },
+            });
+
+            const rmBtn = document.createElement("button");
+            rmBtn.className = "atel-toolbar__btn";
+            rmBtn.textContent = "\u2715";
+            rmBtn.style.padding = "2px 6px";
+            rmBtn.addEventListener("click", () => {
+              points.splice(idx, 1);
+              this.render();
+              this.opts.onPropertyChange();
+            });
+            row.appendChild(rmBtn);
+          }
+
+          // Closed toggle
+          const closedRow = this.makeRow(true);
+          const closedLabel = document.createElement("label");
+          closedLabel.className = "atel-control-label";
+          closedLabel.textContent = "Closed";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = visual.shape.closed ?? false;
+          checkbox.addEventListener("change", () => {
+            if (visual.shape.type === "path") {
+              visual.shape.closed = checkbox.checked;
+              this.opts.onPropertyChange();
+            }
+          });
+          closedRow.appendChild(closedLabel);
+          closedRow.appendChild(checkbox);
+
+          // Add point button
+          const addRow = this.makeRow(true);
+          const addBtn = document.createElement("button");
+          addBtn.className = "atel-toolbar__btn";
+          addBtn.textContent = "+ Add Point";
+          addBtn.addEventListener("click", () => {
+            if (visual.shape.type === "path") {
+              const last = visual.shape.points[visual.shape.points.length - 1] ?? { x: 0, y: 0 };
+              visual.shape.points.push({ x: last.x + 20, y: last.y });
+              this.render();
+              this.opts.onPropertyChange();
+            }
+          });
+          addRow.appendChild(addBtn);
+        });
+      }
     }
 
     if (visual.type === "text") {
@@ -299,6 +370,73 @@ export class PropertyPanel {
         });
       });
     }
+  }
+
+  private addShadowSection(layer: Layer): void {
+    if (!layer.shadow) {
+      // Show "Add Shadow" button
+      this.addSection("Shadow", () => {
+        const row = this.makeRow(true);
+        const addBtn = document.createElement("button");
+        addBtn.className = "atel-toolbar__btn";
+        addBtn.textContent = "+ Add Shadow";
+        addBtn.addEventListener("click", () => {
+          layer.shadow = { color: "#00000080", blur: 10 };
+          this.render();
+          this.opts.onPropertyChange();
+        });
+        row.appendChild(addBtn);
+      });
+      return;
+    }
+
+    this.addSection("Shadow", () => {
+      const shadow = layer.shadow!;
+
+      const row1 = this.makeRow(true);
+      const shadowColor = typeof shadow.color === "string" ? shadow.color : "#00000080";
+      new ColorPicker(row1, {
+        label: "Color",
+        value: shadowColor,
+        onChange: (v) => {
+          shadow.color = v;
+          this.opts.onPropertyChange();
+        },
+      });
+
+      const row2 = this.makeRow(true);
+      new SliderInput(row2, {
+        label: "Blur",
+        value: shadow.blur,
+        min: 0, max: 50, step: 1,
+        onChange: (v) => {
+          shadow.blur = v;
+          this.opts.onPropertyChange();
+        },
+      });
+
+      const row3 = this.makeRow();
+      new NumberInput(row3, {
+        label: "Offset X", value: shadow.offsetX ?? 0, step: 1,
+        onChange: (v) => { shadow.offsetX = v; this.opts.onPropertyChange(); },
+      });
+      new NumberInput(row3, {
+        label: "Offset Y", value: shadow.offsetY ?? 0, step: 1,
+        onChange: (v) => { shadow.offsetY = v; this.opts.onPropertyChange(); },
+      });
+
+      // Remove shadow button
+      const row4 = this.makeRow(true);
+      const rmBtn = document.createElement("button");
+      rmBtn.className = "atel-toolbar__btn";
+      rmBtn.textContent = "Remove Shadow";
+      rmBtn.addEventListener("click", () => {
+        delete layer.shadow;
+        this.render();
+        this.opts.onPropertyChange();
+      });
+      row4.appendChild(rmBtn);
+    });
   }
 
   private addSection(title: string, buildContent: () => void): void {

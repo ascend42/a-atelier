@@ -348,6 +348,84 @@ export const stylesExamples: Example[] = [
     },
   },
   {
+    id: "styles-glow-pulse",
+    name: "Glow Pulse",
+    description:
+      "A circle with animated shadow.blur and shadow.color creates a breathing glow effect",
+    category: "Styles",
+    create: (): AtelierDocument => {
+      return createDocument("Glow Pulse", {
+        width: 600,
+        height: 400,
+        fps: 60,
+        background: "#1E1E1E",
+      })
+        .addLayer({
+          id: "orb",
+          visual: {
+            type: "shape",
+            shape: { type: "ellipse" },
+            fill: { type: "solid", color: "#4A7C91" },
+          },
+          frame: { x: 225, y: 125 },
+          bounds: { width: 150, height: 150 },
+          shadow: { color: "#4A7C91", blur: 5 },
+        })
+        .addLayer({
+          id: "glow-label",
+          visual: {
+            type: "text",
+            content: "Glow Pulse",
+            style: {
+              fontFamily: "sans-serif",
+              fontSize: 20,
+              fontWeight: "bold",
+              color: "#F5F0EB",
+              textAlign: "center",
+            },
+          },
+          frame: { x: 225, y: 320 },
+          bounds: { width: 150, height: 30 },
+        })
+        .addState("pulse", { duration: 180 })
+        // Blur grows then shrinks
+        .addDelta("pulse", {
+          layer: "orb",
+          property: "shadow.blur",
+          range: [0, 89],
+          from: 5,
+          to: 30,
+          easing: "ease-in-out",
+        })
+        .addDelta("pulse", {
+          layer: "orb",
+          property: "shadow.blur",
+          range: [90, 180],
+          from: 30,
+          to: 5,
+          easing: "ease-in-out",
+        })
+        // Shadow color shifts from blue to purple and back
+        .addDelta("pulse", {
+          layer: "orb",
+          property: "shadow.color",
+          range: [0, 89],
+          from: "#4A7C91",
+          to: "#9B59B6",
+          easing: "ease-in-out",
+        })
+        .addDelta("pulse", {
+          layer: "orb",
+          property: "shadow.color",
+          range: [90, 180],
+          from: "#9B59B6",
+          to: "#4A7C91",
+          easing: "ease-in-out",
+        })
+        .build();
+    },
+  },
+  {
     id: "styles-color-shift",
     name: "Color Shift",
     description:

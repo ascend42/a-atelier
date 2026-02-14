@@ -1,5 +1,6 @@
 import type { Shape, Fill, Stroke, TextStyle } from "./shape.js";
 import type { Frame, Bounds, AnchorPoint } from "./coordinates.js";
+import type { Shadow } from "./shadow.js";
 
 /** Visual content of a layer — what it looks like */
 export interface ShapeVisual {
@@ -19,6 +20,8 @@ export interface ImageVisual {
   type: "image";
   /** Asset ID reference */
   assetId: string;
+  /** Direct URL or data-URL for rendering */
+  src?: string;
 }
 
 export interface GroupVisual {
@@ -53,4 +56,6 @@ export interface Layer {
   scale?: { x: number; y: number };
   /** Whether this layer is visible */
   visible?: boolean;
+  /** Drop shadow / glow */
+  shadow?: Shadow;
 }

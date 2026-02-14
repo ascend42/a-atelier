@@ -76,6 +76,10 @@ export class LayerPanel {
     this.opts.onSelectLayer(id);
   }
 
+  removeSelectedLayer(): void {
+    this.removeLayer();
+  }
+
   refresh(): void {
     this.render();
   }

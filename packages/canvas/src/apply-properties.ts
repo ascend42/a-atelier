@@ -1,4 +1,5 @@
-import type { Layer, Visual, ShapeVisual, TextVisual } from "@atelier/types";
+import type { Layer, Visual, ShapeVisual, TextVisual, Color } from "@atelier/types";
+import { colorToCSS } from "./styles.js";
 import type { ResolvedLayer } from "@atelier/core";
 
 /**
@@ -23,6 +24,13 @@ export interface EffectiveLayer {
   scaleY: number;
   anchorX: number;
   anchorY: number;
+  /** Resolved shadow (if layer has shadow or shadow is animated) */
+  shadow?: {
+    color: string;
+    blur: number;
+    offsetX: number;
+    offsetY: number;
+  };
 }
 
 /**
@@ -49,6 +57,8 @@ export function buildEffectiveLayer(
   const { layer, computedProperties } = resolved;
   const cp = computedProperties as Record<string, unknown>;
 
+  const hasShadow = layer.shadow || cp["shadow.blur"] !== undefined || cp["shadow.color"] !== undefined;
+
   return {
     layer,
     visual: buildEffectiveVisual(layer.visual, cp),
@@ -62,6 +72,12 @@ export function buildEffectiveLayer(
     scaleY: (cp["scale.y"] as number) ?? layer.scale?.y ?? 1,
     anchorX: (cp["anchorPoint.x"] as number) ?? layer.anchorPoint?.x ?? 0,
     anchorY: (cp["anchorPoint.y"] as number) ?? layer.anchorPoint?.y ?? 0,
+    shadow: hasShadow ? {
+      color: colorToCSS((cp["shadow.color"] ?? layer.shadow?.color ?? "#00000080") as Color),
+      blur: (cp["shadow.blur"] as number) ?? layer.shadow?.blur ?? 0,
+      offsetX: (cp["shadow.offsetX"] as number) ?? layer.shadow?.offsetX ?? 0,
+      offsetY: (cp["shadow.offsetY"] as number) ?? layer.shadow?.offsetY ?? 0,
+    } : undefined,
   };
 }
 

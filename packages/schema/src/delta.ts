@@ -20,6 +20,10 @@ export const AnimatablePropertySchema = z.enum([
   "visual.stroke.end",
   "visual.style.fontSize",
   "visual.style.color",
+  "shadow.color",
+  "shadow.blur",
+  "shadow.offsetX",
+  "shadow.offsetY",
 ]);
 
 export const FrameRangeSchema = z.tuple([

@@ -1,6 +1,6 @@
 import type { AtelierDocument } from "@atelier/types";
 import { resolveFrame } from "@atelier/core";
-import { renderFrame } from "@atelier/canvas";
+import { renderFrame, ImageCache } from "@atelier/canvas";
 import { Player } from "../player.js";
 
 export interface CanvasPanelOptions {
@@ -17,6 +17,7 @@ export class CanvasPanel {
   private frameDisplay: HTMLSpanElement;
   private doc: AtelierDocument | null = null;
   private stateName = "";
+  private imageCache: ImageCache;
 
   constructor(parent: HTMLElement, private opts: CanvasPanelOptions = {}) {
     this.el = document.createElement("div");
@@ -29,6 +30,16 @@ export class CanvasPanel {
     this.canvas.width = 600;
     this.canvas.height = 400;
     this.ctx = this.canvas.getContext("2d")!;
+    this.imageCache = new ImageCache({
+      onLoad: () => this.refresh(),
+      createImage: (src, onLoad, onError) => {
+        const img = new Image();
+        img.onload = onLoad;
+        img.onerror = onError;
+        img.src = src;
+        return img;
+      },
+    });
     wrap.appendChild(this.canvas);
     this.el.appendChild(wrap);
 
@@ -124,7 +135,7 @@ export class CanvasPanel {
   renderAt(frame: number): void {
     if (!this.doc) return;
     const resolved = resolveFrame(this.doc, this.stateName, frame);
-    renderFrame(this.ctx as any, resolved, this.doc);
+    renderFrame(this.ctx as any, resolved, this.doc, this.imageCache);
     this.scrubber.value = String(frame);
     const total = this.doc.states[this.stateName]?.duration ?? 0;
     this.frameDisplay.textContent = `${frame} / ${total - 1}`;
@@ -137,9 +148,17 @@ export class CanvasPanel {
     this.renderAt(this.player.frame);
   }
 
-  private togglePlay(): void {
+  togglePlay(): void {
     this.player?.toggle();
     this.updatePlayBtn();
+  }
+
+  stepForward(): void {
+    if (this.player) this.player.seek(this.player.frame + 1);
+  }
+
+  stepBack(): void {
+    if (this.player) this.player.seek(Math.max(0, this.player.frame - 1));
   }
 
   private updatePlayBtn(): void {

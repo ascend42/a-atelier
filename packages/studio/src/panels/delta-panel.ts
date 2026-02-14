@@ -26,6 +26,10 @@ const ANIMATABLE_PROPERTIES: { label: string; value: AnimatableProperty }[] = [
   { label: "visual.shape.cornerRadius", value: "visual.shape.cornerRadius" },
   { label: "visual.style.fontSize", value: "visual.style.fontSize" },
   { label: "visual.style.color", value: "visual.style.color" },
+  { label: "shadow.blur", value: "shadow.blur" },
+  { label: "shadow.color", value: "shadow.color" },
+  { label: "shadow.offsetX", value: "shadow.offsetX" },
+  { label: "shadow.offsetY", value: "shadow.offsetY" },
 ];
 
 export interface DeltaPanelOptions {
@@ -433,7 +437,7 @@ export class DeltaPanel {
 }
 
 function isColorProperty(p: AnimatableProperty): boolean {
-  return p === "visual.fill.color" || p === "visual.stroke.color" || p === "visual.style.color";
+  return p === "visual.fill.color" || p === "visual.stroke.color" || p === "visual.style.color" || p === "shadow.color";
 }
 
 function getNumberConfig(p: AnimatableProperty): { step?: number; min?: number; max?: number; suffix?: string } {
@@ -456,6 +460,11 @@ function getNumberConfig(p: AnimatableProperty): { step?: number; min?: number; 
       return { step: 1, min: 0 };
     case "visual.style.fontSize":
       return { step: 1, min: 1 };
+    case "shadow.blur":
+      return { step: 1, min: 0, max: 50 };
+    case "shadow.offsetX":
+    case "shadow.offsetY":
+      return { step: 1 };
     default:
       return { step: 1 };
   }
@@ -466,6 +475,8 @@ function getDefaultValues(p: AnimatableProperty): { from: unknown; to: unknown }
   if (p === "opacity" || p === "visual.stroke.start" || p === "visual.stroke.end") return { from: 0, to: 1 };
   if (p === "scale.x" || p === "scale.y") return { from: 1, to: 2 };
   if (p === "bounds.width" || p === "bounds.height") return { from: 100, to: 200 };
+  if (p === "shadow.blur") return { from: 0, to: 30 };
+  if (p === "shadow.offsetX" || p === "shadow.offsetY") return { from: 0, to: 10 };
   return { from: 0, to: 100 };
 }
 

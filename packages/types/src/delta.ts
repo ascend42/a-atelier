@@ -19,7 +19,11 @@ export type AnimatableProperty =
   | "visual.stroke.start"
   | "visual.stroke.end"
   | "visual.style.fontSize"
-  | "visual.style.color";
+  | "visual.style.color"
+  | "shadow.color"
+  | "shadow.blur"
+  | "shadow.offsetX"
+  | "shadow.offsetY";
 
 /** Frame range [start, end] — inclusive, 0-based */
 export type FrameRange = [number, number];

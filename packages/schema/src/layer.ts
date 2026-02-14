@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ShapeSchema, FillSchema, StrokeSchema, TextStyleSchema } from "./shape.js";
 import { FrameSchema, BoundsSchema, AnchorPointSchema } from "./coordinates.js";
+import { ShadowSchema } from "./shadow.js";
 
 export const ShapeVisualSchema = z.object({
   type: z.literal("shape"),
@@ -18,6 +19,7 @@ export const TextVisualSchema = z.object({
 export const ImageVisualSchema = z.object({
   type: z.literal("image"),
   assetId: z.string().min(1, "assetId is required"),
+  src: z.string().optional(),
 });
 
 export const GroupVisualSchema = z.object({
@@ -50,4 +52,5 @@ export const LayerSchema = z.object({
   rotation: z.number().optional(),
   scale: z.object({ x: z.number(), y: z.number() }).optional(),
   visible: z.boolean().optional(),
+  shadow: ShadowSchema.optional(),
 });

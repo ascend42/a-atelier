@@ -47,6 +47,15 @@ export interface RenderContext {
   textAlign: string;
   textBaseline: string;
 
+  // Shadow
+  shadowColor: string;
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+
+  // Image
+  drawImage(image: unknown, x: number, y: number, w: number, h: number): void;
+
   // Line dash
   setLineDash(segments: number[]): void;
   lineDashOffset: number;

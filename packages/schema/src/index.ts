@@ -13,6 +13,7 @@ export {
   LinearEasingSchema, CubicBezierEasingSchema, SpringEasingSchema, StepEasingSchema,
   EasingPresetSchema, EasingSchema,
 } from "./easing.js";
+export { ShadowSchema } from "./shadow.js";
 export {
   ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, GroupVisualSchema, RefVisualSchema,
   VisualSchema, LayerSchema,
