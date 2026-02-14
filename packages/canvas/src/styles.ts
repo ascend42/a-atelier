@@ -62,11 +62,22 @@ export function applyFill(ctx: RenderContext, fill: Fill, width: number, height:
 
 /**
  * Apply a Stroke to the canvas context.
+ * @param pathLength - total perimeter of the shape (needed for strokeStart/strokeEnd trim)
  */
-export function applyStroke(ctx: RenderContext, stroke: Stroke): void {
+export function applyStroke(ctx: RenderContext, stroke: Stroke, pathLength: number): void {
   ctx.strokeStyle = colorToCSS(stroke.color);
   ctx.lineWidth = stroke.width;
   if (stroke.lineCap) ctx.lineCap = stroke.lineCap;
   if (stroke.lineJoin) ctx.lineJoin = stroke.lineJoin;
-  if (stroke.dash) ctx.setLineDash(stroke.dash);
+
+  const start = stroke.strokeStart ?? 0;
+  const end = stroke.strokeEnd ?? 1;
+
+  if (start !== 0 || end !== 1) {
+    const visible = (end - start) * pathLength;
+    ctx.setLineDash([Math.max(visible, 0), pathLength + 1]);
+    ctx.lineDashOffset = -start * pathLength;
+  } else if (stroke.dash) {
+    ctx.setLineDash(stroke.dash);
+  }
 }

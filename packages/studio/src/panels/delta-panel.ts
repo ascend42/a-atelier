@@ -21,6 +21,8 @@ const ANIMATABLE_PROPERTIES: { label: string; value: AnimatableProperty }[] = [
   { label: "visual.fill.color", value: "visual.fill.color" },
   { label: "visual.stroke.color", value: "visual.stroke.color" },
   { label: "visual.stroke.width", value: "visual.stroke.width" },
+  { label: "visual.stroke.start", value: "visual.stroke.start" },
+  { label: "visual.stroke.end", value: "visual.stroke.end" },
   { label: "visual.shape.cornerRadius", value: "visual.shape.cornerRadius" },
   { label: "visual.style.fontSize", value: "visual.style.fontSize" },
   { label: "visual.style.color", value: "visual.style.color" },
@@ -317,7 +319,7 @@ export class DeltaPanel {
         value: typeof value === "string" ? value : "#000000",
         onChange,
       });
-    } else if (property === "opacity") {
+    } else if (property === "opacity" || property === "visual.stroke.start" || property === "visual.stroke.end") {
       new SliderInput(parent, {
         label,
         value: typeof value === "number" ? value : 0,
@@ -461,7 +463,7 @@ function getNumberConfig(p: AnimatableProperty): { step?: number; min?: number; 
 
 function getDefaultValues(p: AnimatableProperty): { from: unknown; to: unknown } {
   if (isColorProperty(p)) return { from: "#000000", to: "#ffffff" };
-  if (p === "opacity") return { from: 0, to: 1 };
+  if (p === "opacity" || p === "visual.stroke.start" || p === "visual.stroke.end") return { from: 0, to: 1 };
   if (p === "scale.x" || p === "scale.y") return { from: 1, to: 2 };
   if (p === "bounds.width" || p === "bounds.height") return { from: 100, to: 200 };
   return { from: 0, to: 100 };

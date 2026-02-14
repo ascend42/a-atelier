@@ -4,7 +4,7 @@ import type { EffectiveLayer } from "../apply-properties.js";
 import { applyFill, applyStroke } from "../styles.js";
 
 export function renderShape(ctx: RenderContext, eff: EffectiveLayer): void {
-  const visual = eff.layer.visual as ShapeVisual;
+  const visual = eff.visual as ShapeVisual;
   const { shape } = visual;
   const { width, height } = eff;
 
@@ -20,6 +20,50 @@ export function renderShape(ctx: RenderContext, eff: EffectiveLayer): void {
       break;
   }
 }
+
+// ── Perimeter helpers ───────────────────────────────────────
+
+function rectPerimeter(w: number, h: number): number {
+  return 2 * (w + h);
+}
+
+function ellipsePerimeter(w: number, h: number): number {
+  const a = w / 2;
+  const b = h / 2;
+  // Ramanujan approximation
+  return Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b)));
+}
+
+function dist(x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function pathPerimeter(
+  points: { x: number; y: number; in?: { x: number; y: number }; out?: { x: number; y: number } }[],
+  closed: boolean | undefined,
+): number {
+  let length = 0;
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    if (prev.out && curr.in) {
+      // Approximate bezier with chord * 1.2
+      length += dist(prev.x, prev.y, curr.x, curr.y) * 1.2;
+    } else {
+      length += dist(prev.x, prev.y, curr.x, curr.y);
+    }
+  }
+  if (closed && points.length > 1) {
+    const first = points[0];
+    const last = points[points.length - 1];
+    length += dist(last.x, last.y, first.x, first.y);
+  }
+  return length;
+}
+
+// ── Renderers ───────────────────────────────────────────────
 
 function renderRect(
   ctx: RenderContext,
@@ -39,7 +83,8 @@ function renderRect(
     }
   }
   if (visual.stroke) {
-    applyStroke(ctx, visual.stroke);
+    const perimeter = rectPerimeter(width, height);
+    applyStroke(ctx, visual.stroke, perimeter);
     if (cornerRadius && ctx.roundRect) {
       ctx.beginPath();
       ctx.roundRect(0, 0, width, height, cornerRadius);
@@ -64,7 +109,8 @@ function renderEllipse(
     ctx.fill();
   }
   if (visual.stroke) {
-    applyStroke(ctx, visual.stroke);
+    const perimeter = ellipsePerimeter(width, height);
+    applyStroke(ctx, visual.stroke, perimeter);
     ctx.stroke();
   }
 }
@@ -102,7 +148,8 @@ function renderPath(
     ctx.fill();
   }
   if (visual.stroke) {
-    applyStroke(ctx, visual.stroke);
+    const perimeter = pathPerimeter(points, closed);
+    applyStroke(ctx, visual.stroke, perimeter);
     ctx.stroke();
   }
 }

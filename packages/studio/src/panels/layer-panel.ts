@@ -81,6 +81,7 @@ export class LayerPanel {
   }
 
   private render(): void {
+    const scrollTop = this.list.scrollTop;
     this.list.innerHTML = "";
     if (!this.doc) return;
 
@@ -121,6 +122,7 @@ export class LayerPanel {
 
       this.list.appendChild(item);
     }
+    this.list.scrollTop = scrollTop;
   }
 
   private reorderLayer(from: number, to: number): void {

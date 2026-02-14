@@ -4,7 +4,7 @@ import type { EffectiveLayer } from "../apply-properties.js";
 import { colorToCSS } from "../styles.js";
 
 export function renderText(ctx: RenderContext, eff: EffectiveLayer): void {
-  const visual = eff.layer.visual as TextVisual;
+  const visual = eff.visual as TextVisual;
   const { style } = visual;
 
   // Build font string

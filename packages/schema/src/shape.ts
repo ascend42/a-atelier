@@ -68,6 +68,8 @@ export const StrokeSchema = z.object({
   dash: z.array(z.number().min(0)).optional(),
   lineCap: z.enum(["butt", "round", "square"]).optional(),
   lineJoin: z.enum(["miter", "round", "bevel"]).optional(),
+  strokeStart: z.number().min(0).max(1).optional(),
+  strokeEnd: z.number().min(0).max(1).optional(),
 });
 
 export const TextStyleSchema = z.object({

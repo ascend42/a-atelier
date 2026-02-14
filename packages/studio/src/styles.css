@@ -228,8 +228,14 @@
 }
 
 .atel-layer-item--selected {
-  background: var(--atel-accent, #C75B39)20;
-  color: var(--atel-text-accent, #F5F0EB);
+  background: rgba(199, 91, 57, 0.18);
+  border-left: 2px solid var(--atel-accent, #C75B39);
+  padding-left: 10px;
+}
+
+.atel-layer-item--selected,
+.atel-layer-item--selected:hover {
+  background: rgba(199, 91, 57, 0.18);
 }
 
 .atel-layer-item__icon {
@@ -695,6 +701,104 @@
 
 .atel-drag-indicator--below {
   box-shadow: 0 2px 0 0 var(--atel-accent, #C75B39);
+}
+
+/* ─── Fill Editor ─── */
+.atel-fill-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.atel-fill-editor__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ─── Gradient Editor ─── */
+.atel-gradient-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.atel-gradient-editor__preview {
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--atel-border, #4A4A4A);
+}
+
+.atel-gradient-editor__stops {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.atel-gradient-editor__stop {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.atel-gradient-editor__stop .atel-color-picker {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.atel-gradient-editor__stop .atel-color-picker .atel-control-label {
+  display: none;
+}
+
+.atel-gradient-editor__stop .atel-color-picker__hex {
+  display: none;
+}
+
+.atel-gradient-editor__stop .atel-slider-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.atel-gradient-editor__stop .atel-slider-input .atel-control-label {
+  display: none;
+}
+
+.atel-gradient-editor__remove {
+  border: none;
+  background: none;
+  color: var(--atel-text-muted, #A89F95);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  width: 24px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.atel-gradient-editor__remove:hover {
+  color: #e55;
+}
+
+.atel-gradient-editor__remove:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.atel-gradient-editor__add {
+  width: 100%;
+  padding: 4px 0;
+  border: 1px solid var(--atel-border, #4A4A4A);
+  border-radius: 4px;
+  background: var(--atel-button-bg, #3D3D3D);
+  color: var(--atel-text-muted, #A89F95);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--atel-font-family, inherit);
+}
+
+.atel-gradient-editor__add:hover {
+  background: var(--atel-button-hover, #4A4A4A);
+  color: var(--atel-text, #F5F0EB);
 }
 
 /* ─── Empty states ─── */

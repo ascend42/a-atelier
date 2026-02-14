@@ -211,7 +211,7 @@
     },
     "#shape-renderer": {
       "file": "packages/canvas/src/renderers/shape-renderer.ts",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path shapes",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path shapes; includes perimeter calculations for stroke trim",
       "tags": ["renderer", "shapes"],
       "source": "packages/canvas/.purpose"
     },
@@ -229,7 +229,7 @@
     },
     "#canvas-styles": {
       "file": "packages/canvas/src/styles.ts",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash support",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "tags": ["styles", "color"],
       "source": "packages/canvas/.purpose"
     },

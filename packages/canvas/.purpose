@@ -16,7 +16,7 @@ components:
       - '#text-renderer'
     file: src/render-frame.ts
   shape-renderer:
-    description: Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes
+    description: Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim
     file: src/renderers/shape-renderer.ts
   text-renderer:
     description: Renders text layers with font building, fill color, and alignment
@@ -25,5 +25,5 @@ components:
     description: Merges computed animation properties over layer defaults, resolves percentage units to pixels
     file: src/apply-properties.ts
   canvas-styles:
-    description: colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash support
+    description: colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support
     file: src/styles.ts

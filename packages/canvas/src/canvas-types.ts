@@ -49,6 +49,7 @@ export interface RenderContext {
 
   // Line dash
   setLineDash(segments: number[]): void;
+  lineDashOffset: number;
 
   // Gradient
   createLinearGradient(x0: number, y0: number, x1: number, y1: number): GradientLike;

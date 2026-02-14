@@ -61,6 +61,8 @@ export interface Stroke {
   dash?: number[];
   lineCap?: "butt" | "round" | "square";
   lineJoin?: "miter" | "round" | "bevel";
+  strokeStart?: number; // 0-1, default 0
+  strokeEnd?: number;   // 0-1, default 1
 }
 
 export interface TextStyle {

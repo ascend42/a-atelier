@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.13.0] — 2026-02-14
+
+### Added
+- `@atelier/types` + `@atelier/schema` — `strokeStart` (0–1) and `strokeEnd` (0–1) optional fields on `Stroke` interface and `StrokeSchema`
+- `@atelier/types` + `@atelier/schema` — `visual.stroke.start` and `visual.stroke.end` added to `AnimatableProperty` union and `AnimatablePropertySchema` enum
+- `@atelier/canvas` — Stroke trim rendering via `setLineDash` + `lineDashOffset` simulation in `applyStroke()`
+  - Per-shape perimeter helpers: `rectPerimeter`, `ellipsePerimeter` (Ramanujan), `pathPerimeter` (with bezier chord approximation)
+  - Trim overrides existing dash pattern when `strokeStart !== 0` or `strokeEnd !== 1`
+- `@atelier/canvas` — `lineDashOffset` added to `RenderContext` interface
+- `@atelier/canvas` — `buildEffectiveVisual` resolves animated `visual.stroke.start` / `visual.stroke.end` properties
+- `@atelier/studio` — Start/End sliders (0–1, step 0.01) in property panel stroke section
+- `@atelier/studio` — `visual.stroke.start` and `visual.stroke.end` in delta panel animatable properties with slider controls
+- `@atelier/mcp` — `visual.stroke.start` and `visual.stroke.end` in `AnimatablePropertyEnum` for delta tools
+- `@atelier/showcase` — "Stroke Trim" example: staggered draw-on and wipe-away across circle, rect, and star path shapes
+
+### Fixed
+- `@atelier/studio` — Layer panel scroll position no longer resets when selecting a layer
+- `@atelier/studio` — Selected layer highlight now uses accent left border + stronger background for better visibility
+
 ## [0.12.0] — 2026-02-14
 
 ### Added

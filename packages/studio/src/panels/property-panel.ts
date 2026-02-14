@@ -3,6 +3,7 @@ import { NumberInput } from "../controls/number-input.js";
 import { ColorPicker } from "../controls/color-picker.js";
 import { SelectInput } from "../controls/select-input.js";
 import { SliderInput } from "../controls/slider-input.js";
+import { FillEditor } from "../controls/fill-editor.js";
 import { DeltaPanel } from "./delta-panel.js";
 
 export interface PropertyPanelOptions {
@@ -163,19 +164,14 @@ export class PropertyPanel {
 
     if (visual.type === "shape") {
       this.addSection("Visual", () => {
-        // Fill color
-        if (visual.fill?.type === "solid") {
+        // Fill
+        if (visual.fill) {
           const row = this.makeRow(true);
-          const fillColor = typeof visual.fill.color === "string"
-            ? visual.fill.color : "#888888";
-          new ColorPicker(row, {
-            label: "Fill",
-            value: fillColor,
-            onChange: (v) => {
-              if (visual.fill?.type === "solid") {
-                visual.fill.color = v;
-                this.opts.onPropertyChange();
-              }
+          new FillEditor(row, {
+            fill: visual.fill,
+            onChange: (newFill) => {
+              visual.fill = newFill;
+              this.opts.onPropertyChange();
             },
           });
         }
@@ -205,6 +201,30 @@ export class PropertyPanel {
             onChange: (v) => {
               if (visual.stroke) {
                 visual.stroke.width = v;
+                this.opts.onPropertyChange();
+              }
+            },
+          });
+
+          const row2b = this.makeRow();
+          new SliderInput(row2b, {
+            label: "Start",
+            value: visual.stroke.strokeStart ?? 0,
+            min: 0, max: 1, step: 0.01,
+            onChange: (v) => {
+              if (visual.stroke) {
+                visual.stroke.strokeStart = v;
+                this.opts.onPropertyChange();
+              }
+            },
+          });
+          new SliderInput(row2b, {
+            label: "End",
+            value: visual.stroke.strokeEnd ?? 1,
+            min: 0, max: 1, step: 0.01,
+            onChange: (v) => {
+              if (visual.stroke) {
+                visual.stroke.strokeEnd = v;
                 this.opts.onPropertyChange();
               }
             },

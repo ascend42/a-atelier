@@ -16,6 +16,8 @@ export type AnimatableProperty =
   | "visual.fill.color"
   | "visual.stroke.color"
   | "visual.stroke.width"
+  | "visual.stroke.start"
+  | "visual.stroke.end"
   | "visual.style.fontSize"
   | "visual.style.color";
 

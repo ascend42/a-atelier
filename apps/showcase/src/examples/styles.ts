@@ -199,6 +199,155 @@ export const stylesExamples: Example[] = [
     },
   },
   {
+    id: "styles-stroke-trim",
+    name: "Stroke Trim",
+    description:
+      "Draw-on effect using strokeStart/strokeEnd to reveal strokes progressively across shapes",
+    category: "Styles",
+    create: (): AtelierDocument => {
+      return createDocument("Stroke Trim", {
+        width: 600,
+        height: 400,
+        fps: 60,
+        background: "#1E1E1E",
+      })
+        .addLayer({
+          id: "circle",
+          visual: {
+            type: "shape",
+            shape: { type: "ellipse" },
+            stroke: { color: "#4A7C91", width: 3, strokeEnd: 0 },
+          },
+          frame: { x: 60, y: 120 },
+          bounds: { width: 140, height: 140 },
+        })
+        .addLayer({
+          id: "rect",
+          visual: {
+            type: "shape",
+            shape: { type: "rect", cornerRadius: 8 },
+            stroke: { color: "#C75B39", width: 3, strokeEnd: 0 },
+          },
+          frame: { x: 230, y: 120 },
+          bounds: { width: 140, height: 140 },
+        })
+        .addLayer({
+          id: "star",
+          visual: {
+            type: "shape",
+            shape: {
+              type: "path",
+              points: [
+                { x: 70, y: 0 },
+                { x: 90, y: 50 },
+                { x: 140, y: 55 },
+                { x: 102, y: 90 },
+                { x: 115, y: 140 },
+                { x: 70, y: 112 },
+                { x: 25, y: 140 },
+                { x: 38, y: 90 },
+                { x: 0, y: 55 },
+                { x: 50, y: 50 },
+              ],
+              closed: true,
+            },
+            stroke: { color: "#D4A574", width: 3, strokeEnd: 0 },
+          },
+          frame: { x: 400, y: 120 },
+          bounds: { width: 140, height: 140 },
+        })
+        .addLayer({
+          id: "label",
+          visual: {
+            type: "text",
+            content: "Stroke Trim — Draw On",
+            style: {
+              fontFamily: "sans-serif",
+              fontSize: 18,
+              fontWeight: "bold",
+              color: "#F5F0EB",
+              textAlign: "center",
+            },
+          },
+          frame: { x: 150, y: 310 },
+          bounds: { width: 300, height: 30 },
+          opacity: 0,
+        })
+        .addState("draw", { duration: 240 })
+        // Circle draws on
+        .addDelta("draw", {
+          layer: "circle",
+          property: "visual.stroke.end",
+          range: [0, 80],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        // Rect draws on (staggered)
+        .addDelta("draw", {
+          layer: "rect",
+          property: "visual.stroke.end",
+          range: [20, 100],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        // Star draws on (staggered more)
+        .addDelta("draw", {
+          layer: "star",
+          property: "visual.stroke.end",
+          range: [40, 120],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        // Label fades in
+        .addDelta("draw", {
+          layer: "label",
+          property: "opacity",
+          range: [90, 130],
+          from: 0,
+          to: 1,
+          easing: "ease-out",
+        })
+        // Then wipe away — animate strokeStart to erase
+        .addDelta("draw", {
+          layer: "circle",
+          property: "visual.stroke.start",
+          range: [140, 210],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        .addDelta("draw", {
+          layer: "rect",
+          property: "visual.stroke.start",
+          range: [155, 220],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        .addDelta("draw", {
+          layer: "star",
+          property: "visual.stroke.start",
+          range: [170, 230],
+          from: 0,
+          to: 1,
+          easing: "ease-in-out",
+        })
+        // Label fades out
+        .addDelta("draw", {
+          layer: "label",
+          property: "opacity",
+          range: [190, 230],
+          from: 1,
+          to: 0,
+          easing: "ease-in",
+        })
+        .build();
+    },
+  },
+  {
     id: "styles-color-shift",
     name: "Color Shift",
     description:
