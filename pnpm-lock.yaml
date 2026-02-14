@@ -40,6 +40,25 @@ importers:
         specifier: ^6.1.0
         version: 6.4.1(@types/node@22.19.11)(yaml@2.8.2)
 
+  apps/showcase:
+    dependencies:
+      '@atelier/canvas':
+        specifier: workspace:*
+        version: link:../../packages/canvas
+      '@atelier/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@atelier/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+    devDependencies:
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+      vite:
+        specifier: ^6.1.0
+        version: 6.4.1(@types/node@22.19.11)(yaml@2.8.2)
+
   packages/canvas:
     dependencies:
       '@atelier/core':

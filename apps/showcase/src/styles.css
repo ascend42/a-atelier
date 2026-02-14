@@ -1,0 +1,231 @@
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Root vars — set by JS */
+:root { /* theme vars populated dynamically */ }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-family);
+  overflow: hidden;
+  height: 100vh;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+/* Header */
+.header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.header__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-accent);
+  letter-spacing: 0.5px;
+}
+
+.header__subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 12px;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: flex;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.theme-toggle__btn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-family);
+  transition: all 0.15s;
+}
+
+.theme-toggle__btn--active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.sidebar__category {
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+
+.sidebar__category-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  padding: 8px 8px 4px;
+}
+
+.sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  transition: all 0.1s;
+  margin: 0 4px;
+}
+
+.sidebar__item:hover {
+  background: var(--sidebar-item-hover);
+}
+
+.sidebar__item--active {
+  background: var(--sidebar-item-active);
+  color: var(--text-accent);
+}
+
+.sidebar__item-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* Main content */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* Canvas wrapper */
+.canvas-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--canvas-shadow);
+  border: 1px solid var(--border);
+}
+
+.canvas-wrapper canvas {
+  display: block;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.controls__play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--button-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.1s;
+  flex-shrink: 0;
+}
+
+.controls__play:hover {
+  background: var(--button-hover);
+}
+
+.controls__scrubber {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--slider-track);
+  border-radius: 2px;
+  outline: none;
+}
+
+.controls__scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  cursor: pointer;
+}
+
+.controls__frame {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 80px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Info bar */
+.info {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.info__badge {
+  padding: 2px 8px;
+  background: var(--category-bg);
+  color: var(--category-text);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Description */
+.description {
+  max-width: 600px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

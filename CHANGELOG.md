@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.7.0] — 2026-02-14
+
+### Added
+- `apps/showcase` — Interactive animation catalog with 19 examples across 8 categories:
+  - **Shapes** (3): primitives, path drawing, animated corner radius
+  - **Easing** (2): easing race (7 types side-by-side), bounce vs spring comparison
+  - **Motion** (3): slide, spin (720deg), scale pulse
+  - **Styles** (3): gradient reveal, animated stroke width, color cycling
+  - **Composition** (2): staggered entrance, multi-phase choreography
+  - **Presets** (2): fade-in preset, slide-up preset via `expandPreset()`
+  - **Templates** (2): branded title card with variables, notification banner
+  - **States** (2): intro/outro states, traffic light state machine
+- Two themes: **Minimal** (monospace, monochrome) and **Branded** (Inter, red accent, glow effects)
+- Theme toggle, sidebar navigation, play/pause/scrub controls, keyboard shortcuts
+- All examples use consistent 600x400 canvas at 60fps
+
 ## [0.6.0] — 2026-02-14
 
 ### Added
