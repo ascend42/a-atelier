@@ -1,5 +1,5 @@
 import type { Delta, FrameRange } from "@atelier/types";
-import { lerp, clamp } from "@atelier/math";
+import { lerp, clamp, hexToRgba, lerpRgba, rgbaToHex } from "@atelier/math";
 import { resolveEasing } from "./easing-resolver.js";
 
 /**
@@ -45,8 +45,12 @@ export function interpolateValue(from: unknown, to: unknown, t: number): unknown
     return lerp(from, to, t);
   }
 
-  // String (e.g. hex colors, percentage units) — snap at end
+  // Hex color interpolation
   if (typeof from === "string" && typeof to === "string") {
+    if (from.startsWith("#") && to.startsWith("#")) {
+      return rgbaToHex(lerpRgba(hexToRgba(from), hexToRgba(to), t));
+    }
+    // Non-color strings — snap at end
     return t >= 1 ? to : from;
   }
 

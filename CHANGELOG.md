@@ -20,6 +20,7 @@ Format: [major.minor.fix] — based on milestone progression.
 - `@atelier/showcase` — "Stroke Trim" example: staggered draw-on and wipe-away across circle, rect, and star path shapes
 
 ### Fixed
+- `@atelier/core` — Hex color interpolation now lerps through RGBA space instead of snapping between values (fixes Color Shift and all `visual.fill.color` / `visual.stroke.color` animations)
 - `@atelier/studio` — Layer panel scroll position no longer resets when selecting a layer
 - `@atelier/studio` — Selected layer highlight now uses accent left border + stronger background for better visibility
 
