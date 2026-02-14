@@ -1,6 +1,5 @@
 ---
-description: Paradigm multi-agent orchestration protocol
-alwaysApply: true
+description: Multi-agent orchestration - use when task affects 3+ files, involves security AND implementation, or spans multiple features. Call paradigm_orchestrate_inline for planning.
 ---
 # Paradigm Orchestration Protocol
 

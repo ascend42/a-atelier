@@ -1,6 +1,5 @@
 ---
-description: Paradigm commit conventions with Symbols: trailer for history tracking
-alwaysApply: true
+description: Paradigm commit conventions with Symbols: trailer - apply when creating git commits for history tracking.
 ---
 ## Commit Messages
 

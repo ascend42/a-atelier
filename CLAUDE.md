@@ -5,6 +5,7 @@
 ## Project Overview
 
 This project uses Paradigm for structured AI-assisted development.
+Atelier is an AI-native animation engine — declarative YAML format authored through MCP tools.
 All context, symbols, and specifications live in the .paradigm/ directory.
 
 
@@ -59,11 +60,20 @@ Use these prefixes in documentation and commits:
 
 ## First Actions for New Sessions
 
+**Resuming a session:** Call `paradigm_session_recover` for previous session context.
+
 1. **Orient:** Call `paradigm_status` to see project overview and available symbols
 2. **Verify:** Check `.paradigm/config.yaml` for discipline and conventions
 3. **Locate:** Use `paradigm_navigate` with "context" intent for your task
 4. **Review:** Read the nearest `.purpose` file before making changes
 5. **Check:** Call `paradigm_gates_for_route` before adding API endpoints
+
+## Before Implementing (Every Task)
+
+1. **Is this task complex?** (3+ files, security + implementation, multiple features)
+   → Call `paradigm_orchestrate_inline` with mode="plan" BEFORE writing code
+2. **Does it affect existing symbols?** → Call `paradigm_ripple`
+3. **Does it add API endpoints?** → Call `paradigm_gates_for_route`
 
 ## Portal Protocol (Authorization)
 
@@ -159,6 +169,13 @@ Before exploring this codebase:
 - `paradigm_navigate({ intent: "explore", target: "auth" })` - browse area
 - `paradigm_navigate({ intent: "context", task: "add login" })` - task context
 
+### PM Governance (Before/After Tasks)
+
+| When | Tool | Purpose |
+|------|------|---------|
+| Starting any task | `paradigm_pm_preflight` | Get compliance plan, affected symbols, required checks |
+| Finishing any task | `paradigm_pm_postflight` | Check for violations: missing .purpose, missing gates |
+
 ## Context Monitoring Protocol
 
 **Periodically check context usage** by calling `paradigm_context_check` (every 10-15 tool calls or when user asks).
@@ -186,6 +203,9 @@ Before exploring this codebase:
 | **Adding API endpoint** | `paradigm_gates_for_route` for auth gates |
 | **Validating changes** | `paradigm_flows_affected` for flow impact |
 | **Getting test data** | `paradigm_test_fixtures` for fixtures |
+| **Building a feature (3+ files)** | `paradigm_orchestrate_inline` mode="plan" |
+| **Task involves security + code** | `paradigm_orchestrate_inline` mode="plan" |
+| **Finishing work session** | `paradigm_reindex` to rebuild static index |
 
 **Benefits**: ~100 tokens per query vs ~2000 for reading files. Always fresh data from live index.
 
@@ -240,9 +260,8 @@ Reference content is served via MCP resources instead of being stored locally:
 ## Directory Structure
 
 `.purpose` files exist in:
-- `src/*`
-- `lib/*`
 - `packages/*`
+- `apps/*`
 
 ## Paradigm Logging
 
@@ -280,6 +299,13 @@ log.signal('!login-success').info('User authenticated');
 | `integrations/**` | `#` | `log.component()` |
 | `external/**` | `#` | `log.component()` |
 | `vendors/**` | `#` | `log.component()` |
+| `packages/core/src/resolver/**` | `#` | `log.component()` |
+| `packages/core/src/builder/**` | `#` | `log.component()` |
+| `packages/core/src/state/**` | `#` | `log.component()` |
+| `packages/core/src/validation/**` | `^` | `log.gate()` |
+| `packages/mcp/src/tools/**` | `#` | `log.component()` |
+| `packages/canvas/src/**` | `#` | `log.component()` |
+| `packages/math/src/**` | `#` | `log.component()` |
 | `middleware/**` | `^` | `log.gate()` |
 | `auth/**` | `^` | `log.gate()` |
 | `guards/**` | `^` | `log.gate()` |
@@ -441,6 +467,23 @@ feat(#payment-form): add Apple Pay support
 Symbols: #payment-form, #apple-pay-button, $checkout-flow, !payment-method-added
 ```
 
+## Automatic Enforcement (Claude Code Hooks)
+
+This project uses Claude Code hooks for paradigm compliance. These are installed
+automatically via `paradigm shift` or `paradigm hooks install`.
+
+| Hook | Type | Behavior |
+|------|------|----------|
+| **Stop hook** | Stop | **BLOCKS** you from finishing if source files were modified without .purpose updates |
+| **Pre-commit hook** | PreToolUse (Bash) | Auto-rebuilds index before `git commit` — never blocks |
+| **Post-write hook** | PostToolUse (Edit/Write) | Advisory reminder when editing files without .purpose coverage |
+
+**If the Stop hook blocks you:**
+1. Update the nearest `.purpose` file for each modified code area
+2. Update `portal.yaml` if you added routes or gates
+3. Call `paradigm_reindex` to rebuild the static index
+4. Then finish your session
+
 ## Troubleshooting
 
 | Issue | Solution |
@@ -455,7 +498,7 @@ Symbols: #payment-form, #apple-pay-button, $checkout-flow, !payment-method-added
 
 ## Maintaining Paradigm Files
 
-**After completing code changes, update Paradigm files if needed:**
+**You MUST update Paradigm files when making code changes. The Stop hook will block you if you don't:**
 
 | Change Type | Action Required |
 |-------------|-----------------|

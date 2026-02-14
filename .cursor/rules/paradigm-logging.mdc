@@ -39,6 +39,13 @@ log.signal('!login-success').info('User authenticated');
 | `integrations/**` | `#` | `log.component()` |
 | `external/**` | `#` | `log.component()` |
 | `vendors/**` | `#` | `log.component()` |
+| `packages/core/src/resolver/**` | `#` | `log.component()` |
+| `packages/core/src/builder/**` | `#` | `log.component()` |
+| `packages/core/src/state/**` | `#` | `log.component()` |
+| `packages/core/src/validation/**` | `^` | `log.gate()` |
+| `packages/mcp/src/tools/**` | `#` | `log.component()` |
+| `packages/canvas/src/**` | `#` | `log.component()` |
+| `packages/math/src/**` | `#` | `log.component()` |
 | `middleware/**` | `^` | `log.gate()` |
 | `auth/**` | `^` | `log.gate()` |
 | `guards/**` | `^` | `log.gate()` |

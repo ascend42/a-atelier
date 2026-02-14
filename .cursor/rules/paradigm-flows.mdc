@@ -1,6 +1,5 @@
 ---
-description: Paradigm flow-first development - define flows before implementing
-alwaysApply: true
+description: Flow-first development - apply when implementing features spanning multiple steps, requiring gates, or emitting signals. Define $flows before coding.
 ---
 # Flow-First Development
 
