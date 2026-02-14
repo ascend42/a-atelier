@@ -1,0 +1,36 @@
+{
+  "name": "@atelier/studio",
+  "version": "0.1.0",
+  "description": "Reusable editor widget for Atelier animations — canvas preview, YAML viewer, and GUI editor",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'no tests'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@atelier/types": "workspace:*",
+    "@atelier/core": "workspace:*",
+    "@atelier/canvas": "workspace:*",
+    "@atelier/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.0"
+  }
+}

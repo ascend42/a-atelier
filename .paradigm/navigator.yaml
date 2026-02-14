@@ -30,10 +30,17 @@ structure:
       path: packages/cli/
       purpose: packages/cli/.purpose
       description: CLI tool — validate, info, still commands
+    studio:
+      path: packages/studio/
+      purpose: packages/studio/.purpose
+      description: Reusable editor widget — canvas preview, YAML viewer, GUI editor
   apps:
     playground:
       path: apps/playground/
       description: Vite dev app — canvas playback with play/pause/scrub
+    showcase:
+      path: apps/showcase/
+      description: Interactive showcase of 19 animation examples with studio widget
 key_files:
   config:
     - .paradigm/config.yaml
@@ -45,6 +52,7 @@ key_files:
     - packages/canvas/src/index.ts
     - packages/mcp/src/index.ts
     - packages/cli/src/cli.ts
+    - packages/studio/src/index.ts
   types:
     - packages/types/src/document.ts
     - packages/types/src/layer.ts
@@ -108,6 +116,17 @@ symbols:
   "#state-machine": packages/core/src/state/state-machine.ts
   "#template-resolver": packages/core/src/templates/template-resolver.ts
   "#mcp-template-tools": packages/mcp/src/tools/templates.ts
+  "#atelier-studio": packages/studio/src/studio.ts
+  "#canvas-panel": packages/studio/src/panels/canvas-panel.ts
+  "#layer-panel": packages/studio/src/panels/layer-panel.ts
+  "#property-panel": packages/studio/src/panels/property-panel.ts
+  "#delta-panel": packages/studio/src/panels/delta-panel.ts
+  "#yaml-panel": packages/studio/src/panels/yaml-panel.ts
+  "#number-input": packages/studio/src/controls/number-input.ts
+  "#color-picker": packages/studio/src/controls/color-picker.ts
+  "#select-input": packages/studio/src/controls/select-input.ts
+  "#slider-input": packages/studio/src/controls/slider-input.ts
+  "#easing-picker": packages/studio/src/controls/easing-picker.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose

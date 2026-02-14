@@ -5,7 +5,7 @@
     "generatedAt": "2026-02-14T00:00:00.000Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 8,
+      "purposeFiles": 9,
       "portalFiles": 0,
       "premiseFiles": 1
     }
@@ -316,6 +316,72 @@
       "description": "Template MCP tools — instantiate_template, find_variables",
       "tags": ["tools", "templates"],
       "source": "packages/mcp/.purpose"
+    },
+    "#atelier-studio": {
+      "file": "packages/studio/src/studio.ts",
+      "description": "Main widget class — mounts into any DOM element, manages view switching and panel coordination",
+      "tags": ["studio", "editor", "widget"],
+      "source": "packages/studio/.purpose"
+    },
+    "#canvas-panel": {
+      "file": "packages/studio/src/panels/canvas-panel.ts",
+      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
+      "tags": ["studio", "canvas", "playback"],
+      "source": "packages/studio/.purpose"
+    },
+    "#layer-panel": {
+      "file": "packages/studio/src/panels/layer-panel.ts",
+      "description": "Layer list sidebar with selection, visibility toggle, add/remove",
+      "tags": ["studio", "layers"],
+      "source": "packages/studio/.purpose"
+    },
+    "#property-panel": {
+      "file": "packages/studio/src/panels/property-panel.ts",
+      "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
+      "tags": ["studio", "properties", "editor"],
+      "source": "packages/studio/.purpose"
+    },
+    "#delta-panel": {
+      "file": "packages/studio/src/panels/delta-panel.ts",
+      "description": "Delta/animation list for selected layer with add/remove",
+      "tags": ["studio", "deltas"],
+      "source": "packages/studio/.purpose"
+    },
+    "#yaml-panel": {
+      "file": "packages/studio/src/panels/yaml-panel.ts",
+      "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
+      "tags": ["studio", "yaml", "viewer"],
+      "source": "packages/studio/.purpose"
+    },
+    "#number-input": {
+      "file": "packages/studio/src/controls/number-input.ts",
+      "description": "Labeled number input control with optional step, min, max, suffix",
+      "tags": ["studio", "controls"],
+      "source": "packages/studio/.purpose"
+    },
+    "#color-picker": {
+      "file": "packages/studio/src/controls/color-picker.ts",
+      "description": "Color input with native color picker and hex text display",
+      "tags": ["studio", "controls"],
+      "source": "packages/studio/.purpose"
+    },
+    "#select-input": {
+      "file": "packages/studio/src/controls/select-input.ts",
+      "description": "Labeled dropdown select control",
+      "tags": ["studio", "controls"],
+      "source": "packages/studio/.purpose"
+    },
+    "#slider-input": {
+      "file": "packages/studio/src/controls/slider-input.ts",
+      "description": "Range slider control with label and value display",
+      "tags": ["studio", "controls"],
+      "source": "packages/studio/.purpose"
+    },
+    "#easing-picker": {
+      "file": "packages/studio/src/controls/easing-picker.ts",
+      "description": "Easing type selector with preset and structured easing options",
+      "tags": ["studio", "controls", "easing"],
+      "source": "packages/studio/.purpose"
     }
   },
   "features": {},
@@ -409,6 +475,17 @@
     "#cli-still": "packages/cli/src/commands/still.ts",
     "#state-machine": "packages/core/src/state/state-machine.ts",
     "#template-resolver": "packages/core/src/templates/template-resolver.ts",
-    "#mcp-template-tools": "packages/mcp/src/tools/templates.ts"
+    "#mcp-template-tools": "packages/mcp/src/tools/templates.ts",
+    "#atelier-studio": "packages/studio/src/studio.ts",
+    "#canvas-panel": "packages/studio/src/panels/canvas-panel.ts",
+    "#layer-panel": "packages/studio/src/panels/layer-panel.ts",
+    "#property-panel": "packages/studio/src/panels/property-panel.ts",
+    "#delta-panel": "packages/studio/src/panels/delta-panel.ts",
+    "#yaml-panel": "packages/studio/src/panels/yaml-panel.ts",
+    "#number-input": "packages/studio/src/controls/number-input.ts",
+    "#color-picker": "packages/studio/src/controls/color-picker.ts",
+    "#select-input": "packages/studio/src/controls/select-input.ts",
+    "#slider-input": "packages/studio/src/controls/slider-input.ts",
+    "#easing-picker": "packages/studio/src/controls/easing-picker.ts"
   }
 }

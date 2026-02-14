@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.8.0] — 2026-02-14
+
+### Added
+- `@atelier/studio` — New reusable editor widget package with three view modes:
+  - **Preview**: Canvas playback with play/pause/scrub controls
+  - **YAML**: Read-only syntax-highlighted YAML viewer with copy-to-clipboard
+  - **Editor**: Three-panel layout (layer sidebar | canvas | property inspector)
+- Studio panels: `#canvas-panel`, `#layer-panel`, `#property-panel`, `#delta-panel`, `#yaml-panel`
+- Reusable controls: `#number-input`, `#color-picker`, `#select-input`, `#slider-input`, `#easing-picker`
+- Editor features: add/remove layers, toggle visibility, edit position/size/transform/visual properties, add/remove deltas, state selector for multi-state documents, reset button
+- `apps/showcase` — View toggle buttons (Preview / YAML / Editor) in header to embed the studio widget per example
+- `docs/getting-started.md` — "See It In Action" section with showcase run instructions
+
 ## [0.7.3] — 2026-02-14
 
 ### Added

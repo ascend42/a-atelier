@@ -1,0 +1,53 @@
+version: 1.0.0
+description: Reusable editor widget for Atelier animations — canvas preview, YAML viewer, and GUI editor with layer/property/delta panels
+context:
+  - Self-contained widget embeddable in any page
+  - 'Three view modes: preview, yaml, editor'
+  - Depends on @atelier/types, @atelier/core, @atelier/canvas, @atelier/schema
+  - All CSS classes prefixed with atel- to avoid collisions
+components:
+  atelier-studio:
+    description: Main widget class — mounts into any DOM element, manages view switching and panel coordination
+    components:
+      - '#canvas-panel'
+      - '#layer-panel'
+      - '#property-panel'
+      - '#delta-panel'
+      - '#yaml-panel'
+    file: src/studio.ts
+  canvas-panel:
+    description: Canvas rendering and playback panel with play/pause/scrub controls
+    file: src/panels/canvas-panel.ts
+  layer-panel:
+    description: Layer list sidebar with selection, visibility toggle, add/remove
+    file: src/panels/layer-panel.ts
+  property-panel:
+    description: Property inspector for selected layer — position, size, transform, visual, and delta editing
+    components:
+      - '#number-input'
+      - '#color-picker'
+      - '#select-input'
+      - '#slider-input'
+      - '#delta-panel'
+    file: src/panels/property-panel.ts
+  delta-panel:
+    description: Delta/animation list for selected layer with add/remove
+    file: src/panels/delta-panel.ts
+  yaml-panel:
+    description: Read-only YAML viewer with syntax highlighting and copy-to-clipboard
+    file: src/panels/yaml-panel.ts
+  number-input:
+    description: Labeled number input control with optional step, min, max, suffix
+    file: src/controls/number-input.ts
+  color-picker:
+    description: Color input with native color picker and hex text display
+    file: src/controls/color-picker.ts
+  select-input:
+    description: Labeled dropdown select control
+    file: src/controls/select-input.ts
+  slider-input:
+    description: Range slider control with label and value display
+    file: src/controls/slider-input.ts
+  easing-picker:
+    description: Easing type selector with preset and structured easing options
+    file: src/controls/easing-picker.ts

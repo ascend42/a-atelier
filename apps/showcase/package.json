@@ -14,7 +14,8 @@
   "dependencies": {
     "@atelier/types": "workspace:*",
     "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*"
+    "@atelier/canvas": "workspace:*",
+    "@atelier/studio": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

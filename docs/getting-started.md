@@ -12,6 +12,17 @@ You describe _what_ moves, _when_, and _how_ -- the engine handles the rest.
 
 This guide walks you from zero to a running animation in about ten minutes.
 
+## See It In Action
+
+Run the interactive showcase to explore 19 animation examples:
+
+```bash
+pnpm --filter @atelier/showcase dev
+```
+
+Open http://localhost:5173 -- browse examples, view the YAML source,
+and use the visual editor to experiment with properties in real-time.
+
 ## Prerequisites
 
 | Requirement | Version | Install |
