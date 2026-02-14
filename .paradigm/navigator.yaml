@@ -127,6 +127,8 @@ symbols:
   "#select-input": packages/studio/src/controls/select-input.ts
   "#slider-input": packages/studio/src/controls/slider-input.ts
   "#easing-picker": packages/studio/src/controls/easing-picker.ts
+  "#range-slider": packages/studio/src/controls/range-slider.ts
+  "#drag-reorder": packages/studio/src/utils/drag-reorder.ts
   "^valid-document": packages/schema/.purpose
   "^no-overlap": packages/core/.purpose
   "^valid-delta": packages/schema/.purpose

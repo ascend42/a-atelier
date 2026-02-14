@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.12.0] — 2026-02-14
+
+### Added
+- `@atelier/types` + `@atelier/schema` — Optional `name?: string` field on `Delta` type and `DeltaSchema`
+- `@atelier/studio` — Dual-thumb range slider (`#range-slider`) for visualizing and editing delta frame ranges
+  - Two overlaid native `<input type="range">` elements with filled accent track between thumbs
+  - Bidirectional sync: slider updates number inputs and vice versa
+  - `max` bound to animation duration
+- `@atelier/studio` — Optional delta naming: text input in editor, name shown in collapsed header before property label
+- `@atelier/studio` — Sort button (`↕ Sort`) in delta panel title row — orders deltas by start frame ascending
+- `@atelier/studio` — Mini timeline bar in collapsed delta view — non-interactive accent segment showing frame range position relative to animation duration
+
+## [0.11.0] — 2026-02-14
+
+### Added
+- `@atelier/studio` — Drag-to-reorder for layers and deltas
+  - Shared `enableDragReorder()` utility (`#drag-reorder`) using HTML5 Drag and Drop API
+  - Grip handle (`☰`) on each layer item and delta header, hidden by default, fades in on hover
+  - Accent-colored drop indicator line (`box-shadow`) shows above/below target
+  - Dragged item reduces opacity; handle-only activation prevents accidental drags
+  - `MutationObserver` re-binds handles after each re-render; `AbortController` for clean teardown
+  - Layer reordering splices `doc.layers` array directly (affects Z-order / painters algorithm)
+  - Delta reordering maps filtered per-layer indices back to absolute positions in `state.deltas` flat array
+
 ## [0.10.0] — 2026-02-14
 
 ### Added

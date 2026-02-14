@@ -331,7 +331,7 @@
     },
     "#layer-panel": {
       "file": "packages/studio/src/panels/layer-panel.ts",
-      "description": "Layer list sidebar with selection, visibility toggle, add/remove",
+      "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
       "tags": ["studio", "layers"],
       "source": "packages/studio/.purpose"
     },
@@ -343,7 +343,7 @@
     },
     "#delta-panel": {
       "file": "packages/studio/src/panels/delta-panel.ts",
-      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), property switching, and live canvas updates",
+      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
       "tags": ["studio", "deltas", "editor"],
       "source": "packages/studio/.purpose"
     },
@@ -381,6 +381,18 @@
       "file": "packages/studio/src/controls/easing-picker.ts",
       "description": "Easing type selector with preset and structured easing options",
       "tags": ["studio", "controls", "easing"],
+      "source": "packages/studio/.purpose"
+    },
+    "#range-slider": {
+      "file": "packages/studio/src/controls/range-slider.ts",
+      "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
+      "tags": ["studio", "controls"],
+      "source": "packages/studio/.purpose"
+    },
+    "#drag-reorder": {
+      "file": "packages/studio/src/utils/drag-reorder.ts",
+      "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
+      "tags": ["studio", "drag-drop", "utility"],
       "source": "packages/studio/.purpose"
     }
   },
@@ -486,6 +498,8 @@
     "#color-picker": "packages/studio/src/controls/color-picker.ts",
     "#select-input": "packages/studio/src/controls/select-input.ts",
     "#slider-input": "packages/studio/src/controls/slider-input.ts",
-    "#easing-picker": "packages/studio/src/controls/easing-picker.ts"
+    "#easing-picker": "packages/studio/src/controls/easing-picker.ts",
+    "#range-slider": "packages/studio/src/controls/range-slider.ts",
+    "#drag-reorder": "packages/studio/src/utils/drag-reorder.ts"
   }
 }

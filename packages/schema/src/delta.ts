@@ -29,6 +29,7 @@ export const FrameRangeSchema = z.tuple([
 
 export const DeltaSchema = z.object({
   id: z.string().optional(),
+  name: z.string().optional(),
   layer: z.string().min(1, "Delta must reference a layer id"),
   property: AnimatablePropertySchema,
   range: FrameRangeSchema,

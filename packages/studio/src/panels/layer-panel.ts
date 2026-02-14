@@ -1,4 +1,5 @@
 import type { AtelierDocument, Layer } from "@atelier/types";
+import { enableDragReorder } from "../utils/drag-reorder.js";
 
 const TYPE_ICONS: Record<string, string> = {
   shape: "\u25A0",
@@ -33,6 +34,12 @@ export class LayerPanel {
     this.list = document.createElement("div");
     this.list.className = "atel-layer-list";
     this.el.appendChild(this.list);
+
+    enableDragReorder({
+      list: this.list,
+      itemClass: "atel-layer-item",
+      onReorder: (from, to) => this.reorderLayer(from, to),
+    });
 
     // Actions
     const actions = document.createElement("div");
@@ -81,6 +88,10 @@ export class LayerPanel {
       const item = document.createElement("div");
       item.className = `atel-layer-item${layer.id === this.selectedId ? " atel-layer-item--selected" : ""}`;
 
+      const handle = document.createElement("span");
+      handle.className = "atel-drag-handle";
+      handle.textContent = "\u2630";
+
       const icon = document.createElement("span");
       icon.className = "atel-layer-item__icon";
       icon.textContent = TYPE_ICONS[layer.visual.type] ?? "?";
@@ -99,6 +110,7 @@ export class LayerPanel {
         this.opts.onDocumentChange();
       });
 
+      item.appendChild(handle);
       item.appendChild(icon);
       item.appendChild(idSpan);
       item.appendChild(visBtn);
@@ -109,6 +121,14 @@ export class LayerPanel {
 
       this.list.appendChild(item);
     }
+  }
+
+  private reorderLayer(from: number, to: number): void {
+    if (!this.doc) return;
+    const [moved] = this.doc.layers.splice(from, 1);
+    this.doc.layers.splice(to, 0, moved);
+    this.render();
+    this.opts.onDocumentChange();
   }
 
   private addLayer(): void {

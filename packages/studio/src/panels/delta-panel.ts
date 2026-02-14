@@ -4,6 +4,8 @@ import { SliderInput } from "../controls/slider-input.js";
 import { ColorPicker } from "../controls/color-picker.js";
 import { SelectInput } from "../controls/select-input.js";
 import { EasingPicker } from "../controls/easing-picker.js";
+import { RangeSlider } from "../controls/range-slider.js";
+import { enableDragReorder } from "../utils/drag-reorder.js";
 
 const ANIMATABLE_PROPERTIES: { label: string; value: AnimatableProperty }[] = [
   { label: "frame.x", value: "frame.x" },
@@ -46,13 +48,30 @@ export class DeltaPanel {
     this.deltas = opts.state.deltas.filter((d) => d.layer === opts.layerId);
 
     this.title = document.createElement("div");
-    this.title.className = "atel-prop-section__title";
-    this.title.textContent = `Deltas (${this.deltas.length})`;
+    this.title.className = "atel-prop-section__title atel-prop-section__title--deltas";
+
+    const titleText = document.createElement("span");
+    titleText.textContent = `Deltas (${this.deltas.length})`;
+    this.title.appendChild(titleText);
+
+    const sortBtn = document.createElement("button");
+    sortBtn.className = "atel-delta-sort-btn";
+    sortBtn.textContent = "\u2195 Sort";
+    sortBtn.title = "Sort by start frame";
+    sortBtn.addEventListener("click", () => this.sortByStartFrame());
+    this.title.appendChild(sortBtn);
+
     this.el.appendChild(this.title);
 
     this.list = document.createElement("div");
     this.list.className = "atel-delta-list";
     this.el.appendChild(this.list);
+
+    enableDragReorder({
+      list: this.list,
+      itemClass: "atel-delta-item",
+      onReorder: (from, to) => this.reorderDelta(from, to),
+    });
 
     this.renderList();
 
@@ -66,6 +85,11 @@ export class DeltaPanel {
     this.el.appendChild(actions);
 
     parent.appendChild(this.el);
+  }
+
+  private updateTitleCount(): void {
+    const span = this.title.firstElementChild;
+    if (span) span.textContent = `Deltas (${this.deltas.length})`;
   }
 
   private renderList(): void {
@@ -83,6 +107,10 @@ export class DeltaPanel {
     // Header row
     const header = document.createElement("div");
     header.className = "atel-delta-item__header";
+
+    const handle = document.createElement("span");
+    handle.className = "atel-drag-handle";
+    handle.textContent = "\u2630";
 
     const prop = document.createElement("span");
     prop.className = "atel-delta-item__prop";
@@ -105,6 +133,13 @@ export class DeltaPanel {
       this.renderList();
     });
 
+    header.appendChild(handle);
+    if (delta.name) {
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "atel-delta-item__name";
+      nameSpan.textContent = delta.name;
+      header.appendChild(nameSpan);
+    }
     header.appendChild(prop);
     header.appendChild(range);
     header.appendChild(removeBtn);
@@ -119,6 +154,19 @@ export class DeltaPanel {
       const easingLabel = formatEasing(delta.easing);
       detail.textContent = `${formatValue(delta.from)} \u2192 ${formatValue(delta.to)}  ${easingLabel}`;
       item.appendChild(detail);
+
+      // Mini timeline bar
+      const duration = this.opts.state.duration || 1;
+      const bar = document.createElement("div");
+      bar.className = "atel-delta-item__minibar";
+      const fill = document.createElement("div");
+      fill.className = "atel-delta-item__minibar-fill";
+      const left = (delta.range[0] / duration) * 100;
+      const right = ((duration - delta.range[1]) / duration) * 100;
+      fill.style.left = `${left}%`;
+      fill.style.right = `${right}%`;
+      bar.appendChild(fill);
+      item.appendChild(bar);
     }
 
     return item;
@@ -129,6 +177,27 @@ export class DeltaPanel {
     editor.className = "atel-delta-item__editor";
 
     const notify = () => this.opts.onDeltaChange();
+
+    // Name input
+    const nameRow = document.createElement("div");
+    nameRow.className = "atel-delta-item__editor-row";
+    const nameLabel = document.createElement("label");
+    nameLabel.className = "atel-control-label";
+    nameLabel.textContent = "Name";
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "atel-input";
+    nameInput.placeholder = "unnamed";
+    nameInput.value = delta.name ?? "";
+    nameInput.addEventListener("input", () => {
+      const v = nameInput.value.trim();
+      delta.name = v || undefined;
+      this.renderList();
+      notify();
+    });
+    nameRow.appendChild(nameLabel);
+    nameRow.appendChild(nameInput);
+    editor.appendChild(nameRow);
 
     // Property selector
     const propRow = document.createElement("div");
@@ -182,26 +251,51 @@ export class DeltaPanel {
     });
     editor.appendChild(easingRow);
 
+    // Range slider
+    const sliderRow = document.createElement("div");
+    sliderRow.className = "atel-delta-item__editor-row";
+    const rangeSlider = new RangeSlider(sliderRow, {
+      label: "Frame Range",
+      min: 0,
+      max: Math.max(1, this.opts.state.duration),
+      step: 1,
+      valueLow: delta.range[0],
+      valueHigh: delta.range[1],
+      onChangeLow: (v) => {
+        delta.range[0] = v;
+        startInput.setValue(v);
+        notify();
+      },
+      onChangeHigh: (v) => {
+        delta.range[1] = v;
+        endInput.setValue(v);
+        notify();
+      },
+    });
+    editor.appendChild(sliderRow);
+
     // Range inputs
     const rangeRow = document.createElement("div");
     rangeRow.className = "atel-delta-item__editor-row atel-delta-item__editor-row--range";
-    new NumberInput(rangeRow, {
+    const startInput = new NumberInput(rangeRow, {
       label: "Start Frame",
       value: delta.range[0],
       step: 1,
       min: 0,
       onChange: (v) => {
         delta.range[0] = Math.round(v);
+        rangeSlider.setValue(delta.range[0], delta.range[1]);
         notify();
       },
     });
-    new NumberInput(rangeRow, {
+    const endInput = new NumberInput(rangeRow, {
       label: "End Frame",
       value: delta.range[1],
       step: 1,
       min: 0,
       onChange: (v) => {
         delta.range[1] = Math.round(v);
+        rangeSlider.setValue(delta.range[0], delta.range[1]);
         notify();
       },
     });
@@ -243,6 +337,69 @@ export class DeltaPanel {
     }
   }
 
+  private reorderDelta(from: number, to: number): void {
+    const allDeltas = this.opts.state.deltas;
+    const layerId = this.opts.layerId;
+
+    // Find absolute indices of this layer's deltas in the flat array
+    const absIndices: number[] = [];
+    for (let i = 0; i < allDeltas.length; i++) {
+      if (allDeltas[i].layer === layerId) absIndices.push(i);
+    }
+
+    const absFrom = absIndices[from];
+    const [moved] = allDeltas.splice(absFrom, 1);
+
+    // Re-scan after removal to find where to insert
+    const newAbsIndices: number[] = [];
+    for (let i = 0; i < allDeltas.length; i++) {
+      if (allDeltas[i].layer === layerId) newAbsIndices.push(i);
+    }
+
+    let insertAt: number;
+    if (to >= newAbsIndices.length) {
+      // Insert after the last delta of this layer
+      insertAt = (newAbsIndices.length > 0 ? newAbsIndices[newAbsIndices.length - 1] : absFrom) + 1;
+    } else {
+      insertAt = newAbsIndices[to];
+    }
+
+    allDeltas.splice(insertAt, 0, moved);
+    this.deltas = allDeltas.filter((d) => d.layer === layerId);
+    this.expandedIndex = null;
+    this.renderList();
+    this.opts.onDeltaChange();
+  }
+
+  private sortByStartFrame(): void {
+    this.deltas.sort((a, b) => a.range[0] - b.range[0]);
+
+    // Apply sorted order back to the flat state.deltas array
+    const allDeltas = this.opts.state.deltas;
+    const layerId = this.opts.layerId;
+
+    // Remove this layer's deltas from the flat array
+    const otherDeltas = allDeltas.filter((d) => d.layer !== layerId);
+
+    // Find where the first delta of this layer was (insertion point)
+    let insertAt = allDeltas.findIndex((d) => d.layer === layerId);
+    if (insertAt === -1) insertAt = allDeltas.length;
+
+    // Rebuild: other deltas before + sorted layer deltas + other deltas after
+    allDeltas.length = 0;
+    for (let i = 0; i < otherDeltas.length; i++) {
+      allDeltas.push(otherDeltas[i]);
+    }
+    // Re-insert sorted deltas at original position
+    for (let i = this.deltas.length - 1; i >= 0; i--) {
+      allDeltas.splice(Math.min(insertAt, allDeltas.length), 0, this.deltas[i]);
+    }
+
+    this.expandedIndex = null;
+    this.renderList();
+    this.opts.onDeltaChange();
+  }
+
   private addDelta(): void {
     const delta: Delta = {
       layer: this.opts.layerId,
@@ -255,7 +412,7 @@ export class DeltaPanel {
     this.opts.state.deltas.push(delta);
     this.deltas = this.opts.state.deltas.filter((d) => d.layer === this.opts.layerId);
     this.expandedIndex = this.deltas.length - 1;
-    this.title.textContent = `Deltas (${this.deltas.length})`;
+    this.updateTitleCount();
     this.renderList();
     this.opts.onDeltaChange();
   }
@@ -266,7 +423,7 @@ export class DeltaPanel {
       this.opts.state.deltas.splice(idx, 1);
       this.deltas = this.opts.state.deltas.filter((d) => d.layer === this.opts.layerId);
       this.expandedIndex = null;
-      this.title.textContent = `Deltas (${this.deltas.length})`;
+      this.updateTitleCount();
       this.renderList();
       this.opts.onDeltaChange();
     }

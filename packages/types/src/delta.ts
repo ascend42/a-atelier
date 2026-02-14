@@ -25,6 +25,8 @@ export type FrameRange = [number, number];
 /** A single property animation over a keyframe range */
 export interface Delta {
   id?: string;
+  /** Optional display name */
+  name?: string;
   /** Target layer ID */
   layer: string;
   /** Property being animated */
