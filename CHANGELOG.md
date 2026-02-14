@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.7.3] — 2026-02-14
+
+### Added
+- 22-document documentation suite:
+  - **Foundation**: `README.md` (rewrite), `docs/format-spec.md`, `docs/architecture.md`
+  - **Package READMEs**: types, math, schema, core, canvas, mcp, cli
+  - **App READMEs**: playground, showcase
+  - **Deep Reference**: `docs/mcp-reference.md`, `docs/builder-guide.md`, `docs/state-machine-guide.md`, `docs/rendering-pipeline.md`
+  - **Guides**: `docs/getting-started.md`, `docs/examples.md`, `docs/contributing.md`, `docs/design-decisions.md`, `docs/glossary.md`, `docs/ai-agent-guide.md`
+
 ## [0.7.2] — 2026-02-14
 
 ### Changed

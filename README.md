@@ -1,2 +1,272 @@
-# a-maker
-make stuff
+---
+title: Atelier
+scope: Project overview, quick start, package reference
+packages: ["@atelier/types", "@atelier/math", "@atelier/schema", "@atelier/core", "@atelier/canvas", "@atelier/mcp", "@atelier/cli"]
+related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.md"]
+---
+
+# Atelier
+
+**AI-native animation engine** -- a declarative YAML format (`.atelier` files) authored through MCP tools.
+
+Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
+
+**Version 0.7.2** | 7 packages | 2 apps | 181 tests
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Packages](#packages)
+- [Apps](#apps)
+- [Dependency Graph](#dependency-graph)
+- [Monorepo Commands](#monorepo-commands)
+- [The `.atelier` Format](#the-atelier-format)
+- [Version History](#version-history)
+- [Documentation](#documentation)
+
+---
+
+## Overview
+
+Atelier is a monorepo containing a full animation pipeline:
+
+1. **Define** animations as declarative YAML documents with layers, states, and deltas
+2. **Validate** documents against strict Zod schemas with AI-readable error messages
+3. **Resolve** any frame by interpolating delta values through easing functions and spring physics
+4. **Render** resolved frames to Canvas 2D with shapes, text, gradients, and transforms
+5. **Author** animations through 27 MCP tools that an AI agent can call directly
+
+The engine supports state machines (intro/main/outro flows), template instantiation with variable substitution, animation presets, and overlap validation.
+
+---
+
+## Quick Start
+
+**Prerequisites:** Node.js >= 20.0.0, pnpm 10.29.3
+
+```bash
+git clone <repo-url>
+cd a-maker
+pnpm install
+pnpm build
+```
+
+### Path 1: AI Agent (MCP)
+
+Add the MCP server to your Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "atelier": {
+      "command": "node",
+      "args": ["path/to/a-maker/packages/mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+The agent gains access to 27 tools for creating and manipulating animations:
+
+```
+atelier_create        -- create a new document
+atelier_add_layer     -- add a layer with visual properties
+atelier_add_state     -- define an animation state
+atelier_add_delta     -- animate a property over a frame range
+atelier_preview       -- resolve a frame and inspect the result
+atelier_validate      -- check document validity
+```
+
+### Path 2: Programmatic (Builder API)
+
+```typescript
+import { createDocument, resolveFrame } from "@atelier/core";
+
+const doc = createDocument("My Animation", { width: 800, height: 600, fps: 60 })
+  .addLayer({
+    id: "circle",
+    visual: {
+      type: "shape",
+      shape: { type: "ellipse" },
+      fill: { type: "solid", color: "#e94560" },
+    },
+    frame: { x: 100, y: 200 },
+    bounds: { width: 100, height: 100 },
+    opacity: 0,
+  })
+  .addState("intro", { duration: 60 })
+  .addDelta("intro", {
+    layer: "circle",
+    property: "opacity",
+    range: [0, 30],
+    from: 0,
+    to: 1,
+    easing: "ease-out",
+  })
+  .addDelta("intro", {
+    layer: "circle",
+    property: "frame.x",
+    range: [0, 60],
+    from: 100,
+    to: 400,
+    easing: "ease-in-out",
+  })
+  .build();
+
+const frame = resolveFrame(doc, "intro", 15);
+// => resolved layer positions, opacities, and visual properties at frame 15
+```
+
+### Path 3: CLI
+
+```bash
+# Validate an .atelier file (schema + delta overlap detection)
+atelier validate animation.atelier
+
+# Print document summary (canvas, layers, states, presets)
+atelier info animation.atelier
+
+# Resolve a single frame to JSON
+atelier still animation.atelier --state intro --frame 30
+```
+
+---
+
+## Packages
+
+| Package | Description | Key Exports |
+|---------|-------------|-------------|
+| [`@atelier/types`](packages/types) | 44 pure TypeScript type definitions, zero runtime | `AtelierDocument`, `Layer`, `Delta`, `State`, `Canvas`, `Easing`, `AnimatableProperty`, shape/color/unit types |
+| [`@atelier/math`](packages/math) | Pure interpolation engine | `linear`, `cubicBezier`, `easeIn`, `easeOut`, `easeInOut`, `step`, `spring`, `lerp`, `clamp`, `hexToRgba`, `lerpRgba`, `lerpHsla` |
+| [`@atelier/schema`](packages/schema) | Zod validation + YAML parse/serialize | `validateDocument`, `validateLayer`, `validateDelta`, `parseAtelier`, `serializeAtelier`, all Zod schemas |
+| [`@atelier/core`](packages/core) | Animation engine | `resolveFrame`, `DocumentBuilder`, `createDocument`, `StateMachine`, `instantiateTemplate`, `expandPreset`, `validateNoOverlap` |
+| [`@atelier/canvas`](packages/canvas) | Canvas 2D renderer | `renderFrame`, `buildEffectiveLayer`, `colorToCSS`, `renderShape`, `renderText` |
+| [`@atelier/mcp`](packages/mcp) | MCP server (27 tools) for AI authoring | `createServer`, `DocumentStore` |
+| [`@atelier/cli`](packages/cli) | CLI tool (3 commands) | `validateFile`, `getInfo`, `resolveStill` |
+
+---
+
+## Apps
+
+| App | Description |
+|-----|-------------|
+| [`apps/playground`](apps/playground) | Vite dev app with canvas playback, Player class, scrubber, and keyboard controls |
+| [`apps/showcase`](apps/showcase) | Interactive animation catalog with 19 examples across 8 categories (shapes, easing, motion, styles, composition, presets, templates, states) and 2 switchable themes |
+
+---
+
+## Dependency Graph
+
+```
+@atelier/types    @atelier/math
+      \               /
+       \             /
+        v           v
+      @atelier/schema
+            |
+            v
+      @atelier/core
+            |
+            v
+      @atelier/canvas
+          /       \
+         v         v
+  @atelier/mcp   @atelier/cli
+```
+
+`types` and `math` have no internal dependencies and build in parallel. Each subsequent layer depends only on the packages above it.
+
+---
+
+## Monorepo Commands
+
+```bash
+pnpm install          # install all dependencies
+pnpm build            # build all packages (via Turborepo)
+pnpm test             # run all 181 tests (via Turborepo)
+pnpm typecheck        # typecheck all packages
+pnpm dev              # start dev servers
+pnpm clean            # clean all dist/ directories
+```
+
+**Toolchain:** pnpm workspaces + Turborepo for orchestration, tsup for builds (ESM + CJS + DTS dual output), vitest for testing, TypeScript strict mode throughout.
+
+---
+
+## The `.atelier` Format
+
+Atelier documents are YAML files describing layered, stateful animations:
+
+```yaml
+atelier: "1.0"
+name: Hello World
+canvas:
+  width: 800
+  height: 600
+  fps: 60
+  background: "#1a1a2e"
+
+layers:
+  - id: title
+    visual:
+      type: text
+      content: "Hello, Atelier"
+      font: { family: Inter, size: 48 }
+    frame: { x: 200, y: 280 }
+    opacity: 0
+
+states:
+  - name: intro
+    duration: 90
+    deltas:
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: title
+        property: frame.y
+        range: [0, 60]
+        from: 320
+        to: 280
+        easing: ease-in-out
+```
+
+**Core concepts:**
+
+- **Layers** define the visual elements (shapes, text) with position, size, and style
+- **States** are named segments of animation with a frame duration
+- **Deltas** animate a single property of a single layer over a frame range within a state
+- **Presets** are reusable delta templates (fade-in, slide-up) that expand into concrete deltas
+- **Templates** are documents with `{{variable}}` placeholders for instantiation
+- **State machines** drive playback through ordered state transitions
+
+---
+
+## Version History
+
+| Version | Milestone |
+|---------|-----------|
+| 0.7.2 | Showcase restyle with Cormorant Garamond and editorial palette |
+| 0.7.1 | Fix: hold property value after delta range ends |
+| 0.7.0 | Interactive showcase with 19 examples across 8 categories |
+| 0.6.0 | State machine + template system |
+| 0.5.0 | CLI tool + playground app |
+| 0.4.0 | MCP server with 25 tools |
+| 0.3.0 | Canvas 2D renderer |
+| 0.2.0 | Core animation engine |
+| 0.1.0 | Types + math + schema |
+| 0.0.1 | Monorepo scaffold |
+
+See [CHANGELOG.md](CHANGELOG.md) for full details.
+
+---
+
+## Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) -- detailed version history
+- [docs/PROPOSAL.md](docs/PROPOSAL.md) -- original project proposal and design rationale
