@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.17.0] — 2026-02-15
+
+### Added
+- `@atelier/studio` — Browser-based Export button in toolbar with modal dialog (format picker, progress bar, download link)
+- `@atelier/studio` — MP4 export via WebCodecs `VideoEncoder` + `mp4-muxer` (dynamic import, H.264, 5Mbps)
+- `@atelier/studio` — WebM export via WebCodecs VP9 + `webm-muxer` with alpha channel support for transparent video assets; codec fallback chain (VP9+alpha → VP9 → VP8)
+- `@atelier/studio` — Built-in GIF89a encoder (~250 lines, zero dependencies): popularity-based color quantization with full 15-bit LUT, numeric hash-trie LZW compression
+- `@atelier/studio` — GIF accumulated-time rounding for correct playback tempo across all fps values; frame skipping for high-fps documents (≥34fps) with 3cs minimum delay to avoid browser clamping
+- `@atelier/studio` — `VideoEncoder.isConfigSupported()` pre-validation with clear error messages; managed encoder wrapper with async error capture and backpressure (`encodeQueueSize`) draining
+- `@atelier/studio` — Public API: `exportDocument()`, `supportsWebCodecs()`, `supportsWebM()`, `supportsGifExport()`, `ExportFormat`, `ExportOptions`, `ExportResult`
+- `@atelier/studio` — `CanvasPanel.getCanvas()`, `getImageCache()`, `pause()` public accessors
+- `@atelier/studio` — 8 new tests: GIF encoder (header, multi-frame, empty), capability checks (WebCodecs, WebM, GIF)
+- Dependencies: `mp4-muxer`, `webm-muxer` added to `@atelier/studio`
+
 ## [0.16.0] — 2026-02-15
 
 ### Added

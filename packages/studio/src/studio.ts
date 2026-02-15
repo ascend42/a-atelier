@@ -5,6 +5,7 @@ import { PropertyPanel } from "./panels/property-panel.js";
 import { YamlPanel } from "./panels/yaml-panel.js";
 import { applyStudioTheme, defaultTheme, type StudioTheme } from "./theme.js";
 import { History } from "./history.js";
+import { ExportDialog } from "./export/export-dialog.js";
 
 export type RightTab = "yaml" | "editor";
 
@@ -234,6 +235,17 @@ export class AtelierStudio {
     spacer.className = "atel-toolbar__spacer";
     this.toolbar.appendChild(spacer);
 
+    // Export button
+    const exportGroup = document.createElement("div");
+    exportGroup.className = "atel-toolbar__group--controls";
+    const exportBtn = document.createElement("button");
+    exportBtn.className = "atel-toolbar__btn";
+    exportBtn.textContent = "Export";
+    exportBtn.dataset.action = "export";
+    exportBtn.addEventListener("click", () => this.showExportDialog());
+    exportGroup.appendChild(exportBtn);
+    this.toolbar.appendChild(exportGroup);
+
     // Right group: tab toggle
     const tabGroup = document.createElement("div");
     tabGroup.className = "atel-toolbar__group";
@@ -348,5 +360,17 @@ export class AtelierStudio {
     if (this.originalDoc) {
       this.loadDocument(this.originalDoc);
     }
+  }
+
+  private showExportDialog(): void {
+    if (!this.doc) return;
+    this.canvasPanel.pause();
+    const dialog = new ExportDialog();
+    dialog.show(
+      this.doc,
+      this.canvasPanel.getCanvas(),
+      this.canvasPanel.getImageCache(),
+      this.root,
+    );
   }
 }

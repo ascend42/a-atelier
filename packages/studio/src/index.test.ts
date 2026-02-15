@@ -5,6 +5,8 @@ import { ColorPicker } from "./controls/color-picker.js";
 import { SliderInput } from "./controls/slider-input.js";
 import { SelectInput } from "./controls/select-input.js";
 import type { AtelierDocument } from "@atelier/types";
+import { createGifEncoder } from "./export/gif-encoder.js";
+import { supportsWebCodecs, supportsWebM, supportsGifExport } from "./export/video-exporter.js";
 
 // ─── History ──────────────────────────────────────────────────
 
@@ -359,5 +361,92 @@ describe("PropertyPanel", async () => {
     expect(titles).toContain("Size");
     expect(titles).toContain("Transform");
     expect(titles).toContain("Visual");
+  });
+});
+
+// ─── Export: capability checks ───────────────────────────────
+
+describe("supportsWebCodecs", () => {
+  it("returns a boolean", () => {
+    // happy-dom doesn't have VideoEncoder, so expect false
+    expect(typeof supportsWebCodecs()).toBe("boolean");
+  });
+
+  it("returns false in happy-dom (no WebCodecs)", () => {
+    expect(supportsWebCodecs()).toBe(false);
+  });
+});
+
+describe("supportsWebM", () => {
+  it("returns false in happy-dom (no WebCodecs)", () => {
+    expect(supportsWebM()).toBe(false);
+  });
+});
+
+describe("supportsGifExport", () => {
+  it("always returns true", () => {
+    expect(supportsGifExport()).toBe(true);
+  });
+});
+
+// ─── GifEncoder ──────────────────────────────────────────────
+
+describe("GifEncoder", () => {
+  it("produces bytes starting with GIF89a header", () => {
+    const enc = createGifEncoder(2, 2);
+    // 2x2 red frame
+    const pixels = new Uint8ClampedArray(2 * 2 * 4);
+    for (let i = 0; i < 4; i++) {
+      pixels[i * 4] = 255;     // R
+      pixels[i * 4 + 1] = 0;   // G
+      pixels[i * 4 + 2] = 0;   // B
+      pixels[i * 4 + 3] = 255; // A
+    }
+    enc.addFrame(pixels, 10);
+    const bytes = enc.finish();
+
+    expect(bytes.length).toBeGreaterThan(13);
+    // GIF89a magic
+    const header = String.fromCharCode(...bytes.slice(0, 6));
+    expect(header).toBe("GIF89a");
+    // Trailer
+    expect(bytes[bytes.length - 1]).toBe(0x3b);
+  });
+
+  it("creates a valid multi-frame GIF", () => {
+    const enc = createGifEncoder(4, 4);
+    const pixelCount = 4 * 4 * 4;
+
+    // Frame 1: blue
+    const blue = new Uint8ClampedArray(pixelCount);
+    for (let i = 0; i < 16; i++) {
+      blue[i * 4 + 2] = 255;
+      blue[i * 4 + 3] = 255;
+    }
+    enc.addFrame(blue, 5);
+
+    // Frame 2: green
+    const green = new Uint8ClampedArray(pixelCount);
+    for (let i = 0; i < 16; i++) {
+      green[i * 4 + 1] = 255;
+      green[i * 4 + 3] = 255;
+    }
+    enc.addFrame(green, 5);
+
+    const bytes = enc.finish();
+    const header = String.fromCharCode(...bytes.slice(0, 6));
+    expect(header).toBe("GIF89a");
+    // Should contain NETSCAPE2.0 extension for looping
+    const text = new TextDecoder("ascii").decode(bytes);
+    expect(text).toContain("NETSCAPE2.0");
+    expect(bytes[bytes.length - 1]).toBe(0x3b);
+  });
+
+  it("handles finish() with no frames", () => {
+    const enc = createGifEncoder(1, 1);
+    const bytes = enc.finish();
+    const header = String.fromCharCode(...bytes.slice(0, 6));
+    expect(header).toBe("GIF89a");
+    expect(bytes[bytes.length - 1]).toBe(0x3b);
   });
 });

@@ -811,3 +811,87 @@
   color: var(--atel-text-muted, #A89F95);
   font-style: italic;
 }
+
+/* ─── Export Dialog ─── */
+.atel-export-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.atel-export-dialog {
+  background: var(--atel-bg-secondary, #333);
+  border: 1px solid var(--atel-border, #4A4A4A);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 300px;
+  max-width: 400px;
+  color: var(--atel-text, #F5F0EB);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.atel-export-dialog__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.atel-export-dialog__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.atel-export-dialog__select {
+  width: 100%;
+}
+
+.atel-export-dialog__info {
+  font-size: 11px;
+  color: var(--atel-text-muted, #A89F95);
+  font-family: var(--atel-font-mono, monospace);
+}
+
+.atel-export-dialog__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.atel-export-dialog__progress {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 3px;
+  background: var(--atel-slider-track, #4A4A4A);
+}
+
+.atel-export-dialog__progress::-webkit-progress-bar {
+  background: var(--atel-slider-track, #4A4A4A);
+  border-radius: 3px;
+}
+
+.atel-export-dialog__progress::-webkit-progress-value {
+  background: var(--atel-accent, #C75B39);
+  border-radius: 3px;
+}
+
+.atel-export-dialog__status {
+  font-size: 11px;
+  color: var(--atel-text-muted, #A89F95);
+  font-family: var(--atel-font-mono, monospace);
+  text-align: center;
+}
+
+.atel-export-download {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}

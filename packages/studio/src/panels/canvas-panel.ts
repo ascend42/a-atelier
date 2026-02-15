@@ -165,6 +165,19 @@ export class CanvasPanel {
     this.playBtn.textContent = this.player?.isPlaying ? "\u275A\u275A" : "\u25B6";
   }
 
+  getCanvas(): HTMLCanvasElement {
+    return this.canvas;
+  }
+
+  getImageCache(): ImageCache {
+    return this.imageCache;
+  }
+
+  pause(): void {
+    this.player?.pause();
+    this.updatePlayBtn();
+  }
+
   destroy(): void {
     this.player?.destroy();
   }
