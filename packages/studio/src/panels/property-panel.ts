@@ -323,6 +323,42 @@ export class PropertyPanel {
       }
     }
 
+    if (visual.type === "image") {
+      this.addSection("Image", () => {
+        const iv = visual;
+
+        // Asset ID (read-only display)
+        const row1 = this.makeRow(true);
+        this.addTextInput(row1, "Asset ID", iv.assetId ?? "", (v) => {
+          iv.assetId = v;
+          this.opts.onPropertyChange();
+        });
+
+        // src (direct URL / data-URL)
+        const row2 = this.makeRow(true);
+        this.addTextInput(row2, "Src", iv.src ?? "", (v) => {
+          iv.src = v;
+          this.opts.onPropertyChange();
+        });
+
+        // If doc.assets has a matching asset, show "Use Asset" button
+        if (this.doc && iv.assetId && this.doc.assets?.[iv.assetId]) {
+          const row3 = this.makeRow(true);
+          const useBtn = document.createElement("button");
+          useBtn.className = "atel-toolbar__btn";
+          useBtn.textContent = "Use Asset";
+          useBtn.addEventListener("click", () => {
+            if (this.doc?.assets?.[iv.assetId]) {
+              iv.src = this.doc.assets[iv.assetId].src;
+              this.render();
+              this.opts.onPropertyChange();
+            }
+          });
+          row3.appendChild(useBtn);
+        }
+      });
+    }
+
     if (visual.type === "text") {
       this.addSection("Text", () => {
         const row1 = this.makeRow(true);

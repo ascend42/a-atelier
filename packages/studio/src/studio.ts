@@ -4,6 +4,7 @@ import { LayerPanel } from "./panels/layer-panel.js";
 import { PropertyPanel } from "./panels/property-panel.js";
 import { YamlPanel } from "./panels/yaml-panel.js";
 import { applyStudioTheme, defaultTheme, type StudioTheme } from "./theme.js";
+import { History } from "./history.js";
 
 export type RightTab = "yaml" | "editor";
 
@@ -22,6 +23,8 @@ export class AtelierStudio {
   private rightPanel: HTMLElement;
   private stateSelect!: HTMLSelectElement;
   private tabBtns: Map<RightTab, HTMLButtonElement> = new Map();
+  private undoBtn!: HTMLButtonElement;
+  private redoBtn!: HTMLButtonElement;
 
   private canvasPanel: CanvasPanel;
   private layerPanel: LayerPanel;
@@ -33,6 +36,8 @@ export class AtelierStudio {
   private currentTab: RightTab;
   private stateName = "";
   private abortController = new AbortController();
+  private history = new History();
+  private lastSnapshot = "";
 
   constructor(
     private container: HTMLElement,
@@ -95,7 +100,21 @@ export class AtelierStudio {
   }
 
   private handleKeydown(e: KeyboardEvent): void {
-    // Don't intercept when typing in inputs
+    const mod = e.metaKey || e.ctrlKey;
+
+    // Undo/redo always works, even in inputs
+    if (mod && e.key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      this.undoAction();
+      return;
+    }
+    if (mod && e.key === "z" && e.shiftKey) {
+      e.preventDefault();
+      this.redoAction();
+      return;
+    }
+
+    // Don't intercept other keys when typing in inputs
     if (
       e.target instanceof HTMLInputElement ||
       e.target instanceof HTMLTextAreaElement ||
@@ -129,6 +148,8 @@ export class AtelierStudio {
     this.originalDoc = structuredClone(doc);
     this.doc = structuredClone(doc);
     this.stateName = Object.keys(this.doc.states)[0] ?? "";
+    this.lastSnapshot = JSON.stringify(this.doc);
+    this.history.clear();
 
     // Populate state selector
     this.stateSelect.innerHTML = "";
@@ -190,6 +211,22 @@ export class AtelierStudio {
     resetBtn.addEventListener("click", () => this.resetDocument());
     leftGroup.appendChild(resetBtn);
 
+    this.undoBtn = document.createElement("button");
+    this.undoBtn.className = "atel-toolbar__btn";
+    this.undoBtn.textContent = "\u21A9 Undo";
+    this.undoBtn.dataset.action = "undo";
+    this.undoBtn.disabled = true;
+    this.undoBtn.addEventListener("click", () => this.undoAction());
+    leftGroup.appendChild(this.undoBtn);
+
+    this.redoBtn = document.createElement("button");
+    this.redoBtn.className = "atel-toolbar__btn";
+    this.redoBtn.textContent = "Redo \u21AA";
+    this.redoBtn.dataset.action = "redo";
+    this.redoBtn.disabled = true;
+    this.redoBtn.addEventListener("click", () => this.redoAction());
+    leftGroup.appendChild(this.redoBtn);
+
     this.toolbar.appendChild(leftGroup);
 
     // Spacer
@@ -246,6 +283,12 @@ export class AtelierStudio {
   }
 
   private onDocChange(): void {
+    // Push previous state to undo stack before accepting mutation
+    if (this.doc) {
+      this.history.snapshot(this.lastSnapshot);
+      this.lastSnapshot = JSON.stringify(this.doc);
+    }
+
     // Re-render canvas (always visible)
     this.canvasPanel.refresh();
 
@@ -257,10 +300,48 @@ export class AtelierStudio {
     // Refresh layer panel (visibility toggles, etc.)
     this.layerPanel.refresh();
 
+    this.updateUndoRedoButtons();
+
     // Notify consumer
     if (this.doc) {
       this.opts.onDocumentChange?.(this.doc);
     }
+  }
+
+  private undoAction(): void {
+    if (!this.doc) return;
+    const json = this.history.undo(this.lastSnapshot);
+    if (json === null) return;
+    this.lastSnapshot = json;
+    this.doc = JSON.parse(json);
+    this.reloadPanels();
+    this.updateUndoRedoButtons();
+  }
+
+  private redoAction(): void {
+    if (!this.doc) return;
+    const json = this.history.redo(this.lastSnapshot);
+    if (json === null) return;
+    this.lastSnapshot = json;
+    this.doc = JSON.parse(json);
+    this.reloadPanels();
+    this.updateUndoRedoButtons();
+  }
+
+  private updateUndoRedoButtons(): void {
+    this.undoBtn.disabled = !this.history.canUndo;
+    this.redoBtn.disabled = !this.history.canRedo;
+  }
+
+  private reloadPanels(): void {
+    if (!this.doc) return;
+    this.stateName = Object.keys(this.doc.states)[0] ?? "";
+    this.canvasPanel.loadDocument(this.doc, this.stateName);
+    this.layerPanel.loadDocument(this.doc);
+    this.propertyPanel.loadDocument(this.doc, this.stateName);
+    this.yamlPanel.loadDocument(this.doc);
+    if (this.currentTab === "yaml") this.yamlPanel.refresh();
+    this.opts.onDocumentChange?.(this.doc);
   }
 
   private resetDocument(): void {

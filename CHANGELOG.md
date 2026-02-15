@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.15.0] — 2026-02-15
+
+### Added
+- `@atelier/studio` — Undo/redo system: snapshot-based `History` class (50-entry max) with `Cmd+Z` / `Cmd+Shift+Z` keyboard shortcuts and toolbar buttons
+- `@atelier/canvas` — Group layer parent transform inheritance: child layers with `parentId` now accumulate ancestor translate/rotate/scale via `applyAncestorTransforms()` walk
+- `@atelier/canvas` — Ref layer placeholder renderer: dashed outline rectangle with "REF: {src}" label text
+- `@atelier/canvas` — Asset-to-src resolution: image layers with `assetId` and no `src` resolve from `doc.assets` before rendering
+- `@atelier/studio` — Image visual section in property panel: Asset ID input, Src URL input, "Use Asset" button for `doc.assets` resolution
+- `@atelier/studio` — Test suite: 21 tests (vitest + happy-dom) covering History, NumberInput, ColorPicker, SliderInput, SelectInput, LayerPanel, PropertyPanel
+- `@atelier/canvas` — `maxWidth` optional parameter added to `RenderContext.fillText()` signature
+- `@atelier/canvas` — `renderRef` exported from package index
+
 ## [0.14.0] — 2026-02-14
 
 ### Added

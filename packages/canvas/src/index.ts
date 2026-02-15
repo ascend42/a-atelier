@@ -14,3 +14,4 @@ export { colorToCSS, applyFill, applyStroke } from "./styles.js";
 export { renderShape } from "./renderers/shape-renderer.js";
 export { renderText } from "./renderers/text-renderer.js";
 export { renderImage } from "./renderers/image-renderer.js";
+export { renderRef } from "./renderers/ref-renderer.js";

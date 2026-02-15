@@ -33,7 +33,7 @@ export interface RenderContext {
   roundRect?(x: number, y: number, w: number, h: number, radii: number | number[]): void;
 
   // Text
-  fillText(text: string, x: number, y: number): void;
+  fillText(text: string, x: number, y: number, maxWidth?: number): void;
   strokeText(text: string, x: number, y: number): void;
 
   // Style

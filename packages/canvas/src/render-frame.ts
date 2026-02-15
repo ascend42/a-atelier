@@ -1,10 +1,11 @@
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument, ImageVisual } from "@atelier/types";
 import type { ResolvedFrame } from "@atelier/core";
 import type { RenderContext } from "./canvas-types.js";
-import { buildEffectiveLayer } from "./apply-properties.js";
+import { buildEffectiveLayer, type EffectiveLayer } from "./apply-properties.js";
 import { renderShape } from "./renderers/shape-renderer.js";
 import { renderText } from "./renderers/text-renderer.js";
 import { renderImage } from "./renderers/image-renderer.js";
+import { renderRef } from "./renderers/ref-renderer.js";
 import type { ImageCache } from "./image-cache.js";
 
 /**
@@ -23,19 +24,38 @@ export function renderFrame(
   ctx.fillStyle = doc.canvas.background ?? "transparent";
   ctx.fillRect(0, 0, width, height);
 
-  // Render each layer in order (painters algorithm — first = back)
+  // Build effective layers into a map for ancestor transform lookups
+  const effMap = new Map<string, EffectiveLayer>();
+  const effList: EffectiveLayer[] = [];
+
   for (const resolvedLayer of resolvedFrame.layers) {
-    const { layer } = resolvedLayer;
+    const eff = buildEffectiveLayer(resolvedLayer, width, height);
+    effMap.set(resolvedLayer.layer.id, eff);
+    effList.push(eff);
+  }
+
+  // Render each layer in order (painters algorithm — first = back)
+  for (const eff of effList) {
+    const { layer } = eff;
 
     // Skip invisible layers
     if (layer.visible === false) continue;
 
-    const eff = buildEffectiveLayer(resolvedLayer, width, height);
-
     // Skip fully transparent layers
     if (eff.opacity <= 0) continue;
 
+    // Resolve assetId → src for image visuals
+    if (layer.visual.type === "image") {
+      const iv = eff.visual as ImageVisual;
+      if (!iv.src && iv.assetId && doc.assets?.[iv.assetId]) {
+        iv.src = doc.assets[iv.assetId].src;
+      }
+    }
+
     ctx.save();
+
+    // Apply ancestor transforms (group/parent inheritance)
+    applyAncestorTransforms(ctx, layer.id, effMap, doc);
 
     // Apply transforms
     ctx.globalAlpha = eff.opacity;
@@ -76,13 +96,54 @@ export function renderFrame(
         if (imageCache) renderImage(ctx, eff, imageCache);
         break;
       case "group":
-        // Groups are structural — children render via parentId (future)
+        // Groups are structural containers — no visual output
         break;
       case "ref":
-        // Ref rendering deferred — needs sub-document loading
+        renderRef(ctx, eff);
         break;
     }
 
     ctx.restore();
+  }
+}
+
+/**
+ * Walk the parentId chain and apply each ancestor's transforms.
+ * This makes child layers inherit parent position/rotation/scale.
+ */
+function applyAncestorTransforms(
+  ctx: RenderContext,
+  layerId: string,
+  effMap: Map<string, EffectiveLayer>,
+  doc: AtelierDocument,
+): void {
+  // Collect ancestor chain (excluding self)
+  const chain: EffectiveLayer[] = [];
+  const layer = doc.layers.find((l) => l.id === layerId);
+  let parentId = layer?.parentId;
+  const visited = new Set<string>();
+
+  while (parentId && !visited.has(parentId)) {
+    visited.add(parentId);
+    const parentEff = effMap.get(parentId);
+    if (!parentEff) break;
+    chain.push(parentEff);
+    parentId = parentEff.layer.parentId;
+  }
+
+  // Apply from root ancestor down to direct parent
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const p = chain[i];
+    ctx.translate(p.x, p.y);
+
+    const ax = p.anchorX * p.width;
+    const ay = p.anchorY * p.height;
+
+    if (p.rotation !== 0 || p.scaleX !== 1 || p.scaleY !== 1) {
+      ctx.translate(ax, ay);
+      if (p.rotation !== 0) ctx.rotate((p.rotation * Math.PI) / 180);
+      if (p.scaleX !== 1 || p.scaleY !== 1) ctx.scale(p.scaleX, p.scaleY);
+      ctx.translate(-ax, -ay);
+    }
   }
 }
