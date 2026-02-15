@@ -1,10 +1,11 @@
 version: 1.0.0
-description: CLI tool — validate, info, and still commands for .atelier animation files
+description: CLI tool — validate, info, still, and render commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
   - Validate command checks schema + delta overlaps
   - Info command outputs document summary
   - Still command resolves a frame and outputs JSON
+  - Render command produces MP4/GIF via FFmpeg (requires node-canvas + FFmpeg)
 components:
   cli-validate:
     description: Validate command — checks .atelier files for schema validity and delta overlaps
@@ -15,3 +16,9 @@ components:
   cli-still:
     description: Still command — resolves a frame and outputs computed layer states as JSON
     file: src/commands/still.ts
+  cli-render:
+    description: Render command — renders animation to MP4 or GIF via FFmpeg
+    file: src/commands/render.ts
+  render-pipeline:
+    description: Core render pipeline — frame loop, FFmpeg spawning, image preloading
+    file: src/commands/render-pipeline.ts

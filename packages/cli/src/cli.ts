@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { validateCommand } from "./commands/validate.js";
 import { infoCommand } from "./commands/info.js";
 import { stillCommand } from "./commands/still.js";
+import { renderCommand } from "./commands/render.js";
 
 const program = new Command();
 
@@ -17,5 +18,6 @@ program
 validateCommand(program);
 infoCommand(program);
 stillCommand(program);
+renderCommand(program);
 
 program.parse();

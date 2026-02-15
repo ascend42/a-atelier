@@ -32,6 +32,14 @@
     "@atelier/canvas": "workspace:*",
     "commander": "^13.0.0"
   },
+  "peerDependencies": {
+    "canvas": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "canvas": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",

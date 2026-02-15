@@ -7,6 +7,7 @@ import { serializeAtelier } from "@atelier/schema";
 import { validateFile } from "./commands/validate.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
+import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
 
 // ─── Test Fixtures ────────────────────────────────────────────
 
@@ -268,5 +269,60 @@ describe("resolveStill", () => {
       states: {},
     };
     expect(() => resolveStill(noStates)).toThrow("no states");
+  });
+});
+
+// ─── Render Pipeline Tests ───────────────────────────────────
+
+describe("buildFfmpegArgs", () => {
+  it("builds correct MP4 args", () => {
+    const args = buildFfmpegArgs(1920, 1080, 60, "mp4", "out.mp4");
+    expect(args).toContain("-y");
+    expect(args).toContain("-f");
+    expect(args).toContain("rawvideo");
+    expect(args).toContain("-pix_fmt");
+    expect(args).toContain("bgra");
+    expect(args).toContain("-s");
+    expect(args).toContain("1920x1080");
+    expect(args).toContain("-r");
+    expect(args).toContain("60");
+    expect(args).toContain("-i");
+    expect(args).toContain("pipe:0");
+    // MP4-specific
+    expect(args).toContain("-c:v");
+    expect(args).toContain("libx264");
+    expect(args).toContain("yuv420p");
+    expect(args).toContain("-crf");
+    expect(args).toContain("18");
+    expect(args).toContain("-movflags");
+    expect(args).toContain("+faststart");
+    expect(args[args.length - 1]).toBe("out.mp4");
+  });
+
+  it("builds correct GIF args", () => {
+    const args = buildFfmpegArgs(640, 480, 30, "gif", "out.gif");
+    expect(args).toContain("rawvideo");
+    expect(args).toContain("640x480");
+    expect(args).toContain("30");
+    // GIF-specific
+    expect(args).toContain("-vf");
+    expect(args).toContain("-loop");
+    expect(args).toContain("0");
+    expect(args[args.length - 1]).toBe("out.gif");
+    // Should NOT contain MP4-specific flags
+    expect(args).not.toContain("libx264");
+    expect(args).not.toContain("yuv420p");
+  });
+
+  it("uses string fps value", () => {
+    const args = buildFfmpegArgs(100, 100, 24, "mp4", "x.mp4");
+    expect(args).toContain("24");
+  });
+});
+
+describe("checkFfmpeg", () => {
+  it("returns a boolean", async () => {
+    const result = await checkFfmpeg();
+    expect(typeof result).toBe("boolean");
   });
 });

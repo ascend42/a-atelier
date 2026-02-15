@@ -11,14 +11,19 @@
     "dev": "turbo run dev"
   },
   "devDependencies": {
+    "tsup": "^8.4.0",
     "turbo": "^2.4.0",
     "typescript": "^5.7.0",
-    "vitest": "^3.0.0",
-    "tsup": "^8.4.0"
+    "vitest": "^3.0.0"
   },
   "packageManager": "pnpm@10.29.3",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "canvas"
+    ]
   },
   "engines": {
     "node": ">=20.0.0"

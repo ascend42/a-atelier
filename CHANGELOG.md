@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.16.0] — 2026-02-15
+
+### Added
+- `@atelier/cli` — `atelier render <file>` command: renders animations to MP4 or GIF via FFmpeg
+  - Core render pipeline (`render-pipeline.ts`): frame loop with backpressure handling, FFmpeg spawning, image pre-loading via node-canvas `loadImage`
+  - Commander wrapper (`render.ts`): `-o/--output`, `-f/--format` (mp4|gif), `-s/--state` options with progress display and ETA
+  - Validates H.264 even-dimension requirement, graceful errors for missing FFmpeg / missing `canvas` package
+  - `canvas` added as optional peer dependency (`>=2.0.0`)
+  - Public API exports: `renderCommand`, `renderDocument`, `buildFfmpegArgs`, `checkFfmpeg`
+  - Tests for `buildFfmpegArgs` (MP4 + GIF arg validation) and `checkFfmpeg`
+
 ## [0.15.0] — 2026-02-15
 
 ### Added

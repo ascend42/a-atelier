@@ -29,7 +29,7 @@ structure:
     cli:
       path: packages/cli/
       purpose: packages/cli/.purpose
-      description: CLI tool — validate, info, still commands
+      description: CLI tool — validate, info, still, render commands
     studio:
       path: packages/studio/
       purpose: packages/studio/.purpose
@@ -113,6 +113,8 @@ symbols:
   "#cli-validate": packages/cli/src/commands/validate.ts
   "#cli-info": packages/cli/src/commands/info.ts
   "#cli-still": packages/cli/src/commands/still.ts
+  "#cli-render": packages/cli/src/commands/render.ts
+  "#render-pipeline": packages/cli/src/commands/render-pipeline.ts
   "#state-machine": packages/core/src/state/state-machine.ts
   "#template-resolver": packages/core/src/templates/template-resolver.ts
   "#mcp-template-tools": packages/mcp/src/tools/templates.ts

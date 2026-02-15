@@ -299,6 +299,18 @@
       "tags": ["cli", "render"],
       "source": "packages/cli/.purpose"
     },
+    "#cli-render": {
+      "file": "packages/cli/src/commands/render.ts",
+      "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
+      "tags": ["cli", "render", "video"],
+      "source": "packages/cli/.purpose"
+    },
+    "#render-pipeline": {
+      "file": "packages/cli/src/commands/render-pipeline.ts",
+      "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
+      "tags": ["cli", "render", "ffmpeg"],
+      "source": "packages/cli/.purpose"
+    },
     "#state-machine": {
       "file": "packages/core/src/state/state-machine.ts",
       "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
@@ -485,6 +497,8 @@
     "#cli-validate": "packages/cli/src/commands/validate.ts",
     "#cli-info": "packages/cli/src/commands/info.ts",
     "#cli-still": "packages/cli/src/commands/still.ts",
+    "#cli-render": "packages/cli/src/commands/render.ts",
+    "#render-pipeline": "packages/cli/src/commands/render-pipeline.ts",
     "#state-machine": "packages/core/src/state/state-machine.ts",
     "#template-resolver": "packages/core/src/templates/template-resolver.ts",
     "#mcp-template-tools": "packages/mcp/src/tools/templates.ts",
