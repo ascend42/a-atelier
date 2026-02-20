@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.17.1] — 2026-02-20
+
+### Changed
+- Paradigm config generalized: removed atelier-specific symbol mappings, set discipline to `auto`, added inline documentation comments
+- Root `.purpose` reset to generic project template (atelier-specific components/flows/gates/signals removed)
+- `CLAUDE.md` / `AGENTS.md` — removed atelier-specific descriptions, added Session Checkpoints section, updated `.purpose` directory paths, removed package-specific logging mappings
+- `.paradigm/navigator.yaml` and `.paradigm/scan-index.json` rebuilt from updated `.purpose` files
+
+### Added
+- `.claude/hooks/` — Paradigm compliance hooks (post-write, pre-commit, stop)
+- `.claude/settings.json` — Claude Code settings
+- `.paradigm/flow-index.json` — flow index for `paradigm_flows_affected` queries
+- `paradigm_session_checkpoint` documented in AGENTS.md tool table
+
 ## [0.17.0] — 2026-02-15
 
 ### Added

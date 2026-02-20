@@ -1,139 +1,40 @@
 version: '1.0'
-generated: '2026-02-14T00:00:00.000Z'
-structure:
-  packages:
-    types:
-      path: packages/types/
-      purpose: packages/types/.purpose
-      description: Pure TypeScript type definitions — zero runtime
-    math:
-      path: packages/math/
-      purpose: packages/math/.purpose
-      description: Pure interpolation engine — easing, lerp, spring, color
-    schema:
-      path: packages/schema/
-      purpose: packages/schema/.purpose
-      description: Zod validation schemas + YAML parsing
-    core:
-      path: packages/core/
-      purpose: packages/core/.purpose
-      description: Animation engine — delta resolution, builder, validation
-    canvas:
-      path: packages/canvas/
-      purpose: packages/canvas/.purpose
-      description: Canvas 2D renderer — transforms resolved frames into visual output
-    mcp:
-      path: packages/mcp/
-      purpose: packages/mcp/.purpose
-      description: MCP server — AI authoring interface with 25 tools
-    cli:
-      path: packages/cli/
-      purpose: packages/cli/.purpose
-      description: CLI tool — validate, info, still, render commands
-    studio:
-      path: packages/studio/
-      purpose: packages/studio/.purpose
-      description: Reusable editor widget — canvas preview, YAML viewer, GUI editor
-  apps:
-    playground:
-      path: apps/playground/
-      description: Vite dev app — canvas playback with play/pause/scrub
-    showcase:
-      path: apps/showcase/
-      description: Interactive showcase of 19 animation examples with studio widget
+generated: '2026-02-18T19:51:02.971Z'
+structure: {}
 key_files:
   config:
     - .paradigm/config.yaml
-  entry:
-    - packages/types/src/index.ts
-    - packages/math/src/index.ts
-    - packages/schema/src/index.ts
-    - packages/core/src/index.ts
-    - packages/canvas/src/index.ts
-    - packages/mcp/src/index.ts
-    - packages/cli/src/cli.ts
-    - packages/studio/src/index.ts
-  types:
-    - packages/types/src/document.ts
-    - packages/types/src/layer.ts
-    - packages/types/src/delta.ts
-    - packages/types/src/state.ts
+    - package.json
+  entry: []
+  types: []
 skip_patterns:
   always:
     - node_modules/
     - dist/
     - build/
     - .git/
-    - .turbo/
+    - .next/
+    - .nuxt/
+    - .cache/
     - '*.lock'
     - '*.log'
+    - .turbo/
+    - '*.tsbuildinfo'
+    - '*.swp'
+    - '*.swo'
+    - '*~'
+    - .env.*
   unless_testing:
     - '**/*.test.ts'
+    - '**/*.test.tsx'
     - '**/*.spec.ts'
+    - '**/*.spec.tsx'
     - __tests__/
+    - test/
+    - tests/
   unless_docs:
     - docs/
     - '*.md'
+    - README*
     - CHANGELOG*
-symbols:
-  "#atelier-types": packages/types/src/index.ts
-  "#atelier-math": packages/math/src/index.ts
-  "#atelier-schema": packages/schema/src/index.ts
-  "#atelier-core": packages/core/src/index.ts
-  "#atelier-canvas": packages/canvas/src/index.ts
-  "#atelier-mcp": packages/mcp/src/index.ts
-  "#atelier-cli": packages/cli/src/index.ts
-  "#frame-resolver": packages/core/src/resolver/frame-resolver.ts
-  "#delta-resolver": packages/core/src/resolver/delta-resolver.ts
-  "#easing-resolver": packages/core/src/resolver/easing-resolver.ts
-  "#document-builder": packages/core/src/builder/document-builder.ts
-  "#overlap-validator": packages/core/src/validation/overlap-validator.ts
-  "#unit-resolver": packages/core/src/units/resolve-units.ts
-  "#preset-resolver": packages/core/src/presets/preset-resolver.ts
-  "#document-schema": packages/schema/src/document.ts
-  "#validation-functions": packages/schema/src/validate.ts
-  "#yaml-parser": packages/schema/src/parse.ts
-  "#easing-functions": packages/math/src/easing.ts
-  "#spring-solver": packages/math/src/spring.ts
-  "#lerp-functions": packages/math/src/lerp.ts
-  "#color-math": packages/math/src/color.ts
-  "#render-frame": packages/canvas/src/render-frame.ts
-  "#shape-renderer": packages/canvas/src/renderers/shape-renderer.ts
-  "#text-renderer": packages/canvas/src/renderers/text-renderer.ts
-  "#apply-properties": packages/canvas/src/apply-properties.ts
-  "#canvas-styles": packages/canvas/src/styles.ts
-  "#mcp-store": packages/mcp/src/store.ts
-  "#mcp-document-tools": packages/mcp/src/tools/document.ts
-  "#mcp-layer-tools": packages/mcp/src/tools/layers.ts
-  "#mcp-shape-tools": packages/mcp/src/tools/shapes.ts
-  "#mcp-state-tools": packages/mcp/src/tools/states.ts
-  "#mcp-delta-tools": packages/mcp/src/tools/deltas.ts
-  "#mcp-preset-tools": packages/mcp/src/tools/presets.ts
-  "#mcp-preview-tools": packages/mcp/src/tools/preview.ts
-  "#cli-validate": packages/cli/src/commands/validate.ts
-  "#cli-info": packages/cli/src/commands/info.ts
-  "#cli-still": packages/cli/src/commands/still.ts
-  "#cli-render": packages/cli/src/commands/render.ts
-  "#render-pipeline": packages/cli/src/commands/render-pipeline.ts
-  "#state-machine": packages/core/src/state/state-machine.ts
-  "#template-resolver": packages/core/src/templates/template-resolver.ts
-  "#mcp-template-tools": packages/mcp/src/tools/templates.ts
-  "#atelier-studio": packages/studio/src/studio.ts
-  "#canvas-panel": packages/studio/src/panels/canvas-panel.ts
-  "#layer-panel": packages/studio/src/panels/layer-panel.ts
-  "#property-panel": packages/studio/src/panels/property-panel.ts
-  "#delta-panel": packages/studio/src/panels/delta-panel.ts
-  "#yaml-panel": packages/studio/src/panels/yaml-panel.ts
-  "#number-input": packages/studio/src/controls/number-input.ts
-  "#color-picker": packages/studio/src/controls/color-picker.ts
-  "#select-input": packages/studio/src/controls/select-input.ts
-  "#slider-input": packages/studio/src/controls/slider-input.ts
-  "#easing-picker": packages/studio/src/controls/easing-picker.ts
-  "#range-slider": packages/studio/src/controls/range-slider.ts
-  "#drag-reorder": packages/studio/src/utils/drag-reorder.ts
-  "^valid-document": packages/schema/.purpose
-  "^no-overlap": packages/core/.purpose
-  "^valid-delta": packages/schema/.purpose
-  "$animation-authoring": .purpose
-  "$frame-resolution": .purpose
-  "$render-pipeline": .purpose
+symbols: {}

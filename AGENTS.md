@@ -3,7 +3,6 @@
 ## Overview
 
 This project uses Paradigm for structured AI-assisted development.
-Atelier is an AI-native animation engine — declarative YAML format authored through MCP tools.
 All context, symbols, and specifications live in the .paradigm/ directory.
 
 
@@ -78,13 +77,6 @@ log.signal('!login-success').info('User authenticated');
 | `integrations/**` | `#` | `log.component()` |
 | `external/**` | `#` | `log.component()` |
 | `vendors/**` | `#` | `log.component()` |
-| `packages/core/src/resolver/**` | `#` | `log.component()` |
-| `packages/core/src/builder/**` | `#` | `log.component()` |
-| `packages/core/src/state/**` | `#` | `log.component()` |
-| `packages/core/src/validation/**` | `^` | `log.gate()` |
-| `packages/mcp/src/tools/**` | `#` | `log.component()` |
-| `packages/canvas/src/**` | `#` | `log.component()` |
-| `packages/math/src/**` | `#` | `log.component()` |
 | `middleware/**` | `^` | `log.gate()` |
 | `auth/**` | `^` | `log.gate()` |
 | `guards/**` | `^` | `log.gate()` |
@@ -126,6 +118,7 @@ Paradigm provides MCP tools for token-efficient, always-fresh data. Prefer these
 | `paradigm_context_check` | Check context window usage | Every 10-15 tool calls |
 | `paradigm_handoff_prepare` | Prepare session handoff summary | When context is high |
 | `paradigm_reindex` | Rebuild static index files | After modifying .purpose files |
+| `paradigm_session_checkpoint` | Save cognitive-transition checkpoint | Phase transitions |
 | `paradigm_session_stats` | Current session token usage | Checking budget |
 
 **Rule**: Use MCP tools for discovery and validation, file reads for implementation.

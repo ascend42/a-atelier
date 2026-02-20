@@ -7,7 +7,6 @@ alwaysApply: true
 ## Overview
 
 This project uses Paradigm for structured AI-assisted development.
-Atelier is an AI-native animation engine — declarative YAML format authored through MCP tools.
 All context, symbols, and specifications live in the .paradigm/ directory.
 
 

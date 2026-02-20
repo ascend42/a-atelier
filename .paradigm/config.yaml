@@ -2,18 +2,19 @@
 # Source of truth for AI-assisted development in this project
 
 version: "1.0"
-project: "atelier"
+project: "a-maker"
 
-# Discipline - library/framework, not a standard web app
-discipline: custom
+# Discipline (optional) - helps AI understand your domain
+# Options: web, backend, ml, mobile, game, embedded, devops, custom
+# See specs/disciplines.md for symbol interpretations per discipline
+discipline: auto  # auto-detect from project structure
 
 # Guidelines for AI agents working in this codebase
 agent-guidelines:
   overview: |
     This project uses Paradigm for structured AI-assisted development.
-    Atelier is an AI-native animation engine — declarative YAML format authored through MCP tools.
     All context, symbols, and specifications live in the .paradigm/ directory.
-
+  
   how-to-use:
     - "Check .paradigm/specs/ for philosophy and patterns before making changes"
     - "Reference symbols using prefixes: #component ^gate !signal $flow ~aspect"
@@ -22,7 +23,7 @@ agent-guidelines:
     - "Check .paradigm/docs/ for command reference and troubleshooting"
     - "Read .index.yaml files first when navigating documentation"
     - "Use `paradigm team handoff` when approaching context limits"
-
+  
   update-rules:
     - "When adding a feature, create/update the nearest .purpose file"
     - "When adding authorization, update portal.yaml"
@@ -60,9 +61,14 @@ symbol-system:
 
 # Logging configuration
 logging:
+  # Include logging rules in generated IDE instructions
   enforce: true
+  
+  # Default log level (debug, info, warn, error)
   default-level: debug
-
+  
+  # Map directory patterns to symbol types for logging
+  # These are generic patterns - customize for your project structure
   symbol-mapping:
     # Components (#) - all code units
     "features/**": "#"
@@ -76,8 +82,8 @@ logging:
     "utils/**": "#"
     "services/**": "#"
     "core/**": "#"
-    "drivers/**": "#"
-    "systems/**": "#"
+    "drivers/**": "#"       # Embedded
+    "systems/**": "#"       # Game dev
     "stores/**": "#"
     "state/**": "#"
     "reducers/**": "#"
@@ -85,15 +91,6 @@ logging:
     "integrations/**": "#"
     "external/**": "#"
     "vendors/**": "#"
-
-    # Package-specific mappings
-    "packages/core/src/resolver/**": "#"
-    "packages/core/src/builder/**": "#"
-    "packages/core/src/state/**": "#"
-    "packages/core/src/validation/**": "^"
-    "packages/mcp/src/tools/**": "#"
-    "packages/canvas/src/**": "#"
-    "packages/math/src/**": "#"
 
     # Gates (^) - access control
     "middleware/**": "^"
@@ -111,7 +108,7 @@ logging:
     "flows/**": "$"
     "sagas/**": "$"
     "workflows/**": "$"
-    "pipelines/**": "$"
+    "pipelines/**": "$"     # ML/Data pipelines
 
     # Aspects (~) - cross-cutting rules
     "aspects/**": "~"
@@ -122,12 +119,31 @@ probe:
   enabled: true
   auto-include: true
 
+# Project states (define as #components with [state] tag in .purpose files)
+# states:
+#   user-store:
+#     description: User authentication state
+#     tags: [state]
+#   app-store:
+#     description: Application loading state
+#     tags: [state]
+
 # Where .purpose files should exist
+# Customize these patterns for your project structure
 purpose-required:
+  - pattern: "src/*"
+    depth: 1
+  - pattern: "lib/*"
+    depth: 1
   - pattern: "packages/*"
     depth: 1
-  - pattern: "apps/*"
-    depth: 1
+
+# Custom symbols (extend the core set)
+# custom-symbols:
+#   "§": 
+#     name: "Domain"
+#     description: "Domain-specific concepts"
+#     examples: ["§patient", "§transaction"]
 
 # Coding conventions
 conventions:
@@ -142,11 +158,17 @@ conventions:
 
 # AI agent context management
 ai-agent:
-  model: claude-opus-4-6
+  # Model being used
+  model: claude-opus-4.5
+  # Context window size in tokens
   context-window: 200000
+  # Use `paradigm team handoff` for context continuity
 
 # Documentation index settings
 context:
+  # Enable documentation indexing
   enabled: true
+  # Index file name
   index-file: .index.yaml
+  # Root documentation directory
   docs-path: docs/

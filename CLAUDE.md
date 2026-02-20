@@ -5,7 +5,6 @@
 ## Project Overview
 
 This project uses Paradigm for structured AI-assisted development.
-Atelier is an AI-native animation engine — declarative YAML format authored through MCP tools.
 All context, symbols, and specifications live in the .paradigm/ directory.
 
 
@@ -190,6 +189,33 @@ Before exploring this codebase:
 2. User runs: `paradigm team handoff --to <agent> --summary "..."`
 3. New session accepts with: `paradigm team accept <id>`
 
+## Session Checkpoints
+
+**Auto-recovery**: Recovery data is automatically surfaced on your first Paradigm tool call — no action needed to receive it.
+
+Save checkpoints when transitioning between workflow phases to enable crash recovery:
+
+| Phase | Trigger | What to Capture |
+|-------|---------|-----------------|
+| `planning` | After reading requirements / before coding | Plan, approach, key decisions |
+| `implementing` | After starting code changes | Modified files, symbols touched, decisions made |
+| `validating` | After implementation, before tests/review | All modified files, test plan |
+| `complete` | Task finished | Summary, final file list |
+
+### Usage
+
+```
+paradigm_session_checkpoint({
+  phase: "implementing",
+  context: "Adding JWT auth middleware to /api/projects routes",
+  modifiedFiles: ["src/middleware/auth.ts", "src/routes/projects.ts"],
+  symbolsTouched: ["^authenticated", "#project-routes"],
+  decisions: ["Using RS256 for JWT signing", "Storing refresh tokens in httpOnly cookies"]
+})
+```
+
+Keep it lightweight: `phase` + `context` are required, everything else is optional.
+
 ## MCP Workflow Protocol
 
 **Query before modifying** - Use MCP tools for token-efficient, fresh data:
@@ -260,8 +286,9 @@ Reference content is served via MCP resources instead of being stored locally:
 ## Directory Structure
 
 `.purpose` files exist in:
+- `src/*`
+- `lib/*`
 - `packages/*`
-- `apps/*`
 
 ## Paradigm Logging
 
@@ -299,13 +326,6 @@ log.signal('!login-success').info('User authenticated');
 | `integrations/**` | `#` | `log.component()` |
 | `external/**` | `#` | `log.component()` |
 | `vendors/**` | `#` | `log.component()` |
-| `packages/core/src/resolver/**` | `#` | `log.component()` |
-| `packages/core/src/builder/**` | `#` | `log.component()` |
-| `packages/core/src/state/**` | `#` | `log.component()` |
-| `packages/core/src/validation/**` | `^` | `log.gate()` |
-| `packages/mcp/src/tools/**` | `#` | `log.component()` |
-| `packages/canvas/src/**` | `#` | `log.component()` |
-| `packages/math/src/**` | `#` | `log.component()` |
 | `middleware/**` | `^` | `log.gate()` |
 | `auth/**` | `^` | `log.gate()` |
 | `guards/**` | `^` | `log.gate()` |

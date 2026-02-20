@@ -56,3 +56,30 @@ Get current stats anytime:
 ```
 paradigm_session_stats()
 ```
+
+## Session Checkpoints
+
+**Auto-recovery**: Recovery data is automatically surfaced on your first Paradigm tool call — no action needed to receive it.
+
+Save checkpoints when transitioning between workflow phases to enable crash recovery:
+
+| Phase | Trigger | What to Capture |
+|-------|---------|-----------------|
+| `planning` | After reading requirements / before coding | Plan, approach, key decisions |
+| `implementing` | After starting code changes | Modified files, symbols touched, decisions made |
+| `validating` | After implementation, before tests/review | All modified files, test plan |
+| `complete` | Task finished | Summary, final file list |
+
+### Usage
+
+```
+paradigm_session_checkpoint({
+  phase: "implementing",
+  context: "Adding JWT auth middleware to /api/projects routes",
+  modifiedFiles: ["src/middleware/auth.ts", "src/routes/projects.ts"],
+  symbolsTouched: ["^authenticated", "#project-routes"],
+  decisions: ["Using RS256 for JWT signing", "Storing refresh tokens in httpOnly cookies"]
+})
+```
+
+Keep it lightweight: `phase` + `context` are required, everything else is optional.

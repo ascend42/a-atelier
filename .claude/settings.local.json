@@ -43,7 +43,8 @@
       "Bash(git commit:*)",
       "Bash(grep:*)",
       "Bash(python3:*)",
-      "mcp__paradigm__paradigm_purpose_link"
+      "mcp__paradigm__paradigm_purpose_link",
+      "Bash(git status:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -1,519 +1,705 @@
 {
   "$meta": {
     "version": "1.0.0",
-    "project": "atelier",
-    "generatedAt": "2026-02-14T00:00:00.000Z",
+    "project": "a-maker",
+    "generatedAt": "2026-02-18T19:51:02.969Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 9,
+      "purposeFiles": 6,
       "portalFiles": 0,
-      "premiseFiles": 1
+      "premiseFiles": 0
     }
   },
   "components": {
-    "#atelier-types": {
-      "file": "packages/types/src/index.ts",
-      "description": "Pure TypeScript type definitions for the animation format",
-      "tags": ["foundation", "types"],
-      "source": ".purpose"
+    "mcp-store": {
+      "id": "mcp-store",
+      "name": "Mcp Store",
+      "symbol": "#mcp-store",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-schema": {
-      "file": "packages/schema/src/index.ts",
-      "description": "Zod validation schemas with AI-readable error messages",
-      "tags": ["validation"],
-      "source": ".purpose"
+    "mcp-document-tools": {
+      "id": "mcp-document-tools",
+      "name": "Mcp Document Tools",
+      "symbol": "#mcp-document-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-math": {
-      "file": "packages/math/src/index.ts",
-      "description": "Pure interpolation engine — easing, lerp, spring, color",
-      "tags": ["math", "interpolation"],
-      "source": ".purpose"
+    "mcp-layer-tools": {
+      "id": "mcp-layer-tools",
+      "name": "Mcp Layer Tools",
+      "symbol": "#mcp-layer-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Layer management tools — add, edit, remove, list, reorder",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-core": {
-      "file": "packages/core/src/index.ts",
-      "description": "Animation engine — delta resolution, builder API, state machine",
-      "tags": ["engine", "core"],
-      "source": ".purpose"
+    "mcp-shape-tools": {
+      "id": "mcp-shape-tools",
+      "name": "Mcp Shape Tools",
+      "symbol": "#mcp-shape-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-canvas": {
-      "file": "packages/canvas/src/index.ts",
-      "description": "Canvas 2D renderer and playback controller",
-      "tags": ["renderer", "canvas"],
-      "source": ".purpose"
+    "mcp-state-tools": {
+      "id": "mcp-state-tools",
+      "name": "Mcp State Tools",
+      "symbol": "#mcp-state-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "State management tools — add, edit, remove, list animation states",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-mcp": {
-      "file": "packages/mcp/src/index.ts",
-      "description": "MCP server — AI authoring interface for animations",
-      "tags": ["mcp", "ai-interface"],
-      "source": ".purpose"
+    "mcp-delta-tools": {
+      "id": "mcp-delta-tools",
+      "name": "Mcp Delta Tools",
+      "symbol": "#mcp-delta-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+      "visualTags": [],
+      "related": []
     },
-    "#atelier-cli": {
-      "file": "packages/cli/src/index.ts",
-      "description": "CLI tool — validate, preview, render, info commands",
-      "tags": ["cli", "tool"],
-      "source": ".purpose"
+    "mcp-preset-tools": {
+      "id": "mcp-preset-tools",
+      "name": "Mcp Preset Tools",
+      "symbol": "#mcp-preset-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Preset tools — define reusable animation presets, list available presets",
+      "visualTags": [],
+      "related": []
     },
-    "#unit-types": {
-      "file": "packages/types/src/units.ts",
-      "description": "Pixel, Percentage, and UnitValue type definitions",
-      "tags": ["types", "units"],
-      "source": "packages/types/.purpose"
+    "mcp-preview-tools": {
+      "id": "mcp-preview-tools",
+      "name": "Mcp Preview Tools",
+      "symbol": "#mcp-preview-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+      "visualTags": [],
+      "related": []
     },
-    "#coordinate-types": {
-      "file": "packages/types/src/coordinates.ts",
-      "description": "Frame, Bounds, AnchorPoint spatial types",
-      "tags": ["types", "coordinates"],
-      "source": "packages/types/.purpose"
+    "mcp-template-tools": {
+      "id": "mcp-template-tools",
+      "name": "Mcp Template Tools",
+      "symbol": "#mcp-template-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/mcp/.purpose",
+      "description": "Template MCP tools — instantiate_template, find_variables",
+      "visualTags": [],
+      "related": []
     },
-    "#color-types": {
-      "file": "packages/types/src/color.ts",
-      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
-      "tags": ["types", "color"],
-      "source": "packages/types/.purpose"
+    "cli-validate": {
+      "id": "cli-validate",
+      "name": "Cli Validate",
+      "symbol": "#cli-validate",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/cli/.purpose",
+      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+      "visualTags": [],
+      "related": []
     },
-    "#shape-types": {
-      "file": "packages/types/src/shape.ts",
-      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
-      "tags": ["types", "shapes", "visual"],
-      "source": "packages/types/.purpose"
+    "cli-info": {
+      "id": "cli-info",
+      "name": "Cli Info",
+      "symbol": "#cli-info",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/cli/.purpose",
+      "description": "Info command — outputs document summary (canvas, layers, states, presets)",
+      "visualTags": [],
+      "related": []
     },
-    "#layer-types": {
-      "file": "packages/types/src/layer.ts",
-      "description": "Layer, Visual union (shape, text, image, group, ref)",
-      "tags": ["types", "layers"],
-      "source": "packages/types/.purpose"
+    "cli-still": {
+      "id": "cli-still",
+      "name": "Cli Still",
+      "symbol": "#cli-still",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/cli/.purpose",
+      "description": "Still command — resolves a frame and outputs computed layer states as JSON",
+      "visualTags": [],
+      "related": []
     },
-    "#easing-types": {
-      "file": "packages/types/src/easing.ts",
-      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
-      "tags": ["types", "easing"],
-      "source": "packages/types/.purpose"
+    "cli-render": {
+      "id": "cli-render",
+      "name": "Cli Render",
+      "symbol": "#cli-render",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/cli/.purpose",
+      "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
+      "visualTags": [],
+      "related": []
     },
-    "#delta-types": {
-      "file": "packages/types/src/delta.ts",
-      "description": "Delta (animation instruction), AnimatableProperty, FrameRange",
-      "tags": ["types", "animation"],
-      "source": "packages/types/.purpose"
+    "render-pipeline": {
+      "id": "render-pipeline",
+      "name": "Render Pipeline",
+      "symbol": "#render-pipeline",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/cli/.purpose",
+      "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
+      "visualTags": [],
+      "related": []
     },
-    "#state-types": {
-      "file": "packages/types/src/state.ts",
-      "description": "State (named choreography with duration and deltas)",
-      "tags": ["types", "state"],
-      "source": "packages/types/.purpose"
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer"
+      ]
     },
-    "#document-types": {
-      "file": "packages/types/src/document.ts",
-      "description": "AtelierDocument root type, Canvas config",
-      "tags": ["types", "document"],
-      "source": "packages/types/.purpose"
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
     },
-    "#easing-functions": {
-      "file": "packages/math/src/easing.ts",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
-      "tags": ["math", "easing"],
-      "source": "packages/math/.purpose"
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
     },
-    "#spring-solver": {
-      "file": "packages/math/src/spring.ts",
-      "description": "Damped harmonic oscillator spring physics",
-      "tags": ["math", "spring", "physics"],
-      "source": "packages/math/.purpose"
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
     },
-    "#lerp-functions": {
-      "file": "packages/math/src/lerp.ts",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
-      "tags": ["math", "interpolation"],
-      "source": "packages/math/.purpose"
-    },
-    "#color-math": {
-      "file": "packages/math/src/color.ts",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation",
-      "tags": ["math", "color", "interpolation"],
-      "source": "packages/math/.purpose"
-    },
-    "#document-schema": {
-      "file": "packages/schema/src/document.ts",
-      "description": "AtelierDocumentSchema — root Zod schema",
-      "tags": ["validation", "schema"],
-      "source": "packages/schema/.purpose"
-    },
-    "#layer-schema": {
-      "file": "packages/schema/src/layer.ts",
-      "description": "LayerSchema and Visual discriminated union validation",
-      "tags": ["validation", "schema"],
-      "source": "packages/schema/.purpose"
-    },
-    "#delta-schema": {
-      "file": "packages/schema/src/delta.ts",
-      "description": "DeltaSchema with AnimatableProperty enum and FrameRange refinement",
-      "tags": ["validation", "schema"],
-      "source": "packages/schema/.purpose"
-    },
-    "#validation-functions": {
-      "file": "packages/schema/src/validate.ts",
-      "description": "validateDocument, validateLayer, validateDelta — typed results",
-      "tags": ["validation", "api"],
-      "source": "packages/schema/.purpose"
-    },
-    "#yaml-parser": {
-      "file": "packages/schema/src/parse.ts",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
-      "tags": ["parsing", "yaml"],
-      "source": "packages/schema/.purpose"
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
     },
     "#frame-resolver": {
-      "file": "packages/core/src/resolver/frame-resolver.ts",
+      "id": "#frame-resolver",
+      "name": "#frame Resolver",
+      "symbol": "##frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Given document + frame number, computes resolved state of all layers",
-      "tags": ["resolver", "engine"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
     "#delta-resolver": {
-      "file": "packages/core/src/resolver/delta-resolver.ts",
+      "id": "#delta-resolver",
+      "name": "#delta Resolver",
+      "symbol": "##delta-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Per-property interpolation — resolves delta value at a given frame",
-      "tags": ["resolver", "interpolation"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
     "#easing-resolver": {
-      "file": "packages/core/src/resolver/easing-resolver.ts",
+      "id": "#easing-resolver",
+      "name": "#easing Resolver",
+      "symbol": "##easing-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Bridges Easing type definitions to executable math functions",
-      "tags": ["resolver", "easing"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
     "#document-builder": {
-      "file": "packages/core/src/builder/document-builder.ts",
+      "id": "#document-builder",
+      "name": "#document Builder",
+      "symbol": "##document-builder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Fluent API for constructing AtelierDocument objects with validation",
-      "tags": ["builder", "api"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
     "#overlap-validator": {
-      "file": "packages/core/src/validation/overlap-validator.ts",
+      "id": "#overlap-validator",
+      "name": "#overlap Validator",
+      "symbol": "##overlap-validator",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Validates no overlapping deltas exist on same layer+property",
-      "tags": ["validation"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
     "#unit-resolver": {
-      "file": "packages/core/src/units/resolve-units.ts",
-      "description": "Resolves percentage UnitValues to pixel values",
-      "tags": ["units", "resolution"],
-      "source": "packages/core/.purpose"
+      "id": "#unit-resolver",
+      "name": "#unit Resolver",
+      "symbol": "##unit-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
+      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
+      "visualTags": [],
+      "related": []
     },
     "#preset-resolver": {
-      "file": "packages/core/src/presets/preset-resolver.ts",
+      "id": "#preset-resolver",
+      "name": "#preset Resolver",
+      "symbol": "##preset-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Expands preset definitions into concrete deltas for a layer",
-      "tags": ["presets", "expansion"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#render-frame": {
-      "file": "packages/canvas/src/render-frame.ts",
-      "description": "Main entry — clears canvas, iterates layers, applies transform stack, dispatches to renderers",
-      "tags": ["renderer", "entry"],
-      "source": "packages/canvas/.purpose"
-    },
-    "#shape-renderer": {
-      "file": "packages/canvas/src/renderers/shape-renderer.ts",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path shapes; includes perimeter calculations for stroke trim",
-      "tags": ["renderer", "shapes"],
-      "source": "packages/canvas/.purpose"
-    },
-    "#text-renderer": {
-      "file": "packages/canvas/src/renderers/text-renderer.ts",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "tags": ["renderer", "text"],
-      "source": "packages/canvas/.purpose"
-    },
-    "#apply-properties": {
-      "file": "packages/canvas/src/apply-properties.ts",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "tags": ["properties", "resolution"],
-      "source": "packages/canvas/.purpose"
-    },
-    "#canvas-styles": {
-      "file": "packages/canvas/src/styles.ts",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "tags": ["styles", "color"],
-      "source": "packages/canvas/.purpose"
-    },
-    "#mcp-store": {
-      "file": "packages/mcp/src/store.ts",
-      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances",
-      "tags": ["store", "state"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-document-tools": {
-      "file": "packages/mcp/src/tools/document.ts",
-      "description": "Document lifecycle tools — create, info, load, export, list",
-      "tags": ["tools", "document"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-layer-tools": {
-      "file": "packages/mcp/src/tools/layers.ts",
-      "description": "Layer management tools — add, edit, remove, list, reorder",
-      "tags": ["tools", "layers"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-shape-tools": {
-      "file": "packages/mcp/src/tools/shapes.ts",
-      "description": "Shape visual tools — set_shape, set_fill, set_stroke",
-      "tags": ["tools", "shapes"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-state-tools": {
-      "file": "packages/mcp/src/tools/states.ts",
-      "description": "State management tools — add, edit, remove, list",
-      "tags": ["tools", "states"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-delta-tools": {
-      "file": "packages/mcp/src/tools/deltas.ts",
-      "description": "Delta animation tools — add, edit, remove with overlap validation, apply presets",
-      "tags": ["tools", "deltas", "animation"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-preset-tools": {
-      "file": "packages/mcp/src/tools/presets.ts",
-      "description": "Preset tools — define and list reusable animation presets",
-      "tags": ["tools", "presets"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#mcp-preview-tools": {
-      "file": "packages/mcp/src/tools/preview.ts",
-      "description": "Preview tools — validate schema + overlaps, preview resolved frame data",
-      "tags": ["tools", "preview", "validation"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#cli-validate": {
-      "file": "packages/cli/src/commands/validate.ts",
-      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
-      "tags": ["cli", "validation"],
-      "source": "packages/cli/.purpose"
-    },
-    "#cli-info": {
-      "file": "packages/cli/src/commands/info.ts",
-      "description": "Info command — outputs document summary (canvas, layers, states, presets)",
-      "tags": ["cli", "info"],
-      "source": "packages/cli/.purpose"
-    },
-    "#cli-still": {
-      "file": "packages/cli/src/commands/still.ts",
-      "description": "Still command — resolves a frame and outputs computed layer states as JSON",
-      "tags": ["cli", "render"],
-      "source": "packages/cli/.purpose"
-    },
-    "#cli-render": {
-      "file": "packages/cli/src/commands/render.ts",
-      "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
-      "tags": ["cli", "render", "video"],
-      "source": "packages/cli/.purpose"
-    },
-    "#render-pipeline": {
-      "file": "packages/cli/src/commands/render-pipeline.ts",
-      "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
-      "tags": ["cli", "render", "ffmpeg"],
-      "source": "packages/cli/.purpose"
-    },
-    "#state-machine": {
-      "file": "packages/core/src/state/state-machine.ts",
+    "state-machine": {
+      "id": "state-machine",
+      "name": "State Machine",
+      "symbol": "#state-machine",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
-      "tags": ["state", "playback"],
-      "source": "packages/core/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#template-resolver": {
-      "file": "packages/core/src/templates/template-resolver.ts",
-      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables",
-      "tags": ["templates", "variables"],
-      "source": "packages/core/.purpose"
+    "template-resolver": {
+      "id": "template-resolver",
+      "name": "Template Resolver",
+      "symbol": "#template-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
+      "visualTags": [],
+      "related": []
     },
-    "#mcp-template-tools": {
-      "file": "packages/mcp/src/tools/templates.ts",
-      "description": "Template MCP tools — instantiate_template, find_variables",
-      "tags": ["tools", "templates"],
-      "source": "packages/mcp/.purpose"
-    },
-    "#atelier-studio": {
-      "file": "packages/studio/src/studio.ts",
+    "atelier-studio": {
+      "id": "atelier-studio",
+      "name": "Atelier Studio",
+      "symbol": "#atelier-studio",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Main widget class — mounts into any DOM element, manages view switching and panel coordination",
-      "tags": ["studio", "editor", "widget"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": [
+        "#canvas-panel",
+        "#layer-panel",
+        "#property-panel",
+        "#delta-panel",
+        "#yaml-panel"
+      ]
     },
-    "#canvas-panel": {
-      "file": "packages/studio/src/panels/canvas-panel.ts",
+    "canvas-panel": {
+      "id": "canvas-panel",
+      "name": "Canvas Panel",
+      "symbol": "#canvas-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Canvas rendering and playback panel with play/pause/scrub controls",
-      "tags": ["studio", "canvas", "playback"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#layer-panel": {
-      "file": "packages/studio/src/panels/layer-panel.ts",
+    "layer-panel": {
+      "id": "layer-panel",
+      "name": "Layer Panel",
+      "symbol": "#layer-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
-      "tags": ["studio", "layers"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": [
+        "#drag-reorder"
+      ]
     },
-    "#property-panel": {
-      "file": "packages/studio/src/panels/property-panel.ts",
+    "property-panel": {
+      "id": "property-panel",
+      "name": "Property Panel",
+      "symbol": "#property-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
-      "tags": ["studio", "properties", "editor"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#color-picker",
+        "#select-input",
+        "#slider-input",
+        "#delta-panel"
+      ]
     },
-    "#delta-panel": {
-      "file": "packages/studio/src/panels/delta-panel.ts",
+    "delta-panel": {
+      "id": "delta-panel",
+      "name": "Delta Panel",
+      "symbol": "#delta-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
-      "tags": ["studio", "deltas", "editor"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#slider-input",
+        "#color-picker",
+        "#select-input",
+        "#easing-picker",
+        "#range-slider",
+        "#drag-reorder"
+      ]
     },
-    "#yaml-panel": {
-      "file": "packages/studio/src/panels/yaml-panel.ts",
+    "yaml-panel": {
+      "id": "yaml-panel",
+      "name": "Yaml Panel",
+      "symbol": "#yaml-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
-      "tags": ["studio", "yaml", "viewer"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#number-input": {
-      "file": "packages/studio/src/controls/number-input.ts",
+    "number-input": {
+      "id": "number-input",
+      "name": "Number Input",
+      "symbol": "#number-input",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Labeled number input control with optional step, min, max, suffix",
-      "tags": ["studio", "controls"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [
+        "input"
+      ],
+      "related": []
     },
-    "#color-picker": {
-      "file": "packages/studio/src/controls/color-picker.ts",
+    "color-picker": {
+      "id": "color-picker",
+      "name": "Color Picker",
+      "symbol": "#color-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Color input with native color picker and hex text display",
-      "tags": ["studio", "controls"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#select-input": {
-      "file": "packages/studio/src/controls/select-input.ts",
+    "select-input": {
+      "id": "select-input",
+      "name": "Select Input",
+      "symbol": "#select-input",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Labeled dropdown select control",
-      "tags": ["studio", "controls"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [
+        "input",
+        "input"
+      ],
+      "related": []
     },
-    "#slider-input": {
-      "file": "packages/studio/src/controls/slider-input.ts",
+    "slider-input": {
+      "id": "slider-input",
+      "name": "Slider Input",
+      "symbol": "#slider-input",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Range slider control with label and value display",
-      "tags": ["studio", "controls"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [
+        "input"
+      ],
+      "related": []
     },
-    "#easing-picker": {
-      "file": "packages/studio/src/controls/easing-picker.ts",
+    "easing-picker": {
+      "id": "easing-picker",
+      "name": "Easing Picker",
+      "symbol": "#easing-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Easing type selector with preset and structured easing options",
-      "tags": ["studio", "controls", "easing"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#range-slider": {
-      "file": "packages/studio/src/controls/range-slider.ts",
+    "range-slider": {
+      "id": "range-slider",
+      "name": "Range Slider",
+      "symbol": "#range-slider",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
-      "tags": ["studio", "controls"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
     },
-    "#drag-reorder": {
-      "file": "packages/studio/src/utils/drag-reorder.ts",
+    "drag-reorder": {
+      "id": "drag-reorder",
+      "name": "Drag Reorder",
+      "symbol": "#drag-reorder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/studio/.purpose",
       "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
-      "tags": ["studio", "drag-drop", "utility"],
-      "source": "packages/studio/.purpose"
+      "visualTags": [],
+      "related": []
+    },
+    "frame-resolver": {
+      "id": "frame-resolver",
+      "name": "Frame Resolver",
+      "symbol": "#frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/canvas/.purpose",
+      "description": "Referenced from #render-frame",
+      "visualTags": [],
+      "related": [
+        "#render-frame"
+      ]
     }
   },
   "features": {},
   "flows": {
-    "$animation-authoring": {
-      "description": "AI creates animation through MCP tools end-to-end",
-      "source": ".purpose"
-    },
     "$frame-resolution": {
+      "id": "$frame-resolution",
+      "name": "$frame Resolution",
+      "symbol": "$$frame-resolution",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
       "description": "Document + frame number → computed layer states",
-      "source": ".purpose"
-    },
-    "$render-pipeline": {
-      "description": "Resolved frame → canvas draw calls → pixels",
-      "source": ".purpose"
+      "steps": [
+        {
+          "id": "$frame-resolution-step-0",
+          "name": "group deltas by layer+property",
+          "target": "#frame-resolver",
+          "order": 0
+        },
+        {
+          "id": "$frame-resolution-step-1",
+          "name": "compute progress and apply easing",
+          "target": "#delta-resolver",
+          "order": 1
+        },
+        {
+          "id": "$frame-resolution-step-2",
+          "name": "resolve easing type to math function",
+          "target": "#easing-resolver",
+          "order": 2
+        },
+        {
+          "id": "$frame-resolution-step-3",
+          "name": "interpolate value",
+          "target": "#delta-resolver",
+          "order": 3
+        },
+        {
+          "id": "$frame-resolution-step-4",
+          "name": "merge into ResolvedFrame",
+          "target": "#frame-resolver",
+          "order": 4
+        }
+      ]
     }
   },
   "state": {},
   "gates": {
-    "^valid-document": {
-      "description": "Animation document passes Zod schema validation",
-      "source": ".purpose"
-    },
     "^no-overlap": {
-      "description": "No overlapping deltas on same layer+property+range",
-      "source": ".purpose"
-    },
-    "^valid-delta": {
-      "description": "Delta references existing layer and valid property",
-      "source": ".purpose"
+      "id": "^no-overlap",
+      "name": "^no Overlap",
+      "symbol": "^^no-overlap",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-maker/packages/core/.purpose",
+      "description": "Rejects delta additions that overlap with existing deltas on same property",
+      "related": []
     }
   },
-  "signals": {
-    "!animation-created": {
-      "description": "New animation document created via MCP",
-      "category": "system",
-      "source": ".purpose"
-    },
-    "!frame-rendered": {
-      "description": "Frame successfully rendered to canvas",
-      "category": "system",
-      "source": ".purpose"
-    },
-    "!validation-failed": {
-      "description": "Schema validation rejected input",
-      "category": "system",
-      "severity": "warn",
-      "source": ".purpose"
-    }
-  },
+  "signals": {},
   "screens": {},
   "symbolMap": {
-    "#atelier-types": "packages/types/src/index.ts",
-    "#atelier-schema": "packages/schema/src/index.ts",
-    "#atelier-math": "packages/math/src/index.ts",
-    "#atelier-core": "packages/core/src/index.ts",
-    "#atelier-canvas": "packages/canvas/src/index.ts",
-    "#atelier-mcp": "packages/mcp/src/index.ts",
-    "#atelier-cli": "packages/cli/src/index.ts",
-    "#frame-resolver": "packages/core/src/resolver/frame-resolver.ts",
-    "#delta-resolver": "packages/core/src/resolver/delta-resolver.ts",
-    "#easing-resolver": "packages/core/src/resolver/easing-resolver.ts",
-    "#document-builder": "packages/core/src/builder/document-builder.ts",
-    "#overlap-validator": "packages/core/src/validation/overlap-validator.ts",
-    "#unit-resolver": "packages/core/src/units/resolve-units.ts",
-    "#preset-resolver": "packages/core/src/presets/preset-resolver.ts",
-    "#document-schema": "packages/schema/src/document.ts",
-    "#layer-schema": "packages/schema/src/layer.ts",
-    "#delta-schema": "packages/schema/src/delta.ts",
-    "#validation-functions": "packages/schema/src/validate.ts",
-    "#yaml-parser": "packages/schema/src/parse.ts",
-    "#easing-functions": "packages/math/src/easing.ts",
-    "#spring-solver": "packages/math/src/spring.ts",
-    "#lerp-functions": "packages/math/src/lerp.ts",
-    "#color-math": "packages/math/src/color.ts",
-    "#render-frame": "packages/canvas/src/render-frame.ts",
-    "#shape-renderer": "packages/canvas/src/renderers/shape-renderer.ts",
-    "#text-renderer": "packages/canvas/src/renderers/text-renderer.ts",
-    "#apply-properties": "packages/canvas/src/apply-properties.ts",
-    "#canvas-styles": "packages/canvas/src/styles.ts",
-    "#mcp-store": "packages/mcp/src/store.ts",
-    "#mcp-document-tools": "packages/mcp/src/tools/document.ts",
-    "#mcp-layer-tools": "packages/mcp/src/tools/layers.ts",
-    "#mcp-shape-tools": "packages/mcp/src/tools/shapes.ts",
-    "#mcp-state-tools": "packages/mcp/src/tools/states.ts",
-    "#mcp-delta-tools": "packages/mcp/src/tools/deltas.ts",
-    "#mcp-preset-tools": "packages/mcp/src/tools/presets.ts",
-    "#mcp-preview-tools": "packages/mcp/src/tools/preview.ts",
-    "#cli-validate": "packages/cli/src/commands/validate.ts",
-    "#cli-info": "packages/cli/src/commands/info.ts",
-    "#cli-still": "packages/cli/src/commands/still.ts",
-    "#cli-render": "packages/cli/src/commands/render.ts",
-    "#render-pipeline": "packages/cli/src/commands/render-pipeline.ts",
-    "#state-machine": "packages/core/src/state/state-machine.ts",
-    "#template-resolver": "packages/core/src/templates/template-resolver.ts",
-    "#mcp-template-tools": "packages/mcp/src/tools/templates.ts",
-    "#atelier-studio": "packages/studio/src/studio.ts",
-    "#canvas-panel": "packages/studio/src/panels/canvas-panel.ts",
-    "#layer-panel": "packages/studio/src/panels/layer-panel.ts",
-    "#property-panel": "packages/studio/src/panels/property-panel.ts",
-    "#delta-panel": "packages/studio/src/panels/delta-panel.ts",
-    "#yaml-panel": "packages/studio/src/panels/yaml-panel.ts",
-    "#number-input": "packages/studio/src/controls/number-input.ts",
-    "#color-picker": "packages/studio/src/controls/color-picker.ts",
-    "#select-input": "packages/studio/src/controls/select-input.ts",
-    "#slider-input": "packages/studio/src/controls/slider-input.ts",
-    "#easing-picker": "packages/studio/src/controls/easing-picker.ts",
-    "#range-slider": "packages/studio/src/controls/range-slider.ts",
-    "#drag-reorder": "packages/studio/src/utils/drag-reorder.ts"
+    "#mcp-store": {
+      "category": "components",
+      "id": "mcp-store"
+    },
+    "#mcp-document-tools": {
+      "category": "components",
+      "id": "mcp-document-tools"
+    },
+    "#mcp-layer-tools": {
+      "category": "components",
+      "id": "mcp-layer-tools"
+    },
+    "#mcp-shape-tools": {
+      "category": "components",
+      "id": "mcp-shape-tools"
+    },
+    "#mcp-state-tools": {
+      "category": "components",
+      "id": "mcp-state-tools"
+    },
+    "#mcp-delta-tools": {
+      "category": "components",
+      "id": "mcp-delta-tools"
+    },
+    "#mcp-preset-tools": {
+      "category": "components",
+      "id": "mcp-preset-tools"
+    },
+    "#mcp-preview-tools": {
+      "category": "components",
+      "id": "mcp-preview-tools"
+    },
+    "#mcp-template-tools": {
+      "category": "components",
+      "id": "mcp-template-tools"
+    },
+    "#cli-validate": {
+      "category": "components",
+      "id": "cli-validate"
+    },
+    "#cli-info": {
+      "category": "components",
+      "id": "cli-info"
+    },
+    "#cli-still": {
+      "category": "components",
+      "id": "cli-still"
+    },
+    "#cli-render": {
+      "category": "components",
+      "id": "cli-render"
+    },
+    "#render-pipeline": {
+      "category": "components",
+      "id": "render-pipeline"
+    },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
+    },
+    "##frame-resolver": {
+      "category": "components",
+      "id": "#frame-resolver"
+    },
+    "##delta-resolver": {
+      "category": "components",
+      "id": "#delta-resolver"
+    },
+    "##easing-resolver": {
+      "category": "components",
+      "id": "#easing-resolver"
+    },
+    "##document-builder": {
+      "category": "components",
+      "id": "#document-builder"
+    },
+    "##overlap-validator": {
+      "category": "components",
+      "id": "#overlap-validator"
+    },
+    "##unit-resolver": {
+      "category": "components",
+      "id": "#unit-resolver"
+    },
+    "##preset-resolver": {
+      "category": "components",
+      "id": "#preset-resolver"
+    },
+    "#state-machine": {
+      "category": "components",
+      "id": "state-machine"
+    },
+    "#template-resolver": {
+      "category": "components",
+      "id": "template-resolver"
+    },
+    "#atelier-studio": {
+      "category": "components",
+      "id": "atelier-studio"
+    },
+    "#canvas-panel": {
+      "category": "components",
+      "id": "canvas-panel"
+    },
+    "#layer-panel": {
+      "category": "components",
+      "id": "layer-panel"
+    },
+    "#property-panel": {
+      "category": "components",
+      "id": "property-panel"
+    },
+    "#delta-panel": {
+      "category": "components",
+      "id": "delta-panel"
+    },
+    "#yaml-panel": {
+      "category": "components",
+      "id": "yaml-panel"
+    },
+    "#number-input": {
+      "category": "components",
+      "id": "number-input"
+    },
+    "#color-picker": {
+      "category": "components",
+      "id": "color-picker"
+    },
+    "#select-input": {
+      "category": "components",
+      "id": "select-input"
+    },
+    "#slider-input": {
+      "category": "components",
+      "id": "slider-input"
+    },
+    "#easing-picker": {
+      "category": "components",
+      "id": "easing-picker"
+    },
+    "#range-slider": {
+      "category": "components",
+      "id": "range-slider"
+    },
+    "#drag-reorder": {
+      "category": "components",
+      "id": "drag-reorder"
+    },
+    "^^no-overlap": {
+      "category": "gates",
+      "id": "^no-overlap"
+    },
+    "$$frame-resolution": {
+      "category": "flows",
+      "id": "$frame-resolution"
+    },
+    "#frame-resolver": {
+      "category": "components",
+      "id": "frame-resolver"
+    }
   }
 }
