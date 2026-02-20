@@ -1,0 +1,155 @@
+version: "1.0"
+name: Traffic Light
+description: Three-state animation — red, yellow, green — demonstrating the state machine pattern
+canvas:
+  width: 200
+  height: 500
+  fps: 60
+  background: "#1E1E1E"
+
+layers:
+  # Housing
+  - id: housing
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#2A2A2A" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 30, y: 30 }
+    bounds: { width: 140, height: 440 }
+
+  # Red light
+  - id: red-light
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#661111" }
+    frame: { x: 55, y: 60 }
+    bounds: { width: 90, height: 90 }
+    shadow:
+      color: "#FF0000"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Yellow light
+  - id: yellow-light
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#665511" }
+    frame: { x: 55, y: 195 }
+    bounds: { width: 90, height: 90 }
+    shadow:
+      color: "#FFAA00"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Green light
+  - id: green-light
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#116611" }
+    frame: { x: 55, y: 330 }
+    bounds: { width: 90, height: 90 }
+    shadow:
+      color: "#00FF00"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  # State 1: Red on
+  red:
+    duration: 180
+    deltas:
+      # Red lights up
+      - layer: red-light
+        property: visual.fill.color
+        range: [0, 15]
+        from: "#661111"
+        to: "#FF3333"
+        easing: ease-out
+      - layer: red-light
+        property: shadow.blur
+        range: [0, 15]
+        from: 0
+        to: 20
+        easing: ease-out
+      # Red dims at end
+      - layer: red-light
+        property: visual.fill.color
+        range: [160, 180]
+        from: "#FF3333"
+        to: "#661111"
+        easing: ease-in
+      - layer: red-light
+        property: shadow.blur
+        range: [160, 180]
+        from: 20
+        to: 0
+        easing: ease-in
+
+  # State 2: Yellow on
+  yellow:
+    duration: 90
+    deltas:
+      # Yellow lights up
+      - layer: yellow-light
+        property: visual.fill.color
+        range: [0, 15]
+        from: "#665511"
+        to: "#FFCC33"
+        easing: ease-out
+      - layer: yellow-light
+        property: shadow.blur
+        range: [0, 15]
+        from: 0
+        to: 15
+        easing: ease-out
+      # Yellow dims at end
+      - layer: yellow-light
+        property: visual.fill.color
+        range: [70, 90]
+        from: "#FFCC33"
+        to: "#665511"
+        easing: ease-in
+      - layer: yellow-light
+        property: shadow.blur
+        range: [70, 90]
+        from: 15
+        to: 0
+        easing: ease-in
+
+  # State 3: Green on
+  green:
+    duration: 180
+    deltas:
+      # Green lights up
+      - layer: green-light
+        property: visual.fill.color
+        range: [0, 15]
+        from: "#116611"
+        to: "#33FF66"
+        easing: ease-out
+      - layer: green-light
+        property: shadow.blur
+        range: [0, 15]
+        from: 0
+        to: 20
+        easing: ease-out
+      # Green dims at end
+      - layer: green-light
+        property: visual.fill.color
+        range: [160, 180]
+        from: "#33FF66"
+        to: "#116611"
+        easing: ease-in
+      - layer: green-light
+        property: shadow.blur
+        range: [160, 180]
+        from: 20
+        to: 0
+        easing: ease-in

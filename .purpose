@@ -1,6 +1,57 @@
 version: 1.0.0
-description: Project purpose and context
+description: "AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D, exported to video"
 context:
-  - Add contextual notes for AI agents here
-features: {}
-components: {}
+  - "Monorepo: 8 packages (types, math, schema, core, canvas, studio, mcp, cli) + 2 apps (playground, showcase)"
+  - "Build order: types + math (parallel) → schema → core → canvas → studio + mcp + cli (parallel)"
+  - "Primary AI interface: @atelier/mcp exposes 27 tools for structured animation authoring"
+  - "22 animatable properties, 5 easing types, state machines, templates, presets"
+  - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio) and CLI (FFmpeg MP4/GIF)"
+features:
+  animation-engine:
+    description: "Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing"
+    components:
+      - "#atelier-types"
+      - "#atelier-math"
+      - "#atelier-schema"
+      - "#atelier-core"
+  rendering:
+    description: "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim"
+    components:
+      - "#atelier-canvas"
+  ai-authoring:
+    description: "MCP server with 27 tools for AI agents to create, edit, preview, and export animations"
+    components:
+      - "#atelier-mcp"
+  studio:
+    description: "Browser editor widget — canvas preview, YAML viewer, GUI editor, undo/redo, drag-to-reorder, MP4/WebM/GIF export"
+    components:
+      - "#atelier-studio"
+  cli:
+    description: "Command-line tool — validate, info, still, render (MP4/GIF via FFmpeg)"
+    components:
+      - "#atelier-cli"
+components:
+  atelier-types:
+    description: "44 TypeScript type definitions for the .atelier format (zero runtime)"
+    file: packages/types/src/index.ts
+  atelier-math:
+    description: "Pure interpolation engine — easing functions, spring physics, color lerp"
+    file: packages/math/src/index.ts
+  atelier-schema:
+    description: "Zod validation schemas + YAML parse/serialize with AI-readable errors"
+    file: packages/schema/src/index.ts
+  atelier-core:
+    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine, templates, presets"
+    file: packages/core/src/index.ts
+  atelier-canvas:
+    description: "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim"
+    file: packages/canvas/src/index.ts
+  atelier-studio:
+    description: "Browser editor widget + video/GIF export via WebCodecs"
+    file: packages/studio/src/index.ts
+  atelier-mcp:
+    description: "MCP server — 27 tools for AI animation authoring"
+    file: packages/mcp/src/index.ts
+  atelier-cli:
+    description: "CLI tool — validate, info, still, render commands"
+    file: packages/cli/src/index.ts

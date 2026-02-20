@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.17.2] — 2026-02-20
+
+### Changed
+- `README.md` — Full overhaul: version 0.7.2 → 0.17.1, added `@atelier/studio` to packages table (8 total), added `render` CLI command, updated dependency graph, added version history rows for 0.8.0–0.17.1, added Documentation section linking all docs, removed stale test count
+- `AGENTS.md` — Added Atelier overview section (what it is, 8 packages, key concepts) above Paradigm boilerplate
+- Root `.purpose` — Restored Atelier-specific content: description, context notes, features (animation-engine, rendering, ai-authoring, studio, cli), component references to all 8 packages
+- `docs/ai-agent-guide.md` — Updated animatable properties from 16 to 22 (added stroke.start/end, shadow.color/blur/offsetX/offsetY), added ecosystem section for studio and CLI render
+- `packages/mcp/.purpose` — Fixed tool count: "25 tools" → "27 tools"
+
+### Added
+- `examples/hello-world.atelier` — Minimal example: 1 text layer, fade-in + slide-up
+- `examples/easing-race.atelier` — 7 circles racing with different easing types
+- `examples/glow-pulse.atelier` — Shadow animation with breathing glow effect
+- `examples/traffic-light.atelier` — 3-state animation demonstrating the state machine pattern
+- `docs/website-concept.md` — Atelier website page concept: keynote-energy scroll sequence, live canvas demos, technical rendering notes
+
 ## [0.17.1] — 2026-02-20
 
 ### Changed

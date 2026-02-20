@@ -133,7 +133,7 @@ Deltas use `[startFrame, endFrame]` (inclusive, 0-based). Duration in frames = s
 | Slow, smooth | 60-90 | 1-1.5s |
 | Dramatic reveal | 90-120 | 1.5-2s |
 
-### The 16 Animatable Properties
+### The 22 Animatable Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -151,8 +151,14 @@ Deltas use `[startFrame, endFrame]` (inclusive, 0-based). Duration in frames = s
 | `visual.fill.color` | hex string | Fill color |
 | `visual.stroke.color` | hex string | Stroke color |
 | `visual.stroke.width` | number | Stroke thickness |
+| `visual.stroke.start` | number (0-1) | Stroke trim start position |
+| `visual.stroke.end` | number (0-1) | Stroke trim end position |
 | `visual.style.fontSize` | number | Text font size |
 | `visual.style.color` | hex string | Text color |
+| `shadow.color` | hex string | Drop shadow color |
+| `shadow.blur` | number | Drop shadow blur radius |
+| `shadow.offsetX` | number | Drop shadow horizontal offset |
+| `shadow.offsetY` | number | Drop shadow vertical offset |
 
 These strings are case-sensitive and must be used exactly as shown.
 
@@ -431,3 +437,14 @@ atelier_export    -> get the YAML output
 | Bouncy / organic | `{ type: "spring", stiffness: 200, damping: 10 }` | Playful motion |
 | Snappy | `{ type: "spring", stiffness: 300, damping: 20 }` | UI interactions |
 | Discrete steps | `{ type: "step", steps: 5 }` | Frame-by-frame |
+
+---
+
+## 10. Ecosystem
+
+Beyond the MCP server, Atelier includes tools for visual editing and export:
+
+- **`@atelier/studio`** -- a browser-based editor widget with canvas preview, YAML viewer, GUI property panels, undo/redo, drag-to-reorder, and export to MP4/WebM/GIF via WebCodecs. Embeddable in any web page.
+- **`atelier render`** (CLI) -- renders animations to MP4 or GIF via FFmpeg and node-canvas. Useful for headless/CI export pipelines.
+
+Both tools consume the same `.atelier` format, so documents authored through MCP can be opened in the studio or rendered from the command line without modification.

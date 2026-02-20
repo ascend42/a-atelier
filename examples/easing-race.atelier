@@ -1,0 +1,161 @@
+version: "1.0"
+name: Easing Race
+description: Seven circles race across the canvas, each with a different easing type
+canvas:
+  width: 600
+  height: 400
+  fps: 60
+  background: "#1E1E1E"
+
+layers:
+  - id: label-linear
+    visual:
+      type: text
+      content: "linear"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 40 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-linear
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#C75B39" }
+    frame: { x: 50, y: 40 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-ease-in
+    visual:
+      type: text
+      content: "ease-in"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 90 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-ease-in
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#4A7C91" }
+    frame: { x: 50, y: 90 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-ease-out
+    visual:
+      type: text
+      content: "ease-out"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 140 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-ease-out
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#7A8B6F" }
+    frame: { x: 50, y: 140 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-ease-in-out
+    visual:
+      type: text
+      content: "ease-in-out"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 190 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-ease-in-out
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#D4A574" }
+    frame: { x: 50, y: 190 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-spring
+    visual:
+      type: text
+      content: "spring"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 240 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-spring
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#E94560" }
+    frame: { x: 50, y: 240 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-bezier
+    visual:
+      type: text
+      content: "cubic-bezier"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 290 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-bezier
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 50, y: 290 }
+    bounds: { width: 30, height: 30 }
+
+  - id: label-step
+    visual:
+      type: text
+      content: "step(5)"
+      style: { fontFamily: sans-serif, fontSize: 12, color: "#888888", textAlign: left }
+    frame: { x: 10, y: 340 }
+    bounds: { width: 80, height: 16 }
+  - id: dot-step
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3A5A6B" }
+    frame: { x: 50, y: 340 }
+    bounds: { width: 30, height: 30 }
+
+states:
+  race:
+    duration: 120
+    deltas:
+      - layer: dot-linear
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: { type: linear }
+      - layer: dot-ease-in
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: ease-in
+      - layer: dot-ease-out
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: ease-out
+      - layer: dot-ease-in-out
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: ease-in-out
+      - layer: dot-spring
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: { type: spring, stiffness: 180, damping: 12 }
+      - layer: dot-bezier
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: { type: cubic-bezier, x1: 0.68, y1: -0.55, x2: 0.27, y2: 1.55 }
+      - layer: dot-step
+        property: frame.x
+        range: [0, 90]
+        from: 50
+        to: 520
+        easing: { type: step, steps: 5 }

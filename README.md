@@ -1,7 +1,7 @@
 ---
 title: Atelier
 scope: Project overview, quick start, package reference
-packages: ["@atelier/types", "@atelier/math", "@atelier/schema", "@atelier/core", "@atelier/canvas", "@atelier/mcp", "@atelier/cli"]
+packages: ["@atelier/types", "@atelier/math", "@atelier/schema", "@atelier/core", "@atelier/canvas", "@atelier/studio", "@atelier/mcp", "@atelier/cli"]
 related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.md"]
 ---
 
@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 0.7.2** | 7 packages | 2 apps | 181 tests
+**Version 0.17.1** | 8 packages | 2 apps
 
 ---
 
@@ -24,8 +24,8 @@ Atelier lets AI agents create, edit, and preview animations through a structured
 - [Dependency Graph](#dependency-graph)
 - [Monorepo Commands](#monorepo-commands)
 - [The `.atelier` Format](#the-atelier-format)
-- [Version History](#version-history)
 - [Documentation](#documentation)
+- [Version History](#version-history)
 
 ---
 
@@ -37,9 +37,11 @@ Atelier is a monorepo containing a full animation pipeline:
 2. **Validate** documents against strict Zod schemas with AI-readable error messages
 3. **Resolve** any frame by interpolating delta values through easing functions and spring physics
 4. **Render** resolved frames to Canvas 2D with shapes, text, gradients, and transforms
-5. **Author** animations through 27 MCP tools that an AI agent can call directly
+5. **Edit** animations in a browser-based studio with GUI panels, undo/redo, and drag-to-reorder
+6. **Export** to MP4, WebM, or GIF from the browser (WebCodecs) or CLI (FFmpeg)
+7. **Author** animations through 27 MCP tools that an AI agent can call directly
 
-The engine supports state machines (intro/main/outro flows), template instantiation with variable substitution, animation presets, and overlap validation.
+The engine supports 22 animatable properties, 5 easing types (linear, cubic-bezier, ease presets, spring, step), state machines (intro/main/outro flows), template instantiation with variable substitution, animation presets, and overlap validation.
 
 ---
 
@@ -131,6 +133,10 @@ atelier info animation.atelier
 
 # Resolve a single frame to JSON
 atelier still animation.atelier --state intro --frame 30
+
+# Render to MP4 or GIF (requires FFmpeg + node-canvas)
+atelier render animation.atelier -o output.mp4
+atelier render animation.atelier -o output.gif -f gif
 ```
 
 ---
@@ -143,9 +149,10 @@ atelier still animation.atelier --state intro --frame 30
 | [`@atelier/math`](packages/math) | Pure interpolation engine | `linear`, `cubicBezier`, `easeIn`, `easeOut`, `easeInOut`, `step`, `spring`, `lerp`, `clamp`, `hexToRgba`, `lerpRgba`, `lerpHsla` |
 | [`@atelier/schema`](packages/schema) | Zod validation + YAML parse/serialize | `validateDocument`, `validateLayer`, `validateDelta`, `parseAtelier`, `serializeAtelier`, all Zod schemas |
 | [`@atelier/core`](packages/core) | Animation engine | `resolveFrame`, `DocumentBuilder`, `createDocument`, `StateMachine`, `instantiateTemplate`, `expandPreset`, `validateNoOverlap` |
-| [`@atelier/canvas`](packages/canvas) | Canvas 2D renderer | `renderFrame`, `buildEffectiveLayer`, `colorToCSS`, `renderShape`, `renderText` |
+| [`@atelier/canvas`](packages/canvas) | Canvas 2D renderer | `renderFrame`, `buildEffectiveLayer`, `colorToCSS`, `renderShape`, `renderText`, `ImageCache` |
+| [`@atelier/studio`](packages/studio) | Browser editor widget + video/GIF export | `AtelierStudio`, `exportDocument`, `supportsWebCodecs`, CSS panels and controls |
 | [`@atelier/mcp`](packages/mcp) | MCP server (27 tools) for AI authoring | `createServer`, `DocumentStore` |
-| [`@atelier/cli`](packages/cli) | CLI tool (3 commands) | `validateFile`, `getInfo`, `resolveStill` |
+| [`@atelier/cli`](packages/cli) | CLI tool (4 commands) | `validateFile`, `getInfo`, `resolveStill`, `renderDocument` |
 
 ---
 
@@ -172,12 +179,12 @@ atelier still animation.atelier --state intro --frame 30
             |
             v
       @atelier/canvas
-          /       \
-         v         v
-  @atelier/mcp   @atelier/cli
+        /   |    \
+       v    v     v
+ studio   mcp    cli
 ```
 
-`types` and `math` have no internal dependencies and build in parallel. Each subsequent layer depends only on the packages above it.
+`types` and `math` have no internal dependencies and build in parallel. Each subsequent layer depends only on the packages above it. `studio`, `mcp`, and `cli` all depend on `canvas` and can build in parallel.
 
 ---
 
@@ -186,7 +193,7 @@ atelier still animation.atelier --state intro --frame 30
 ```bash
 pnpm install          # install all dependencies
 pnpm build            # build all packages (via Turborepo)
-pnpm test             # run all 181 tests (via Turborepo)
+pnpm test             # run all tests (via Turborepo)
 pnpm typecheck        # typecheck all packages
 pnpm dev              # start dev servers
 pnpm clean            # clean all dist/ directories
@@ -238,7 +245,7 @@ states:
 
 **Core concepts:**
 
-- **Layers** define the visual elements (shapes, text) with position, size, and style
+- **Layers** define the visual elements (shapes, text, images, groups) with position, size, and style
 - **States** are named segments of animation with a frame duration
 - **Deltas** animate a single property of a single layer over a frame range within a state
 - **Presets** are reusable delta templates (fade-in, slide-up) that expand into concrete deltas
@@ -247,10 +254,46 @@ states:
 
 ---
 
+## Documentation
+
+### Guides
+- [Getting Started](docs/getting-started.md) -- installation, first animation, running the showcase
+- [AI Agent Guide](docs/ai-agent-guide.md) -- MCP setup, authoring workflows, recipes, error recovery
+- [Builder Guide](docs/builder-guide.md) -- programmatic animation construction via the fluent API
+- [State Machine Guide](docs/state-machine-guide.md) -- multi-state animations and state transitions
+- [Examples](docs/examples.md) -- annotated animation examples
+
+### Reference
+- [Format Specification](docs/format-spec.md) -- complete `.atelier` YAML format, every field and constraint
+- [MCP Reference](docs/mcp-reference.md) -- all 27 MCP tools with parameters and responses
+- [Architecture](docs/architecture.md) -- package design, dependency flow, rendering pipeline
+- [Rendering Pipeline](docs/rendering-pipeline.md) -- frame resolution through canvas output
+
+### Project
+- [Design Decisions](docs/design-decisions.md) -- rationale behind key architectural choices
+- [Contributing](docs/contributing.md) -- development setup, testing, PR workflow
+- [Glossary](docs/glossary.md) -- terminology reference
+- [Proposal](docs/PROPOSAL.md) -- original project proposal and design rationale
+- [Changelog](CHANGELOG.md) -- detailed version history
+
+---
+
 ## Version History
 
 | Version | Milestone |
 |---------|-----------|
+| 0.17.1 | Paradigm config generalization, Claude Code hooks |
+| 0.17.0 | Studio browser export: MP4 (WebCodecs), WebM (VP9), GIF (built-in encoder) |
+| 0.16.0 | CLI `atelier render` command: MP4/GIF export via FFmpeg |
+| 0.15.0 | Studio undo/redo, group/ref rendering, asset management |
+| 0.14.0 | Shadow/glow properties, keyboard shortcuts, image layers, path editing |
+| 0.13.0 | Stroke trim (`visual.stroke.start`/`end`), color interpolation fix |
+| 0.12.0 | Delta naming, dual-thumb range slider, mini timeline, sort deltas |
+| 0.11.0 | Drag-to-reorder layers and deltas |
+| 0.10.0 | Inline delta editor with property-matched controls |
+| 0.9.0 | Studio side-by-side layout, CSS bundling |
+| 0.8.0 | `@atelier/studio` package: canvas preview, YAML viewer, GUI editor |
+| 0.7.3 | 22-document documentation suite |
 | 0.7.2 | Showcase restyle with Cormorant Garamond and editorial palette |
 | 0.7.1 | Fix: hold property value after delta range ends |
 | 0.7.0 | Interactive showcase with 19 examples across 8 categories |
@@ -263,10 +306,3 @@ states:
 | 0.0.1 | Monorepo scaffold |
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
-
----
-
-## Documentation
-
-- [CHANGELOG.md](CHANGELOG.md) -- detailed version history
-- [docs/PROPOSAL.md](docs/PROPOSAL.md) -- original project proposal and design rationale
