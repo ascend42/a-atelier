@@ -189,7 +189,11 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_add_asset");
     expect(toolNames).toContain("atelier_list_assets");
     expect(toolNames).toContain("atelier_remove_asset");
-    expect(toolNames).toHaveLength(40);
+    // M11 tools
+    expect(toolNames).toContain("atelier_add_variable");
+    expect(toolNames).toContain("atelier_list_variables");
+    expect(toolNames).toContain("atelier_remove_variable");
+    expect(toolNames).toHaveLength(43);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1586,6 +1590,146 @@ describe("MCP Tools", () => {
     it("atelier_remove_asset errors on nonexistent asset", async () => {
       const result = await callTool(client, "atelier_remove_asset", {
         id: docId, assetId: "ghost",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+  });
+
+  // ── Variable tools ───────────────────────────────────────────
+
+  describe("variable tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Variable Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+    });
+
+    it("atelier_add_variable adds a string variable", async () => {
+      const result = await callTool(client, "atelier_add_variable", {
+        id: docId,
+        variableName: "title",
+        type: "string",
+        description: "Animation title",
+      });
+      expect(result.success).toBe(true);
+      expect(result.variableName).toBe("title");
+      expect(result.type).toBe("string");
+
+      const doc = store.get(docId)!;
+      expect(doc.variables).toBeDefined();
+      expect(doc.variables!.title.type).toBe("string");
+      expect(doc.variables!.title.description).toBe("Animation title");
+    });
+
+    it("atelier_add_variable adds a variable with default", async () => {
+      const result = await callTool(client, "atelier_add_variable", {
+        id: docId,
+        variableName: "color",
+        type: "color",
+        default: "#FF0000",
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(docId)!;
+      expect(doc.variables!.color.default).toBe("#FF0000");
+    });
+
+    it("atelier_add_variable rejects duplicate", async () => {
+      await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "title", type: "string",
+      });
+      const result = await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "title", type: "number",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("already exists");
+    });
+
+    it("atelier_add_variable errors on nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_add_variable", {
+        id: "nonexistent", variableName: "x", type: "string",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_list_variables lists with usage info", async () => {
+      // Add variables
+      await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "title", type: "string", description: "Title text",
+      });
+      await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "unused", type: "number",
+      });
+
+      // Add a reference to title in the doc name
+      const doc = store.get(docId)!;
+      doc.name = "{{title}} Animation";
+
+      const result = await callTool(client, "atelier_list_variables", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(2);
+
+      const title = result.variables.find((v: any) => v.name === "title");
+      expect(title.referenced).toBe(true);
+
+      const unused = result.variables.find((v: any) => v.name === "unused");
+      expect(unused.referenced).toBe(false);
+    });
+
+    it("atelier_list_variables returns empty list", async () => {
+      const result = await callTool(client, "atelier_list_variables", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(0);
+      expect(result.variables).toEqual([]);
+    });
+
+    it("atelier_list_variables detects undeclared references", async () => {
+      const doc = store.get(docId)!;
+      doc.name = "{{mystery}}";
+
+      const result = await callTool(client, "atelier_list_variables", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.undeclared).toContain("mystery");
+    });
+
+    it("atelier_remove_variable removes unused variable", async () => {
+      await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "temp", type: "boolean",
+      });
+
+      const result = await callTool(client, "atelier_remove_variable", {
+        id: docId, variableName: "temp",
+      });
+      expect(result.success).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
+
+    it("atelier_remove_variable warns for referenced variable", async () => {
+      await callTool(client, "atelier_add_variable", {
+        id: docId, variableName: "title", type: "string",
+      });
+      const doc = store.get(docId)!;
+      doc.name = "{{title}}";
+
+      const result = await callTool(client, "atelier_remove_variable", {
+        id: docId, variableName: "title",
+      });
+      expect(result.success).toBe(true);
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings[0]).toContain("title");
+    });
+
+    it("atelier_remove_variable errors on nonexistent variable", async () => {
+      const result = await callTool(client, "atelier_remove_variable", {
+        id: docId, variableName: "ghost",
       });
       expect(result._isError).toBe(true);
       expect(result.error).toContain("not found");

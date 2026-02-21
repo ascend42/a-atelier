@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.22.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 3 new MCP tools (40→43 total) for variable management:
+  - `atelier_add_variable` — define a template variable on a document
+  - `atelier_list_variables` — list all variables with usage info (referenced vs unused, undeclared references)
+  - `atelier_remove_variable` — remove a variable with warnings if still referenced
+- `@a-company/atelier` — 1 new CLI command:
+  - `atelier variables <file>` — list all variables in an .atelier file with usage info
+- ~10 new MCP tests (variable add/list/remove with usage tracking)
+
 ## [0.21.0] — 2026-02-21
 
 ### Added

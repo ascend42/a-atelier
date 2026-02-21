@@ -9,6 +9,7 @@ import { renderCommand } from "./commands/render.js";
 import { exportSvgCommand } from "./commands/export-svg.js";
 import { exportLottieCommand } from "./commands/export-lottie.js";
 import { assetsCommand } from "./commands/assets.js";
+import { variablesCommand } from "./commands/variables.js";
 
 const program = new Command();
 
@@ -25,5 +26,6 @@ renderCommand(program);
 exportSvgCommand(program);
 exportLottieCommand(program);
 assetsCommand(program);
+variablesCommand(program);
 
 program.parse();
