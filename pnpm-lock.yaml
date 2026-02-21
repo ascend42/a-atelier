@@ -67,6 +67,9 @@ importers:
       '@atelier/core':
         specifier: workspace:*
         version: link:../core
+      '@atelier/math':
+        specifier: workspace:*
+        version: link:../math
       '@atelier/types':
         specifier: workspace:*
         version: link:../types
@@ -222,6 +225,9 @@ importers:
       '@atelier/core':
         specifier: workspace:*
         version: link:../core
+      '@atelier/math':
+        specifier: workspace:*
+        version: link:../math
       '@atelier/schema':
         specifier: workspace:*
         version: link:../schema

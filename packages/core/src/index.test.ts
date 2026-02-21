@@ -17,6 +17,12 @@ import {
   StateMachine,
   instantiateTemplate,
   findTemplateVariables,
+  evaluateExpression,
+  isExpression,
+  frameToTime,
+  timeToFrame,
+  computeAudioState,
+  computeAudioCues,
 } from "./index.js";
 
 // ─── Delta Resolver ─────────────────────────────────────────
@@ -791,5 +797,224 @@ describe("findTemplateVariables", () => {
     };
     const vars = findTemplateVariables(doc);
     expect(vars.filter(v => v === "title")).toHaveLength(1);
+  });
+});
+
+// ─── Expression Evaluator ──────────────────────────────────
+
+describe("expression evaluator", () => {
+  const ctx = { t: 0.5, progress: 0.5, frame: 15, duration: 30 };
+
+  it("isExpression detects expression objects", () => {
+    expect(isExpression({ expr: "t * 100" })).toBe(true);
+    expect(isExpression(42)).toBe(false);
+    expect(isExpression("hello")).toBe(false);
+    expect(isExpression(null)).toBe(false);
+    expect(isExpression({ other: "key" })).toBe(false);
+  });
+
+  it("evaluates simple arithmetic", () => {
+    expect(evaluateExpression("2 + 3", ctx)).toBe(5);
+    expect(evaluateExpression("10 - 4", ctx)).toBe(6);
+    expect(evaluateExpression("3 * 7", ctx)).toBe(21);
+    expect(evaluateExpression("20 / 4", ctx)).toBe(5);
+    expect(evaluateExpression("17 % 5", ctx)).toBe(2);
+  });
+
+  it("respects operator precedence", () => {
+    expect(evaluateExpression("2 + 3 * 4", ctx)).toBe(14);
+    expect(evaluateExpression("(2 + 3) * 4", ctx)).toBe(20);
+  });
+
+  it("supports power operator", () => {
+    expect(evaluateExpression("2 ** 3", ctx)).toBe(8);
+    expect(evaluateExpression("2 ** 3 ** 2", ctx)).toBe(512); // right-associative: 2^(3^2) = 2^9
+  });
+
+  it("supports unary minus", () => {
+    expect(evaluateExpression("-5", ctx)).toBe(-5);
+    expect(evaluateExpression("-(3 + 4)", ctx)).toBe(-7);
+  });
+
+  it("reads context variables", () => {
+    expect(evaluateExpression("t", ctx)).toBe(0.5);
+    expect(evaluateExpression("frame", ctx)).toBe(15);
+    expect(evaluateExpression("duration", ctx)).toBe(30);
+    expect(evaluateExpression("progress", ctx)).toBe(0.5);
+  });
+
+  it("reads constants", () => {
+    expect(evaluateExpression("pi", ctx)).toBeCloseTo(Math.PI);
+    expect(evaluateExpression("e", ctx)).toBeCloseTo(Math.E);
+    expect(evaluateExpression("tau", ctx)).toBeCloseTo(Math.PI * 2);
+  });
+
+  it("calls math functions", () => {
+    expect(evaluateExpression("sin(0)", ctx)).toBeCloseTo(0);
+    expect(evaluateExpression("cos(0)", ctx)).toBeCloseTo(1);
+    expect(evaluateExpression("abs(-5)", ctx)).toBe(5);
+    expect(evaluateExpression("floor(3.7)", ctx)).toBe(3);
+    expect(evaluateExpression("ceil(3.2)", ctx)).toBe(4);
+    expect(evaluateExpression("round(3.5)", ctx)).toBe(4);
+    expect(evaluateExpression("sqrt(9)", ctx)).toBe(3);
+    expect(evaluateExpression("min(3, 7)", ctx)).toBe(3);
+    expect(evaluateExpression("max(3, 7)", ctx)).toBe(7);
+    expect(evaluateExpression("pow(2, 10)", ctx)).toBe(1024);
+    expect(evaluateExpression("clamp(5, 0, 3)", ctx)).toBe(3);
+  });
+
+  it("evaluates complex expressions", () => {
+    // Oscillation: sin(t * pi * 2) * 100
+    const val = evaluateExpression("sin(t * pi * 2) * 100", ctx);
+    expect(val).toBeCloseTo(Math.sin(0.5 * Math.PI * 2) * 100);
+  });
+
+  it("supports comparison operators", () => {
+    expect(evaluateExpression("5 > 3", ctx)).toBe(1);
+    expect(evaluateExpression("5 < 3", ctx)).toBe(0);
+    expect(evaluateExpression("5 == 5", ctx)).toBe(1);
+    expect(evaluateExpression("5 != 3", ctx)).toBe(1);
+    expect(evaluateExpression("5 >= 5", ctx)).toBe(1);
+    expect(evaluateExpression("4 <= 3", ctx)).toBe(0);
+  });
+
+  it("supports ternary operator", () => {
+    expect(evaluateExpression("t > 0.3 ? 100 : 0", ctx)).toBe(100);
+    expect(evaluateExpression("t > 0.8 ? 100 : 0", ctx)).toBe(0);
+  });
+
+  it("handles safe division by zero", () => {
+    expect(evaluateExpression("5 / 0", ctx)).toBe(0);
+  });
+
+  it("throws on unknown variables", () => {
+    expect(() => evaluateExpression("unknownVar", ctx)).toThrow("unknown variable");
+  });
+
+  it("throws on unknown functions", () => {
+    expect(() => evaluateExpression("unknownFn(5)", ctx)).toThrow("unknown function");
+  });
+
+  it("works as delta from/to values", () => {
+    const delta: Delta = {
+      layer: "test",
+      property: "rotation",
+      range: [0, 60],
+      from: 0,
+      to: { expr: "sin(t * pi * 4) * 30" } as unknown,
+    };
+    // At frame 30 (midpoint), t=0.5, sin(0.5 * pi * 4) = sin(2pi) ≈ 0
+    // The expression evaluates to ~0, then interpolateValue(0, ~0, 0.5) ≈ 0
+    const val = resolveDeltaValue(delta, 30) as number;
+    expect(typeof val).toBe("number");
+  });
+});
+
+// ─── Audio Timing ──────────────────────────────────────────
+
+describe("audio timing", () => {
+  it("frameToTime converts frames to seconds", () => {
+    expect(frameToTime(0, 30)).toBe(0);
+    expect(frameToTime(30, 30)).toBe(1);
+    expect(frameToTime(60, 30)).toBe(2);
+    expect(frameToTime(15, 30)).toBe(0.5);
+    expect(frameToTime(90, 60)).toBe(1.5);
+  });
+
+  it("timeToFrame converts seconds to frames (floored)", () => {
+    expect(timeToFrame(0, 30)).toBe(0);
+    expect(timeToFrame(1, 30)).toBe(30);
+    expect(timeToFrame(2, 30)).toBe(60);
+    expect(timeToFrame(0.5, 30)).toBe(15);
+    expect(timeToFrame(1.5, 60)).toBe(90);
+    // Flooring behavior
+    expect(timeToFrame(0.9, 30)).toBe(27);
+  });
+
+  it("computeAudioState — basic playback", () => {
+    const audio = { src: "music.mp3" };
+    const state = computeAudioState(audio, 0, 30, 90);
+    expect(state.shouldPlay).toBe(true);
+    expect(state.currentTime).toBe(0);
+    expect(state.volume).toBe(1);
+  });
+
+  it("computeAudioState — respects offset", () => {
+    const audio = { src: "music.mp3", offset: 5 };
+    // At frame 30 (1 second into 30fps), currentTime = offset + elapsed = 5 + 1 = 6
+    const state = computeAudioState(audio, 30, 30, 90);
+    expect(state.shouldPlay).toBe(true);
+    expect(state.currentTime).toBeCloseTo(6);
+  });
+
+  it("computeAudioState — respects volume", () => {
+    const audio = { src: "music.mp3", volume: 0.5 };
+    const state = computeAudioState(audio, 0, 30, 90);
+    expect(state.volume).toBe(0.5);
+  });
+
+  it("computeAudioState — delayed start", () => {
+    const audio = { src: "music.mp3", startFrame: 30 };
+    // Before startFrame
+    const before = computeAudioState(audio, 15, 30, 90);
+    expect(before.shouldPlay).toBe(false);
+    expect(before.currentTime).toBe(0);
+
+    // At startFrame
+    const at = computeAudioState(audio, 30, 30, 90);
+    expect(at.shouldPlay).toBe(true);
+    expect(at.currentTime).toBe(0);
+
+    // After startFrame
+    const after = computeAudioState(audio, 60, 30, 90);
+    expect(after.shouldPlay).toBe(true);
+    expect(after.currentTime).toBe(1); // 30 frames = 1 second at 30fps
+  });
+
+  it("computeAudioState — stops at state end", () => {
+    const audio = { src: "music.mp3" };
+    const state = computeAudioState(audio, 90, 30, 90);
+    expect(state.shouldPlay).toBe(false);
+  });
+
+  it("computeAudioState — loop wraps time", () => {
+    const audio = { src: "beat.mp3", loop: true };
+    // State is 90 frames = 3 seconds at 30fps
+    // At frame 0: time = 0
+    const t0 = computeAudioState(audio, 0, 30, 90);
+    expect(t0.shouldPlay).toBe(true);
+    expect(t0.currentTime).toBe(0);
+
+    // At frame 45 (1.5s): should still be playing
+    const t1 = computeAudioState(audio, 45, 30, 90);
+    expect(t1.shouldPlay).toBe(true);
+    expect(t1.currentTime).toBeCloseTo(1.5);
+  });
+
+  it("computeAudioState — loop with offset + delayed start", () => {
+    const audio = { src: "beat.mp3", loop: true, offset: 2, startFrame: 30 };
+    // At frame 30 (start): elapsed = 0, currentTime = offset + 0 = 2
+    const t0 = computeAudioState(audio, 30, 30, 90);
+    expect(t0.currentTime).toBeCloseTo(2);
+  });
+
+  it("computeAudioCues — basic start/end", () => {
+    const audio = { src: "music.mp3" };
+    const cues = computeAudioCues(audio, 90);
+    expect(cues).toContainEqual({ frame: 0, event: "start" });
+    expect(cues).toContainEqual({ frame: 89, event: "end" });
+  });
+
+  it("computeAudioCues — delayed start", () => {
+    const audio = { src: "music.mp3", startFrame: 30 };
+    const cues = computeAudioCues(audio, 90);
+    expect(cues[0]).toEqual({ frame: 30, event: "start" });
+    expect(cues[cues.length - 1]).toEqual({ frame: 89, event: "end" });
+  });
+
+  it("computeAudioCues — no cues when startFrame >= duration", () => {
+    const audio = { src: "music.mp3", startFrame: 100 };
+    const cues = computeAudioCues(audio, 90);
+    expect(cues).toEqual([]);
   });
 });

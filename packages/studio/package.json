@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@atelier/types": "workspace:*",
+    "@atelier/math": "workspace:*",
     "@atelier/core": "workspace:*",
     "@atelier/canvas": "workspace:*",
     "@atelier/schema": "workspace:*",

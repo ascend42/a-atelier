@@ -1,0 +1,8 @@
+version: "1.0"
+
+# Atelier is a library + CLI + MCP server — no HTTP routes.
+# MCP tools use stdio transport (not HTTP) and have no auth gates.
+# This file exists to satisfy Paradigm compliance checks.
+
+gates: {}
+routes: {}

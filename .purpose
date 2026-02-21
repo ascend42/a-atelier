@@ -4,7 +4,8 @@ context:
   - "Monorepo: 8 packages (types, math, schema, core, canvas, studio, mcp, cli) + 2 apps (playground, showcase)"
   - "Build order: types + math (parallel) → schema → core → canvas → studio + mcp + cli (parallel)"
   - "Primary AI interface: @atelier/mcp exposes 27 tools for structured animation authoring"
-  - "22 animatable properties, 5 easing types, state machines, templates, presets"
+  - "27 animatable properties, 5 easing types, state machines, templates, presets"
+  - "Blend modes (16 Canvas 2D composite operations), motion path animation, clip paths, gradient animation, audio sync"
   - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio) and CLI (FFmpeg MP4/GIF)"
 features:
   animation-engine:
@@ -15,7 +16,7 @@ features:
       - "#atelier-schema"
       - "#atelier-core"
   rendering:
-    description: "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim"
+    description: "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim, blend modes, motion paths, clip paths"
     components:
       - "#atelier-canvas"
   ai-authoring:
@@ -32,22 +33,22 @@ features:
       - "#atelier-cli"
 components:
   atelier-types:
-    description: "44 TypeScript type definitions for the .atelier format (zero runtime)"
+    description: "46 TypeScript type definitions for the .atelier format (zero runtime) — includes Audio type and audio asset type"
     file: packages/types/src/index.ts
   atelier-math:
-    description: "Pure interpolation engine — easing functions, spring physics, color lerp"
+    description: "Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation"
     file: packages/math/src/index.ts
   atelier-schema:
     description: "Zod validation schemas + YAML parse/serialize with AI-readable errors"
     file: packages/schema/src/index.ts
   atelier-core:
-    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine, templates, presets"
+    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine, templates, presets, expression evaluator, audio timing"
     file: packages/core/src/index.ts
   atelier-canvas:
     description: "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim"
     file: packages/canvas/src/index.ts
   atelier-studio:
-    description: "Browser editor widget + video/GIF export via WebCodecs"
+    description: "Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points"
     file: packages/studio/src/index.ts
   atelier-mcp:
     description: "MCP server — 27 tools for AI animation authoring"

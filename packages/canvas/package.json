@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "@atelier/types": "workspace:*",
-    "@atelier/core": "workspace:*"
+    "@atelier/core": "workspace:*",
+    "@atelier/math": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",

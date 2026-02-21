@@ -1,7 +1,21 @@
 import { z } from "zod";
-import { ShapeSchema, FillSchema, StrokeSchema, TextStyleSchema } from "./shape.js";
+import { ShapeSchema, FillSchema, StrokeSchema, TextStyleSchema, PathPointSchema } from "./shape.js";
 import { FrameSchema, BoundsSchema, AnchorPointSchema } from "./coordinates.js";
 import { ShadowSchema } from "./shadow.js";
+
+export const BlendModeSchema = z.enum([
+  "normal", "multiply", "screen", "overlay",
+  "darken", "lighten", "color-dodge", "color-burn",
+  "hard-light", "soft-light", "difference", "exclusion",
+  "hue", "saturation", "color", "luminosity",
+]);
+
+export const MotionPathSchema = z.object({
+  points: z.array(PathPointSchema).min(2, "Motion path must have at least 2 points"),
+  closed: z.boolean().optional(),
+  autoRotate: z.boolean().optional(),
+  autoRotateOffset: z.number().optional(),
+});
 
 export const ShapeVisualSchema = z.object({
   type: z.literal("shape"),
@@ -53,4 +67,7 @@ export const LayerSchema = z.object({
   scale: z.object({ x: z.number(), y: z.number() }).optional(),
   visible: z.boolean().optional(),
   shadow: ShadowSchema.optional(),
+  blendMode: BlendModeSchema.optional(),
+  motionPath: MotionPathSchema.optional(),
+  clipPath: ShapeSchema.optional(),
 });

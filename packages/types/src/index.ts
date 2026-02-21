@@ -38,6 +38,8 @@ export type {
   RefVisual,
   Visual,
   Layer,
+  BlendMode,
+  MotionPath,
 } from "./layer.js";
 
 // easing.ts
@@ -52,6 +54,9 @@ export type {
 
 // delta.ts
 export type { AnimatableProperty, FrameRange, Delta } from "./delta.js";
+
+// audio.ts
+export type { Audio } from "./audio.js";
 
 // state.ts
 export type { State } from "./state.js";

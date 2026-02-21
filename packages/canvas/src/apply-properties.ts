@@ -1,5 +1,6 @@
-import type { Layer, Visual, ShapeVisual, TextVisual, Color } from "@atelier/types";
+import type { Layer, Visual, ShapeVisual, TextVisual, Color, BlendMode, LinearGradientFill, RadialGradientFill } from "@atelier/types";
 import { colorToCSS } from "./styles.js";
+import { evaluatePathAtProgress } from "@atelier/math";
 import type { ResolvedLayer } from "@atelier/core";
 
 /**
@@ -31,6 +32,10 @@ export interface EffectiveLayer {
     offsetX: number;
     offsetY: number;
   };
+  /** Blend mode for compositing */
+  blendMode: string;
+  /** Motion path auto-rotation in degrees (applied additively to rotation) */
+  motionPathAngle: number;
 }
 
 /**
@@ -59,11 +64,27 @@ export function buildEffectiveLayer(
 
   const hasShadow = layer.shadow || cp["shadow.blur"] !== undefined || cp["shadow.color"] !== undefined;
 
+  // Resolve base position
+  let x = resolveUnit((cp["frame.x"] ?? layer.frame.x) as number | string, parentWidth);
+  let y = resolveUnit((cp["frame.y"] ?? layer.frame.y) as number | string, parentHeight);
+  let motionPathAngle = 0;
+
+  // Motion path overrides position when progress is animated
+  const motionProgress = cp["motionPath.progress"] as number | undefined;
+  if (motionProgress !== undefined && layer.motionPath && layer.motionPath.points.length >= 2) {
+    const pos = evaluatePathAtProgress(layer.motionPath.points, motionProgress, layer.motionPath.closed);
+    x = pos.x;
+    y = pos.y;
+    if (layer.motionPath.autoRotate) {
+      motionPathAngle = pos.angle + (layer.motionPath.autoRotateOffset ?? 0);
+    }
+  }
+
   return {
     layer,
     visual: buildEffectiveVisual(layer.visual, cp),
-    x: resolveUnit((cp["frame.x"] ?? layer.frame.x) as number | string, parentWidth),
-    y: resolveUnit((cp["frame.y"] ?? layer.frame.y) as number | string, parentHeight),
+    x,
+    y,
     width: resolveUnit((cp["bounds.width"] ?? layer.bounds.width) as number | string, parentWidth),
     height: resolveUnit((cp["bounds.height"] ?? layer.bounds.height) as number | string, parentHeight),
     opacity: (cp["opacity"] as number) ?? layer.opacity ?? 1,
@@ -78,6 +99,8 @@ export function buildEffectiveLayer(
       offsetX: (cp["shadow.offsetX"] as number) ?? layer.shadow?.offsetX ?? 0,
       offsetY: (cp["shadow.offsetY"] as number) ?? layer.shadow?.offsetY ?? 0,
     } : undefined,
+    blendMode: (layer.blendMode as BlendMode) ?? "normal",
+    motionPathAngle,
   };
 }
 
@@ -88,6 +111,10 @@ export function buildEffectiveLayer(
 function buildEffectiveVisual(visual: Visual, cp: Record<string, unknown>): Visual {
   const hasVisualOverride =
     cp["visual.fill.color"] !== undefined ||
+    cp["visual.fill.angle"] !== undefined ||
+    cp["visual.fill.center.x"] !== undefined ||
+    cp["visual.fill.center.y"] !== undefined ||
+    cp["visual.fill.radius"] !== undefined ||
     cp["visual.stroke.color"] !== undefined ||
     cp["visual.stroke.width"] !== undefined ||
     cp["visual.stroke.start"] !== undefined ||
@@ -105,10 +132,29 @@ function buildEffectiveVisual(visual: Visual, cp: Record<string, unknown>): Visu
       v.shape = { ...v.shape, cornerRadius: cp["visual.shape.cornerRadius"] as number };
     }
 
-    if (v.fill && cp["visual.fill.color"] !== undefined) {
-      v.fill = v.fill.type === "solid"
-        ? { ...v.fill, color: cp["visual.fill.color"] as string }
-        : v.fill;
+    if (v.fill) {
+      if (cp["visual.fill.color"] !== undefined && v.fill.type === "solid") {
+        v.fill = { ...v.fill, color: cp["visual.fill.color"] as string };
+      }
+      if (cp["visual.fill.angle"] !== undefined && v.fill.type === "linear-gradient") {
+        v.fill = { ...v.fill, angle: cp["visual.fill.angle"] as number } as LinearGradientFill;
+      }
+      if (v.fill.type === "radial-gradient") {
+        const cx = cp["visual.fill.center.x"];
+        const cy = cp["visual.fill.center.y"];
+        const r = cp["visual.fill.radius"];
+        if (cx !== undefined || cy !== undefined || r !== undefined) {
+          const f = v.fill as RadialGradientFill;
+          v.fill = {
+            ...f,
+            center: {
+              x: cx !== undefined ? (cx as number) : f.center.x,
+              y: cy !== undefined ? (cy as number) : f.center.y,
+            },
+            radius: r !== undefined ? (r as number) : f.radius,
+          } as RadialGradientFill;
+        }
+      }
     }
 
     if (v.stroke) {

@@ -1,0 +1,61 @@
+version: "1.0"
+name: Blend Modes
+description: Overlapping circles with different blend modes
+canvas:
+  width: 600
+  height: 400
+  fps: 30
+  background: "#ffffff"
+
+layers:
+  - id: circle-red
+    description: Red circle (normal)
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#ff000099" }
+    frame: { x: 150, y: 120 }
+    bounds: { width: 200, height: 200 }
+
+  - id: circle-green
+    description: Green circle (multiply blend)
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#00ff0099" }
+    frame: { x: 250, y: 120 }
+    bounds: { width: 200, height: 200 }
+    blendMode: multiply
+
+  - id: circle-blue
+    description: Blue circle (screen blend)
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0000ff99" }
+    frame: { x: 200, y: 200 }
+    bounds: { width: 200, height: 200 }
+    blendMode: screen
+
+states:
+  main:
+    duration: 90
+    deltas:
+      - layer: circle-red
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: circle-green
+        property: opacity
+        range: [15, 45]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: circle-blue
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-in-out
