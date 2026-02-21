@@ -1,4 +1,4 @@
-export type AssetType = "image" | "svg" | "font" | "animation";
+export type AssetType = "image" | "svg" | "font" | "animation" | "audio";
 
 /** A referenced external asset */
 export interface Asset {

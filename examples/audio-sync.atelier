@@ -1,0 +1,116 @@
+version: "1.0"
+name: Audio Sync Demo
+description: Pulsing circle synchronized to an audio beat track
+canvas:
+  width: 600
+  height: 400
+  fps: 30
+  background: "#0d1117"
+
+assets:
+  beat-track:
+    type: audio
+    src: assets/beat.mp3
+    description: Looping beat track for pulse sync
+
+layers:
+  - id: pulse-ring
+    description: Outer ring that pulses to the beat
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      stroke: { color: "#58a6ff", width: 3 }
+    frame: { x: 250, y: 150 }
+    bounds: { width: 120, height: 120 }
+    anchorPoint: { x: 0.5, y: 0.5 }
+
+  - id: beat-circle
+    description: Inner circle that scales with the beat
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#58a6ff" }
+    frame: { x: 270, y: 170 }
+    bounds: { width: 60, height: 60 }
+    anchorPoint: { x: 0.5, y: 0.5 }
+
+  - id: label
+    description: "Audio sync" label
+    visual:
+      type: text
+      text: "♪ Audio Sync"
+      style:
+        fontSize: 24
+        fontFamily: monospace
+        color: "#8b949e"
+    frame: { x: 220, y: 320 }
+    bounds: { width: 200, height: 40 }
+
+states:
+  main:
+    duration: 120
+    audio:
+      src: beat-track
+      volume: 0.8
+      loop: true
+    deltas:
+      - layer: beat-circle
+        property: scale.x
+        range: [0, 14]
+        from: 1
+        to: 1.4
+        easing: ease-out
+      - layer: beat-circle
+        property: scale.x
+        range: [15, 29]
+        from: 1.4
+        to: 1
+        easing: ease-in
+      - layer: beat-circle
+        property: scale.y
+        range: [0, 14]
+        from: 1
+        to: 1.4
+        easing: ease-out
+      - layer: beat-circle
+        property: scale.y
+        range: [15, 29]
+        from: 1.4
+        to: 1
+        easing: ease-in
+      - layer: beat-circle
+        property: scale.x
+        range: [30, 44]
+        from: 1
+        to: 1.4
+        easing: ease-out
+      - layer: beat-circle
+        property: scale.x
+        range: [45, 59]
+        from: 1.4
+        to: 1
+        easing: ease-in
+      - layer: beat-circle
+        property: scale.y
+        range: [30, 44]
+        from: 1
+        to: 1.4
+        easing: ease-out
+      - layer: beat-circle
+        property: scale.y
+        range: [45, 59]
+        from: 1.4
+        to: 1
+        easing: ease-in
+      - layer: pulse-ring
+        property: opacity
+        range: [0, 59]
+        from: 1
+        to: 0.3
+        easing: ease-in-out
+      - layer: pulse-ring
+        property: opacity
+        range: [60, 119]
+        from: 0.3
+        to: 1
+        easing: ease-in-out

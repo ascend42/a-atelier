@@ -16,10 +16,10 @@ export {
 export { ShadowSchema } from "./shadow.js";
 export {
   ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, GroupVisualSchema, RefVisualSchema,
-  VisualSchema, LayerSchema,
+  VisualSchema, LayerSchema, BlendModeSchema, MotionPathSchema,
 } from "./layer.js";
 export { AnimatablePropertySchema, FrameRangeSchema, DeltaSchema } from "./delta.js";
-export { StateSchema } from "./state.js";
+export { AudioSchema, StateSchema } from "./state.js";
 export { PresetDeltaSchema, PresetSchema } from "./preset.js";
 export { VariableTypeSchema, VariableSchema } from "./variable.js";
 export { AssetTypeSchema, AssetSchema } from "./asset.js";

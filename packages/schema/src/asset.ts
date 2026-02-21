@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const AssetTypeSchema = z.enum(["image", "svg", "font", "animation"]);
+export const AssetTypeSchema = z.enum(["image", "svg", "font", "animation", "audio"]);
 
 export const AssetSchema = z.object({
   type: AssetTypeSchema,

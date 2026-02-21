@@ -25,6 +25,7 @@ export interface RenderContext {
   bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void;
   fill(): void;
   stroke(): void;
+  clip(): void;
 
   // Ellipse
   ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number): void;
@@ -43,6 +44,7 @@ export interface RenderContext {
   lineCap: string;
   lineJoin: string;
   globalAlpha: number;
+  globalCompositeOperation: string;
   font: string;
   textAlign: string;
   textBaseline: string;

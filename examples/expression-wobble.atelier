@@ -1,0 +1,46 @@
+version: "1.0"
+name: Expression Wobble
+description: Circle with sine-wave oscillation using expressions
+canvas:
+  width: 600
+  height: 400
+  fps: 60
+  background: "#1a1a2e"
+
+layers:
+  - id: wobble-circle
+    description: Circle that wobbles using a sine expression
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#e94560" }
+    frame: { x: 250, y: 150 }
+    bounds: { width: 100, height: 100 }
+    anchorPoint: { x: 0.5, y: 0.5 }
+
+states:
+  main:
+    duration: 180
+    deltas:
+      - layer: wobble-circle
+        property: frame.x
+        range: [0, 179]
+        from: 250
+        to: { expr: "250 + sin(t * pi * 6) * 150" }
+        easing: ease-in-out
+      - layer: wobble-circle
+        property: frame.y
+        range: [0, 179]
+        from: 150
+        to: { expr: "150 + cos(t * pi * 4) * 100" }
+        easing: ease-in-out
+      - layer: wobble-circle
+        property: scale.x
+        range: [0, 179]
+        from: 1
+        to: { expr: "1 + sin(t * pi * 8) * 0.3" }
+      - layer: wobble-circle
+        property: scale.y
+        range: [0, 179]
+        from: 1
+        to: { expr: "1 + cos(t * pi * 8) * 0.3" }

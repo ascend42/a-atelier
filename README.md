@@ -45,16 +45,20 @@ The engine supports 22 animatable properties, 5 easing types (linear, cubic-bezi
 
 ---
 
-## Quick Start
-
-**Prerequisites:** Node.js >= 20.0.0, pnpm 10.29.3
+## Install
 
 ```bash
-git clone <repo-url>
-cd a-atelier
-pnpm install
-pnpm build
+npm i -g @a-company/atelier
 ```
+
+This gives you two commands:
+
+- `atelier` -- CLI for validating, inspecting, and rendering `.atelier` files
+- `atelier-mcp` -- MCP server for AI-assisted animation authoring
+
+---
+
+## Quick Start
 
 ### Path 1: AI Agent (MCP)
 
@@ -187,16 +191,24 @@ atelier render animation.atelier -o output.gif -f gif
 
 ---
 
-## Monorepo Commands
+## Development
+
+To work on Atelier itself:
 
 ```bash
-pnpm install          # install all dependencies
-pnpm build            # build all packages (via Turborepo)
-pnpm test             # run all tests (via Turborepo)
-pnpm typecheck        # typecheck all packages
-pnpm dev              # start dev servers
-pnpm clean            # clean all dist/ directories
+git clone <repo-url> && cd a-atelier
+pnpm install
+pnpm build
+pnpm test
 ```
+
+| Command | Description |
+|---------|-------------|
+| `pnpm build` | Build all packages (via Turborepo) |
+| `pnpm test` | Run all tests |
+| `pnpm typecheck` | Type-check all packages |
+| `pnpm dev` | Start dev servers |
+| `pnpm clean` | Clean all `dist/` directories |
 
 **Toolchain:** pnpm workspaces + Turborepo for orchestration, tsup for builds (ESM + CJS + DTS dual output), vitest for testing, TypeScript strict mode throughout.
 

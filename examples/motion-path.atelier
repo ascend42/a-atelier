@@ -1,0 +1,38 @@
+version: "1.0"
+name: Motion Path
+description: Circle following a figure-eight bezier path
+canvas:
+  width: 600
+  height: 400
+  fps: 60
+  background: "#1a1a2e"
+
+layers:
+  - id: dot
+    description: Circle following a motion path
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#e94560" }
+    frame: { x: 0, y: 0 }
+    bounds: { width: 30, height: 30 }
+    anchorPoint: { x: 0.5, y: 0.5 }
+    motionPath:
+      points:
+        - { x: 300, y: 100, out: { x: 150, y: 0 } }
+        - { x: 500, y: 200, in: { x: 0, y: -100 }, out: { x: 0, y: 100 } }
+        - { x: 300, y: 300, in: { x: 150, y: 0 }, out: { x: -150, y: 0 } }
+        - { x: 100, y: 200, in: { x: 0, y: 100 }, out: { x: 0, y: -100 } }
+      closed: true
+      autoRotate: true
+
+states:
+  main:
+    duration: 180
+    deltas:
+      - layer: dot
+        property: motionPath.progress
+        range: [0, 179]
+        from: 0
+        to: 1
+        easing: ease-in-out

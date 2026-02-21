@@ -37,6 +37,37 @@ export interface RefVisual {
 
 export type Visual = ShapeVisual | TextVisual | ImageVisual | GroupVisual | RefVisual;
 
+/** Canvas 2D composite operations */
+export type BlendMode =
+  | "normal"
+  | "multiply"
+  | "screen"
+  | "overlay"
+  | "darken"
+  | "lighten"
+  | "color-dodge"
+  | "color-burn"
+  | "hard-light"
+  | "soft-light"
+  | "difference"
+  | "exclusion"
+  | "hue"
+  | "saturation"
+  | "color"
+  | "luminosity";
+
+/** Motion path definition for path-based animation */
+export interface MotionPath {
+  /** Path points defining the motion trajectory */
+  points: import("./shape.js").PathPoint[];
+  /** Whether the path is closed */
+  closed?: boolean;
+  /** Auto-rotate layer to follow path tangent */
+  autoRotate?: boolean;
+  /** Rotation offset in degrees when autoRotate is enabled */
+  autoRotateOffset?: number;
+}
+
 /** A visual element in the animation */
 export interface Layer {
   id: string;
@@ -58,4 +89,10 @@ export interface Layer {
   visible?: boolean;
   /** Drop shadow / glow */
   shadow?: Shadow;
+  /** Blend mode for compositing */
+  blendMode?: BlendMode;
+  /** Motion path for path-based position animation */
+  motionPath?: MotionPath;
+  /** Clip path — restricts rendering to within a shape */
+  clipPath?: import("./shape.js").Shape;
 }

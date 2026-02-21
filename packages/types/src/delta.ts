@@ -23,7 +23,12 @@ export type AnimatableProperty =
   | "shadow.color"
   | "shadow.blur"
   | "shadow.offsetX"
-  | "shadow.offsetY";
+  | "shadow.offsetY"
+  | "motionPath.progress"
+  | "visual.fill.angle"
+  | "visual.fill.center.x"
+  | "visual.fill.center.y"
+  | "visual.fill.radius";
 
 /** Frame range [start, end] — inclusive, 0-based */
 export type FrameRange = [number, number];

@@ -1,4 +1,5 @@
 import type { Delta } from "./delta.js";
+import type { Audio } from "./audio.js";
 
 /** A named choreography — what layers do during this state */
 export interface State {
@@ -8,4 +9,6 @@ export interface State {
   duration: number;
   /** Animation instructions */
   deltas: Delta[];
+  /** Audio track synchronized with this state */
+  audio?: Audio;
 }

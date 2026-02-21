@@ -1,0 +1,37 @@
+version: "1.0"
+name: Clip Path
+description: Text clipped to an ellipse shape
+canvas:
+  width: 600
+  height: 400
+  fps: 30
+  background: "#0f0f23"
+
+layers:
+  - id: clipped-gradient
+    description: Gradient rectangle clipped to an ellipse
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill:
+        type: linear-gradient
+        angle: 45
+        stops:
+          - { offset: 0, color: "#ff6b6b" }
+          - { offset: 0.5, color: "#4ecdc4" }
+          - { offset: 1, color: "#45b7d1" }
+    frame: { x: 100, y: 50 }
+    bounds: { width: 400, height: 300 }
+    clipPath:
+      type: ellipse
+
+states:
+  main:
+    duration: 120
+    deltas:
+      - layer: clipped-gradient
+        property: visual.fill.angle
+        range: [0, 119]
+        from: 0
+        to: 360
+        easing: ease-in-out

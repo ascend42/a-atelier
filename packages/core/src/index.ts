@@ -34,3 +34,11 @@ export type { StateTransition, PlaybackState } from "./state/state-machine.js";
 // Templates
 export { instantiateTemplate, findTemplateVariables } from "./templates/template-resolver.js";
 export type { TemplateBindings, TemplateError, TemplateResult } from "./templates/template-resolver.js";
+
+// Expressions
+export { evaluateExpression, isExpression } from "./expressions/expression-evaluator.js";
+export type { ExpressionContext } from "./expressions/expression-evaluator.js";
+
+// Audio timing
+export { frameToTime, timeToFrame, computeAudioState, computeAudioCues } from "./audio/audio-timing.js";
+export type { AudioPlaybackState } from "./audio/audio-timing.js";
