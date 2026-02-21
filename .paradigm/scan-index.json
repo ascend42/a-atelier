@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T22:14:00.472Z",
+    "generatedAt": "2026-02-21T22:14:30.461Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 6,
@@ -226,6 +226,126 @@
       "visualTags": [],
       "related": []
     },
+    "mcp-store": {
+      "id": "mcp-store",
+      "name": "Mcp Store",
+      "symbol": "#mcp-store",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-document-tools": {
+      "id": "mcp-document-tools",
+      "name": "Mcp Document Tools",
+      "symbol": "#mcp-document-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-layer-tools": {
+      "id": "mcp-layer-tools",
+      "name": "Mcp Layer Tools",
+      "symbol": "#mcp-layer-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer management tools — add, edit, remove, list, reorder",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-shape-tools": {
+      "id": "mcp-shape-tools",
+      "name": "Mcp Shape Tools",
+      "symbol": "#mcp-shape-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-state-tools": {
+      "id": "mcp-state-tools",
+      "name": "Mcp State Tools",
+      "symbol": "#mcp-state-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State management tools — add, edit, remove, list animation states",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-delta-tools": {
+      "id": "mcp-delta-tools",
+      "name": "Mcp Delta Tools",
+      "symbol": "#mcp-delta-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preset-tools": {
+      "id": "mcp-preset-tools",
+      "name": "Mcp Preset Tools",
+      "symbol": "#mcp-preset-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preset tools — define reusable animation presets, list available presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preview-tools": {
+      "id": "mcp-preview-tools",
+      "name": "Mcp Preview Tools",
+      "symbol": "#mcp-preview-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-template-tools": {
+      "id": "mcp-template-tools",
+      "name": "Mcp Template Tools",
+      "symbol": "#mcp-template-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Template MCP tools — instantiate_template, find_variables",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-layer-effect-tools": {
+      "id": "mcp-layer-effect-tools",
+      "name": "Mcp Layer Effect Tools",
+      "symbol": "#mcp-layer-effect-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer effect tools — set_blend_mode, set_shadow, set_motion_path, set_clip_path, edit_visual",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-state-config-tools": {
+      "id": "mcp-state-config-tools",
+      "name": "Mcp State Config Tools",
+      "symbol": "#mcp-state-config-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-export-tools": {
+      "id": "mcp-export-tools",
+      "name": "Mcp Export Tools",
+      "symbol": "#mcp-export-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
+      "visualTags": [],
+      "related": []
+    },
     "canvas-panel": {
       "id": "canvas-panel",
       "name": "Canvas Panel",
@@ -369,126 +489,6 @@
       "visualTags": [],
       "related": []
     },
-    "mcp-store": {
-      "id": "mcp-store",
-      "name": "Mcp Store",
-      "symbol": "#mcp-store",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-document-tools": {
-      "id": "mcp-document-tools",
-      "name": "Mcp Document Tools",
-      "symbol": "#mcp-document-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-layer-tools": {
-      "id": "mcp-layer-tools",
-      "name": "Mcp Layer Tools",
-      "symbol": "#mcp-layer-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Layer management tools — add, edit, remove, list, reorder",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-shape-tools": {
-      "id": "mcp-shape-tools",
-      "name": "Mcp Shape Tools",
-      "symbol": "#mcp-shape-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-state-tools": {
-      "id": "mcp-state-tools",
-      "name": "Mcp State Tools",
-      "symbol": "#mcp-state-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "State management tools — add, edit, remove, list animation states",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-delta-tools": {
-      "id": "mcp-delta-tools",
-      "name": "Mcp Delta Tools",
-      "symbol": "#mcp-delta-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-preset-tools": {
-      "id": "mcp-preset-tools",
-      "name": "Mcp Preset Tools",
-      "symbol": "#mcp-preset-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preset tools — define reusable animation presets, list available presets",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-preview-tools": {
-      "id": "mcp-preview-tools",
-      "name": "Mcp Preview Tools",
-      "symbol": "#mcp-preview-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-template-tools": {
-      "id": "mcp-template-tools",
-      "name": "Mcp Template Tools",
-      "symbol": "#mcp-template-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Template MCP tools — instantiate_template, find_variables",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-layer-effect-tools": {
-      "id": "mcp-layer-effect-tools",
-      "name": "Mcp Layer Effect Tools",
-      "symbol": "#mcp-layer-effect-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Layer effect tools — set_blend_mode, set_shadow, set_motion_path, set_clip_path, edit_visual",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-state-config-tools": {
-      "id": "mcp-state-config-tools",
-      "name": "Mcp State Config Tools",
-      "symbol": "#mcp-state-config-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-export-tools": {
-      "id": "mcp-export-tools",
-      "name": "Mcp Export Tools",
-      "symbol": "#mcp-export-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
-      "visualTags": [],
-      "related": []
-    },
     "#frame-resolver": {
       "id": "#frame-resolver",
       "name": "#frame Resolver",
@@ -579,61 +579,6 @@
       "visualTags": [],
       "related": []
     },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
-      "visualTags": [],
-      "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer"
-      ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "visualTags": [],
-      "related": []
-    },
     "cli-validate": {
       "id": "cli-validate",
       "name": "Cli Validate",
@@ -701,6 +646,61 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
       "description": "Export Lottie command — exports document to Lottie JSON via @atelier/lottie",
+      "visualTags": [],
+      "related": []
+    },
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
+    },
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
+    },
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "visualTags": [],
       "related": []
     },
@@ -850,54 +850,6 @@
       "category": "components",
       "id": "atelier-cli"
     },
-    "#canvas-panel": {
-      "category": "components",
-      "id": "canvas-panel"
-    },
-    "#layer-panel": {
-      "category": "components",
-      "id": "layer-panel"
-    },
-    "#property-panel": {
-      "category": "components",
-      "id": "property-panel"
-    },
-    "#delta-panel": {
-      "category": "components",
-      "id": "delta-panel"
-    },
-    "#yaml-panel": {
-      "category": "components",
-      "id": "yaml-panel"
-    },
-    "#number-input": {
-      "category": "components",
-      "id": "number-input"
-    },
-    "#color-picker": {
-      "category": "components",
-      "id": "color-picker"
-    },
-    "#select-input": {
-      "category": "components",
-      "id": "select-input"
-    },
-    "#slider-input": {
-      "category": "components",
-      "id": "slider-input"
-    },
-    "#easing-picker": {
-      "category": "components",
-      "id": "easing-picker"
-    },
-    "#range-slider": {
-      "category": "components",
-      "id": "range-slider"
-    },
-    "#drag-reorder": {
-      "category": "components",
-      "id": "drag-reorder"
-    },
     "#mcp-store": {
       "category": "components",
       "id": "mcp-store"
@@ -946,6 +898,54 @@
       "category": "components",
       "id": "mcp-export-tools"
     },
+    "#canvas-panel": {
+      "category": "components",
+      "id": "canvas-panel"
+    },
+    "#layer-panel": {
+      "category": "components",
+      "id": "layer-panel"
+    },
+    "#property-panel": {
+      "category": "components",
+      "id": "property-panel"
+    },
+    "#delta-panel": {
+      "category": "components",
+      "id": "delta-panel"
+    },
+    "#yaml-panel": {
+      "category": "components",
+      "id": "yaml-panel"
+    },
+    "#number-input": {
+      "category": "components",
+      "id": "number-input"
+    },
+    "#color-picker": {
+      "category": "components",
+      "id": "color-picker"
+    },
+    "#select-input": {
+      "category": "components",
+      "id": "select-input"
+    },
+    "#slider-input": {
+      "category": "components",
+      "id": "slider-input"
+    },
+    "#easing-picker": {
+      "category": "components",
+      "id": "easing-picker"
+    },
+    "#range-slider": {
+      "category": "components",
+      "id": "range-slider"
+    },
+    "#drag-reorder": {
+      "category": "components",
+      "id": "drag-reorder"
+    },
     "##frame-resolver": {
       "category": "components",
       "id": "#frame-resolver"
@@ -982,26 +982,6 @@
       "category": "components",
       "id": "template-resolver"
     },
-    "#render-frame": {
-      "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
-    },
     "#cli-validate": {
       "category": "components",
       "id": "cli-validate"
@@ -1029,6 +1009,26 @@
     "#cli-export-lottie": {
       "category": "components",
       "id": "cli-export-lottie"
+    },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
     },
     "^^no-overlap": {
       "category": "gates",
