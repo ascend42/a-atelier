@@ -1,0 +1,44 @@
+version: 1.0.0
+name: "@atelier/lottie"
+description: Lottie JSON exporter — converts Atelier documents to Lottie animation format (lossy, best-effort)
+context:
+  - exportToLottie() orchestrates the conversion pipeline
+  - Specialized mappers handle colors, easing, shapes, keyframes, and layers
+  - Lossy conversion — warns about unsupported features (audio, expressions, shadows, motion paths, clip paths)
+  - Depends on @atelier/types, @atelier/core
+
+components:
+  '#lottie-exporter':
+    description: exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings
+    file: src/export-lottie.ts
+    tags: [exporter, lottie, entry-point]
+    components: ["#lottie-map-layers", "#lottie-warnings"]
+  '#lottie-types':
+    description: LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format
+    file: src/lottie-types.ts
+    tags: [types, lottie]
+  '#lottie-map-layers':
+    description: mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting
+    file: src/map-layers.ts
+    tags: [mapper, layers]
+    components: ["#lottie-map-shapes", "#lottie-map-keyframes", "#lottie-map-colors", "#lottie-map-easing"]
+  '#lottie-map-shapes':
+    description: mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes
+    file: src/map-shapes.ts
+    tags: [mapper, shapes]
+  '#lottie-map-keyframes':
+    description: mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values
+    file: src/map-keyframes.ts
+    tags: [mapper, keyframes, animation]
+  '#lottie-map-colors':
+    description: colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format
+    file: src/map-colors.ts
+    tags: [mapper, color]
+  '#lottie-map-easing':
+    description: mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions
+    file: src/map-easing.ts
+    tags: [mapper, easing]
+  '#lottie-warnings':
+    description: collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings
+    file: src/warnings.ts
+    tags: [validation, warnings]

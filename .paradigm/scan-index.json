@@ -2,10 +2,10 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T23:35:25.763Z",
+    "generatedAt": "2026-02-21T23:55:51.704Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 6,
+      "purposeFiles": 11,
       "portalFiles": 1,
       "premiseFiles": 0
     }
@@ -80,7 +80,7 @@
       "symbol": "#ai-authoring",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "MCP server with 27 tools for AI agents to create, edit, preview, and export animations",
+      "description": "MCP server with 52 tools across 16 groups for AI agents to create, edit, preview, export, and analyze animations",
       "visualTags": [],
       "related": [
         "#atelier-mcp"
@@ -104,7 +104,7 @@
       "symbol": "#cli",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "Command-line tool — validate, info, still, render (MP4/GIF via FFmpeg)",
+      "description": "Command-line tool — validate, info, still, render, export-svg, export-lottie, assets, variables (9 commands)",
       "visualTags": [],
       "related": [
         "#atelier-cli"
@@ -116,7 +116,7 @@
       "symbol": "#atelier-types",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "48 TypeScript type definitions for the .atelier format (zero runtime) — includes StateTransitionConfig, hierarchical parent state support",
+      "description": "60+ TypeScript type definitions across 16 modules — layers, deltas, easing, states, shadows, audio, assets, variables, interactions, presets",
       "visualTags": [],
       "related": []
     },
@@ -146,7 +146,7 @@
       "symbol": "#atelier-core",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing",
+      "description": "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing, unit resolver",
       "visualTags": [],
       "related": []
     },
@@ -212,7 +212,7 @@
       "symbol": "#atelier-mcp",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "MCP server — 27 tools for AI animation authoring",
+      "description": "MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)",
       "visualTags": [],
       "related": []
     },
@@ -222,7 +222,234 @@
       "symbol": "#atelier-cli",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "CLI tool — validate, info, still, render commands",
+      "description": "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables",
+      "visualTags": [],
+      "related": []
+    },
+    "#unit-types": {
+      "id": "#unit-types",
+      "name": "#unit Types",
+      "symbol": "##unit-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Pixel, Percentage, and UnitValue type definitions",
+      "visualTags": [],
+      "related": []
+    },
+    "#coordinate-types": {
+      "id": "#coordinate-types",
+      "name": "#coordinate Types",
+      "symbol": "##coordinate-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Frame, Bounds, AnchorPoint spatial types",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-types": {
+      "id": "#color-types",
+      "name": "#color Types",
+      "symbol": "##color-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+      "visualTags": [],
+      "related": []
+    },
+    "#shape-types": {
+      "id": "#shape-types",
+      "name": "#shape Types",
+      "symbol": "##shape-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+      "visualTags": [],
+      "related": []
+    },
+    "#layer-types": {
+      "id": "#layer-types",
+      "name": "#layer Types",
+      "symbol": "##layer-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Layer, Visual union (shape, text, image, group, ref)",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-types": {
+      "id": "#easing-types",
+      "name": "#easing Types",
+      "symbol": "##easing-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-types": {
+      "id": "#delta-types",
+      "name": "#delta Types",
+      "symbol": "##delta-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Delta (animation instruction), AnimatableProperty, FrameRange",
+      "visualTags": [],
+      "related": []
+    },
+    "#state-types": {
+      "id": "#state-types",
+      "name": "#state Types",
+      "symbol": "##state-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "State (named choreography with duration and deltas)",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-types": {
+      "id": "#document-types",
+      "name": "#document Types",
+      "symbol": "##document-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDocument root type, Canvas config",
+      "visualTags": [],
+      "related": []
+    },
+    "#shadow-types": {
+      "id": "#shadow-types",
+      "name": "#shadow Types",
+      "symbol": "##shadow-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
+      "visualTags": [],
+      "related": []
+    },
+    "#audio-types": {
+      "id": "#audio-types",
+      "name": "#audio Types",
+      "symbol": "##audio-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
+      "visualTags": [],
+      "related": []
+    },
+    "#asset-types": {
+      "id": "#asset-types",
+      "name": "#asset Types",
+      "symbol": "##asset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio)",
+      "visualTags": [],
+      "related": []
+    },
+    "#variable-types": {
+      "id": "#variable-types",
+      "name": "#variable Types",
+      "symbol": "##variable-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
+      "visualTags": [],
+      "related": []
+    },
+    "#interaction-types": {
+      "id": "#interaction-types",
+      "name": "#interaction Types",
+      "symbol": "##interaction-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-types": {
+      "id": "#preset-types",
+      "name": "#preset Types",
+      "symbol": "##preset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "PresetDelta, Preset — reusable animation delta templates",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-renderer": {
+      "id": "#svg-renderer",
+      "name": "#svg Renderer",
+      "symbol": "##svg-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+      "visualTags": [],
+      "related": [
+        "#svg-shapes",
+        "#svg-text",
+        "#svg-gradients",
+        "#svg-filters",
+        "#svg-clip",
+        "#svg-properties"
+      ]
+    },
+    "#svg-shapes": {
+      "id": "#svg-shapes",
+      "name": "#svg Shapes",
+      "symbol": "##svg-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-text": {
+      "id": "#svg-text",
+      "name": "#svg Text",
+      "symbol": "##svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-gradients": {
+      "id": "#svg-gradients",
+      "name": "#svg Gradients",
+      "symbol": "##svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-filters": {
+      "id": "#svg-filters",
+      "name": "#svg Filters",
+      "symbol": "##svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-clip": {
+      "id": "#svg-clip",
+      "name": "#svg Clip",
+      "symbol": "##svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-properties": {
+      "id": "#svg-properties",
+      "name": "#svg Properties",
+      "symbol": "##svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
       "visualTags": [],
       "related": []
     },
@@ -541,93 +768,91 @@
       ],
       "related": []
     },
-    "#frame-resolver": {
-      "id": "#frame-resolver",
-      "name": "#frame Resolver",
-      "symbol": "##frame-resolver",
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Given document + frame number, computes resolved state of all layers",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
       "visualTags": [],
       "related": []
     },
-    "#delta-resolver": {
-      "id": "#delta-resolver",
-      "name": "#delta Resolver",
-      "symbol": "##delta-resolver",
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
       "visualTags": [],
       "related": []
     },
-    "#easing-resolver": {
-      "id": "#easing-resolver",
-      "name": "#easing Resolver",
-      "symbol": "##easing-resolver",
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Bridges Easing type definitions to executable math functions",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
       "visualTags": [],
       "related": []
     },
-    "#document-builder": {
-      "id": "#document-builder",
-      "name": "#document Builder",
-      "symbol": "##document-builder",
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
       "visualTags": [],
       "related": []
     },
-    "#overlap-validator": {
-      "id": "#overlap-validator",
-      "name": "#overlap Validator",
-      "symbol": "##overlap-validator",
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Validates no overlapping deltas exist on same layer+property",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
       "visualTags": [],
       "related": []
     },
-    "#unit-resolver": {
-      "id": "#unit-resolver",
-      "name": "#unit Resolver",
-      "symbol": "##unit-resolver",
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-resolver": {
-      "id": "#preset-resolver",
-      "name": "#preset Resolver",
-      "symbol": "##preset-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Expands preset definitions into concrete deltas for a layer",
-      "visualTags": [],
-      "related": []
-    },
-    "state-machine": {
-      "id": "state-machine",
-      "name": "State Machine",
-      "symbol": "#state-machine",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
-      "visualTags": [],
-      "related": []
-    },
-    "template-resolver": {
-      "id": "template-resolver",
-      "name": "Template Resolver",
-      "symbol": "#template-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
       "visualTags": [],
       "related": []
     },
@@ -721,6 +946,46 @@
       "visualTags": [],
       "related": []
     },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
     "render-frame": {
       "id": "render-frame",
       "name": "Render Frame",
@@ -775,6 +1040,308 @@
       "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "visualTags": [],
       "related": []
+    },
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+      "visualTags": [],
+      "related": [
+        "#atelier-types"
+      ]
+    },
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatableProperty enum and FrameRange refinement",
+      "visualTags": [],
+      "related": []
+    },
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
+      "visualTags": [],
+      "related": []
+    },
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "visualTags": [],
+      "related": []
+    },
+    "#frame-resolver": {
+      "id": "#frame-resolver",
+      "name": "#frame Resolver",
+      "symbol": "##frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Given document + frame number, computes resolved state of all layers",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-resolver": {
+      "id": "#delta-resolver",
+      "name": "#delta Resolver",
+      "symbol": "##delta-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-resolver": {
+      "id": "#easing-resolver",
+      "name": "#easing Resolver",
+      "symbol": "##easing-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Bridges Easing type definitions to executable math functions",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-builder": {
+      "id": "#document-builder",
+      "name": "#document Builder",
+      "symbol": "##document-builder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "visualTags": [],
+      "related": []
+    },
+    "#overlap-validator": {
+      "id": "#overlap-validator",
+      "name": "#overlap Validator",
+      "symbol": "##overlap-validator",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Validates no overlapping deltas exist on same layer+property",
+      "visualTags": [],
+      "related": []
+    },
+    "#unit-resolver": {
+      "id": "#unit-resolver",
+      "name": "#unit Resolver",
+      "symbol": "##unit-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-resolver": {
+      "id": "#preset-resolver",
+      "name": "#preset Resolver",
+      "symbol": "##preset-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Expands preset definitions into concrete deltas for a layer",
+      "visualTags": [],
+      "related": []
+    },
+    "#state-machine": {
+      "id": "#state-machine",
+      "name": "#state Machine",
+      "symbol": "##state-machine",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
+      "visualTags": [],
+      "related": []
+    },
+    "#template-resolver": {
+      "id": "#template-resolver",
+      "name": "#template Resolver",
+      "symbol": "##template-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
+      "visualTags": [],
+      "related": []
+    },
+    "#expression-evaluator": {
+      "id": "#expression-evaluator",
+      "name": "#expression Evaluator",
+      "symbol": "##expression-evaluator",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Safe recursive descent expression evaluator — supports math functions, context variables (t, frame, duration, progress), ternary, no eval()",
+      "visualTags": [],
+      "related": []
+    },
+    "#audio-timing": {
+      "id": "#audio-timing",
+      "name": "#audio Timing",
+      "symbol": "##audio-timing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
+      "visualTags": [],
+      "related": []
+    },
+    "svg-shapes": {
+      "id": "svg-shapes",
+      "name": "Svg Shapes",
+      "symbol": "#svg-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "svg-text": {
+      "id": "svg-text",
+      "name": "Svg Text",
+      "symbol": "#svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "svg-gradients": {
+      "id": "svg-gradients",
+      "name": "Svg Gradients",
+      "symbol": "#svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "svg-filters": {
+      "id": "svg-filters",
+      "name": "Svg Filters",
+      "symbol": "#svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "svg-clip": {
+      "id": "svg-clip",
+      "name": "Svg Clip",
+      "symbol": "#svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "svg-properties": {
+      "id": "svg-properties",
+      "name": "Svg Properties",
+      "symbol": "#svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Referenced from ##svg-renderer",
+      "visualTags": [],
+      "related": [
+        "#svg-renderer"
+      ]
+    },
+    "lottie-map-layers": {
+      "id": "lottie-map-layers",
+      "name": "Lottie Map Layers",
+      "symbol": "#lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-warnings": {
+      "id": "lottie-warnings",
+      "name": "Lottie Warnings",
+      "symbol": "#lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-map-shapes": {
+      "id": "lottie-map-shapes",
+      "name": "Lottie Map Shapes",
+      "symbol": "#lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-keyframes": {
+      "id": "lottie-map-keyframes",
+      "name": "Lottie Map Keyframes",
+      "symbol": "#lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-colors": {
+      "id": "lottie-map-colors",
+      "name": "Lottie Map Colors",
+      "symbol": "#lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-easing": {
+      "id": "lottie-map-easing",
+      "name": "Lottie Map Easing",
+      "symbol": "#lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
     },
     "frame-resolver": {
       "id": "frame-resolver",
@@ -833,6 +1400,24 @@
   },
   "state": {},
   "gates": {
+    "^valid-document": {
+      "id": "^valid-document",
+      "name": "^valid Document",
+      "symbol": "^^valid-document",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Document passes full Zod schema validation",
+      "related": []
+    },
+    "^valid-delta": {
+      "id": "^valid-delta",
+      "name": "^valid Delta",
+      "symbol": "^^valid-delta",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Delta references valid property and has valid frame range",
+      "related": []
+    },
     "^no-overlap": {
       "id": "^no-overlap",
       "name": "^no Overlap",
@@ -921,6 +1506,94 @@
     "#atelier-cli": {
       "category": "components",
       "id": "atelier-cli"
+    },
+    "##unit-types": {
+      "category": "components",
+      "id": "#unit-types"
+    },
+    "##coordinate-types": {
+      "category": "components",
+      "id": "#coordinate-types"
+    },
+    "##color-types": {
+      "category": "components",
+      "id": "#color-types"
+    },
+    "##shape-types": {
+      "category": "components",
+      "id": "#shape-types"
+    },
+    "##layer-types": {
+      "category": "components",
+      "id": "#layer-types"
+    },
+    "##easing-types": {
+      "category": "components",
+      "id": "#easing-types"
+    },
+    "##delta-types": {
+      "category": "components",
+      "id": "#delta-types"
+    },
+    "##state-types": {
+      "category": "components",
+      "id": "#state-types"
+    },
+    "##document-types": {
+      "category": "components",
+      "id": "#document-types"
+    },
+    "##shadow-types": {
+      "category": "components",
+      "id": "#shadow-types"
+    },
+    "##audio-types": {
+      "category": "components",
+      "id": "#audio-types"
+    },
+    "##asset-types": {
+      "category": "components",
+      "id": "#asset-types"
+    },
+    "##variable-types": {
+      "category": "components",
+      "id": "#variable-types"
+    },
+    "##interaction-types": {
+      "category": "components",
+      "id": "#interaction-types"
+    },
+    "##preset-types": {
+      "category": "components",
+      "id": "#preset-types"
+    },
+    "##svg-renderer": {
+      "category": "components",
+      "id": "#svg-renderer"
+    },
+    "##svg-shapes": {
+      "category": "components",
+      "id": "#svg-shapes"
+    },
+    "##svg-text": {
+      "category": "components",
+      "id": "#svg-text"
+    },
+    "##svg-gradients": {
+      "category": "components",
+      "id": "#svg-gradients"
+    },
+    "##svg-filters": {
+      "category": "components",
+      "id": "#svg-filters"
+    },
+    "##svg-clip": {
+      "category": "components",
+      "id": "#svg-clip"
+    },
+    "##svg-properties": {
+      "category": "components",
+      "id": "#svg-properties"
     },
     "#canvas-panel": {
       "category": "components",
@@ -1038,41 +1711,37 @@
       "category": "components",
       "id": "mcp-performance-tools"
     },
-    "##frame-resolver": {
+    "##lottie-exporter": {
       "category": "components",
-      "id": "#frame-resolver"
+      "id": "#lottie-exporter"
     },
-    "##delta-resolver": {
+    "##lottie-types": {
       "category": "components",
-      "id": "#delta-resolver"
+      "id": "#lottie-types"
     },
-    "##easing-resolver": {
+    "##lottie-map-layers": {
       "category": "components",
-      "id": "#easing-resolver"
+      "id": "#lottie-map-layers"
     },
-    "##document-builder": {
+    "##lottie-map-shapes": {
       "category": "components",
-      "id": "#document-builder"
+      "id": "#lottie-map-shapes"
     },
-    "##overlap-validator": {
+    "##lottie-map-keyframes": {
       "category": "components",
-      "id": "#overlap-validator"
+      "id": "#lottie-map-keyframes"
     },
-    "##unit-resolver": {
+    "##lottie-map-colors": {
       "category": "components",
-      "id": "#unit-resolver"
+      "id": "#lottie-map-colors"
     },
-    "##preset-resolver": {
+    "##lottie-map-easing": {
       "category": "components",
-      "id": "#preset-resolver"
+      "id": "#lottie-map-easing"
     },
-    "#state-machine": {
+    "##lottie-warnings": {
       "category": "components",
-      "id": "state-machine"
-    },
-    "#template-resolver": {
-      "category": "components",
-      "id": "template-resolver"
+      "id": "#lottie-warnings"
     },
     "#cli-validate": {
       "category": "components",
@@ -1110,6 +1779,22 @@
       "category": "components",
       "id": "cli-variables"
     },
+    "##easing-functions": {
+      "category": "components",
+      "id": "#easing-functions"
+    },
+    "##spring-solver": {
+      "category": "components",
+      "id": "#spring-solver"
+    },
+    "##lerp-functions": {
+      "category": "components",
+      "id": "#lerp-functions"
+    },
+    "##color-math": {
+      "category": "components",
+      "id": "#color-math"
+    },
     "#render-frame": {
       "category": "components",
       "id": "render-frame"
@@ -1130,6 +1815,78 @@
       "category": "components",
       "id": "canvas-styles"
     },
+    "##document-schema": {
+      "category": "components",
+      "id": "#document-schema"
+    },
+    "##layer-schema": {
+      "category": "components",
+      "id": "#layer-schema"
+    },
+    "##delta-schema": {
+      "category": "components",
+      "id": "#delta-schema"
+    },
+    "##validation-functions": {
+      "category": "components",
+      "id": "#validation-functions"
+    },
+    "##yaml-parser": {
+      "category": "components",
+      "id": "#yaml-parser"
+    },
+    "##frame-resolver": {
+      "category": "components",
+      "id": "#frame-resolver"
+    },
+    "##delta-resolver": {
+      "category": "components",
+      "id": "#delta-resolver"
+    },
+    "##easing-resolver": {
+      "category": "components",
+      "id": "#easing-resolver"
+    },
+    "##document-builder": {
+      "category": "components",
+      "id": "#document-builder"
+    },
+    "##overlap-validator": {
+      "category": "components",
+      "id": "#overlap-validator"
+    },
+    "##unit-resolver": {
+      "category": "components",
+      "id": "#unit-resolver"
+    },
+    "##preset-resolver": {
+      "category": "components",
+      "id": "#preset-resolver"
+    },
+    "##state-machine": {
+      "category": "components",
+      "id": "#state-machine"
+    },
+    "##template-resolver": {
+      "category": "components",
+      "id": "#template-resolver"
+    },
+    "##expression-evaluator": {
+      "category": "components",
+      "id": "#expression-evaluator"
+    },
+    "##audio-timing": {
+      "category": "components",
+      "id": "#audio-timing"
+    },
+    "^^valid-document": {
+      "category": "gates",
+      "id": "^valid-document"
+    },
+    "^^valid-delta": {
+      "category": "gates",
+      "id": "^valid-delta"
+    },
     "^^no-overlap": {
       "category": "gates",
       "id": "^no-overlap"
@@ -1137,6 +1894,54 @@
     "$$frame-resolution": {
       "category": "flows",
       "id": "$frame-resolution"
+    },
+    "#svg-shapes": {
+      "category": "components",
+      "id": "svg-shapes"
+    },
+    "#svg-text": {
+      "category": "components",
+      "id": "svg-text"
+    },
+    "#svg-gradients": {
+      "category": "components",
+      "id": "svg-gradients"
+    },
+    "#svg-filters": {
+      "category": "components",
+      "id": "svg-filters"
+    },
+    "#svg-clip": {
+      "category": "components",
+      "id": "svg-clip"
+    },
+    "#svg-properties": {
+      "category": "components",
+      "id": "svg-properties"
+    },
+    "#lottie-map-layers": {
+      "category": "components",
+      "id": "lottie-map-layers"
+    },
+    "#lottie-warnings": {
+      "category": "components",
+      "id": "lottie-warnings"
+    },
+    "#lottie-map-shapes": {
+      "category": "components",
+      "id": "lottie-map-shapes"
+    },
+    "#lottie-map-keyframes": {
+      "category": "components",
+      "id": "lottie-map-keyframes"
+    },
+    "#lottie-map-colors": {
+      "category": "components",
+      "id": "lottie-map-colors"
+    },
+    "#lottie-map-easing": {
+      "category": "components",
+      "id": "lottie-map-easing"
     },
     "#frame-resolver": {
       "category": "components",

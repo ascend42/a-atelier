@@ -5,42 +5,66 @@ context:
   - This is a type-only package — every export is a type or interface
   - No runtime code, no classes, no functions
   - All other @atelier packages depend on these types
-  - 44 types across 12 modules
+  - 60+ types across 16 modules
 
 components:
-  #unit-types:
+  '#unit-types':
     description: Pixel, Percentage, and UnitValue type definitions
     file: src/units.ts
     tags: [types, units]
-  #coordinate-types:
+  '#coordinate-types':
     description: Frame, Bounds, AnchorPoint spatial types
     file: src/coordinates.ts
     tags: [types, coordinates]
-  #color-types:
+  '#color-types':
     description: RGBAColor, HSLAColor, HexColor, Color union type
     file: src/color.ts
     tags: [types, color]
-  #shape-types:
+  '#shape-types':
     description: Shape primitives (rect, ellipse, path), fill, stroke, text style
     file: src/shape.ts
     tags: [types, shapes, visual]
-  #layer-types:
+  '#layer-types':
     description: Layer, Visual union (shape, text, image, group, ref)
     file: src/layer.ts
     tags: [types, layers]
-  #easing-types:
+  '#easing-types':
     description: Easing definitions — linear, cubic-bezier, spring, step, presets
     file: src/easing.ts
     tags: [types, easing]
-  #delta-types:
+  '#delta-types':
     description: Delta (animation instruction), AnimatableProperty, FrameRange
     file: src/delta.ts
     tags: [types, animation]
-  #state-types:
+  '#state-types':
     description: State (named choreography with duration and deltas)
     file: src/state.ts
     tags: [types, state]
-  #document-types:
+  '#document-types':
     description: AtelierDocument root type, Canvas config
     file: src/document.ts
     tags: [types, document]
+  '#shadow-types':
+    description: Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)
+    file: src/shadow.ts
+    tags: [types, effects]
+  '#audio-types':
+    description: Audio type — audio track config (src, offset, volume, loop, startFrame)
+    file: src/audio.ts
+    tags: [types, audio]
+  '#asset-types':
+    description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio)
+    file: src/asset.ts
+    tags: [types, assets]
+  '#variable-types':
+    description: VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)
+    file: src/variable.ts
+    tags: [types, variables, templates]
+  '#interaction-types':
+    description: TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity
+    file: src/interaction.ts
+    tags: [types, interactions, events]
+  '#preset-types':
+    description: PresetDelta, Preset — reusable animation delta templates
+    file: src/preset.ts
+    tags: [types, presets]

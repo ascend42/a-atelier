@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.25.1] — 2026-02-21
+
+### Fixed
+- 3 `.purpose` files with YAML syntax errors — `#`-prefixed component IDs in `packages/schema`, `packages/types`, and `packages/math` were parsed as YAML comments; now properly quoted
+- 2 unregistered components in `packages/core/.purpose` — `state-machine` and `template-resolver` now use `#` prefix convention
+- Root `.purpose` — MCP tool count updated from 27 to 52, CLI commands from 4 to 9, type count from 48 to 60+
+
+### Added
+- `packages/svg/.purpose` — 7 components (#svg-renderer, #svg-shapes, #svg-text, #svg-gradients, #svg-filters, #svg-clip, #svg-properties)
+- `packages/lottie/.purpose` — 8 components (#lottie-exporter, #lottie-types, #lottie-map-layers, #lottie-map-shapes, #lottie-map-keyframes, #lottie-map-colors, #lottie-map-easing, #lottie-warnings)
+- `packages/types/.purpose` — 6 missing type components (#shadow-types, #audio-types, #asset-types, #variable-types, #interaction-types, #preset-types)
+- `packages/core/.purpose` — 2 missing engine components (#expression-evaluator, #audio-timing)
+- Paradigm symbol count: 74 → 129 (125 components, 3 gates, 1 flow) across 11 .purpose files
+
 ## [0.25.0] — 2026-02-21
 
 ### Added

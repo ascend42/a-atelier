@@ -3,8 +3,8 @@ description: "AI-native animation engine — declarative YAML format (.atelier f
 context:
   - "Monorepo: 11 packages (types, math, schema, core, canvas, svg, lottie, react, studio, mcp, cli) + 2 apps (playground, showcase)"
   - "Build order: types + math (parallel) → schema → core → canvas → svg + lottie + react + studio + mcp + cli (parallel)"
-  - "Primary AI interface: @atelier/mcp exposes 27 tools for structured animation authoring"
-  - "27 animatable properties, 5 easing types, state machines (hierarchical + transitions), templates, presets"
+  - "Primary AI interface: @atelier/mcp exposes 52 tools across 16 tool groups for structured animation authoring"
+  - "27 animatable properties, 5 easing types, state machines (hierarchical + transitions), templates, presets, assets, variables, interactions, refs"
   - "Blend modes (16 Canvas 2D composite operations), motion path animation, clip paths, gradient animation, audio sync"
   - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio), CLI (FFmpeg MP4/GIF), SVG string, Lottie JSON, React component"
 features:
@@ -32,7 +32,7 @@ features:
     components:
       - "#atelier-react"
   ai-authoring:
-    description: "MCP server with 27 tools for AI agents to create, edit, preview, and export animations"
+    description: "MCP server with 52 tools across 16 groups for AI agents to create, edit, preview, export, and analyze animations"
     components:
       - "#atelier-mcp"
   studio:
@@ -40,12 +40,12 @@ features:
     components:
       - "#atelier-studio"
   cli:
-    description: "Command-line tool — validate, info, still, render (MP4/GIF via FFmpeg)"
+    description: "Command-line tool — validate, info, still, render, export-svg, export-lottie, assets, variables (9 commands)"
     components:
       - "#atelier-cli"
 components:
   atelier-types:
-    description: "48 TypeScript type definitions for the .atelier format (zero runtime) — includes StateTransitionConfig, hierarchical parent state support"
+    description: "60+ TypeScript type definitions across 16 modules — layers, deltas, easing, states, shadows, audio, assets, variables, interactions, presets"
     file: packages/types/src/index.ts
   atelier-math:
     description: "Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation"
@@ -54,7 +54,7 @@ components:
     description: "Zod validation schemas + YAML parse/serialize with AI-readable errors"
     file: packages/schema/src/index.ts
   atelier-core:
-    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing"
+    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing, unit resolver"
     file: packages/core/src/index.ts
   atelier-canvas:
     description: "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim"
@@ -72,8 +72,8 @@ components:
     description: "Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points"
     file: packages/studio/src/index.ts
   atelier-mcp:
-    description: "MCP server — 27 tools for AI animation authoring"
+    description: "MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)"
     file: packages/mcp/src/index.ts
   atelier-cli:
-    description: "CLI tool — validate, info, still, render commands"
+    description: "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables"
     file: packages/cli/src/index.ts

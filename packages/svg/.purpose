@@ -1,0 +1,39 @@
+version: 1.0.0
+name: "@atelier/svg"
+description: SVG renderer — renders any resolved frame as a complete SVG string
+context:
+  - Main entry is renderFrameSVG() which orchestrates all sub-renderers
+  - Helper modules handle specific SVG domains (shapes, text, gradients, filters, clip paths)
+  - Deterministic ID counters reset before each render for consistent output
+  - Depends on @atelier/types, @atelier/core, @atelier/canvas
+
+components:
+  '#svg-renderer':
+    description: renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms
+    file: src/render-svg.ts
+    tags: [renderer, svg, entry-point]
+    components: ["#svg-shapes", "#svg-text", "#svg-gradients", "#svg-filters", "#svg-clip", "#svg-properties"]
+  '#svg-shapes':
+    description: renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays
+    file: src/svg-shapes.ts
+    tags: [renderer, shapes]
+  '#svg-text':
+    description: renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing
+    file: src/svg-text.ts
+    tags: [renderer, text]
+  '#svg-gradients':
+    description: buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs
+    file: src/svg-gradients.ts
+    tags: [renderer, gradients, color]
+  '#svg-filters':
+    description: buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color
+    file: src/svg-filters.ts
+    tags: [renderer, filters, shadow]
+  '#svg-clip':
+    description: buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths
+    file: src/svg-clip.ts
+    tags: [renderer, clip-path]
+  '#svg-properties':
+    description: buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping
+    file: src/svg-properties.ts
+    tags: [renderer, utilities]
