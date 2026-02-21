@@ -38,6 +38,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         "difference", "exclusion", "hue", "saturation", "color", "luminosity",
       ]).nullable().describe("Blend mode to set, or null to clear"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, blendMode }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -70,6 +71,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         offsetY: z.number().optional().describe("Vertical offset in pixels"),
       }).nullable().describe("Shadow definition, or null to remove"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, shadow }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -107,6 +109,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         autoRotateOffset: z.number().optional().describe("Rotation offset in degrees when autoRotate is enabled"),
       }).nullable().describe("Motion path definition, or null to remove"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, motionPath }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -147,6 +150,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         closed: z.boolean().optional().describe("Whether path is closed (path only)"),
       }).nullable().describe("Clip path shape, or null to remove"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, clipPath }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -196,6 +200,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       fill: z.record(z.unknown()).optional().describe("New fill definition (shape layers only)"),
       stroke: z.record(z.unknown()).optional().describe("New stroke definition (shape layers only)"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, content, style, src, assetId, shape, fill, stroke }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

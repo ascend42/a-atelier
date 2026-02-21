@@ -75,6 +75,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       tags: z.array(z.string()).optional().describe("Tags"),
       deltaId: z.string().optional().describe("Custom delta ID"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, layer, property, range, from, to, easing, description, tags, deltaId }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -134,6 +135,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       description: z.string().optional().describe("New description"),
       tags: z.array(z.string()).optional().describe("New tags"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, deltaIndex, layer, property, range, from, to, easing, description, tags }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -184,6 +186,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       stateName: z.string().describe("State name"),
       deltaIndex: z.number().int().min(0).describe("Delta index to remove"),
     },
+    { readOnlyHint: false, destructiveHint: true },
     async ({ id, stateName, deltaIndex }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -221,6 +224,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       startFrame: z.number().int().min(0).optional().describe("Start frame (default: 0)"),
       duration: z.number().positive().int().optional().describe("Duration for preset (default: state duration)"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, presetName, layerId, startFrame, duration }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

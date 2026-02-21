@@ -56,6 +56,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         startFrame: z.number().int().min(0).optional().describe("Frame to start playing (default: 0)"),
       }).nullable().describe("Audio configuration, or null to remove"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, audio }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -87,6 +88,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         easing: EasingInputSchema.optional(),
       }).nullable().describe("Transition config, or null to remove"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, targetState, transition }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -130,6 +132,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       stateName: z.string().describe("State name"),
       parent: z.string().nullable().describe("Parent state name, or null to clear"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, parent }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

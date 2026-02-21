@@ -35,6 +35,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       description: z.string().optional().describe("Animation description"),
       tags: z.array(z.string()).optional().describe("Tags for categorization"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ name, width, height, fps, background, description, tags }) => {
       const doc: AtelierDocument = {
         version: "1.0",
@@ -63,6 +64,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -95,6 +97,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       id: z.string().optional().describe("Custom document ID (auto-generated if omitted)"),
       yaml: z.string().describe("YAML string representing an Atelier document"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, yaml }) => {
       const parsed = parseAtelier(yaml);
       if (!parsed.success) {
@@ -113,6 +116,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -127,6 +131,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     "atelier_list",
     "List all Atelier documents in the store",
     {},
+    { readOnlyHint: true, destructiveHint: false },
     async () => {
       const docs = store.list();
       return ok({ documents: docs, count: docs.length });

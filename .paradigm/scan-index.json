@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T15:31:30.405Z",
+    "generatedAt": "2026-02-21T22:14:00.472Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 6,
@@ -369,96 +369,6 @@
       "visualTags": [],
       "related": []
     },
-    "#frame-resolver": {
-      "id": "#frame-resolver",
-      "name": "#frame Resolver",
-      "symbol": "##frame-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Given document + frame number, computes resolved state of all layers",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-resolver": {
-      "id": "#delta-resolver",
-      "name": "#delta Resolver",
-      "symbol": "##delta-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Per-property interpolation — resolves delta value at a given frame",
-      "visualTags": [],
-      "related": []
-    },
-    "#easing-resolver": {
-      "id": "#easing-resolver",
-      "name": "#easing Resolver",
-      "symbol": "##easing-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Bridges Easing type definitions to executable math functions",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-builder": {
-      "id": "#document-builder",
-      "name": "#document Builder",
-      "symbol": "##document-builder",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Fluent API for constructing AtelierDocument objects with validation",
-      "visualTags": [],
-      "related": []
-    },
-    "#overlap-validator": {
-      "id": "#overlap-validator",
-      "name": "#overlap Validator",
-      "symbol": "##overlap-validator",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Validates no overlapping deltas exist on same layer+property",
-      "visualTags": [],
-      "related": []
-    },
-    "#unit-resolver": {
-      "id": "#unit-resolver",
-      "name": "#unit Resolver",
-      "symbol": "##unit-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-resolver": {
-      "id": "#preset-resolver",
-      "name": "#preset Resolver",
-      "symbol": "##preset-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Expands preset definitions into concrete deltas for a layer",
-      "visualTags": [],
-      "related": []
-    },
-    "state-machine": {
-      "id": "state-machine",
-      "name": "State Machine",
-      "symbol": "#state-machine",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
-      "visualTags": [],
-      "related": []
-    },
-    "template-resolver": {
-      "id": "template-resolver",
-      "name": "Template Resolver",
-      "symbol": "#template-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
-      "visualTags": [],
-      "related": []
-    },
     "mcp-store": {
       "id": "mcp-store",
       "name": "Mcp Store",
@@ -546,6 +456,126 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
       "description": "Template MCP tools — instantiate_template, find_variables",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-layer-effect-tools": {
+      "id": "mcp-layer-effect-tools",
+      "name": "Mcp Layer Effect Tools",
+      "symbol": "#mcp-layer-effect-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer effect tools — set_blend_mode, set_shadow, set_motion_path, set_clip_path, edit_visual",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-state-config-tools": {
+      "id": "mcp-state-config-tools",
+      "name": "Mcp State Config Tools",
+      "symbol": "#mcp-state-config-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-export-tools": {
+      "id": "mcp-export-tools",
+      "name": "Mcp Export Tools",
+      "symbol": "#mcp-export-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
+      "visualTags": [],
+      "related": []
+    },
+    "#frame-resolver": {
+      "id": "#frame-resolver",
+      "name": "#frame Resolver",
+      "symbol": "##frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Given document + frame number, computes resolved state of all layers",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-resolver": {
+      "id": "#delta-resolver",
+      "name": "#delta Resolver",
+      "symbol": "##delta-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-resolver": {
+      "id": "#easing-resolver",
+      "name": "#easing Resolver",
+      "symbol": "##easing-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Bridges Easing type definitions to executable math functions",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-builder": {
+      "id": "#document-builder",
+      "name": "#document Builder",
+      "symbol": "##document-builder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "visualTags": [],
+      "related": []
+    },
+    "#overlap-validator": {
+      "id": "#overlap-validator",
+      "name": "#overlap Validator",
+      "symbol": "##overlap-validator",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Validates no overlapping deltas exist on same layer+property",
+      "visualTags": [],
+      "related": []
+    },
+    "#unit-resolver": {
+      "id": "#unit-resolver",
+      "name": "#unit Resolver",
+      "symbol": "##unit-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-resolver": {
+      "id": "#preset-resolver",
+      "name": "#preset Resolver",
+      "symbol": "##preset-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Expands preset definitions into concrete deltas for a layer",
+      "visualTags": [],
+      "related": []
+    },
+    "state-machine": {
+      "id": "state-machine",
+      "name": "State Machine",
+      "symbol": "#state-machine",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
+      "visualTags": [],
+      "related": []
+    },
+    "template-resolver": {
+      "id": "template-resolver",
+      "name": "Template Resolver",
+      "symbol": "#template-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
       "visualTags": [],
       "related": []
     },
@@ -651,6 +681,26 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
       "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-export-svg": {
+      "id": "cli-export-svg",
+      "name": "Cli Export Svg",
+      "symbol": "#cli-export-svg",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Export SVG command — renders a frame as SVG via @atelier/svg",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-export-lottie": {
+      "id": "cli-export-lottie",
+      "name": "Cli Export Lottie",
+      "symbol": "#cli-export-lottie",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Export Lottie command — exports document to Lottie JSON via @atelier/lottie",
       "visualTags": [],
       "related": []
     },
@@ -848,42 +898,6 @@
       "category": "components",
       "id": "drag-reorder"
     },
-    "##frame-resolver": {
-      "category": "components",
-      "id": "#frame-resolver"
-    },
-    "##delta-resolver": {
-      "category": "components",
-      "id": "#delta-resolver"
-    },
-    "##easing-resolver": {
-      "category": "components",
-      "id": "#easing-resolver"
-    },
-    "##document-builder": {
-      "category": "components",
-      "id": "#document-builder"
-    },
-    "##overlap-validator": {
-      "category": "components",
-      "id": "#overlap-validator"
-    },
-    "##unit-resolver": {
-      "category": "components",
-      "id": "#unit-resolver"
-    },
-    "##preset-resolver": {
-      "category": "components",
-      "id": "#preset-resolver"
-    },
-    "#state-machine": {
-      "category": "components",
-      "id": "state-machine"
-    },
-    "#template-resolver": {
-      "category": "components",
-      "id": "template-resolver"
-    },
     "#mcp-store": {
       "category": "components",
       "id": "mcp-store"
@@ -919,6 +933,54 @@
     "#mcp-template-tools": {
       "category": "components",
       "id": "mcp-template-tools"
+    },
+    "#mcp-layer-effect-tools": {
+      "category": "components",
+      "id": "mcp-layer-effect-tools"
+    },
+    "#mcp-state-config-tools": {
+      "category": "components",
+      "id": "mcp-state-config-tools"
+    },
+    "#mcp-export-tools": {
+      "category": "components",
+      "id": "mcp-export-tools"
+    },
+    "##frame-resolver": {
+      "category": "components",
+      "id": "#frame-resolver"
+    },
+    "##delta-resolver": {
+      "category": "components",
+      "id": "#delta-resolver"
+    },
+    "##easing-resolver": {
+      "category": "components",
+      "id": "#easing-resolver"
+    },
+    "##document-builder": {
+      "category": "components",
+      "id": "#document-builder"
+    },
+    "##overlap-validator": {
+      "category": "components",
+      "id": "#overlap-validator"
+    },
+    "##unit-resolver": {
+      "category": "components",
+      "id": "#unit-resolver"
+    },
+    "##preset-resolver": {
+      "category": "components",
+      "id": "#preset-resolver"
+    },
+    "#state-machine": {
+      "category": "components",
+      "id": "state-machine"
+    },
+    "#template-resolver": {
+      "category": "components",
+      "id": "template-resolver"
     },
     "#render-frame": {
       "category": "components",
@@ -959,6 +1021,14 @@
     "#render-pipeline": {
       "category": "components",
       "id": "render-pipeline"
+    },
+    "#cli-export-svg": {
+      "category": "components",
+      "id": "cli-export-svg"
+    },
+    "#cli-export-lottie": {
+      "category": "components",
+      "id": "cli-export-lottie"
     },
     "^^no-overlap": {
       "category": "gates",

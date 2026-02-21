@@ -31,6 +31,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       description: z.string().optional().describe("State description"),
       tags: z.array(z.string()).optional().describe("Tags"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, duration, description, tags }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -62,6 +63,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       description: z.string().optional().describe("New description"),
       tags: z.array(z.string()).optional().describe("New tags"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, duration, description, tags }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -86,6 +88,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       id: z.string().describe("Document ID"),
       stateName: z.string().describe("State name to remove"),
     },
+    { readOnlyHint: false, destructiveHint: true },
     async ({ id, stateName }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -107,6 +110,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

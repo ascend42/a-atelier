@@ -34,6 +34,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       viewBox: z.boolean().optional().describe("Include viewBox attribute (default: true)"),
       indent: z.number().int().min(0).optional().describe("Indent size in spaces (default: 2)"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id, stateName, frame, xmlDeclaration, viewBox, indent }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -70,6 +71,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       id: z.string().describe("Document ID"),
       stateName: z.string().optional().describe("State to export (defaults to first state)"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id, stateName }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

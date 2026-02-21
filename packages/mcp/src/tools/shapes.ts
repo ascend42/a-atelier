@@ -42,6 +42,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         closed: z.boolean().optional().describe("Whether path is closed (path only)"),
       }).describe("Shape definition"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, shape }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -78,6 +79,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         })).optional().describe("Gradient stops"),
       }).describe("Fill definition"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, fill }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -107,6 +109,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         lineJoin: z.enum(["miter", "round", "bevel"]).optional().describe("Line join style"),
       }).describe("Stroke definition"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, stroke }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

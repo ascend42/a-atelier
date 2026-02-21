@@ -76,6 +76,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       tags: z.array(z.string()).optional().describe("Tags"),
       deltas: z.array(PresetDeltaSchema).min(1).describe("Array of preset delta definitions"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, presetName, description, tags, deltas }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -102,6 +103,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

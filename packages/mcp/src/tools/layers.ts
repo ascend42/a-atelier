@@ -67,6 +67,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       scale: z.object({ x: z.number(), y: z.number() }).optional().describe("Scale factors"),
       visible: z.boolean().optional().describe("Whether layer is visible"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, visual, x, y, width, height, description, tags, opacity, rotation, parentId, anchorPoint, scale, visible }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -122,6 +123,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       scale: z.object({ x: z.number(), y: z.number() }).optional().describe("New scale"),
       visible: z.boolean().optional().describe("New visibility"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, x, y, width, height, description, tags, opacity, rotation, parentId, anchorPoint, scale, visible }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -162,6 +164,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       id: z.string().describe("Document ID"),
       layerId: z.string().describe("Layer ID to remove"),
     },
+    { readOnlyHint: false, destructiveHint: true },
     async ({ id, layerId }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -197,6 +200,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -229,6 +233,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       layerId: z.string().describe("Layer ID to move"),
       position: z.number().int().min(0).describe("Target position index (0-based)"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, position }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

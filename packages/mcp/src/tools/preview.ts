@@ -29,6 +29,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -69,6 +70,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       stateName: z.string().describe("State name to preview"),
       frame: z.number().int().min(0).describe("Frame number to resolve"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id, stateName, frame }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
