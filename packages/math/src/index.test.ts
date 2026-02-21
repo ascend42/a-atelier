@@ -17,6 +17,7 @@ import {
   rgbaToHsla,
   hslaToRgba,
   lerpHsla,
+  evaluatePathAtProgress,
 } from "./index.js";
 
 describe("easing", () => {
@@ -155,5 +156,73 @@ describe("color", () => {
     const mid = lerpHsla(a, b, 0.5);
     // Should go through 0/360, not through 180
     expect(mid.h).toBeCloseTo(0, 0);
+  });
+});
+
+describe("path interpolation", () => {
+  it("returns start point at progress 0", () => {
+    const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }];
+    const pos = evaluatePathAtProgress(points, 0);
+    expect(pos.x).toBeCloseTo(0);
+    expect(pos.y).toBeCloseTo(0);
+  });
+
+  it("returns end point at progress 1", () => {
+    const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }];
+    const pos = evaluatePathAtProgress(points, 1);
+    expect(pos.x).toBeCloseTo(100);
+    expect(pos.y).toBeCloseTo(0);
+  });
+
+  it("returns midpoint at progress 0.5 for a straight line", () => {
+    const points = [{ x: 0, y: 0 }, { x: 200, y: 0 }];
+    const pos = evaluatePathAtProgress(points, 0.5);
+    expect(pos.x).toBeCloseTo(100, 0);
+    expect(pos.y).toBeCloseTo(0);
+  });
+
+  it("computes tangent angle for horizontal line", () => {
+    const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }];
+    const pos = evaluatePathAtProgress(points, 0.5);
+    expect(pos.angle).toBeCloseTo(0);
+  });
+
+  it("computes tangent angle for vertical line", () => {
+    const points = [{ x: 0, y: 0 }, { x: 0, y: 100 }];
+    const pos = evaluatePathAtProgress(points, 0.5);
+    expect(pos.angle).toBeCloseTo(90);
+  });
+
+  it("handles bezier curves with control points", () => {
+    const points = [
+      { x: 0, y: 0, out: { x: 50, y: 0 } },
+      { x: 100, y: 100, in: { x: -50, y: 0 } },
+    ];
+    const mid = evaluatePathAtProgress(points, 0.5);
+    // Should be somewhere between start and end, not on the straight line
+    expect(mid.x).toBeGreaterThan(0);
+    expect(mid.x).toBeLessThan(100);
+    expect(mid.y).toBeGreaterThan(0);
+    expect(mid.y).toBeLessThan(100);
+  });
+
+  it("handles multi-segment paths", () => {
+    const points = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+    ];
+    // At progress 0.5, should be at the second point (halfway through total length)
+    const pos = evaluatePathAtProgress(points, 0.5);
+    expect(pos.x).toBeCloseTo(100, 0);
+    expect(pos.y).toBeCloseTo(0, 0);
+  });
+
+  it("clamps progress outside 0-1 range", () => {
+    const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }];
+    const before = evaluatePathAtProgress(points, -1);
+    expect(before.x).toBeCloseTo(0);
+    const after = evaluatePathAtProgress(points, 2);
+    expect(after.x).toBeCloseTo(100);
   });
 });

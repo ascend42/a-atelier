@@ -24,6 +24,11 @@ export const AnimatablePropertySchema = z.enum([
   "shadow.blur",
   "shadow.offsetX",
   "shadow.offsetY",
+  "motionPath.progress",
+  "visual.fill.angle",
+  "visual.fill.center.x",
+  "visual.fill.center.y",
+  "visual.fill.radius",
 ]);
 
 export const FrameRangeSchema = z.tuple([

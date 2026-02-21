@@ -25,7 +25,14 @@ const AnimatablePropertyEnum = z.enum([
   "anchorPoint.x", "anchorPoint.y",
   "visual.shape.cornerRadius", "visual.fill.color",
   "visual.stroke.color", "visual.stroke.width",
+  "visual.stroke.start", "visual.stroke.end",
   "visual.style.fontSize", "visual.style.color",
+  "shadow.color", "shadow.blur",
+  "shadow.offsetX", "shadow.offsetY",
+  "motionPath.progress",
+  "visual.fill.angle",
+  "visual.fill.center.x", "visual.fill.center.y",
+  "visual.fill.radius",
 ]);
 
 const EasingInputSchema = z.union([

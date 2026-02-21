@@ -1,4 +1,4 @@
-import type { AtelierDocument, ImageVisual } from "@atelier/types";
+import type { AtelierDocument, ImageVisual, Shape } from "@atelier/types";
 import type { ResolvedFrame } from "@atelier/core";
 import type { RenderContext } from "./canvas-types.js";
 import { buildEffectiveLayer, type EffectiveLayer } from "./apply-properties.js";
@@ -59,16 +59,25 @@ export function renderFrame(
 
     // Apply transforms
     ctx.globalAlpha = eff.opacity;
+
+    // Apply blend mode
+    if (eff.blendMode !== "normal") {
+      ctx.globalCompositeOperation = blendModeToComposite(eff.blendMode);
+    }
+
     ctx.translate(eff.x, eff.y);
 
     // Apply anchor-relative transforms
     const anchorPixelX = eff.anchorX * eff.width;
     const anchorPixelY = eff.anchorY * eff.height;
 
-    if (eff.rotation !== 0 || eff.scaleX !== 1 || eff.scaleY !== 1) {
+    // Combine explicit rotation with motion path auto-rotation
+    const totalRotation = eff.rotation + eff.motionPathAngle;
+
+    if (totalRotation !== 0 || eff.scaleX !== 1 || eff.scaleY !== 1) {
       ctx.translate(anchorPixelX, anchorPixelY);
-      if (eff.rotation !== 0) {
-        ctx.rotate((eff.rotation * Math.PI) / 180);
+      if (totalRotation !== 0) {
+        ctx.rotate((totalRotation * Math.PI) / 180);
       }
       if (eff.scaleX !== 1 || eff.scaleY !== 1) {
         ctx.scale(eff.scaleX, eff.scaleY);
@@ -82,6 +91,11 @@ export function renderFrame(
       ctx.shadowBlur = eff.shadow.blur;
       ctx.shadowOffsetX = eff.shadow.offsetX;
       ctx.shadowOffsetY = eff.shadow.offsetY;
+    }
+
+    // Apply clip path if present
+    if (layer.clipPath) {
+      applyClipPath(ctx, layer.clipPath, eff.width, eff.height);
     }
 
     // Dispatch to type-specific renderer
@@ -105,6 +119,70 @@ export function renderFrame(
 
     ctx.restore();
   }
+}
+
+/** Apply a shape as a clipping region */
+function applyClipPath(ctx: RenderContext, shape: Shape, width: number, height: number): void {
+  ctx.beginPath();
+  switch (shape.type) {
+    case "rect":
+      if (shape.cornerRadius && ctx.roundRect) {
+        ctx.roundRect(0, 0, width, height, shape.cornerRadius);
+      } else {
+        // Manual rect path for clipping (fillRect doesn't create a path)
+        ctx.moveTo(0, 0);
+        ctx.lineTo(width, 0);
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+      }
+      break;
+    case "ellipse":
+      ctx.ellipse(width / 2, height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+      break;
+    case "path":
+      if (shape.points.length >= 2) {
+        ctx.moveTo(shape.points[0].x, shape.points[0].y);
+        for (let i = 1; i < shape.points.length; i++) {
+          const prev = shape.points[i - 1];
+          const curr = shape.points[i];
+          if (prev.out && curr.in) {
+            ctx.bezierCurveTo(
+              prev.x + prev.out.x, prev.y + prev.out.y,
+              curr.x + curr.in.x, curr.y + curr.in.y,
+              curr.x, curr.y,
+            );
+          } else {
+            ctx.lineTo(curr.x, curr.y);
+          }
+        }
+        if (shape.closed) ctx.closePath();
+      }
+      break;
+  }
+  ctx.clip();
+}
+
+/** Map Atelier blend mode names to Canvas 2D globalCompositeOperation values */
+function blendModeToComposite(mode: string): string {
+  const map: Record<string, string> = {
+    "multiply": "multiply",
+    "screen": "screen",
+    "overlay": "overlay",
+    "darken": "darken",
+    "lighten": "lighten",
+    "color-dodge": "color-dodge",
+    "color-burn": "color-burn",
+    "hard-light": "hard-light",
+    "soft-light": "soft-light",
+    "difference": "difference",
+    "exclusion": "exclusion",
+    "hue": "hue",
+    "saturation": "saturation",
+    "color": "color",
+    "luminosity": "luminosity",
+  };
+  return map[mode] ?? "source-over";
 }
 
 /**

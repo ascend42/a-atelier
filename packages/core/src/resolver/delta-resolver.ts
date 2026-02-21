@@ -1,6 +1,7 @@
 import type { Delta, FrameRange } from "@atelier/types";
 import { lerp, clamp, hexToRgba, lerpRgba, rgbaToHex } from "@atelier/math";
 import { resolveEasing } from "./easing-resolver.js";
+import { isExpression, evaluateExpression, type ExpressionContext } from "../expressions/expression-evaluator.js";
 
 /**
  * Check if a frame is within a delta's range (inclusive).
@@ -22,6 +23,9 @@ export function computeProgress(frame: number, range: FrameRange): number {
  * Resolve a single delta's value at a given frame.
  * Returns undefined if the frame is outside the delta's range.
  * Returns the interpolated value if within range.
+ *
+ * If `from` or `to` is an expression object `{ expr: "..." }`,
+ * it is evaluated with the current animation context before interpolation.
  */
 export function resolveDeltaValue(delta: Delta, frame: number): unknown | undefined {
   if (!isFrameInRange(frame, delta.range)) {
@@ -32,7 +36,22 @@ export function resolveDeltaValue(delta: Delta, frame: number): unknown | undefi
   const easingFn = resolveEasing(delta.easing);
   const easedProgress = easingFn(progress);
 
-  return interpolateValue(delta.from, delta.to, easedProgress);
+  const exprCtx: ExpressionContext = {
+    t: easedProgress,
+    progress,
+    frame,
+    duration: delta.range[1] - delta.range[0],
+  };
+
+  const from = isExpression(delta.from)
+    ? evaluateExpression(delta.from.expr, exprCtx)
+    : delta.from;
+
+  const to = isExpression(delta.to)
+    ? evaluateExpression(delta.to.expr, exprCtx)
+    : delta.to;
+
+  return interpolateValue(from, to, easedProgress);
 }
 
 /**
@@ -89,5 +108,17 @@ export function resolvePropertyAtFrame(
     }
   }
 
-  return lastCompleted?.to;
+  if (!lastCompleted) return undefined;
+
+  // If the held `to` value is an expression, evaluate at t=1
+  if (isExpression(lastCompleted.to)) {
+    return evaluateExpression(lastCompleted.to.expr, {
+      t: 1,
+      progress: 1,
+      frame,
+      duration: lastCompleted.range[1] - lastCompleted.range[0],
+    });
+  }
+
+  return lastCompleted.to;
 }

@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.18.0] — 2026-02-20
+
+### Added
+- `@atelier/types` — `BlendMode` type (16 Canvas 2D composite operations: multiply, screen, overlay, darken, lighten, color-dodge, color-burn, hard-light, soft-light, difference, exclusion, hue, saturation, color, luminosity)
+- `@atelier/types` — `MotionPath` interface: path-based position animation with `points`, `closed`, `autoRotate`, `autoRotateOffset`
+- `@atelier/types` — `motionPath.progress` animatable property (0–1, drives position along a motion path)
+- `@atelier/types` — `clipPath?: Shape` on Layer — restricts rendering to within a shape (rect, ellipse, path)
+- `@atelier/types` — 4 gradient animation properties: `visual.fill.angle`, `visual.fill.center.x`, `visual.fill.center.y`, `visual.fill.radius`
+- `@atelier/math` — `evaluatePathAtProgress()`: arc-length parameterized path interpolation with tangent angle computation, cubic bezier segment evaluation, multi-segment support
+- `@atelier/schema` — `BlendModeSchema`, `MotionPathSchema` validation schemas; `clipPath` on `LayerSchema`; all new animatable properties in `AnimatablePropertySchema`
+- `@atelier/canvas` — Blend mode rendering via `ctx.globalCompositeOperation`; motion path position override and auto-rotation in `buildEffectiveLayer`
+- `@atelier/canvas` — Clip path rendering: `applyClipPath()` supports rect (with rounded corners), ellipse, and bezier path clipping via `ctx.clip()`
+- `@atelier/canvas` — Gradient animation: animated `angle` on linear gradients, animated `center.x`/`center.y`/`radius` on radial gradients
+- `@atelier/canvas` — `globalCompositeOperation` and `clip()` added to `RenderContext` interface
+- `@atelier/mcp` — All new animatable properties in delta and preset `AnimatablePropertyEnum`
+- `examples/blend-modes.atelier` — Overlapping circles with multiply/screen blend modes
+- `examples/motion-path.atelier` — Circle following a figure-eight bezier curve with auto-rotate
+- `examples/clip-path.atelier` — Gradient rectangle clipped to ellipse with rotating angle
+- `examples/gradient-animation.atelier` — Radial gradient with animated center and radius
+- `@atelier/core` — Expression evaluator: safe recursive descent parser (no `eval()`), supports arithmetic (`+ - * / % **`), math functions (`sin cos abs floor ceil round sqrt min max pow clamp`), constants (`pi tau e`), context variables (`t progress frame duration`), comparisons (`< > <= >= == !=`), ternary (`cond ? a : b`)
+- `@atelier/core` — Expression integration: `{ expr: "..." }` object form in delta `from`/`to` values, evaluated per-frame with animation context
+- `examples/expression-wobble.atelier` — Sine/cosine oscillation using expression-driven position and scale
+- `@atelier/types` — `Audio` interface: `src`, `offset`, `volume`, `loop`, `startFrame` for audio tracks on states
+- `@atelier/types` — `audio` asset type added to `AssetType` union
+- `@atelier/types` — `audio?: Audio` field on `State` interface
+- `@atelier/schema` — `AudioSchema` validation (src required, volume 0–1, non-negative offset/startFrame)
+- `@atelier/schema` — `"audio"` added to `AssetTypeSchema`
+- `@atelier/core` — Audio timing utilities: `frameToTime()`, `timeToFrame()`, `computeAudioState()` (playback state at any frame), `computeAudioCues()` (start/end/loop cue points)
+- `examples/audio-sync.atelier` — Pulsing circle synchronized to a looping beat track
+- 8 new tests for path interpolation (math package): start/end/midpoint, tangent angles, bezier curves, multi-segment, clamping
+- 21 new tests for expression evaluator (core package): arithmetic, precedence, power, unary, variables, constants, functions, comparisons, ternary, error handling, delta integration
+- `@atelier/studio` — Easing curve editor: visual canvas-based easing curve graph with interactive cubic-bezier control point dragging
+- `@atelier/studio` — Easing picker upgrade: shows curve preview for all easing types, parameter inputs for cubic-bezier (x1/y1/x2/y2), spring (mass/stiffness/damping), and step (steps/position)
+- 12 new tests for audio timing (core package): frameToTime, timeToFrame, computeAudioState (basic, offset, volume, delayed start, loop, end), computeAudioCues
+
 ## [0.17.3] — 2026-02-20
 
 ### Changed

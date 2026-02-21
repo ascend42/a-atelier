@@ -11,3 +11,5 @@ export {
   lerpHsla,
 } from "./color.js";
 export type { RGBA, HSLA } from "./color.js";
+export { evaluatePathAtProgress } from "./path.js";
+export type { PathPoint2D, PathPosition } from "./path.js";

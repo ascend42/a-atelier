@@ -1,0 +1,72 @@
+version: "1.0"
+name: Gradient Animation
+description: Animated radial gradient center and radius
+canvas:
+  width: 600
+  height: 400
+  fps: 60
+  background: "#1a1a2e"
+
+layers:
+  - id: radial-bg
+    description: Radial gradient with animated center and radius
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill:
+        type: radial-gradient
+        center: { x: 300, y: 200 }
+        radius: 100
+        stops:
+          - { offset: 0, color: "#e94560" }
+          - { offset: 0.5, color: "#533483" }
+          - { offset: 1, color: "#0f3460" }
+    frame: { x: 0, y: 0 }
+    bounds: { width: 600, height: 400 }
+
+states:
+  main:
+    duration: 180
+    deltas:
+      - layer: radial-bg
+        property: visual.fill.center.x
+        range: [0, 89]
+        from: 150
+        to: 450
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.center.x
+        range: [90, 179]
+        from: 450
+        to: 150
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.center.y
+        range: [0, 59]
+        from: 100
+        to: 300
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.center.y
+        range: [60, 119]
+        from: 300
+        to: 100
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.center.y
+        range: [120, 179]
+        from: 100
+        to: 300
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.radius
+        range: [0, 89]
+        from: 100
+        to: 300
+        easing: ease-in-out
+      - layer: radial-bg
+        property: visual.fill.radius
+        range: [90, 179]
+        from: 300
+        to: 100
+        easing: ease-in-out
