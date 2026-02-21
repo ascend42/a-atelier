@@ -1,7 +1,7 @@
 {
   "sessionId": "smlvknx44",
   "startTime": 1771633198948,
-  "lastActivity": 1771716689055,
+  "lastActivity": 1771716692464,
   "breadcrumbs": [
     {
       "timestamp": 1771633254035,
@@ -208,6 +208,12 @@
       "tool": "paradigm_history_record",
       "symbol": "#mcp-ref-tools",
       "summary": "Recorded implement: M13: Added 2 MCP tools (atelier_set_ref, atelier_resolve_ref"
+    },
+    {
+      "timestamp": 1771716912213,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [

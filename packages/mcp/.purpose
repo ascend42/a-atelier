@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 48 tools
+description: MCP server — AI authoring interface for Atelier animations with 52 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -54,3 +54,6 @@ components:
   mcp-ref-tools:
     description: Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)
     file: src/tools/refs.ts
+  mcp-performance-tools:
+    description: Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)
+    file: src/tools/performance.ts

@@ -1,0 +1,10 @@
+id: L-2026-02-21-005
+type: session
+timestamp: '2026-02-21T23:35:17.564Z'
+author:
+  type: human
+  id: claude
+title: 'M14: Performance optimization tools'
+summary: Added 4 MCP tools (atelier_profile, atelier_diff_frames, atelier_batch_preview, atelier_complexity) for performance analysis. Frame profiling with timing, frame diff for change detection, batch preview for multi-frame resolution, complexity analyzer. 11 new tests, tool count 48→52, version 0.25.0.
+symbols_touched:
+  - '#mcp-performance-tools'

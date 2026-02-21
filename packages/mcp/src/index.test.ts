@@ -200,7 +200,12 @@ describe("MCP Tools", () => {
     // M13 tools
     expect(toolNames).toContain("atelier_set_ref");
     expect(toolNames).toContain("atelier_resolve_refs");
-    expect(toolNames).toHaveLength(48);
+    // M14 tools
+    expect(toolNames).toContain("atelier_profile");
+    expect(toolNames).toContain("atelier_diff_frames");
+    expect(toolNames).toContain("atelier_batch_preview");
+    expect(toolNames).toContain("atelier_complexity");
+    expect(toolNames).toHaveLength(52);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -2016,6 +2021,151 @@ describe("MCP Tools", () => {
       expect(result.success).toBe(true);
       expect(result.count).toBe(0);
       expect(result.resolvedCount).toBe(0);
+    });
+  });
+
+  // ── Performance tools ──────────────────────────────────────────
+
+  describe("performance tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Perf Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "intro", duration: 60 });
+      await callTool(client, "atelier_add_delta", {
+        id: docId, stateName: "intro", layer: "rect",
+        property: "opacity", range: [0, 30], from: 0, to: 1,
+      });
+      await callTool(client, "atelier_add_delta", {
+        id: docId, stateName: "intro", layer: "rect",
+        property: "rotation", range: [0, 60], from: 0, to: 360,
+      });
+    });
+
+    it("atelier_profile returns timing and counts", async () => {
+      const result = await callTool(client, "atelier_profile", {
+        id: docId, stateName: "intro", frame: 15,
+      });
+      expect(result.success).toBe(true);
+      expect(result.resolveTimeMs).toBeDefined();
+      expect(typeof result.resolveTimeMs).toBe("number");
+      expect(result.layerCount).toBe(1);
+      expect(result.deltaCount).toBe(2);
+      expect(result.propertiesComputed).toBeGreaterThan(0);
+      expect(result.layerDetails).toHaveLength(1);
+      expect(result.layerDetails[0].id).toBe("rect");
+    });
+
+    it("atelier_profile errors on nonexistent state", async () => {
+      const result = await callTool(client, "atelier_profile", {
+        id: docId, stateName: "nope", frame: 0,
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_diff_frames shows changed properties", async () => {
+      const result = await callTool(client, "atelier_diff_frames", {
+        id: docId, stateName: "intro", frameA: 0, frameB: 15,
+      });
+      expect(result.success).toBe(true);
+      expect(result.changeCount).toBeGreaterThan(0);
+      expect(result.changes.length).toBeGreaterThan(0);
+
+      const opacityChange = result.changes.find((c: any) => c.property === "opacity");
+      expect(opacityChange).toBeDefined();
+      expect(opacityChange.from).toBe(0);
+      expect(opacityChange.to).toBeCloseTo(0.5, 1);
+    });
+
+    it("atelier_diff_frames returns no changes for same frame", async () => {
+      const result = await callTool(client, "atelier_diff_frames", {
+        id: docId, stateName: "intro", frameA: 10, frameB: 10,
+      });
+      expect(result.success).toBe(true);
+      expect(result.changeCount).toBe(0);
+    });
+
+    it("atelier_diff_frames errors on nonexistent state", async () => {
+      const result = await callTool(client, "atelier_diff_frames", {
+        id: docId, stateName: "missing", frameA: 0, frameB: 10,
+      });
+      expect(result._isError).toBe(true);
+    });
+
+    it("atelier_batch_preview resolves multiple frames", async () => {
+      const result = await callTool(client, "atelier_batch_preview", {
+        id: docId, stateName: "intro", frames: [0, 15, 30],
+      });
+      expect(result.success).toBe(true);
+      expect(result.frameCount).toBe(3);
+      expect(result.frames).toHaveLength(3);
+      expect(result.totalTimeMs).toBeDefined();
+      expect(result.avgTimeMs).toBeDefined();
+
+      // Verify frame data
+      const frame0 = result.frames[0];
+      expect(frame0.frame).toBe(0);
+      expect(frame0.layers[0].computedProperties.opacity).toBe(0);
+
+      const frame30 = result.frames[2];
+      expect(frame30.frame).toBe(30);
+      expect(frame30.layers[0].computedProperties.opacity).toBe(1);
+    });
+
+    it("atelier_batch_preview errors on nonexistent state", async () => {
+      const result = await callTool(client, "atelier_batch_preview", {
+        id: docId, stateName: "ghost", frames: [0],
+      });
+      expect(result._isError).toBe(true);
+    });
+
+    it("atelier_complexity analyzes document", async () => {
+      const result = await callTool(client, "atelier_complexity", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.layerCount).toBe(1);
+      expect(result.stateCount).toBe(1);
+      expect(result.totalDeltas).toBe(2);
+      expect(result.totalExpressions).toBe(0);
+      expect(result.maxStateDuration).toBe(60);
+      expect(result.uniqueAnimatedProperties).toContain("opacity");
+      expect(result.uniqueAnimatedProperties).toContain("rotation");
+      expect(result.stateDetails).toHaveLength(1);
+      expect(result.stateDetails[0].name).toBe("intro");
+    });
+
+    it("atelier_complexity reports interactions and hierarchy", async () => {
+      // Add interaction
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "rect", interactionId: "click-it",
+        trigger: { type: "click" },
+        action: { type: "emit-signal", signal: "clicked" },
+      });
+
+      // Add child state
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "child", duration: 15 });
+      await callTool(client, "atelier_set_state_parent", { id: docId, stateName: "child", parent: "intro" });
+
+      const result = await callTool(client, "atelier_complexity", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.totalInteractions).toBe(1);
+      expect(result.maxHierarchyDepth).toBe(1);
+    });
+
+    it("atelier_complexity errors on nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_complexity", { id: "nonexistent" });
+      expect(result._isError).toBe(true);
     });
   });
 });

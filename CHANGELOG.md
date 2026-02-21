@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.25.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 4 new MCP tools (48→52 total) for performance analysis:
+  - `atelier_profile` — profile frame resolution with timing breakdown, layer/delta/expression counts
+  - `atelier_diff_frames` — compare two frames and return only changed properties per layer
+  - `atelier_batch_preview` — resolve multiple frames at once (max 60) with aggregate timing
+  - `atelier_complexity` — analyze document complexity: layers, deltas, expressions, interactions, hierarchy depth, animated properties
+- ~11 new MCP tests (profile/diff/batch/complexity with timing, hierarchy, interactions)
+
 ## [0.24.0] — 2026-02-21
 
 ### Added
