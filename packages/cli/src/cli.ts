@@ -8,6 +8,7 @@ import { stillCommand } from "./commands/still.js";
 import { renderCommand } from "./commands/render.js";
 import { exportSvgCommand } from "./commands/export-svg.js";
 import { exportLottieCommand } from "./commands/export-lottie.js";
+import { assetsCommand } from "./commands/assets.js";
 
 const program = new Command();
 
@@ -23,5 +24,6 @@ stillCommand(program);
 renderCommand(program);
 exportSvgCommand(program);
 exportLottieCommand(program);
+assetsCommand(program);
 
 program.parse();

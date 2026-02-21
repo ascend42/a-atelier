@@ -185,7 +185,11 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_set_state_parent");
     expect(toolNames).toContain("atelier_export_svg");
     expect(toolNames).toContain("atelier_export_lottie");
-    expect(toolNames).toHaveLength(37);
+    // M10 tools
+    expect(toolNames).toContain("atelier_add_asset");
+    expect(toolNames).toContain("atelier_list_assets");
+    expect(toolNames).toContain("atelier_remove_asset");
+    expect(toolNames).toHaveLength(40);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1438,6 +1442,150 @@ describe("MCP Tools", () => {
     it("atelier_export_lottie errors on nonexistent document", async () => {
       const result = await callTool(client, "atelier_export_lottie", {
         id: "nonexistent",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+  });
+
+  // ── Asset tools ──────────────────────────────────────────────
+
+  describe("asset tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Asset Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+    });
+
+    it("atelier_add_asset adds an image asset", async () => {
+      const result = await callTool(client, "atelier_add_asset", {
+        id: docId,
+        assetId: "hero-img",
+        type: "image",
+        src: "assets/hero.png",
+        description: "Hero image",
+      });
+      expect(result.success).toBe(true);
+      expect(result.assetId).toBe("hero-img");
+      expect(result.type).toBe("image");
+
+      const doc = store.get(docId)!;
+      expect(doc.assets).toBeDefined();
+      expect(doc.assets!["hero-img"].type).toBe("image");
+      expect(doc.assets!["hero-img"].src).toBe("assets/hero.png");
+      expect(doc.assets!["hero-img"].description).toBe("Hero image");
+    });
+
+    it("atelier_add_asset adds an audio asset", async () => {
+      const result = await callTool(client, "atelier_add_asset", {
+        id: docId,
+        assetId: "bgm",
+        type: "audio",
+        src: "audio/background.mp3",
+      });
+      expect(result.success).toBe(true);
+      expect(result.type).toBe("audio");
+    });
+
+    it("atelier_add_asset rejects duplicate assetId", async () => {
+      await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "dup", type: "image", src: "a.png",
+      });
+      const result = await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "dup", type: "svg", src: "b.svg",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("already exists");
+    });
+
+    it("atelier_add_asset errors on nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_add_asset", {
+        id: "nonexistent", assetId: "x", type: "image", src: "x.png",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_list_assets lists with usage info", async () => {
+      // Add asset
+      await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "photo", type: "image", src: "photo.jpg",
+      });
+      // Add a layer referencing it
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "img-layer",
+        visual: { type: "image", assetId: "photo" },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+      // Add audio asset and state referencing it
+      await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "music", type: "audio", src: "music.mp3",
+      });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "intro", duration: 30 });
+      await callTool(client, "atelier_set_audio", {
+        id: docId, stateName: "intro", audio: { src: "music" },
+      });
+
+      const result = await callTool(client, "atelier_list_assets", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(2);
+
+      const photo = result.assets.find((a: any) => a.assetId === "photo");
+      expect(photo.usedByLayers).toContain("img-layer");
+
+      const music = result.assets.find((a: any) => a.assetId === "music");
+      expect(music.usedByStates).toContain("intro");
+    });
+
+    it("atelier_list_assets returns empty list", async () => {
+      const result = await callTool(client, "atelier_list_assets", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(0);
+      expect(result.assets).toEqual([]);
+    });
+
+    it("atelier_remove_asset removes unused asset", async () => {
+      await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "unused", type: "font", src: "font.woff2",
+      });
+
+      const result = await callTool(client, "atelier_remove_asset", {
+        id: docId, assetId: "unused",
+      });
+      expect(result.success).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+      expect(store.get(docId)!.assets!["unused"]).toBeUndefined();
+    });
+
+    it("atelier_remove_asset returns warnings for referenced asset", async () => {
+      await callTool(client, "atelier_add_asset", {
+        id: docId, assetId: "bg-img", type: "image", src: "bg.png",
+      });
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "bg-layer",
+        visual: { type: "image", assetId: "bg-img" },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+
+      const result = await callTool(client, "atelier_remove_asset", {
+        id: docId, assetId: "bg-img",
+      });
+      expect(result.success).toBe(true);
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings[0]).toContain("bg-layer");
+      // Asset should still be removed
+      expect(store.get(docId)!.assets!["bg-img"]).toBeUndefined();
+    });
+
+    it("atelier_remove_asset errors on nonexistent asset", async () => {
+      const result = await callTool(client, "atelier_remove_asset", {
+        id: docId, assetId: "ghost",
       });
       expect(result._isError).toBe(true);
       expect(result.error).toContain("not found");

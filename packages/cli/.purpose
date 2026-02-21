@@ -1,5 +1,5 @@
 version: 1.0.0
-description: CLI tool — validate, info, still, render, export-svg, and export-lottie commands for .atelier animation files
+description: CLI tool — validate, info, still, render, export-svg, export-lottie, and assets commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
   - Validate command checks schema + delta overlaps
@@ -28,3 +28,6 @@ components:
   cli-export-lottie:
     description: Export Lottie command — exports document to Lottie JSON via @atelier/lottie
     file: src/commands/export-lottie.ts
+  cli-assets:
+    description: Assets command — lists all assets in a document with usage info
+    file: src/commands/assets.ts

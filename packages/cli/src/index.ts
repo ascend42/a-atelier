@@ -8,6 +8,8 @@ export { stillCommand, resolveStill } from "./commands/still.js";
 export { renderCommand } from "./commands/render.js";
 export { exportSvgCommand } from "./commands/export-svg.js";
 export { exportLottieCommand } from "./commands/export-lottie.js";
+export { assetsCommand, getAssets } from "./commands/assets.js";
+export type { AssetInfo } from "./commands/assets.js";
 export {
   checkFfmpeg,
   buildFfmpegArgs,

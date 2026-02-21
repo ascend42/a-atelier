@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.21.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 3 new MCP tools (37→40 total) for asset management:
+  - `atelier_add_asset` — register an external asset (image, SVG, font, animation, audio) on a document
+  - `atelier_list_assets` — list all assets with usage info (which layers/states reference them)
+  - `atelier_remove_asset` — remove an asset with warnings if still referenced by layers or state audio
+- `@a-company/atelier` — 1 new CLI command:
+  - `atelier assets <file>` — list all assets in an .atelier file with usage info
+- ~9 new MCP tests (asset add/list/remove with usage tracking)
+
 ## [0.20.0] — 2026-02-21
 
 ### Added

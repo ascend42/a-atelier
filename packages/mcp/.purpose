@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 37 tools
+description: MCP server — AI authoring interface for Atelier animations with 40 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -42,3 +42,6 @@ components:
   mcp-export-tools:
     description: Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)
     file: src/tools/export.ts
+  mcp-asset-tools:
+    description: Asset management tools — add_asset, list_assets, remove_asset with usage tracking
+    file: src/tools/assets.ts
