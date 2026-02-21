@@ -64,8 +64,7 @@ Add the MCP server to your Claude Desktop configuration:
 {
   "mcpServers": {
     "atelier": {
-      "command": "node",
-      "args": ["path/to/a-atelier/packages/mcp/dist/index.js"]
+      "command": "atelier-mcp"
     }
   }
 }

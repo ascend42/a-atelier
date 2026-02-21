@@ -43,8 +43,7 @@ Add to your Claude Desktop configuration (`claude_desktop_config.json`):
 {
   "mcpServers": {
     "atelier": {
-      "command": "node",
-      "args": ["/path/to/a-atelier/packages/mcp/dist/index.js"]
+      "command": "atelier-mcp"
     }
   }
 }
