@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.17.3] — 2026-02-20
+
+### Changed
+- Renamed repository and folder from `a-maker` to `a-atelier`
+- Updated project name in `.premise`, `.windsurfrules`, `.cursor/rules/paradigm-core.mdc`
+- Rebuilt Paradigm index files (scan-index, navigator, flow-index) with corrected paths
+
 ## [0.17.2] — 2026-02-20
 
 ### Changed
