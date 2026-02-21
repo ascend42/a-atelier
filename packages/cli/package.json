@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
   "main": "./dist/index.cjs",

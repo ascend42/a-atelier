@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.19.0] — 2026-02-20
+
+### Added
+- `@atelier/types` — `parent?: string` on State interface: enables hierarchical state inheritance where child states inherit deltas from parent states (child overrides win on same layer+property)
+- `@atelier/types` — `StateTransitionConfig` interface: `duration` (frames) + `easing` for smooth crossfade transitions between states
+- `@atelier/types` — `transitions?: Record<string, StateTransitionConfig>` on State interface
+- `@atelier/schema` — `StateTransitionConfigSchema` validation; `parent` and `transitions` fields on `StateSchema`
+- `@atelier/core` — Hierarchical state resolution: `resolveAncestorChain()` walks parent chain (with cycle detection), `collectDeltas()` merges ancestor deltas (child wins per layer+property)
+- `@atelier/core` — State transition interpolation: `transitionTo()` with duration/easing, `isTransitioning()`, `getTransitionProgress()` for smooth crossfade blending
+- `@atelier/core` — `blendResolvedFrames()`: frame-level blending for state transitions — lerps numeric properties, color-lerps hex values, snaps discrete values at t >= 0.5, fades in/out layers unique to source/target
+- `@atelier/core` — Frame resolver accepts optional `overrideDeltas` parameter for hierarchical state resolution
+- `@atelier/svg` — New package: SVG renderer for static frame export (thumbnails, SSR, static export)
+  - `renderFrameSVG(doc, state, frame, opts?)` → SVG string with full visual fidelity
+  - Shape mapping: rect→`<rect>` (with rounded corners), ellipse→`<ellipse>`, path→`<path>` (with bezier curves)
+  - Fill/stroke rendering, linear/radial gradient `<defs>`, shadow `<filter>` (feDropShadow)
+  - Clip path support, blend modes via CSS `mix-blend-mode`, image/text layers
+  - Transform stack: translate, rotate, scale with anchor point support
+  - Options: `xmlDeclaration`, `viewBox`, `indent` control
+- `@atelier/lottie` — New package: Lottie JSON exporter (lossy, best-effort)
+  - `exportToLottie(doc, opts?)` → `{ json: LottieAnimation; warnings: string[] }`
+  - Full mapping: rect, ellipse, path shapes; solid/gradient fills; stroke; position/opacity/rotation animation
+  - Easing mapping: linear, cubic-bezier (exact), presets (mapped), spring (approximated as cubic-bezier), step (hold keyframes)
+  - Color mapping: hex/RGBA/HSLA → Lottie [r,g,b,a] 0–1 arrays
+  - Text layer support (basic), image layer with asset references, blend mode mapping
+  - Warnings for unsupported features: audio (dropped), expressions (dropped), shadows (dropped), motion paths, clip paths (partial)
+- `@atelier/react` — New package: React integration for embedding Atelier animations
+  - `<Animation>` component: renders to canvas with autoplay, loop, width/height, callbacks (onFrame, onComplete)
+  - `useAnimation()` hook: play/pause/seek controls, currentFrame/isPlaying state, canvas ref binding
+  - `useAnimationState()` hook: state machine controls for multi-state animations
+  - `AnimationPlayer` class: requestAnimationFrame loop with frame timing, play/pause/seek/loop
+  - Peer dependencies: React >= 18
+- 22 new tests for hierarchical states and state transitions (core package)
+- 26 new tests for SVG renderer
+- 37 new tests for Lottie exporter
+- 15 new tests for React integration (happy-dom + @testing-library/react)
+- `examples/hierarchical-states.atelier` — Three-level state inheritance (idle → hover → active) with scale/opacity overrides
+- `examples/state-transitions.atelier` — Day/night scene with smooth crossfade transition using cubic-bezier easing
+
 ## [0.18.0] — 2026-02-20
 
 ### Added

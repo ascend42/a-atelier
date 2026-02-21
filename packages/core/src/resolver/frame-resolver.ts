@@ -23,11 +23,13 @@ export interface ResolvedFrame {
 /**
  * Resolve all layers at a given frame within a named state.
  * This is the main entry point for frame resolution.
+ * @param overrideDeltas - Optional pre-merged deltas (used for hierarchical state resolution)
  */
 export function resolveFrame(
   doc: AtelierDocument,
   stateName: string,
   frame: number,
+  overrideDeltas?: Delta[],
 ): ResolvedFrame {
   const state = doc.states[stateName];
   if (!state) {
@@ -35,7 +37,7 @@ export function resolveFrame(
   }
 
   // Group deltas by layer+property
-  const deltasByLayerProperty = groupDeltas(state.deltas);
+  const deltasByLayerProperty = groupDeltas(overrideDeltas ?? state.deltas);
 
   // Resolve each layer
   const resolvedLayers: ResolvedLayer[] = doc.layers.map((layer) => {

@@ -1,15 +1,15 @@
 version: 1.0.0
-description: "AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D, exported to video"
+description: "AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D/SVG, exported to video/Lottie"
 context:
-  - "Monorepo: 8 packages (types, math, schema, core, canvas, studio, mcp, cli) + 2 apps (playground, showcase)"
-  - "Build order: types + math (parallel) → schema → core → canvas → studio + mcp + cli (parallel)"
+  - "Monorepo: 11 packages (types, math, schema, core, canvas, svg, lottie, react, studio, mcp, cli) + 2 apps (playground, showcase)"
+  - "Build order: types + math (parallel) → schema → core → canvas → svg + lottie + react + studio + mcp + cli (parallel)"
   - "Primary AI interface: @atelier/mcp exposes 27 tools for structured animation authoring"
-  - "27 animatable properties, 5 easing types, state machines, templates, presets"
+  - "27 animatable properties, 5 easing types, state machines (hierarchical + transitions), templates, presets"
   - "Blend modes (16 Canvas 2D composite operations), motion path animation, clip paths, gradient animation, audio sync"
-  - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio) and CLI (FFmpeg MP4/GIF)"
+  - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio), CLI (FFmpeg MP4/GIF), SVG string, Lottie JSON, React component"
 features:
   animation-engine:
-    description: "Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing"
+    description: "Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing; hierarchical states with parent inheritance; smooth state transition interpolation"
     components:
       - "#atelier-types"
       - "#atelier-math"
@@ -19,6 +19,18 @@ features:
     description: "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim, blend modes, motion paths, clip paths"
     components:
       - "#atelier-canvas"
+  svg-renderer:
+    description: "SVG renderer — render any frame as an SVG string for thumbnails, SSR, and static export"
+    components:
+      - "#atelier-svg"
+  lottie-export:
+    description: "Lottie JSON exporter — lossy but best-effort conversion of .atelier documents to Lottie format"
+    components:
+      - "#atelier-lottie"
+  react-integration:
+    description: "React integration — Animation component, useAnimation hook, useAnimationState hook for embedding Atelier in React apps"
+    components:
+      - "#atelier-react"
   ai-authoring:
     description: "MCP server with 27 tools for AI agents to create, edit, preview, and export animations"
     components:
@@ -33,7 +45,7 @@ features:
       - "#atelier-cli"
 components:
   atelier-types:
-    description: "46 TypeScript type definitions for the .atelier format (zero runtime) — includes Audio type and audio asset type"
+    description: "48 TypeScript type definitions for the .atelier format (zero runtime) — includes StateTransitionConfig, hierarchical parent state support"
     file: packages/types/src/index.ts
   atelier-math:
     description: "Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation"
@@ -42,11 +54,20 @@ components:
     description: "Zod validation schemas + YAML parse/serialize with AI-readable errors"
     file: packages/schema/src/index.ts
   atelier-core:
-    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine, templates, presets, expression evaluator, audio timing"
+    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing"
     file: packages/core/src/index.ts
   atelier-canvas:
     description: "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim"
     file: packages/canvas/src/index.ts
+  atelier-svg:
+    description: "SVG renderer — renderFrameSVG, shape/gradient/filter/clip/text mapping to SVG elements"
+    file: packages/svg/src/index.ts
+  atelier-lottie:
+    description: "Lottie JSON exporter — exportToLottie, layer/shape/keyframe/easing/color mapping with unsupported feature warnings"
+    file: packages/lottie/src/index.ts
+  atelier-react:
+    description: "React integration — Animation component, useAnimation/useAnimationState hooks, AnimationPlayer class"
+    file: packages/react/src/index.ts
   atelier-studio:
     description: "Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points"
     file: packages/studio/src/index.ts

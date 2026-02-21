@@ -1,0 +1,29 @@
+id: m8-architecture
+title: M8 Advanced Animation Capabilities Architecture
+status: accepted
+date: '2026-02-21'
+symbols:
+  - '#atelier-core'
+  - '#atelier-svg'
+  - '#atelier-lottie'
+  - '#atelier-react'
+context: ''
+decision: M8 added hierarchical states (parent chain with child-override delta merging), smooth state transition interpolation (crossfade blending via blendResolvedFrames), SVG renderer (reuses buildEffectiveLayer from canvas), Lottie export (lossy best-effort with warnings), and React integration (AnimationPlayer with rAF loop + hooks).
+rationale:
+  factors:
+    - SVG renderer imports buildEffectiveLayer from @atelier/canvas rather than extracting to core
+    - Lottie export is intentionally lossy with warnings system
+    - State transition blending resolves both frames then lerps
+    - React uses AnimationPlayer class with hooks for composability
+  conclusion: 'Sequential build: types → schema → core → canvas → svg/lottie/react parallel'
+consequences:
+  positive:
+    - Three new export targets (SVG, Lottie, React)
+    - Hierarchical states enable layered UI patterns
+    - Smooth transitions improve animation quality
+  negative:
+    - buildEffectiveLayer coupled to canvas package
+    - Lottie export is lossy for advanced features
+  mitigations:
+    - Extract buildEffectiveLayer to core if third consumer appears
+    - Lottie warnings system clearly communicates unsupported features

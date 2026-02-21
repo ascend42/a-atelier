@@ -1,0 +1,98 @@
+version: "1.0"
+name: hierarchical-states
+description: "Demonstrates parent state inheritance — 'hover' inherits from 'idle' and overrides opacity"
+canvas:
+  width: 400
+  height: 300
+  fps: 30
+
+layers:
+  - id: bg
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#1a1a2e" }
+    frame: { x: 0, y: 0 }
+    bounds: { width: 400, height: 300 }
+
+  - id: box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#e94560" }
+    frame: { x: 125, y: 75 }
+    bounds: { width: 150, height: 150 }
+    opacity: 0.8
+
+  - id: label
+    visual:
+      type: text
+      content: "Hover Me"
+      style:
+        fontFamily: "Inter, sans-serif"
+        fontSize: 20
+        color: "#ffffff"
+        textAlign: center
+    frame: { x: 155, y: 135 }
+    bounds: { width: 90, height: 30 }
+
+states:
+  idle:
+    duration: 60
+    deltas:
+      - layer: box
+        property: scale.x
+        range: [0, 59]
+        from: 1
+        to: 1
+      - layer: box
+        property: scale.y
+        range: [0, 59]
+        from: 1
+        to: 1
+      - layer: box
+        property: opacity
+        range: [0, 59]
+        from: 0.8
+        to: 0.8
+
+  hover:
+    parent: idle
+    duration: 30
+    deltas:
+      # Overrides: scale up and full opacity
+      - layer: box
+        property: scale.x
+        range: [0, 29]
+        from: 1
+        to: 1.1
+        easing: { type: cubic-bezier, x1: 0.34, y1: 1.56, x2: 0.64, y2: 1 }
+      - layer: box
+        property: scale.y
+        range: [0, 29]
+        from: 1
+        to: 1.1
+        easing: { type: cubic-bezier, x1: 0.34, y1: 1.56, x2: 0.64, y2: 1 }
+      - layer: box
+        property: opacity
+        range: [0, 29]
+        from: 0.8
+        to: 1
+
+  active:
+    parent: hover
+    duration: 15
+    deltas:
+      # Further overrides: change color via fill.color delta
+      - layer: box
+        property: scale.x
+        range: [0, 14]
+        from: 1.1
+        to: 0.95
+        easing: { type: cubic-bezier, x1: 0.22, y1: 1, x2: 0.36, y2: 1 }
+      - layer: box
+        property: scale.y
+        range: [0, 14]
+        from: 1.1
+        to: 0.95
+        easing: { type: cubic-bezier, x1: 0.22, y1: 1, x2: 0.36, y2: 1 }

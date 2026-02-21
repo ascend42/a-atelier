@@ -1,0 +1,109 @@
+version: "1.0"
+name: state-transitions
+description: "Demonstrates smooth state transition interpolation — crossfade between 'day' and 'night' scenes"
+canvas:
+  width: 400
+  height: 300
+  fps: 30
+
+layers:
+  - id: sky
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#87CEEB" }
+    frame: { x: 0, y: 0 }
+    bounds: { width: 400, height: 200 }
+
+  - id: ground
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#228B22" }
+    frame: { x: 0, y: 200 }
+    bounds: { width: 400, height: 100 }
+
+  - id: sun
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#FFD700" }
+    frame: { x: 160, y: 30 }
+    bounds: { width: 80, height: 80 }
+    opacity: 1
+
+  - id: moon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F5DC" }
+    frame: { x: 260, y: 40 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+
+  - id: title
+    visual:
+      type: text
+      content: "Day / Night"
+      style:
+        fontFamily: "Georgia, serif"
+        fontSize: 24
+        color: "#333333"
+        textAlign: center
+    frame: { x: 130, y: 230 }
+    bounds: { width: 140, height: 40 }
+
+states:
+  day:
+    duration: 60
+    transitions:
+      night:
+        duration: 20
+        easing: { type: cubic-bezier, x1: 0.4, y1: 0, x2: 0.2, y2: 1 }
+    deltas:
+      - layer: sun
+        property: frame.y
+        range: [0, 59]
+        from: 30
+        to: 50
+        easing: { type: cubic-bezier, x1: 0.37, y1: 0, x2: 0.63, y2: 1 }
+      - layer: sun
+        property: opacity
+        range: [0, 59]
+        from: 1
+        to: 1
+      - layer: moon
+        property: opacity
+        range: [0, 59]
+        from: 0
+        to: 0
+
+  night:
+    duration: 60
+    transitions:
+      day:
+        duration: 20
+        easing: { type: cubic-bezier, x1: 0.4, y1: 0, x2: 0.2, y2: 1 }
+    deltas:
+      - layer: sun
+        property: opacity
+        range: [0, 59]
+        from: 0
+        to: 0
+      - layer: moon
+        property: opacity
+        range: [0, 10]
+        from: 0
+        to: 1
+        easing: { type: cubic-bezier, x1: 0, y1: 0, x2: 0.2, y2: 1 }
+      - layer: moon
+        property: frame.y
+        range: [0, 59]
+        from: 40
+        to: 30
+        easing: { type: cubic-bezier, x1: 0.37, y1: 0, x2: 0.63, y2: 1 }
+      - layer: sky
+        property: fill.color
+        range: [0, 0]
+        from: "#0C1445"
+        to: "#0C1445"

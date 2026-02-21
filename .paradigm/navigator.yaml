@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-02-21T01:16:24.463Z'
+generated: '2026-02-21T04:06:50.503Z'
 structure: {}
 key_files:
   config:
@@ -40,6 +40,9 @@ skip_patterns:
 symbols:
   '#purpose-feature-animation-engine': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-feature-rendering': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-feature-svg-renderer': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-feature-lottie-export': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-feature-react-integration': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-feature-ai-authoring': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-feature-studio': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-feature-cli': /Users/ascend/Documents/GitHub/a-atelier/.purpose
@@ -48,9 +51,40 @@ symbols:
   '#purpose-component-atelier-schema': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-component-atelier-core': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-component-atelier-canvas': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-component-atelier-svg': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-component-atelier-lottie': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-component-atelier-react': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-component-atelier-studio': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-atelier-mcp': /Users/ascend/Documents/GitHub/a-atelier/.purpose
   '#purpose-component-atelier-cli': /Users/ascend/Documents/GitHub/a-atelier/.purpose
+  '#purpose-component-mcp-store': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-document-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-layer-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-shape-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-state-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-delta-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-preset-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-preview-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-template-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-#frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#delta-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#easing-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#document-builder': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#overlap-validator': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#unit-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-#preset-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-state-machine': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-template-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  '#purpose-component-cli-validate': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-cli-info': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-cli-still': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-cli-render': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-render-pipeline': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-render-frame': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-component-shape-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-component-text-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-component-apply-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-component-canvas-styles': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-canvas-panel': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-layer-panel': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-property-panel': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
@@ -63,34 +97,6 @@ symbols:
   '#purpose-component-easing-picker': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-range-slider': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-drag-reorder': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
-  '#purpose-component-cli-validate': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-component-cli-info': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-component-cli-still': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-component-cli-render': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-component-render-pipeline': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-component-#frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#delta-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#easing-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#document-builder': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#overlap-validator': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#unit-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-#preset-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-state-machine': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-template-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  '#purpose-component-mcp-store': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-document-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-layer-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-shape-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-state-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-delta-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-preset-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-preview-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-mcp-template-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  '#purpose-component-render-frame': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
-  '#purpose-component-shape-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
-  '#purpose-component-text-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
-  '#purpose-component-apply-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
-  '#purpose-component-canvas-styles': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ^purpose-gate-^no-overlap: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   $purpose-flow-$frame-resolution: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   '#purpose-ref-component-frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
