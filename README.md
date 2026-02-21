@@ -51,7 +51,7 @@ The engine supports 22 animatable properties, 5 easing types (linear, cubic-bezi
 
 ```bash
 git clone <repo-url>
-cd a-maker
+cd a-atelier
 pnpm install
 pnpm build
 ```
@@ -65,7 +65,7 @@ Add the MCP server to your Claude Desktop configuration:
   "mcpServers": {
     "atelier": {
       "command": "node",
-      "args": ["path/to/a-maker/packages/mcp/dist/index.js"]
+      "args": ["path/to/a-atelier/packages/mcp/dist/index.js"]
     }
   }
 }

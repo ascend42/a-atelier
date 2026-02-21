@@ -8,8 +8,17 @@ Format: [major.minor.fix] — based on milestone progression.
 
 ### Changed
 - Renamed repository and folder from `a-maker` to `a-atelier`
-- Updated project name in `.premise`, `.windsurfrules`, `.cursor/rules/paradigm-core.mdc`
+- Updated all `a-maker` references across project config, docs, and MCP configs
 - Rebuilt Paradigm index files (scan-index, navigator, flow-index) with corrected paths
+- `@atelier/cli` renamed to `@a-company/atelier` for npm publishing
+- `@atelier/cli` tsup config: two-entry build bundles all `@atelier/*` internals via `noExternal` + MCP server entry from `../mcp/src/index.ts`
+- All other packages (`types`, `math`, `schema`, `core`, `canvas`, `mcp`, `studio`) marked `"private": true`
+
+### Added
+- `atelier-mcp` binary in `@a-company/atelier` — runs the MCP server standalone
+- `publishConfig: { "access": "public" }` and `prepublishOnly` script
+- `yaml` added as runtime dependency (required external for ESM compatibility)
+- Install via `npm i -g @a-company/atelier` provides both `atelier` CLI and `atelier-mcp` server
 
 ## [0.17.2] — 2026-02-20
 

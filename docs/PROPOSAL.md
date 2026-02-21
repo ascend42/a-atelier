@@ -1,4 +1,4 @@
-# a-maker: Animation Engine Proposal
+# a-atelier: Animation Engine Proposal
 
 ## What This Is
 
@@ -151,9 +151,9 @@ const anim = maker({ width: 1920, height: 1080, fps: 30, duration: 150 })
 **Build or adopt:** **Future.** Not in scope for v1. When ready, react-native-skia is the likely path.
 
 #### 6e. Lottie Export (Future)
-**What it does:** Converts a-maker documents to Lottie JSON (lossy — only features Lottie supports).
+**What it does:** Converts a-atelier documents to Lottie JSON (lossy — only features Lottie supports).
 
-**Build or adopt:** **Future.** Useful for adoption (use a-maker format, export to Lottie for existing pipelines). Complex mapping work.
+**Build or adopt:** **Future.** Useful for adoption (use a-atelier format, export to Lottie for existing pipelines). Complex mapping work.
 
 **Renderers depend on:** #1 (Document Format), #4 (Interpolation Engine)
 
@@ -184,12 +184,12 @@ const anim = maker({ width: 1920, height: 1080, fps: 30, duration: 150 })
 **What it is:** A command-line interface for working with animation files.
 
 **Commands:**
-- `a-maker validate <file>` — validate a document against the schema
-- `a-maker preview <file>` — open a browser preview with hot reload
-- `a-maker render <file> -o output.mp4` — render to video
-- `a-maker render <file> -o output.gif` — render to GIF
-- `a-maker still <file> --frame=30 -o frame.png` — render a single frame
-- `a-maker info <file>` — display document metadata, layer list, duration
+- `a-atelier validate <file>` — validate a document against the schema
+- `a-atelier preview <file>` — open a browser preview with hot reload
+- `a-atelier render <file> -o output.mp4` — render to video
+- `a-atelier render <file> -o output.gif` — render to GIF
+- `a-atelier still <file> --frame=30 -o frame.png` — render a single frame
+- `a-atelier info <file>` — display document metadata, layer list, duration
 
 **Build or adopt:** **Build from scratch**, using established CLI libraries (e.g., `commander` or `citty` for arg parsing). The CLI is a thin orchestrator calling into core + renderer packages.
 
@@ -199,7 +199,7 @@ const anim = maker({ width: 1920, height: 1080, fps: 30, duration: 150 })
 
 ### 10. MCP Server
 
-**What it is:** An MCP (Model Context Protocol) server that exposes a-maker capabilities as tools for AI agents. This is what makes the system AI-native.
+**What it is:** An MCP (Model Context Protocol) server that exposes a-atelier capabilities as tools for AI agents. This is what makes the system AI-native.
 
 **Potential tool surface:**
 - `create_animation` — create a new document from parameters

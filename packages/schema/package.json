@@ -1,5 +1,6 @@
 {
   "name": "@atelier/schema",
+  "private": true,
   "version": "0.1.0",
   "description": "Zod validation schemas with AI-readable error messages",
   "type": "module",

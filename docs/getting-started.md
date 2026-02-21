@@ -34,7 +34,7 @@ and use the visual editor to experiment with properties in real-time.
 ## Installation
 
 ```bash
-git clone <repo-url> && cd a-maker
+git clone <repo-url> && cd a-atelier
 pnpm install
 pnpm build        # builds all 7 packages in dependency order
 pnpm test         # runs 181 tests across the workspace

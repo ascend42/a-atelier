@@ -1,6 +1,6 @@
 version: 1.0.0
 team:
-  name: a-maker-team
+  name: a-atelier-team
   default_agent: architect
   require_handoff: false
 agents:

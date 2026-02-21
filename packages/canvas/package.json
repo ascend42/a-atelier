@@ -1,5 +1,6 @@
 {
   "name": "@atelier/canvas",
+  "private": true,
   "version": "0.1.0",
   "description": "Canvas 2D renderer and playback controller",
   "type": "module",

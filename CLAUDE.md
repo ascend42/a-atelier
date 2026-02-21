@@ -1,4 +1,4 @@
-# a-maker - Claude Context
+# a-atelier - Claude Context
 
 > **Paradigm v2.0** | For Claude Code, Claude API, and Claude-native interfaces
 

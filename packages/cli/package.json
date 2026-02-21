@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/cli",
+  "name": "@a-company/atelier",
   "version": "0.1.0",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
@@ -7,7 +7,8 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "atelier": "./dist/cli.js"
+    "atelier": "./dist/cli.js",
+    "atelier-mcp": "./dist/mcp.js"
   },
   "exports": {
     ".": {
@@ -23,14 +24,14 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/schema": "workspace:*",
-    "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*",
-    "commander": "^13.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "commander": "^13.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.25.0"
   },
   "peerDependencies": {
     "canvas": ">=2.0.0"
@@ -40,7 +41,14 @@
       "optional": true
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
+    "@atelier/types": "workspace:*",
+    "@atelier/schema": "workspace:*",
+    "@atelier/core": "workspace:*",
+    "@atelier/canvas": "workspace:*",
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",

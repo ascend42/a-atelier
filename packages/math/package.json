@@ -1,5 +1,6 @@
 {
   "name": "@atelier/math",
+  "private": true,
   "version": "0.1.0",
   "description": "Pure interpolation engine — easing, lerp, spring, color",
   "type": "module",

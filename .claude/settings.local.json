@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker log --oneline -5)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-atelier log --oneline -5)",
       "WebFetch(domain:www.remotion.dev)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -17,9 +17,9 @@
       "Bash(node -e:*)",
       "Bash(pnpm test:*)",
       "Bash(pnpm typecheck:*)",
-      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker status)",
-      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker diff)",
-      "Bash(git -C /Users/ascend/Documents/GitHub/a-maker add .gitignore CHANGELOG.md CLAUDE.md .purpose .paradigm/ .premise .windsurfrules .mcp.json .cursor/ .github/ docs/ package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json turbo.json packages/ apps/)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-atelier status)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-atelier diff)",
+      "Bash(git -C /Users/ascend/Documents/GitHub/a-atelier add .gitignore CHANGELOG.md CLAUDE.md .purpose .paradigm/ .premise .windsurfrules .mcp.json .cursor/ .github/ docs/ package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json turbo.json packages/ apps/)",
       "Bash(git -C:*)",
       "Bash(npx tsc:*)",
       "Bash(npx vitest:*)",
@@ -44,7 +44,12 @@
       "Bash(grep:*)",
       "Bash(python3:*)",
       "mcp__paradigm__paradigm_purpose_link",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(wc:*)",
+      "Bash(node:*)",
+      "mcp__paradigm__paradigm_reindex",
+      "mcp__paradigm__paradigm_session_recover",
+      "mcp__paradigm__paradigm_session_checkpoint"
     ]
   },
   "enableAllProjectMcpServers": true,

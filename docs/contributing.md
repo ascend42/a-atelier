@@ -18,7 +18,7 @@ Atelier is a TypeScript monorepo for an AI-native animation engine. This guide c
 ## Repository Structure
 
 ```
-a-maker/
+a-atelier/
 ├── packages/
 │   ├── types/       # @atelier/types   — 44 type definitions (0 deps)
 │   ├── math/        # @atelier/math    — interpolation engine (0 deps)
@@ -42,7 +42,7 @@ Workspace roots are defined in `pnpm-workspace.yaml` and cover `packages/*` and 
 ## Getting Set Up
 
 ```bash
-git clone <repo-url> && cd a-maker
+git clone <repo-url> && cd a-atelier
 pnpm install
 pnpm build       # builds all packages in dependency order
 pnpm test        # runs all 181 tests

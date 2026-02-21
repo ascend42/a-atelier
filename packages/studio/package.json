@@ -1,5 +1,6 @@
 {
   "name": "@atelier/studio",
+  "private": true,
   "version": "0.1.0",
   "description": "Reusable editor widget for Atelier animations — canvas preview, YAML viewer, and GUI editor",
   "type": "module",

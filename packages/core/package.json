@@ -1,5 +1,6 @@
 {
   "name": "@atelier/core",
+  "private": true,
   "version": "0.1.0",
   "description": "Animation engine — delta resolution, builder API, state machine",
   "type": "module",

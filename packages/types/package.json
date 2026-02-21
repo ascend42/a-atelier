@@ -1,5 +1,6 @@
 {
   "name": "@atelier/types",
+  "private": true,
   "version": "0.1.0",
   "description": "Pure TypeScript type definitions for the Atelier animation format",
   "type": "module",
