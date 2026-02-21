@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-02-21T22:16:04.791Z'
+generated: '2026-02-21T22:42:59.721Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -1363,5 +1363,85 @@ by_symbol:
       human:
         - ascend
       agent: []
+  '#mcp-asset-tools':
+    symbol: '#mcp-asset-tools'
+    total_changes: 2
+    last_modified: '2026-02-21T22:39:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_18
+        id: h0038
+        ts: '2026-02-21T22:39:27Z'
+        type: implement
+        symbols:
+          - '#cli-assets'
+          - '#mcp-asset-tools'
+        author:
+          type: human
+          id: ascend
+        commit: 4072444e267c69cadf6b8e17c34c671e4ba17e94
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-001.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/cli/.purpose
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/assets.ts
+          - packages/cli/src/index.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/assets.ts
+        description: 'feat(#atelier-mcp): M10 asset management — 3 new MCP tools, 1 CLI command [0.21.0]'
+      - &ref_19
+        id: h0037
+        ts: '2026-02-21T22:29:24.094Z'
+        type: implement
+        symbols:
+          - '#mcp-asset-tools'
+          - '#cli-assets'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'M10: Added 3 new MCP tools (atelier_add_asset, atelier_list_assets, atelier_remove_asset) for managing document assets without reloading the entire document. Added 1 CLI command (atelier assets). Total tools: 37→40. Version bumped to 0.21.0. All tests pass (87 MCP, 23 CLI).'
+        files:
+          - packages/mcp/src/tools/assets.ts
+          - packages/mcp/src/index.ts
+          - packages/cli/src/commands/assets.ts
+          - packages/cli/src/cli.ts
+          - packages/cli/src/index.ts
+          - packages/cli/package.json
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/.purpose
+          - packages/cli/.purpose
+          - CHANGELOG.md
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#cli-assets':
+    symbol: '#cli-assets'
+    total_changes: 2
+    last_modified: '2026-02-21T22:39:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_18
+      - *ref_19
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
 co_changes: []
 fragile_symbols: []

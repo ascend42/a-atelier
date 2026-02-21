@@ -1,0 +1,74 @@
+{
+  "phase": "planning",
+  "context": "Designing M9: MCP + CLI parity plan. Explored all 8 MCP tool files, CLI commands, types (Layer, State, Shadow, Audio, BlendMode, MotionPath, ClipPath, Easing), SVG/Lottie package APIs, test files, tsup configs, and package.json dependencies. Ready to write detailed plan.",
+  "timestamp": 1771654089730,
+  "sessionId": "smlvknx44",
+  "symbolsTouched": [
+    "#atelier-mcp",
+    "#atelier-cli",
+    "#atelier-svg",
+    "#atelier-lottie"
+  ],
+  "recentBreadcrumbs": [
+    {
+      "timestamp": 1771645689768,
+      "action": "tool-call",
+      "tool": "paradigm_session_recover",
+      "summary": "session_recover"
+    },
+    {
+      "timestamp": 1771645737330,
+      "action": "tool-call",
+      "tool": "paradigm_session_checkpoint",
+      "summary": "Checkpoint: phase=implementing, Starting M8 implementation: 5 sub-milestones (hierarchical s"
+    },
+    {
+      "timestamp": 1771646810447,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1771646889297,
+      "action": "tool-call",
+      "tool": "paradigm_pm_postflight",
+      "summary": "pm_postflight"
+    },
+    {
+      "timestamp": 1771646901793,
+      "action": "tool-call",
+      "tool": "paradigm_wisdom_record",
+      "summary": "wisdom_record: decision"
+    },
+    {
+      "timestamp": 1771646906016,
+      "action": "tool-call",
+      "tool": "paradigm_session_checkpoint",
+      "summary": "Checkpoint: phase=complete, M8 fully implemented: hierarchical states, state transitions"
+    },
+    {
+      "timestamp": 1771646913207,
+      "action": "tool-call",
+      "tool": "paradigm_wisdom_record",
+      "summary": "wisdom_record: decision"
+    },
+    {
+      "timestamp": 1771654012393,
+      "action": "tool-call",
+      "tool": "paradigm_status",
+      "summary": "Checked project status"
+    },
+    {
+      "timestamp": 1771654012467,
+      "action": "tool-call",
+      "tool": "paradigm_session_recover",
+      "summary": "session_recover"
+    },
+    {
+      "timestamp": 1771654089726,
+      "action": "tool-call",
+      "tool": "paradigm_session_checkpoint",
+      "summary": "Checkpoint: phase=planning, Designing M9: MCP + CLI parity plan. Explored all 8 MCP tool"
+    }
+  ]
+}

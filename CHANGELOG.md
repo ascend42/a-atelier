@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.24.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 2 new MCP tools (46→48 total) for composition/nesting:
+  - `atelier_set_ref` — set the source reference on a ref-type layer (file path, URL, or in-memory document ID) with self-reference prevention
+  - `atelier_resolve_refs` — check which ref layers resolve to valid in-memory documents with target info
+- ~8 new MCP tests (ref set/resolve with in-memory resolution, self-reference prevention, error cases)
+
 ## [0.23.0] — 2026-02-21
 
 ### Added

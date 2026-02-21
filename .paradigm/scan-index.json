@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T23:28:03.241Z",
+    "generatedAt": "2026-02-21T23:32:03.037Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 6,
@@ -519,6 +519,16 @@
       "visualTags": [],
       "related": []
     },
+    "mcp-ref-tools": {
+      "id": "mcp-ref-tools",
+      "name": "Mcp Ref Tools",
+      "symbol": "#mcp-ref-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)",
+      "visualTags": [],
+      "related": []
+    },
     "cli-validate": {
       "id": "cli-validate",
       "name": "Cli Validate",
@@ -609,6 +619,61 @@
       "visualTags": [],
       "related": []
     },
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
+    },
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
+    },
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
+    },
     "#frame-resolver": {
       "id": "#frame-resolver",
       "name": "#frame Resolver",
@@ -696,61 +761,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
       "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
-      "visualTags": [],
-      "related": []
-    },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
-      "visualTags": [],
-      "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer"
-      ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "visualTags": [],
       "related": []
     },
@@ -1008,6 +1018,10 @@
       "category": "components",
       "id": "mcp-interaction-tools"
     },
+    "#mcp-ref-tools": {
+      "category": "components",
+      "id": "mcp-ref-tools"
+    },
     "#cli-validate": {
       "category": "components",
       "id": "cli-validate"
@@ -1044,6 +1058,26 @@
       "category": "components",
       "id": "cli-variables"
     },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
+    },
     "##frame-resolver": {
       "category": "components",
       "id": "#frame-resolver"
@@ -1079,26 +1113,6 @@
     "#template-resolver": {
       "category": "components",
       "id": "template-resolver"
-    },
-    "#render-frame": {
-      "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
     },
     "^^no-overlap": {
       "category": "gates",

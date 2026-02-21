@@ -197,7 +197,10 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_add_interaction");
     expect(toolNames).toContain("atelier_list_interactions");
     expect(toolNames).toContain("atelier_remove_interaction");
-    expect(toolNames).toHaveLength(46);
+    // M13 tools
+    expect(toolNames).toContain("atelier_set_ref");
+    expect(toolNames).toContain("atelier_resolve_refs");
+    expect(toolNames).toHaveLength(48);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1894,6 +1897,125 @@ describe("MCP Tools", () => {
       });
       expect(result._isError).toBe(true);
       expect(result.error).toContain("not found");
+    });
+  });
+
+  // ── Ref tools ──────────────────────────────────────────────────
+
+  describe("ref tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Ref Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "ref-layer",
+        visual: { type: "ref", src: "" },
+        x: 0, y: 0, width: 50, height: 50,
+      });
+    });
+
+    it("atelier_set_ref sets src on a ref layer", async () => {
+      const result = await callTool(client, "atelier_set_ref", {
+        id: docId, layerId: "ref-layer", src: "some-file.atelier",
+      });
+      expect(result.success).toBe(true);
+      expect(result.layerId).toBe("ref-layer");
+      expect(result.src).toBe("some-file.atelier");
+      expect(result.resolvedInMemory).toBe(false);
+    });
+
+    it("atelier_set_ref resolves in-memory document", async () => {
+      // Create another document to reference
+      const other = await callTool(client, "atelier_create", {
+        name: "Other Doc", width: 50, height: 50, fps: 30,
+      });
+
+      const result = await callTool(client, "atelier_set_ref", {
+        id: docId, layerId: "ref-layer", src: other.id,
+      });
+      expect(result.success).toBe(true);
+      expect(result.resolvedInMemory).toBe(true);
+    });
+
+    it("atelier_set_ref prevents self-reference", async () => {
+      const result = await callTool(client, "atelier_set_ref", {
+        id: docId, layerId: "ref-layer", src: docId,
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("self");
+    });
+
+    it("atelier_set_ref errors on non-ref layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 10, height: 10,
+      });
+
+      const result = await callTool(client, "atelier_set_ref", {
+        id: docId, layerId: "rect", src: "something",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not \"ref\"");
+    });
+
+    it("atelier_set_ref errors on nonexistent doc", async () => {
+      const result = await callTool(client, "atelier_set_ref", {
+        id: "nonexistent", layerId: "ref-layer", src: "x",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_resolve_refs reports resolution status", async () => {
+      // Create another doc and point the ref to it
+      const other = await callTool(client, "atelier_create", {
+        name: "Target", width: 50, height: 50, fps: 30,
+      });
+      await callTool(client, "atelier_set_ref", {
+        id: docId, layerId: "ref-layer", src: other.id,
+      });
+
+      // Add another unresolved ref layer
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "ref-unresolved",
+        visual: { type: "ref", src: "unknown-file.atelier" },
+        x: 0, y: 0, width: 30, height: 30,
+      });
+
+      const result = await callTool(client, "atelier_resolve_refs", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(2);
+      expect(result.resolvedCount).toBe(1);
+
+      const resolved = result.refs.find((r: any) => r.resolved);
+      expect(resolved.targetName).toBe("Target");
+
+      const unresolved = result.refs.find((r: any) => !r.resolved);
+      expect(unresolved.src).toBe("unknown-file.atelier");
+    });
+
+    it("atelier_resolve_refs returns empty for no refs", async () => {
+      // Create a doc with no ref layers
+      const plain = await callTool(client, "atelier_create", {
+        name: "Plain", width: 100, height: 100, fps: 30,
+      });
+      await callTool(client, "atelier_add_layer", {
+        id: plain.id, layerId: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+      });
+
+      const result = await callTool(client, "atelier_resolve_refs", { id: plain.id });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(0);
+      expect(result.resolvedCount).toBe(0);
     });
   });
 });
