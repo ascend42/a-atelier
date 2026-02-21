@@ -1,6 +1,7 @@
 import type { Shape, Fill, Stroke, TextStyle } from "./shape.js";
 import type { Frame, Bounds, AnchorPoint } from "./coordinates.js";
 import type { Shadow } from "./shadow.js";
+import type { Interaction } from "./interaction.js";
 
 /** Visual content of a layer — what it looks like */
 export interface ShapeVisual {
@@ -95,4 +96,6 @@ export interface Layer {
   motionPath?: MotionPath;
   /** Clip path — restricts rendering to within a shape */
   clipPath?: import("./shape.js").Shape;
+  /** Interactive trigger-action bindings */
+  interactions?: Interaction[];
 }

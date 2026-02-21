@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.23.0] — 2026-02-21
+
+### Added
+- `@atelier/types` — `Interaction` type system: `Trigger` (click, hover, pointerdown, pointerup, timer, signal), `Action` (go-to-state, emit-signal, set-variable, toggle-visibility), `Interaction` interface with id/trigger/action/description
+- `@atelier/types` — `interactions?: Interaction[]` on Layer interface
+- `@atelier/schema` — `TriggerSchema`, `ActionSchema`, `InteractionSchema` with contextual validation (timer requires delay, signal requires signal name, go-to-state requires state, set-variable requires variable+value)
+- `@atelier/schema` — `interactions` field on `LayerSchema`
+- `@atelier/mcp` — 3 new MCP tools (43→46 total) for interaction management:
+  - `atelier_add_interaction` — add a trigger-action binding to a layer with validation (state exists, target layer exists, timer has delay)
+  - `atelier_list_interactions` — list all interactions across all layers or filtered by layer
+  - `atelier_remove_interaction` — remove an interaction from a layer
+- ~11 new MCP tests (interaction add/list/remove with validation)
+
 ## [0.22.0] — 2026-02-21
 
 ### Added

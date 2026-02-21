@@ -193,7 +193,11 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_add_variable");
     expect(toolNames).toContain("atelier_list_variables");
     expect(toolNames).toContain("atelier_remove_variable");
-    expect(toolNames).toHaveLength(43);
+    // M12 tools
+    expect(toolNames).toContain("atelier_add_interaction");
+    expect(toolNames).toContain("atelier_list_interactions");
+    expect(toolNames).toContain("atelier_remove_interaction");
+    expect(toolNames).toHaveLength(46);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1730,6 +1734,163 @@ describe("MCP Tools", () => {
     it("atelier_remove_variable errors on nonexistent variable", async () => {
       const result = await callTool(client, "atelier_remove_variable", {
         id: docId, variableName: "ghost",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+  });
+
+  // ── Interaction tools ────────────────────────────────────────
+
+  describe("interaction tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Interaction Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "btn",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 10, y: 10, width: 80, height: 40,
+      });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "idle", duration: 30 });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "active", duration: 30 });
+    });
+
+    it("atelier_add_interaction adds a click → go-to-state", async () => {
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "click-activate",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "active" },
+        description: "Click to activate",
+      });
+      expect(result.success).toBe(true);
+      expect(result.triggerType).toBe("click");
+      expect(result.actionType).toBe("go-to-state");
+
+      const doc = store.get(docId)!;
+      expect(doc.layers[0].interactions).toHaveLength(1);
+      expect(doc.layers[0].interactions![0].id).toBe("click-activate");
+    });
+
+    it("atelier_add_interaction adds a hover → emit-signal", async () => {
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "hover-signal",
+        trigger: { type: "hover" },
+        action: { type: "emit-signal", signal: "btn-hovered" },
+      });
+      expect(result.success).toBe(true);
+      expect(result.actionType).toBe("emit-signal");
+    });
+
+    it("atelier_add_interaction adds a timer → toggle-visibility", async () => {
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "auto-hide",
+        trigger: { type: "timer", delay: 3000 },
+        action: { type: "toggle-visibility" },
+      });
+      expect(result.success).toBe(true);
+      expect(result.triggerType).toBe("timer");
+    });
+
+    it("atelier_add_interaction rejects duplicate interaction ID", async () => {
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "dup",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "active" },
+      });
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "dup",
+        trigger: { type: "hover" },
+        action: { type: "emit-signal", signal: "x" },
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("already exists");
+    });
+
+    it("atelier_add_interaction rejects nonexistent target state", async () => {
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "bad-state",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "nonexistent" },
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_add_interaction rejects timer without delay", async () => {
+      const result = await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "no-delay",
+        trigger: { type: "timer" },
+        action: { type: "toggle-visibility" },
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("delay");
+    });
+
+    it("atelier_list_interactions lists all interactions", async () => {
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "i1",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "active" },
+      });
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "i2",
+        trigger: { type: "hover" },
+        action: { type: "emit-signal", signal: "hovering" },
+      });
+
+      const result = await callTool(client, "atelier_list_interactions", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(2);
+    });
+
+    it("atelier_list_interactions filters by layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "other",
+        visual: { type: "group" },
+        x: 0, y: 0, width: 10, height: 10,
+      });
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "i1",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "active" },
+      });
+
+      const result = await callTool(client, "atelier_list_interactions", { id: docId, layerId: "other" });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(0);
+    });
+
+    it("atelier_list_interactions returns empty for no interactions", async () => {
+      const result = await callTool(client, "atelier_list_interactions", { id: docId });
+      expect(result.success).toBe(true);
+      expect(result.count).toBe(0);
+    });
+
+    it("atelier_remove_interaction removes an interaction", async () => {
+      await callTool(client, "atelier_add_interaction", {
+        id: docId, layerId: "btn", interactionId: "rm-me",
+        trigger: { type: "click" },
+        action: { type: "go-to-state", state: "active" },
+      });
+
+      const result = await callTool(client, "atelier_remove_interaction", {
+        id: docId, layerId: "btn", interactionId: "rm-me",
+      });
+      expect(result.success).toBe(true);
+      expect(result.remainingInteractions).toBe(0);
+      expect(store.get(docId)!.layers[0].interactions).toBeUndefined();
+    });
+
+    it("atelier_remove_interaction errors on nonexistent interaction", async () => {
+      const result = await callTool(client, "atelier_remove_interaction", {
+        id: docId, layerId: "btn", interactionId: "ghost",
       });
       expect(result._isError).toBe(true);
       expect(result.error).toContain("not found");

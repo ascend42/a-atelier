@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ShapeSchema, FillSchema, StrokeSchema, TextStyleSchema, PathPointSchema } from "./shape.js";
 import { FrameSchema, BoundsSchema, AnchorPointSchema } from "./coordinates.js";
 import { ShadowSchema } from "./shadow.js";
+import { InteractionSchema } from "./interaction.js";
 
 export const BlendModeSchema = z.enum([
   "normal", "multiply", "screen", "overlay",
@@ -70,4 +71,5 @@ export const LayerSchema = z.object({
   blendMode: BlendModeSchema.optional(),
   motionPath: MotionPathSchema.optional(),
   clipPath: ShapeSchema.optional(),
+  interactions: z.array(InteractionSchema).optional(),
 });

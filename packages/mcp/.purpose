@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 43 tools
+description: MCP server — AI authoring interface for Atelier animations with 46 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -48,3 +48,6 @@ components:
   mcp-variable-tools:
     description: Variable management tools — add_variable, list_variables, remove_variable with usage tracking
     file: src/tools/variables.ts
+  mcp-interaction-tools:
+    description: Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings
+    file: src/tools/interactions.ts

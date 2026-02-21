@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T23:24:34.152Z",
+    "generatedAt": "2026-02-21T23:28:03.241Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 6,
@@ -509,93 +509,13 @@
       "visualTags": [],
       "related": []
     },
-    "#frame-resolver": {
-      "id": "#frame-resolver",
-      "name": "#frame Resolver",
-      "symbol": "##frame-resolver",
+    "mcp-interaction-tools": {
+      "id": "mcp-interaction-tools",
+      "name": "Mcp Interaction Tools",
+      "symbol": "#mcp-interaction-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Given document + frame number, computes resolved state of all layers",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-resolver": {
-      "id": "#delta-resolver",
-      "name": "#delta Resolver",
-      "symbol": "##delta-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Per-property interpolation — resolves delta value at a given frame",
-      "visualTags": [],
-      "related": []
-    },
-    "#easing-resolver": {
-      "id": "#easing-resolver",
-      "name": "#easing Resolver",
-      "symbol": "##easing-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Bridges Easing type definitions to executable math functions",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-builder": {
-      "id": "#document-builder",
-      "name": "#document Builder",
-      "symbol": "##document-builder",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Fluent API for constructing AtelierDocument objects with validation",
-      "visualTags": [],
-      "related": []
-    },
-    "#overlap-validator": {
-      "id": "#overlap-validator",
-      "name": "#overlap Validator",
-      "symbol": "##overlap-validator",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Validates no overlapping deltas exist on same layer+property",
-      "visualTags": [],
-      "related": []
-    },
-    "#unit-resolver": {
-      "id": "#unit-resolver",
-      "name": "#unit Resolver",
-      "symbol": "##unit-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-resolver": {
-      "id": "#preset-resolver",
-      "name": "#preset Resolver",
-      "symbol": "##preset-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Expands preset definitions into concrete deltas for a layer",
-      "visualTags": [],
-      "related": []
-    },
-    "state-machine": {
-      "id": "state-machine",
-      "name": "State Machine",
-      "symbol": "#state-machine",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
-      "visualTags": [],
-      "related": []
-    },
-    "template-resolver": {
-      "id": "template-resolver",
-      "name": "Template Resolver",
-      "symbol": "#template-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings",
       "visualTags": [],
       "related": []
     },
@@ -686,6 +606,96 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
       "description": "Variables command — lists all variables in a document with usage info",
+      "visualTags": [],
+      "related": []
+    },
+    "#frame-resolver": {
+      "id": "#frame-resolver",
+      "name": "#frame Resolver",
+      "symbol": "##frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Given document + frame number, computes resolved state of all layers",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-resolver": {
+      "id": "#delta-resolver",
+      "name": "#delta Resolver",
+      "symbol": "##delta-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-resolver": {
+      "id": "#easing-resolver",
+      "name": "#easing Resolver",
+      "symbol": "##easing-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Bridges Easing type definitions to executable math functions",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-builder": {
+      "id": "#document-builder",
+      "name": "#document Builder",
+      "symbol": "##document-builder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "visualTags": [],
+      "related": []
+    },
+    "#overlap-validator": {
+      "id": "#overlap-validator",
+      "name": "#overlap Validator",
+      "symbol": "##overlap-validator",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Validates no overlapping deltas exist on same layer+property",
+      "visualTags": [],
+      "related": []
+    },
+    "#unit-resolver": {
+      "id": "#unit-resolver",
+      "name": "#unit Resolver",
+      "symbol": "##unit-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-resolver": {
+      "id": "#preset-resolver",
+      "name": "#preset Resolver",
+      "symbol": "##preset-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Expands preset definitions into concrete deltas for a layer",
+      "visualTags": [],
+      "related": []
+    },
+    "state-machine": {
+      "id": "state-machine",
+      "name": "State Machine",
+      "symbol": "#state-machine",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
+      "visualTags": [],
+      "related": []
+    },
+    "template-resolver": {
+      "id": "template-resolver",
+      "name": "Template Resolver",
+      "symbol": "#template-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
       "visualTags": [],
       "related": []
     },
@@ -994,41 +1004,9 @@
       "category": "components",
       "id": "mcp-variable-tools"
     },
-    "##frame-resolver": {
+    "#mcp-interaction-tools": {
       "category": "components",
-      "id": "#frame-resolver"
-    },
-    "##delta-resolver": {
-      "category": "components",
-      "id": "#delta-resolver"
-    },
-    "##easing-resolver": {
-      "category": "components",
-      "id": "#easing-resolver"
-    },
-    "##document-builder": {
-      "category": "components",
-      "id": "#document-builder"
-    },
-    "##overlap-validator": {
-      "category": "components",
-      "id": "#overlap-validator"
-    },
-    "##unit-resolver": {
-      "category": "components",
-      "id": "#unit-resolver"
-    },
-    "##preset-resolver": {
-      "category": "components",
-      "id": "#preset-resolver"
-    },
-    "#state-machine": {
-      "category": "components",
-      "id": "state-machine"
-    },
-    "#template-resolver": {
-      "category": "components",
-      "id": "template-resolver"
+      "id": "mcp-interaction-tools"
     },
     "#cli-validate": {
       "category": "components",
@@ -1065,6 +1043,42 @@
     "#cli-variables": {
       "category": "components",
       "id": "cli-variables"
+    },
+    "##frame-resolver": {
+      "category": "components",
+      "id": "#frame-resolver"
+    },
+    "##delta-resolver": {
+      "category": "components",
+      "id": "#delta-resolver"
+    },
+    "##easing-resolver": {
+      "category": "components",
+      "id": "#easing-resolver"
+    },
+    "##document-builder": {
+      "category": "components",
+      "id": "#document-builder"
+    },
+    "##overlap-validator": {
+      "category": "components",
+      "id": "#overlap-validator"
+    },
+    "##unit-resolver": {
+      "category": "components",
+      "id": "#unit-resolver"
+    },
+    "##preset-resolver": {
+      "category": "components",
+      "id": "#preset-resolver"
+    },
+    "#state-machine": {
+      "category": "components",
+      "id": "state-machine"
+    },
+    "#template-resolver": {
+      "category": "components",
+      "id": "template-resolver"
     },
     "#render-frame": {
       "category": "components",

@@ -67,6 +67,9 @@ export type { PresetDelta, Preset } from "./preset.js";
 // variable.ts
 export type { VariableType, Variable } from "./variable.js";
 
+// interaction.ts
+export type { TriggerType, Trigger, ActionType, Action, Interaction } from "./interaction.js";
+
 // asset.ts
 export type { AssetType, Asset } from "./asset.js";
 
