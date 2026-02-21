@@ -108,9 +108,15 @@ importers:
       '@atelier/core':
         specifier: workspace:*
         version: link:../core
+      '@atelier/lottie':
+        specifier: workspace:*
+        version: link:../lottie
       '@atelier/schema':
         specifier: workspace:*
         version: link:../schema
+      '@atelier/svg':
+        specifier: workspace:*
+        version: link:../svg
       '@atelier/types':
         specifier: workspace:*
         version: link:../types
@@ -188,9 +194,15 @@ importers:
       '@atelier/core':
         specifier: workspace:*
         version: link:../core
+      '@atelier/lottie':
+        specifier: workspace:*
+        version: link:../lottie
       '@atelier/schema':
         specifier: workspace:*
         version: link:../schema
+      '@atelier/svg':
+        specifier: workspace:*
+        version: link:../svg
       '@atelier/types':
         specifier: workspace:*
         version: link:../types

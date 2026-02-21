@@ -6,6 +6,8 @@ import { validateCommand } from "./commands/validate.js";
 import { infoCommand } from "./commands/info.js";
 import { stillCommand } from "./commands/still.js";
 import { renderCommand } from "./commands/render.js";
+import { exportSvgCommand } from "./commands/export-svg.js";
+import { exportLottieCommand } from "./commands/export-lottie.js";
 
 const program = new Command();
 
@@ -19,5 +21,7 @@ validateCommand(program);
 infoCommand(program);
 stillCommand(program);
 renderCommand(program);
+exportSvgCommand(program);
+exportLottieCommand(program);
 
 program.parse();

@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T04:56:54.365Z",
+    "generatedAt": "2026-02-21T15:31:30.405Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 6,
@@ -223,96 +223,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
       "description": "CLI tool — validate, info, still, render commands",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-store": {
-      "id": "mcp-store",
-      "name": "Mcp Store",
-      "symbol": "#mcp-store",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-document-tools": {
-      "id": "mcp-document-tools",
-      "name": "Mcp Document Tools",
-      "symbol": "#mcp-document-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-layer-tools": {
-      "id": "mcp-layer-tools",
-      "name": "Mcp Layer Tools",
-      "symbol": "#mcp-layer-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Layer management tools — add, edit, remove, list, reorder",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-shape-tools": {
-      "id": "mcp-shape-tools",
-      "name": "Mcp Shape Tools",
-      "symbol": "#mcp-shape-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-state-tools": {
-      "id": "mcp-state-tools",
-      "name": "Mcp State Tools",
-      "symbol": "#mcp-state-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "State management tools — add, edit, remove, list animation states",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-delta-tools": {
-      "id": "mcp-delta-tools",
-      "name": "Mcp Delta Tools",
-      "symbol": "#mcp-delta-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-preset-tools": {
-      "id": "mcp-preset-tools",
-      "name": "Mcp Preset Tools",
-      "symbol": "#mcp-preset-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preset tools — define reusable animation presets, list available presets",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-preview-tools": {
-      "id": "mcp-preview-tools",
-      "name": "Mcp Preview Tools",
-      "symbol": "#mcp-preview-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-template-tools": {
-      "id": "mcp-template-tools",
-      "name": "Mcp Template Tools",
-      "symbol": "#mcp-template-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Template MCP tools — instantiate_template, find_variables",
       "visualTags": [],
       "related": []
     },
@@ -549,53 +459,93 @@
       "visualTags": [],
       "related": []
     },
-    "cli-validate": {
-      "id": "cli-validate",
-      "name": "Cli Validate",
-      "symbol": "#cli-validate",
+    "mcp-store": {
+      "id": "mcp-store",
+      "name": "Mcp Store",
+      "symbol": "#mcp-store",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
       "visualTags": [],
       "related": []
     },
-    "cli-info": {
-      "id": "cli-info",
-      "name": "Cli Info",
-      "symbol": "#cli-info",
+    "mcp-document-tools": {
+      "id": "mcp-document-tools",
+      "name": "Mcp Document Tools",
+      "symbol": "#mcp-document-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Info command — outputs document summary (canvas, layers, states, presets)",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
       "visualTags": [],
       "related": []
     },
-    "cli-still": {
-      "id": "cli-still",
-      "name": "Cli Still",
-      "symbol": "#cli-still",
+    "mcp-layer-tools": {
+      "id": "mcp-layer-tools",
+      "name": "Mcp Layer Tools",
+      "symbol": "#mcp-layer-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Still command — resolves a frame and outputs computed layer states as JSON",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer management tools — add, edit, remove, list, reorder",
       "visualTags": [],
       "related": []
     },
-    "cli-render": {
-      "id": "cli-render",
-      "name": "Cli Render",
-      "symbol": "#cli-render",
+    "mcp-shape-tools": {
+      "id": "mcp-shape-tools",
+      "name": "Mcp Shape Tools",
+      "symbol": "#mcp-shape-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
       "visualTags": [],
       "related": []
     },
-    "render-pipeline": {
-      "id": "render-pipeline",
-      "name": "Render Pipeline",
-      "symbol": "#render-pipeline",
+    "mcp-state-tools": {
+      "id": "mcp-state-tools",
+      "name": "Mcp State Tools",
+      "symbol": "#mcp-state-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State management tools — add, edit, remove, list animation states",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-delta-tools": {
+      "id": "mcp-delta-tools",
+      "name": "Mcp Delta Tools",
+      "symbol": "#mcp-delta-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preset-tools": {
+      "id": "mcp-preset-tools",
+      "name": "Mcp Preset Tools",
+      "symbol": "#mcp-preset-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preset tools — define reusable animation presets, list available presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preview-tools": {
+      "id": "mcp-preview-tools",
+      "name": "Mcp Preview Tools",
+      "symbol": "#mcp-preview-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-template-tools": {
+      "id": "mcp-template-tools",
+      "name": "Mcp Template Tools",
+      "symbol": "#mcp-template-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Template MCP tools — instantiate_template, find_variables",
       "visualTags": [],
       "related": []
     },
@@ -651,6 +601,56 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
       "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-validate": {
+      "id": "cli-validate",
+      "name": "Cli Validate",
+      "symbol": "#cli-validate",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-info": {
+      "id": "cli-info",
+      "name": "Cli Info",
+      "symbol": "#cli-info",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Info command — outputs document summary (canvas, layers, states, presets)",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-still": {
+      "id": "cli-still",
+      "name": "Cli Still",
+      "symbol": "#cli-still",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Still command — resolves a frame and outputs computed layer states as JSON",
+      "visualTags": [],
+      "related": []
+    },
+    "cli-render": {
+      "id": "cli-render",
+      "name": "Cli Render",
+      "symbol": "#cli-render",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
+      "visualTags": [],
+      "related": []
+    },
+    "render-pipeline": {
+      "id": "render-pipeline",
+      "name": "Render Pipeline",
+      "symbol": "#render-pipeline",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
       "visualTags": [],
       "related": []
     },
@@ -800,42 +800,6 @@
       "category": "components",
       "id": "atelier-cli"
     },
-    "#mcp-store": {
-      "category": "components",
-      "id": "mcp-store"
-    },
-    "#mcp-document-tools": {
-      "category": "components",
-      "id": "mcp-document-tools"
-    },
-    "#mcp-layer-tools": {
-      "category": "components",
-      "id": "mcp-layer-tools"
-    },
-    "#mcp-shape-tools": {
-      "category": "components",
-      "id": "mcp-shape-tools"
-    },
-    "#mcp-state-tools": {
-      "category": "components",
-      "id": "mcp-state-tools"
-    },
-    "#mcp-delta-tools": {
-      "category": "components",
-      "id": "mcp-delta-tools"
-    },
-    "#mcp-preset-tools": {
-      "category": "components",
-      "id": "mcp-preset-tools"
-    },
-    "#mcp-preview-tools": {
-      "category": "components",
-      "id": "mcp-preview-tools"
-    },
-    "#mcp-template-tools": {
-      "category": "components",
-      "id": "mcp-template-tools"
-    },
     "#canvas-panel": {
       "category": "components",
       "id": "canvas-panel"
@@ -920,25 +884,41 @@
       "category": "components",
       "id": "template-resolver"
     },
-    "#cli-validate": {
+    "#mcp-store": {
       "category": "components",
-      "id": "cli-validate"
+      "id": "mcp-store"
     },
-    "#cli-info": {
+    "#mcp-document-tools": {
       "category": "components",
-      "id": "cli-info"
+      "id": "mcp-document-tools"
     },
-    "#cli-still": {
+    "#mcp-layer-tools": {
       "category": "components",
-      "id": "cli-still"
+      "id": "mcp-layer-tools"
     },
-    "#cli-render": {
+    "#mcp-shape-tools": {
       "category": "components",
-      "id": "cli-render"
+      "id": "mcp-shape-tools"
     },
-    "#render-pipeline": {
+    "#mcp-state-tools": {
       "category": "components",
-      "id": "render-pipeline"
+      "id": "mcp-state-tools"
+    },
+    "#mcp-delta-tools": {
+      "category": "components",
+      "id": "mcp-delta-tools"
+    },
+    "#mcp-preset-tools": {
+      "category": "components",
+      "id": "mcp-preset-tools"
+    },
+    "#mcp-preview-tools": {
+      "category": "components",
+      "id": "mcp-preview-tools"
+    },
+    "#mcp-template-tools": {
+      "category": "components",
+      "id": "mcp-template-tools"
     },
     "#render-frame": {
       "category": "components",
@@ -959,6 +939,26 @@
     "#canvas-styles": {
       "category": "components",
       "id": "canvas-styles"
+    },
+    "#cli-validate": {
+      "category": "components",
+      "id": "cli-validate"
+    },
+    "#cli-info": {
+      "category": "components",
+      "id": "cli-info"
+    },
+    "#cli-still": {
+      "category": "components",
+      "id": "cli-still"
+    },
+    "#cli-render": {
+      "category": "components",
+      "id": "cli-render"
+    },
+    "#render-pipeline": {
+      "category": "components",
+      "id": "render-pipeline"
     },
     "^^no-overlap": {
       "category": "gates",

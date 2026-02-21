@@ -8,6 +8,8 @@ import { validateFile } from "./commands/validate.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
+import { renderFrameSVG } from "@atelier/svg";
+import { exportToLottie } from "@atelier/lottie";
 
 // ─── Test Fixtures ────────────────────────────────────────────
 
@@ -324,5 +326,51 @@ describe("checkFfmpeg", () => {
   it("returns a boolean", async () => {
     const result = await checkFfmpeg();
     expect(typeof result).toBe("boolean");
+  });
+});
+
+// ─── Export SVG Tests ────────────────────────────────────────
+
+describe("renderFrameSVG (export-svg)", () => {
+  it("produces valid SVG output", () => {
+    const svg = renderFrameSVG(VALID_DOC, "intro", 0);
+    expect(svg).toContain("<svg");
+    expect(svg).toContain("</svg>");
+    expect(svg).toContain("1920");
+    expect(svg).toContain("1080");
+  });
+
+  it("defaults to frame 0", () => {
+    const svg = renderFrameSVG(VALID_DOC, "intro");
+    expect(svg).toContain("<svg");
+  });
+
+  it("supports XML declaration option", () => {
+    const svg = renderFrameSVG(VALID_DOC, "intro", 0, { xmlDeclaration: true });
+    expect(svg).toContain('<?xml version="1.0"');
+  });
+});
+
+// ─── Export Lottie Tests ─────────────────────────────────────
+
+describe("exportToLottie (export-lottie)", () => {
+  it("produces valid Lottie JSON", () => {
+    const { json, warnings } = exportToLottie(VALID_DOC, { state: "intro" });
+    expect(json.v).toBeDefined();
+    expect(json.layers).toBeDefined();
+    expect(json.fr).toBe(60);
+    expect(json.w).toBe(1920);
+    expect(Array.isArray(warnings)).toBe(true);
+  });
+
+  it("defaults to first state", () => {
+    const { json } = exportToLottie(VALID_DOC);
+    expect(json.op).toBe(60); // intro duration
+  });
+
+  it("includes warnings for unsupported features", () => {
+    // VALID_DOC uses ease-out easing which may produce warnings
+    const { warnings } = exportToLottie(VALID_DOC);
+    expect(Array.isArray(warnings)).toBe(true);
   });
 });

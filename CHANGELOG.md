@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.20.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 10 new MCP tools (27→37 total) for MCP + CLI parity with M7/M8 engine capabilities:
+  - **Layer Effects** (5): `atelier_set_blend_mode` (16 blend modes + null clear), `atelier_set_shadow` (color/blur/offset + null remove), `atelier_set_motion_path` (path points/autoRotate + null remove), `atelier_set_clip_path` (rect/ellipse/path + null remove), `atelier_edit_visual` (edit text content/style, image src/assetId, shape/fill/stroke post-creation with type validation)
+  - **State Config** (3): `atelier_set_audio` (audio track on state + null remove), `atelier_configure_transition` (state-to-state transitions with easing + null remove, validates target exists, rejects self-transition), `atelier_set_state_parent` (hierarchical state inheritance with cycle detection + null clear)
+  - **Export** (2): `atelier_export_svg` (frame→SVG string via `@atelier/svg`), `atelier_export_lottie` (document→Lottie JSON via `@atelier/lottie` with warnings)
+- `@a-company/atelier` — 2 new CLI commands:
+  - `atelier export-svg <file>` — export a frame as SVG (`-s/--state`, `-f/--frame`, `-o/--output`, `--xml-declaration`)
+  - `atelier export-lottie <file>` — export to Lottie JSON (`-s/--state`, `-o/--output`, warnings to stderr)
+- `@a-company/atelier` — `atelier still` now supports `--format png` with `-o/--output` for PNG rendering via node-canvas (JSON remains default)
+- ~28 new MCP tests (layer effects, state config, export tools, tool listing)
+- ~6 new CLI tests (SVG export, Lottie export)
+
+### Changed
+- `@atelier/mcp` — `@atelier/svg` and `@atelier/lottie` added as dependencies
+- `@a-company/atelier` — `@atelier/svg` and `@atelier/lottie` added as devDependencies
+
 ## [0.19.0] — 2026-02-20
 
 ### Added

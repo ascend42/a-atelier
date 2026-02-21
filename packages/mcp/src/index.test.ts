@@ -174,6 +174,18 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_preview");
     expect(toolNames).toContain("atelier_instantiate_template");
     expect(toolNames).toContain("atelier_find_variables");
+    // M9 tools
+    expect(toolNames).toContain("atelier_set_blend_mode");
+    expect(toolNames).toContain("atelier_set_shadow");
+    expect(toolNames).toContain("atelier_set_motion_path");
+    expect(toolNames).toContain("atelier_set_clip_path");
+    expect(toolNames).toContain("atelier_edit_visual");
+    expect(toolNames).toContain("atelier_set_audio");
+    expect(toolNames).toContain("atelier_configure_transition");
+    expect(toolNames).toContain("atelier_set_state_parent");
+    expect(toolNames).toContain("atelier_export_svg");
+    expect(toolNames).toContain("atelier_export_lottie");
+    expect(toolNames).toHaveLength(37);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1094,6 +1106,339 @@ describe("MCP Tools", () => {
         id: "nonexistent",
       });
 
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+  });
+
+  // ── Layer effect tools ─────────────────────────────────────
+
+  describe("layer effect tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Effect Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "title",
+        visual: { type: "text", content: "Hello", style: { fontFamily: "sans-serif", fontSize: 24, color: "#000" } },
+        x: 10, y: 10, width: 80, height: 20,
+      });
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "img",
+        visual: { type: "image", assetId: "photo" },
+        x: 0, y: 0, width: 50, height: 50,
+      });
+    });
+
+    it("atelier_set_blend_mode sets multiply", async () => {
+      const result = await callTool(client, "atelier_set_blend_mode", {
+        id: docId, layerId: "rect", blendMode: "multiply",
+      });
+      expect(result.success).toBe(true);
+      expect(result.blendMode).toBe("multiply");
+      expect(store.get(docId)!.layers[0].blendMode).toBe("multiply");
+    });
+
+    it("atelier_set_blend_mode clears with null", async () => {
+      await callTool(client, "atelier_set_blend_mode", { id: docId, layerId: "rect", blendMode: "screen" });
+      const result = await callTool(client, "atelier_set_blend_mode", { id: docId, layerId: "rect", blendMode: null });
+      expect(result.success).toBe(true);
+      expect(result.cleared).toBe(true);
+      expect(store.get(docId)!.layers[0].blendMode).toBeUndefined();
+    });
+
+    it("atelier_set_blend_mode errors on nonexistent layer", async () => {
+      const result = await callTool(client, "atelier_set_blend_mode", { id: docId, layerId: "missing", blendMode: "overlay" });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_set_shadow sets shadow", async () => {
+      const result = await callTool(client, "atelier_set_shadow", {
+        id: docId, layerId: "rect",
+        shadow: { color: "#000000", blur: 10, offsetX: 2, offsetY: 4 },
+      });
+      expect(result.success).toBe(true);
+      expect(result.hasShadow).toBe(true);
+      const layer = store.get(docId)!.layers[0];
+      expect(layer.shadow).toBeDefined();
+      expect(layer.shadow!.blur).toBe(10);
+    });
+
+    it("atelier_set_shadow removes with null", async () => {
+      await callTool(client, "atelier_set_shadow", { id: docId, layerId: "rect", shadow: { color: "#000", blur: 5 } });
+      const result = await callTool(client, "atelier_set_shadow", { id: docId, layerId: "rect", shadow: null });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+      expect(store.get(docId)!.layers[0].shadow).toBeUndefined();
+    });
+
+    it("atelier_set_shadow errors on nonexistent layer", async () => {
+      const result = await callTool(client, "atelier_set_shadow", { id: docId, layerId: "nope", shadow: { color: "#000", blur: 1 } });
+      expect(result._isError).toBe(true);
+    });
+
+    it("atelier_set_motion_path sets 2-point path", async () => {
+      const result = await callTool(client, "atelier_set_motion_path", {
+        id: docId, layerId: "rect",
+        motionPath: {
+          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          autoRotate: true,
+        },
+      });
+      expect(result.success).toBe(true);
+      expect(result.pointCount).toBe(2);
+      expect(store.get(docId)!.layers[0].motionPath).toBeDefined();
+    });
+
+    it("atelier_set_motion_path removes with null", async () => {
+      await callTool(client, "atelier_set_motion_path", {
+        id: docId, layerId: "rect",
+        motionPath: { points: [{ x: 0, y: 0 }, { x: 50, y: 50 }] },
+      });
+      const result = await callTool(client, "atelier_set_motion_path", { id: docId, layerId: "rect", motionPath: null });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+    });
+
+    it("atelier_set_motion_path errors on nonexistent layer", async () => {
+      const result = await callTool(client, "atelier_set_motion_path", {
+        id: docId, layerId: "ghost",
+        motionPath: { points: [{ x: 0, y: 0 }, { x: 10, y: 10 }] },
+      });
+      expect(result._isError).toBe(true);
+    });
+
+    it("atelier_set_clip_path sets ellipse clip", async () => {
+      const result = await callTool(client, "atelier_set_clip_path", {
+        id: docId, layerId: "rect",
+        clipPath: { type: "ellipse" },
+      });
+      expect(result.success).toBe(true);
+      expect(result.clipType).toBe("ellipse");
+      expect(store.get(docId)!.layers[0].clipPath).toBeDefined();
+    });
+
+    it("atelier_set_clip_path removes with null", async () => {
+      await callTool(client, "atelier_set_clip_path", { id: docId, layerId: "rect", clipPath: { type: "rect" } });
+      const result = await callTool(client, "atelier_set_clip_path", { id: docId, layerId: "rect", clipPath: null });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+    });
+
+    it("atelier_edit_visual edits text content", async () => {
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId, layerId: "title", content: "Updated",
+      });
+      expect(result.success).toBe(true);
+      expect(result.updated).toContain("content");
+      expect((store.get(docId)!.layers[1].visual as any).content).toBe("Updated");
+    });
+
+    it("atelier_edit_visual edits text style partially", async () => {
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId, layerId: "title", style: { fontSize: 36 },
+      });
+      expect(result.success).toBe(true);
+      const visual = store.get(docId)!.layers[1].visual as any;
+      expect(visual.style.fontSize).toBe(36);
+      // Original keys preserved
+      expect(visual.style.fontFamily).toBe("sans-serif");
+    });
+
+    it("atelier_edit_visual edits image src", async () => {
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId, layerId: "img", src: "https://example.com/photo.png",
+      });
+      expect(result.success).toBe(true);
+      expect((store.get(docId)!.layers[2].visual as any).src).toBe("https://example.com/photo.png");
+    });
+
+    it("atelier_edit_visual rejects text edit on shape layer", async () => {
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId, layerId: "rect", content: "nope",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("text layers only");
+    });
+  });
+
+  // ── State config tools ─────────────────────────────────────
+
+  describe("state config tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "State Config Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "intro", duration: 60 });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "hover", duration: 30 });
+    });
+
+    it("atelier_set_audio sets audio on state", async () => {
+      const result = await callTool(client, "atelier_set_audio", {
+        id: docId, stateName: "intro",
+        audio: { src: "music.mp3", volume: 0.8, loop: true },
+      });
+      expect(result.success).toBe(true);
+      expect(result.audioSrc).toBe("music.mp3");
+      expect(store.get(docId)!.states.intro.audio).toBeDefined();
+      expect(store.get(docId)!.states.intro.audio!.volume).toBe(0.8);
+    });
+
+    it("atelier_set_audio removes with null", async () => {
+      await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: { src: "x.mp3" } });
+      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: null });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+      expect(store.get(docId)!.states.intro.audio).toBeUndefined();
+    });
+
+    it("atelier_set_audio errors on nonexistent state", async () => {
+      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "gone", audio: { src: "x" } });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_configure_transition configures transition", async () => {
+      const result = await callTool(client, "atelier_configure_transition", {
+        id: docId, stateName: "intro", targetState: "hover",
+        transition: { duration: 15, easing: "ease-in-out" },
+      });
+      expect(result.success).toBe(true);
+      expect(result.duration).toBe(15);
+      const transitions = store.get(docId)!.states.intro.transitions;
+      expect(transitions).toBeDefined();
+      expect(transitions!.hover.duration).toBe(15);
+    });
+
+    it("atelier_configure_transition removes with null", async () => {
+      await callTool(client, "atelier_configure_transition", {
+        id: docId, stateName: "intro", targetState: "hover",
+        transition: { duration: 10 },
+      });
+      const result = await callTool(client, "atelier_configure_transition", {
+        id: docId, stateName: "intro", targetState: "hover",
+        transition: null,
+      });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+    });
+
+    it("atelier_configure_transition errors on nonexistent target", async () => {
+      const result = await callTool(client, "atelier_configure_transition", {
+        id: docId, stateName: "intro", targetState: "missing",
+        transition: { duration: 10 },
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_set_state_parent sets parent", async () => {
+      const result = await callTool(client, "atelier_set_state_parent", {
+        id: docId, stateName: "hover", parent: "intro",
+      });
+      expect(result.success).toBe(true);
+      expect(result.parent).toBe("intro");
+      expect(store.get(docId)!.states.hover.parent).toBe("intro");
+    });
+
+    it("atelier_set_state_parent clears with null", async () => {
+      await callTool(client, "atelier_set_state_parent", { id: docId, stateName: "hover", parent: "intro" });
+      const result = await callTool(client, "atelier_set_state_parent", { id: docId, stateName: "hover", parent: null });
+      expect(result.success).toBe(true);
+      expect(result.cleared).toBe(true);
+      expect(store.get(docId)!.states.hover.parent).toBeUndefined();
+    });
+
+    it("atelier_set_state_parent rejects circular reference", async () => {
+      await callTool(client, "atelier_set_state_parent", { id: docId, stateName: "hover", parent: "intro" });
+      const result = await callTool(client, "atelier_set_state_parent", { id: docId, stateName: "intro", parent: "hover" });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("cycle");
+    });
+  });
+
+  // ── Export tools ────────────────────────────────────────────
+
+  describe("export tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Export Test",
+        width: 200,
+        height: 200,
+        fps: 30,
+        background: "#FFFFFF",
+      });
+      docId = result.id;
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "bg",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 200, height: 200,
+      });
+      await callTool(client, "atelier_set_fill", {
+        id: docId, layerId: "bg",
+        fill: { type: "solid", color: "#FF0000" },
+      });
+      await callTool(client, "atelier_add_state", { id: docId, stateName: "main", duration: 30 });
+    });
+
+    it("atelier_export_svg exports SVG string containing <svg>", async () => {
+      const result = await callTool(client, "atelier_export_svg", {
+        id: docId, stateName: "main", frame: 0,
+      });
+      expect(result.success).toBe(true);
+      expect(result.svg).toContain("<svg");
+      expect(result.svg).toContain("</svg>");
+      expect(result.svg).toContain("200");
+      expect(result.stateName).toBe("main");
+    });
+
+    it("atelier_export_svg errors on nonexistent state", async () => {
+      const result = await callTool(client, "atelier_export_svg", {
+        id: docId, stateName: "nope",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("not found");
+    });
+
+    it("atelier_export_lottie exports Lottie JSON", async () => {
+      const result = await callTool(client, "atelier_export_lottie", {
+        id: docId, stateName: "main",
+      });
+      expect(result.success).toBe(true);
+      expect(result.lottie).toBeDefined();
+      expect(result.lottie.v).toBeDefined();
+      expect(result.lottie.layers).toBeDefined();
+      expect(Array.isArray(result.warnings)).toBe(true);
+    });
+
+    it("atelier_export_lottie errors on nonexistent document", async () => {
+      const result = await callTool(client, "atelier_export_lottie", {
+        id: "nonexistent",
+      });
       expect(result._isError).toBe(true);
       expect(result.error).toContain("not found");
     });
