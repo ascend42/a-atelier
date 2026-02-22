@@ -57,6 +57,12 @@
       "action": "tool-call",
       "tool": "paradigm_session_checkpoint",
       "summary": "Checkpoint: phase=complete, Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, "
+    },
+    {
+      "timestamp": 1771719030830,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: agent-session"
     }
   ],
   "symbolsModified": [
