@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/svg",
+  "name": "@a-company/atelier-svg",
   "version": "0.25.1",
   "publishConfig": {
     "access": "public"
@@ -26,9 +26,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*"
+    "@a-company/atelier-types": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
+    "@a-company/atelier-canvas": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",

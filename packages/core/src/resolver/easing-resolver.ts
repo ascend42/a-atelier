@@ -1,5 +1,5 @@
-import type { Easing } from "@atelier/types";
-import { linear, cubicBezier, easeIn, easeOut, easeInOut, step, spring } from "@atelier/math";
+import type { Easing } from "@a-company/atelier-types";
+import { linear, cubicBezier, easeIn, easeOut, easeInOut, step, spring } from "@a-company/atelier-math";
 
 /**
  * Converts an Easing type definition into an executable easing function.

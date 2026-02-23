@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, Delta } from "@atelier/types";
+import type { AtelierDocument, Layer, Delta } from "@a-company/atelier-types";
 import { AtelierDocumentSchema } from "./document.js";
 import { LayerSchema } from "./layer.js";
 import { DeltaSchema } from "./delta.js";

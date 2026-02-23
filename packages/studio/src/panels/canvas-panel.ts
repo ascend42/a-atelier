@@ -1,6 +1,6 @@
-import type { AtelierDocument } from "@atelier/types";
-import { resolveFrame } from "@atelier/core";
-import { renderFrame, ImageCache } from "@atelier/canvas";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { resolveFrame } from "@a-company/atelier-core";
+import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
 import { Player } from "../player.js";
 
 export interface CanvasPanelOptions {

@@ -1,5 +1,5 @@
-import { createDocument, expandPreset } from "@atelier/core";
-import type { AtelierDocument, Preset } from "@atelier/types";
+import { createDocument, expandPreset } from "@a-company/atelier-core";
+import type { AtelierDocument, Preset } from "@a-company/atelier-types";
 import type { Example } from "./index.js";
 
 export const presetsExamples: Example[] = [

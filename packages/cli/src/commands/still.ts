@@ -1,10 +1,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import type { AtelierDocument } from "@atelier/types";
-import { parseAtelier } from "@atelier/schema";
-import { resolveFrame } from "@atelier/core";
-import type { ResolvedFrame } from "@atelier/core";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { parseAtelier } from "@a-company/atelier-schema";
+import { resolveFrame } from "@a-company/atelier-core";
+import type { ResolvedFrame } from "@a-company/atelier-core";
 
 /**
  * Resolve a single frame from a document, returning the resolved frame data.
@@ -123,12 +123,12 @@ export function stillCommand(program: Command): void {
               return;
             }
 
-            const { renderFrame } = await import("@atelier/canvas");
+            const { renderFrame } = await import("@a-company/atelier-canvas");
 
             const { createCanvas } = canvasMod;
             const cvs = createCanvas(doc.canvas.width, doc.canvas.height);
             const ctx = cvs.getContext("2d");
-            renderFrame(ctx as unknown as import("@atelier/canvas").RenderContext, resolved, doc);
+            renderFrame(ctx as unknown as import("@a-company/atelier-canvas").RenderContext, resolved, doc);
 
             const buffer = cvs.toBuffer("image/png");
             if (options.output) {

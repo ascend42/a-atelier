@@ -1,4 +1,4 @@
-import type { Delta, FrameRange } from "@atelier/types";
+import type { Delta, FrameRange } from "@a-company/atelier-types";
 
 export interface OverlapError {
   layerId: string;

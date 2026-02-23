@@ -1,4 +1,4 @@
-import type { Preset, Delta, FrameRange } from "@atelier/types";
+import type { Preset, Delta, FrameRange } from "@a-company/atelier-types";
 
 /**
  * Expand a preset into concrete deltas for a specific layer and start frame.

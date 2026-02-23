@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/playground",
+  "name": "@a-company/atelier-playground",
   "version": "0.1.0",
   "private": true,
   "description": "Vite dev app for Atelier animation preview",
@@ -12,9 +12,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*"
+    "@a-company/atelier-types": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
+    "@a-company/atelier-canvas": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

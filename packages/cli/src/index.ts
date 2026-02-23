@@ -1,4 +1,4 @@
-// @atelier/cli — CLI tool: validate, preview, render, info commands
+// @a-company/atelier-cli — CLI tool: validate, preview, render, info commands
 
 // Command registration functions (for programmatic use)
 export { validateCommand, validateFile } from "./commands/validate.js";

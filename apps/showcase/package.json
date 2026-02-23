@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/showcase",
+  "name": "@a-company/atelier-showcase",
   "version": "0.1.0",
   "private": true,
   "description": "Interactive showcase of Atelier animation capabilities",
@@ -12,10 +12,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*",
-    "@atelier/studio": "workspace:*"
+    "@a-company/atelier-types": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
+    "@a-company/atelier-canvas": "workspace:*",
+    "@a-company/atelier-studio": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

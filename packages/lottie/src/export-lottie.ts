@@ -1,4 +1,4 @@
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import type { LottieAnimation, LottieAsset } from "./lottie-types.js";
 import { mapLayers } from "./map-layers.js";
 import { collectUnsupportedWarnings } from "./warnings.js";

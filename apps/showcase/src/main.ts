@@ -1,5 +1,5 @@
-import { AtelierStudio } from "@atelier/studio";
-import "@atelier/studio/styles.css";
+import { AtelierStudio } from "@a-company/atelier-studio";
+import "@a-company/atelier-studio/styles.css";
 import { themes, type Theme, type ThemeName } from "./themes.js";
 import { examples, type Example } from "./examples/index.js";
 import "./styles.css";

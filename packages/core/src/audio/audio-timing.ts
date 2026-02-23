@@ -1,4 +1,4 @@
-import type { Audio } from "@atelier/types";
+import type { Audio } from "@a-company/atelier-types";
 
 /** Audio playback state at a given frame */
 export interface AudioPlaybackState {

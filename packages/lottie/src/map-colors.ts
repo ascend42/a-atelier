@@ -1,4 +1,4 @@
-import type { Color, RGBAColor, HSLAColor } from "@atelier/types";
+import type { Color, RGBAColor, HSLAColor } from "@a-company/atelier-types";
 
 /** Convert an Atelier color to Lottie [r, g, b, a] format (0–1 range) */
 export function colorToLottie(color: Color): number[] {

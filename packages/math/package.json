@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/math",
+  "name": "@a-company/atelier-math",
   "version": "0.25.1",
   "publishConfig": {
     "access": "public"

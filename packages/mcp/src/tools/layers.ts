@@ -1,8 +1,8 @@
-// @atelier/mcp — Layer management tools
+// @a-company/atelier-mcp — Layer management tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, Layer, Visual, UnitValue } from "@atelier/types";
+import type { AtelierDocument, Layer, Visual, UnitValue } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

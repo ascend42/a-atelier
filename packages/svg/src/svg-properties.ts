@@ -1,4 +1,4 @@
-import type { EffectiveLayer } from "@atelier/canvas";
+import type { EffectiveLayer } from "@a-company/atelier-canvas";
 
 /** Build SVG transform attribute from effective layer values */
 export function buildTransform(eff: EffectiveLayer): string {

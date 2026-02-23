@@ -1,6 +1,6 @@
-// @atelier/mcp — In-memory document store
+// @a-company/atelier-mcp — In-memory document store
 
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 
 let counter = 0;
 

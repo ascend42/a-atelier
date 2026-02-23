@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer } from "@atelier/types";
+import type { AtelierDocument, Layer } from "@a-company/atelier-types";
 import { enableDragReorder } from "../utils/drag-reorder.js";
 
 const TYPE_ICONS: Record<string, string> = {

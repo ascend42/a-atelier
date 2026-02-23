@@ -5,8 +5,8 @@
  * Built with vanilla DOM, matching existing studio patterns.
  */
 
-import type { AtelierDocument } from "@atelier/types";
-import type { ImageCache } from "@atelier/canvas";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import type { ImageCache } from "@a-company/atelier-canvas";
 import { exportDocument, supportsWebCodecs, type ExportFormat, type ExportResult } from "./video-exporter.js";
 
 export class ExportDialog {

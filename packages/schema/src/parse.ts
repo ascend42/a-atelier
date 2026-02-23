@@ -1,5 +1,5 @@
 import { parse as yamlParse, stringify as yamlStringify } from "yaml";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { validateDocument } from "./validate.js";
 import type { ValidationResult } from "./validate.js";
 

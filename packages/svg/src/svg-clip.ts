@@ -1,4 +1,4 @@
-import type { Shape } from "@atelier/types";
+import type { Shape } from "@a-company/atelier-types";
 
 let clipIdCounter = 0;
 

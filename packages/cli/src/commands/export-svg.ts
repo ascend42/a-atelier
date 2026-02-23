@@ -1,9 +1,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import type { AtelierDocument } from "@atelier/types";
-import { parseAtelier } from "@atelier/schema";
-import { renderFrameSVG } from "@atelier/svg";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { parseAtelier } from "@a-company/atelier-schema";
+import { renderFrameSVG } from "@a-company/atelier-svg";
 
 /** Read and parse an .atelier file, exiting on failure. */
 function readAndParse(file: string): AtelierDocument {

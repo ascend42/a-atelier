@@ -1,4 +1,4 @@
-import type { AtelierDocument, State } from "@atelier/types";
+import type { AtelierDocument, State } from "@a-company/atelier-types";
 
 /** Check for unsupported features and collect warnings */
 export function collectUnsupportedWarnings(doc: AtelierDocument, state: State): string[] {

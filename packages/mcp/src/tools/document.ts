@@ -1,9 +1,9 @@
-// @atelier/mcp — Document management tools
+// @a-company/atelier-mcp — Document management tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument } from "@atelier/types";
-import { validateDocument, parseAtelier, serializeAtelier } from "@atelier/schema";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { validateDocument, parseAtelier, serializeAtelier } from "@a-company/atelier-schema";
 import type { DocumentStore } from "../store.js";
 
 /** Helper: get document or return error result */

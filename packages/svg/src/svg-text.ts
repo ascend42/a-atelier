@@ -1,5 +1,5 @@
-import type { TextVisual } from "@atelier/types";
-import type { EffectiveLayer } from "@atelier/canvas";
+import type { TextVisual } from "@a-company/atelier-types";
+import type { EffectiveLayer } from "@a-company/atelier-canvas";
 import { colorToCSS } from "./svg-gradients.js";
 import { escapeXml } from "./svg-properties.js";
 

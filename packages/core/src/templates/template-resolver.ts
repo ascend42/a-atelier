@@ -1,4 +1,4 @@
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 
 export interface TemplateBindings {
   [variableName: string]: unknown;

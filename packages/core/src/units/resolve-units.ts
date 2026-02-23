@@ -1,4 +1,4 @@
-import type { UnitValue } from "@atelier/types";
+import type { UnitValue } from "@a-company/atelier-types";
 
 /**
  * Check if a UnitValue is a percentage string.

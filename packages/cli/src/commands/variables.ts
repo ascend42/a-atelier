@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import type { AtelierDocument } from "@atelier/types";
-import { parseAtelier } from "@atelier/schema";
-import { findTemplateVariables } from "@atelier/core";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { parseAtelier } from "@a-company/atelier-schema";
+import { findTemplateVariables } from "@a-company/atelier-core";
 
 /** Variable summary entry */
 export interface VariableInfo {

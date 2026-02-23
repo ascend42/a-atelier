@@ -1,7 +1,7 @@
-import type { Layer, Visual, ShapeVisual, TextVisual, ImageVisual, Color, BlendMode, LinearGradientFill, RadialGradientFill } from "@atelier/types";
+import type { Layer, Visual, ShapeVisual, TextVisual, ImageVisual, Color, BlendMode, LinearGradientFill, RadialGradientFill } from "@a-company/atelier-types";
 import { colorToCSS } from "./styles.js";
-import { evaluatePathAtProgress } from "@atelier/math";
-import type { ResolvedLayer } from "@atelier/core";
+import { evaluatePathAtProgress } from "@a-company/atelier-math";
+import type { ResolvedLayer } from "@a-company/atelier-core";
 
 /**
  * Effective values for a layer at a given frame,

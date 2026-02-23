@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 
 export interface UseAnimationStateReturn {
   currentState: string;

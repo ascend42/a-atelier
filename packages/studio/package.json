@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/studio",
+  "name": "@a-company/atelier-studio",
   "version": "0.25.1",
   "publishConfig": {
     "access": "public"
@@ -27,11 +27,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/math": "workspace:*",
-    "@atelier/core": "workspace:*",
-    "@atelier/canvas": "workspace:*",
-    "@atelier/schema": "workspace:*",
+    "@a-company/atelier-types": "workspace:*",
+    "@a-company/atelier-math": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
+    "@a-company/atelier-canvas": "workspace:*",
+    "@a-company/atelier-schema": "workspace:*",
     "mp4-muxer": "^5.1.3",
     "webm-muxer": "^5.0.1"
   },

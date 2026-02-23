@@ -1,4 +1,4 @@
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { shapesExamples } from "./shapes.js";
 import { easingExamples } from "./easing.js";
 import { motionExamples } from "./motion.js";

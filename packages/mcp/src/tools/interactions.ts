@@ -1,8 +1,8 @@
-// @atelier/mcp — Interaction management tools
+// @a-company/atelier-mcp — Interaction management tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, Interaction } from "@atelier/types";
+import type { AtelierDocument, Interaction } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

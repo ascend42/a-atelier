@@ -1,7 +1,7 @@
 import { describe, it, expectTypeOf } from "vitest";
 import type { AtelierDocument, Layer, Delta, State, Canvas, UnitValue } from "./index.js";
 
-describe("@atelier/types", () => {
+describe("@a-company/atelier-types", () => {
   it("AtelierDocument has required fields", () => {
     expectTypeOf<AtelierDocument>().toHaveProperty("version");
     expectTypeOf<AtelierDocument>().toHaveProperty("name");

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { AtelierDocument } from "@atelier/types";
-import { resolveFrame } from "@atelier/core";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { resolveFrame } from "@a-company/atelier-core";
 import { renderFrame, buildEffectiveLayer, colorToCSS } from "./index.js";
 import type { RenderContext } from "./canvas-types.js";
 

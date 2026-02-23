@@ -1,5 +1,5 @@
-import { createDocument } from "@atelier/core";
-import type { AtelierDocument } from "@atelier/types";
+import { createDocument } from "@a-company/atelier-core";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import type { Example } from "./index.js";
 
 export const shapesExamples: Example[] = [

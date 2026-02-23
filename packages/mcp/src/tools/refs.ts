@@ -1,8 +1,8 @@
-// @atelier/mcp — Ref layer (composition/nesting) tools
+// @a-company/atelier-mcp — Ref layer (composition/nesting) tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, RefVisual } from "@atelier/types";
+import type { AtelierDocument, RefVisual } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

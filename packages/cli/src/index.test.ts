@@ -2,14 +2,14 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import type { AtelierDocument } from "@atelier/types";
-import { serializeAtelier } from "@atelier/schema";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { serializeAtelier } from "@a-company/atelier-schema";
 import { validateFile } from "./commands/validate.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
-import { renderFrameSVG } from "@atelier/svg";
-import { exportToLottie } from "@atelier/lottie";
+import { renderFrameSVG } from "@a-company/atelier-svg";
+import { exportToLottie } from "@a-company/atelier-lottie";
 
 // ─── Test Fixtures ────────────────────────────────────────────
 

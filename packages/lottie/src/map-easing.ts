@@ -1,4 +1,4 @@
-import type { Easing } from "@atelier/types";
+import type { Easing } from "@a-company/atelier-types";
 
 export interface LottieEasing {
   i: { x: number[]; y: number[] };

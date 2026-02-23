@@ -1,5 +1,5 @@
-import type { Easing, CubicBezierEasing, SpringEasing, StepEasing } from "@atelier/types";
-import { cubicBezier, easeIn, easeOut, easeInOut, step, linear } from "@atelier/math";
+import type { Easing, CubicBezierEasing, SpringEasing, StepEasing } from "@a-company/atelier-types";
+import { cubicBezier, easeIn, easeOut, easeInOut, step, linear } from "@a-company/atelier-math";
 
 export interface EasingCurveEditorOptions {
   value: Easing | undefined;

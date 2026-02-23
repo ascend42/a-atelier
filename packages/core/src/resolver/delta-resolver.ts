@@ -1,5 +1,5 @@
-import type { Delta, FrameRange } from "@atelier/types";
-import { lerp, clamp, hexToRgba, lerpRgba, rgbaToHex } from "@atelier/math";
+import type { Delta, FrameRange } from "@a-company/atelier-types";
+import { lerp, clamp, hexToRgba, lerpRgba, rgbaToHex } from "@a-company/atelier-math";
 import { resolveEasing } from "./easing-resolver.js";
 import { isExpression, evaluateExpression, type ExpressionContext } from "../expressions/expression-evaluator.js";
 

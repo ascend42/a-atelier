@@ -1,4 +1,4 @@
-import type { AtelierDocument, State, Delta, AnimatableProperty, Easing } from "@atelier/types";
+import type { AtelierDocument, State, Delta, AnimatableProperty, Easing } from "@a-company/atelier-types";
 import { NumberInput } from "../controls/number-input.js";
 import { SliderInput } from "../controls/slider-input.js";
 import { ColorPicker } from "../controls/color-picker.js";

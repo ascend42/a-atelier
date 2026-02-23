@@ -79,4 +79,4 @@ export interface GradientLike {
 }
 
 /** Resolves a ref layer's src path to a loaded AtelierDocument */
-export type DocumentResolver = (src: string) => import("@atelier/types").AtelierDocument | undefined;
+export type DocumentResolver = (src: string) => import("@a-company/atelier-types").AtelierDocument | undefined;

@@ -1,4 +1,4 @@
-import type { Fill, Stroke, Color, RGBAColor, HSLAColor } from "@atelier/types";
+import type { Fill, Stroke, Color, RGBAColor, HSLAColor } from "@a-company/atelier-types";
 import type { RenderContext } from "./canvas-types.js";
 
 /**

@@ -1,4 +1,4 @@
-import type { ShapeVisual } from "@atelier/types";
+import type { ShapeVisual } from "@a-company/atelier-types";
 import type { RenderContext } from "../canvas-types.js";
 import type { EffectiveLayer } from "../apply-properties.js";
 import { applyFill, applyStroke } from "../styles.js";

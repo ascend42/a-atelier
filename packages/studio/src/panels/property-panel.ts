@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, AnimatableProperty } from "@atelier/types";
+import type { AtelierDocument, Layer, AnimatableProperty } from "@a-company/atelier-types";
 import { NumberInput } from "../controls/number-input.js";
 import { ColorPicker } from "../controls/color-picker.js";
 import { SelectInput } from "../controls/select-input.js";

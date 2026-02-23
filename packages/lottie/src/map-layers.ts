@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, Delta, State, UnitValue } from "@atelier/types";
+import type { AtelierDocument, Layer, Delta, State, UnitValue } from "@a-company/atelier-types";
 import type { LottieLayer, LottieTransform, LottieTextData } from "./lottie-types.js";
 import { mapShapeVisual } from "./map-shapes.js";
 import { mapDeltasToAnimated, mapPositionDeltas } from "./map-keyframes.js";

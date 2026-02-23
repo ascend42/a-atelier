@@ -1,4 +1,4 @@
-import type { GradientStop } from "@atelier/types";
+import type { GradientStop } from "@a-company/atelier-types";
 import { ColorPicker } from "./color-picker.js";
 import { SliderInput } from "./slider-input.js";
 

@@ -1,9 +1,9 @@
-// @atelier/mcp — Preset management tools
+// @a-company/atelier-mcp — Preset management tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, Preset, PresetDelta } from "@atelier/types";
-import { AnimatablePropertySchema, EasingSchema } from "@atelier/schema";
+import type { AtelierDocument, Preset, PresetDelta } from "@a-company/atelier-types";
+import { AnimatablePropertySchema, EasingSchema } from "@a-company/atelier-schema";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {
@@ -20,7 +20,7 @@ function err(message: string) {
   return { content: [{ type: "text" as const, text: JSON.stringify({ error: message }) }], isError: true as const };
 }
 
-// Canonical source: @atelier/schema — single source of truth for AnimatableProperty
+// Canonical source: @a-company/atelier-schema — single source of truth for AnimatableProperty
 const AnimatablePropertyEnum = AnimatablePropertySchema;
 const EasingInputSchema = EasingSchema;
 

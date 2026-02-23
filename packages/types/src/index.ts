@@ -1,4 +1,4 @@
-// @atelier/types — Pure TypeScript type definitions for the Atelier animation format
+// @a-company/atelier-types — Pure TypeScript type definitions for the Atelier animation format
 // Zero runtime, type-only package
 
 // units.ts

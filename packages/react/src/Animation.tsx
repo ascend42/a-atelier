@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { useAnimation, type UseAnimationOptions } from "./useAnimation.js";
 
 export interface AnimationProps extends UseAnimationOptions {

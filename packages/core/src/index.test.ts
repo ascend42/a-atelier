@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { AtelierDocument, Delta } from "@atelier/types";
+import type { AtelierDocument, Delta } from "@a-company/atelier-types";
 import {
   resolveFrame,
   resolveDeltaValue,

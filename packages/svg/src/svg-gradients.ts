@@ -1,4 +1,4 @@
-import type { Fill, LinearGradientFill, RadialGradientFill, Color, RGBAColor, HSLAColor } from "@atelier/types";
+import type { Fill, LinearGradientFill, RadialGradientFill, Color, RGBAColor, HSLAColor } from "@a-company/atelier-types";
 
 let gradientIdCounter = 0;
 

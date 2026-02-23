@@ -4,7 +4,7 @@ import { NumberInput } from "./controls/number-input.js";
 import { ColorPicker } from "./controls/color-picker.js";
 import { SliderInput } from "./controls/slider-input.js";
 import { SelectInput } from "./controls/select-input.js";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { createGifEncoder } from "./export/gif-encoder.js";
 import { supportsWebCodecs, supportsWebM, supportsGifExport } from "./export/video-exporter.js";
 

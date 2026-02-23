@@ -1,5 +1,5 @@
-import type { AtelierDocument, RefVisual, ImageVisual } from "@atelier/types";
-import { resolveFrame } from "@atelier/core";
+import type { AtelierDocument, RefVisual, ImageVisual } from "@a-company/atelier-types";
+import { resolveFrame } from "@a-company/atelier-core";
 import type { RenderContext, DocumentResolver } from "../canvas-types.js";
 import type { EffectiveLayer } from "../apply-properties.js";
 import { buildEffectiveLayer } from "../apply-properties.js";

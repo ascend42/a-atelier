@@ -1,4 +1,4 @@
-// @atelier/schema — Zod validation schemas with AI-readable error messages
+// @a-company/atelier-schema — Zod validation schemas with AI-readable error messages
 
 // Schemas
 export { PixelSchema, PercentageSchema, UnitValueSchema } from "./units.js";

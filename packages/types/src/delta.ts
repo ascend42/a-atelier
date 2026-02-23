@@ -1,6 +1,6 @@
 import type { Easing } from "./easing.js";
 
-/** Animatable layer properties — runtime Zod source of truth is in @atelier/schema */
+/** Animatable layer properties — runtime Zod source of truth is in @a-company/atelier-schema */
 export type AnimatableProperty =
   | "frame.x"
   | "frame.y"

@@ -1,4 +1,4 @@
-import type { ShapeVisual, Fill, Stroke } from "@atelier/types";
+import type { ShapeVisual, Fill, Stroke } from "@a-company/atelier-types";
 import type { LottieShapeItem } from "./lottie-types.js";
 import { colorToLottie } from "./map-colors.js";
 

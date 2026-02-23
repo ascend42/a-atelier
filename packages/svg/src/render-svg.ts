@@ -1,6 +1,6 @@
-import type { AtelierDocument, ImageVisual, RefVisual } from "@atelier/types";
-import { resolveFrame, type ResolvedFrame } from "@atelier/core";
-import { buildEffectiveLayer, type EffectiveLayer, type DocumentResolver } from "@atelier/canvas";
+import type { AtelierDocument, ImageVisual, RefVisual } from "@a-company/atelier-types";
+import { resolveFrame, type ResolvedFrame } from "@a-company/atelier-core";
+import { buildEffectiveLayer, type EffectiveLayer, type DocumentResolver } from "@a-company/atelier-canvas";
 import { buildTransform, buildStyleAttrs } from "./svg-properties.js";
 import { renderShapeSVG } from "./svg-shapes.js";
 import { renderTextSVG } from "./svg-text.js";
@@ -118,13 +118,13 @@ export function renderFrameSVG(
 
     switch (layer.visual.type) {
       case "shape": {
-        const result = renderShapeSVG(eff, eff.visual as import("@atelier/types").ShapeVisual);
+        const result = renderShapeSVG(eff, eff.visual as import("@a-company/atelier-types").ShapeVisual);
         content = result.elements;
         layerDefs = result.defs;
         break;
       }
       case "text":
-        content = renderTextSVG(eff, eff.visual as import("@atelier/types").TextVisual);
+        content = renderTextSVG(eff, eff.visual as import("@a-company/atelier-types").TextVisual);
         break;
       case "image": {
         const iv = eff.visual as ImageVisual;
@@ -285,12 +285,12 @@ function renderRefSVG(
     let childContent = "";
     switch (rl.layer.visual.type) {
       case "shape": {
-        const result = renderShapeSVG(subEff, subEff.visual as import("@atelier/types").ShapeVisual);
+        const result = renderShapeSVG(subEff, subEff.visual as import("@a-company/atelier-types").ShapeVisual);
         childContent = result.elements;
         break;
       }
       case "text":
-        childContent = renderTextSVG(subEff, subEff.visual as import("@atelier/types").TextVisual);
+        childContent = renderTextSVG(subEff, subEff.visual as import("@a-company/atelier-types").TextVisual);
         break;
       case "image": {
         const iv = subEff.visual as ImageVisual;

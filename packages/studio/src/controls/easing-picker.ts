@@ -1,4 +1,4 @@
-import type { Easing } from "@atelier/types";
+import type { Easing } from "@a-company/atelier-types";
 import { EasingCurveEditor } from "./easing-curve-editor.js";
 import { NumberInput } from "./number-input.js";
 import { SelectInput } from "./select-input.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/core",
+  "name": "@a-company/atelier-core",
   "version": "0.25.1",
   "publishConfig": {
     "access": "public"
@@ -26,9 +26,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*",
-    "@atelier/schema": "workspace:*",
-    "@atelier/math": "workspace:*"
+    "@a-company/atelier-types": "workspace:*",
+    "@a-company/atelier-schema": "workspace:*",
+    "@a-company/atelier-math": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",

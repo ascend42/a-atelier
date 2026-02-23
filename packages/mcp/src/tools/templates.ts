@@ -1,9 +1,9 @@
-// @atelier/mcp — Template variable tools
+// @a-company/atelier-mcp — Template variable tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument } from "@atelier/types";
-import { instantiateTemplate, findTemplateVariables } from "@atelier/core";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { instantiateTemplate, findTemplateVariables } from "@a-company/atelier-core";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

@@ -1,7 +1,7 @@
 import type {
   AtelierDocument, Canvas, Layer, State, Delta, Preset,
   Variable, Asset,
-} from "@atelier/types";
+} from "@a-company/atelier-types";
 import { validateNoOverlap } from "../validation/overlap-validator.js";
 
 /**

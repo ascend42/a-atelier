@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import type { AtelierDocument, ImageVisual } from "@atelier/types";
-import { parseAtelier } from "@atelier/schema";
+import type { AtelierDocument, ImageVisual } from "@a-company/atelier-types";
+import { parseAtelier } from "@a-company/atelier-schema";
 
 /** Asset summary entry */
 export interface AssetInfo {

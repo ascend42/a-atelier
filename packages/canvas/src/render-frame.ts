@@ -1,5 +1,5 @@
-import type { AtelierDocument, ImageVisual, Shape } from "@atelier/types";
-import type { ResolvedFrame } from "@atelier/core";
+import type { AtelierDocument, ImageVisual, Shape } from "@a-company/atelier-types";
+import type { ResolvedFrame } from "@a-company/atelier-core";
 import type { RenderContext, DocumentResolver } from "./canvas-types.js";
 import { buildEffectiveLayer, type EffectiveLayer } from "./apply-properties.js";
 import { renderShape } from "./renderers/shape-renderer.js";

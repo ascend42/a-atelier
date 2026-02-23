@@ -1,10 +1,10 @@
-// @atelier/mcp — Export tools (SVG, Lottie)
+// @a-company/atelier-mcp — Export tools (SVG, Lottie)
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument } from "@atelier/types";
-import { renderFrameSVG } from "@atelier/svg";
-import { exportToLottie } from "@atelier/lottie";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { renderFrameSVG } from "@a-company/atelier-svg";
+import { exportToLottie } from "@a-company/atelier-lottie";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import { parseAtelier } from "@atelier/schema";
-import { validateAllDeltas } from "@atelier/core";
+import { parseAtelier } from "@a-company/atelier-schema";
+import { validateAllDeltas } from "@a-company/atelier-core";
 
 /**
  * Validate an .atelier file: parse YAML, check schema, check delta overlaps.

@@ -1,4 +1,4 @@
-import type { ImageVisual } from "@atelier/types";
+import type { ImageVisual } from "@a-company/atelier-types";
 import type { RenderContext } from "../canvas-types.js";
 import type { EffectiveLayer } from "../apply-properties.js";
 import type { ImageCache } from "../image-cache.js";

@@ -7,17 +7,18 @@ Format: [major.minor.fix] — based on milestone progression.
 ## [0.26.1] — 2026-02-23
 
 ### Changed
-- **All 10 `@atelier/*` subpackages published to npm** — previously private, now available as individual packages:
-  - `@atelier/types` — TypeScript type definitions
-  - `@atelier/math` — Interpolation engine (easing, lerp, spring, color)
-  - `@atelier/schema` — Zod validation schemas
-  - `@atelier/core` — Animation engine (delta resolution, builder API)
-  - `@atelier/canvas` — Canvas 2D renderer and playback controller
-  - `@atelier/studio` — Reusable editor widget
-  - `@atelier/svg` — SVG renderer
-  - `@atelier/lottie` — Lottie JSON exporter
-  - `@atelier/react` — React integration (Animation component and hooks)
-  - `@atelier/mcp` — MCP server for AI authoring
+- **All 10 subpackages published to npm under `@a-company` scope** — previously private `@atelier/*`, now public:
+  - `@a-company/atelier-types` — TypeScript type definitions
+  - `@a-company/atelier-math` — Interpolation engine (easing, lerp, spring, color)
+  - `@a-company/atelier-schema` — Zod validation schemas
+  - `@a-company/atelier-core` — Animation engine (delta resolution, builder API)
+  - `@a-company/atelier-canvas` — Canvas 2D renderer and playback controller
+  - `@a-company/atelier-studio` — Reusable editor widget
+  - `@a-company/atelier-svg` — SVG renderer
+  - `@a-company/atelier-lottie` — Lottie JSON exporter
+  - `@a-company/atelier-react` — React integration (Animation component and hooks)
+  - `@a-company/atelier-mcp` — MCP server for AI authoring
+- Renamed all internal imports from `@atelier/*` to `@a-company/atelier-*`
 - All subpackages versioned at `0.25.1` to match CLI release
 - Added `publishConfig: { "access": "public" }` to all subpackages
 

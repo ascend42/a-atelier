@@ -1,8 +1,8 @@
-// @atelier/mcp — State configuration tools (audio, transitions, parent states)
+// @a-company/atelier-mcp — State configuration tools (audio, transitions, parent states)
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

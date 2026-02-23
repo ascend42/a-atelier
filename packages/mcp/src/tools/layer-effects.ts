@@ -1,4 +1,4 @@
-// @atelier/mcp — Layer effect tools (blend mode, shadow, motion path, clip path, visual editing)
+// @a-company/atelier-mcp — Layer effect tools (blend mode, shadow, motion path, clip path, visual editing)
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import type {
   ShapeVisual,
   TextVisual,
   ImageVisual,
-} from "@atelier/types";
+} from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

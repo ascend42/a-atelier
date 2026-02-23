@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, Delta, AnimatableProperty } from "@atelier/types";
+import type { AtelierDocument, Layer, Delta, AnimatableProperty } from "@a-company/atelier-types";
 import { resolvePropertyAtFrame } from "./delta-resolver.js";
 
 /** A resolved layer at a specific frame — all animated properties computed */

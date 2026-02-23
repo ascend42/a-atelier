@@ -1,5 +1,5 @@
-import type { ShapeVisual, Shape, RectShape, PathShape, Stroke } from "@atelier/types";
-import type { EffectiveLayer } from "@atelier/canvas";
+import type { ShapeVisual, Shape, RectShape, PathShape, Stroke } from "@a-company/atelier-types";
+import type { EffectiveLayer } from "@a-company/atelier-canvas";
 import { buildGradientDef, colorToCSS } from "./svg-gradients.js";
 
 /** Render a shape visual as SVG elements */

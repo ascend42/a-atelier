@@ -1,4 +1,4 @@
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { CanvasPanel } from "./panels/canvas-panel.js";
 import { LayerPanel } from "./panels/layer-panel.js";
 import { PropertyPanel } from "./panels/property-panel.js";

@@ -23,13 +23,13 @@ importers:
 
   apps/playground:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../../packages/canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../../packages/types
     devDependencies:
@@ -42,16 +42,16 @@ importers:
 
   apps/showcase:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../../packages/canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@atelier/studio':
+      '@a-company/atelier-studio':
         specifier: workspace:*
         version: link:../../packages/studio
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../../packages/types
     devDependencies:
@@ -64,13 +64,13 @@ importers:
 
   packages/canvas:
     dependencies:
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/math':
+      '@a-company/atelier-math':
         specifier: workspace:*
         version: link:../math
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
@@ -102,22 +102,22 @@ importers:
         specifier: ^3.25.0
         version: 3.25.76
     devDependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/lottie':
+      '@a-company/atelier-lottie':
         specifier: workspace:*
         version: link:../lottie
-      '@atelier/schema':
+      '@a-company/atelier-schema':
         specifier: workspace:*
         version: link:../schema
-      '@atelier/svg':
+      '@a-company/atelier-svg':
         specifier: workspace:*
         version: link:../svg
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
       '@types/node':
@@ -135,13 +135,13 @@ importers:
 
   packages/core:
     dependencies:
-      '@atelier/math':
+      '@a-company/atelier-math':
         specifier: workspace:*
         version: link:../math
-      '@atelier/schema':
+      '@a-company/atelier-schema':
         specifier: workspace:*
         version: link:../schema
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
@@ -157,10 +157,10 @@ importers:
 
   packages/lottie:
     dependencies:
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
@@ -188,22 +188,22 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/lottie':
+      '@a-company/atelier-lottie':
         specifier: workspace:*
         version: link:../lottie
-      '@atelier/schema':
+      '@a-company/atelier-schema':
         specifier: workspace:*
         version: link:../schema
-      '@atelier/svg':
+      '@a-company/atelier-svg':
         specifier: workspace:*
         version: link:../svg
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
       '@modelcontextprotocol/sdk':
@@ -228,13 +228,13 @@ importers:
 
   packages/react:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
@@ -268,7 +268,7 @@ importers:
 
   packages/schema:
     dependencies:
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
       yaml:
@@ -290,19 +290,19 @@ importers:
 
   packages/studio:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/math':
+      '@a-company/atelier-math':
         specifier: workspace:*
         version: link:../math
-      '@atelier/schema':
+      '@a-company/atelier-schema':
         specifier: workspace:*
         version: link:../schema
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
       mp4-muxer:
@@ -327,13 +327,13 @@ importers:
 
   packages/svg:
     dependencies:
-      '@atelier/canvas':
+      '@a-company/atelier-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@atelier/core':
+      '@a-company/atelier-core':
         specifier: workspace:*
         version: link:../core
-      '@atelier/types':
+      '@a-company/atelier-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:

@@ -1,4 +1,4 @@
-import type { TextVisual } from "@atelier/types";
+import type { TextVisual } from "@a-company/atelier-types";
 import type { RenderContext } from "../canvas-types.js";
 import type { EffectiveLayer } from "../apply-properties.js";
 import { colorToCSS } from "../styles.js";

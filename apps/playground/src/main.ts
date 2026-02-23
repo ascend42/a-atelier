@@ -1,7 +1,7 @@
 import { createDemoAnimation } from "./demo.js";
 import { Player } from "./player.js";
-import { resolveFrame } from "@atelier/core";
-import { renderFrame } from "@atelier/canvas";
+import { resolveFrame } from "@a-company/atelier-core";
+import { renderFrame } from "@a-company/atelier-canvas";
 import "./styles.css";
 
 // --- Build the demo document ---

@@ -1,4 +1,4 @@
-import type { AtelierDocument, Easing, State, Delta } from "@atelier/types";
+import type { AtelierDocument, Easing, State, Delta } from "@a-company/atelier-types";
 import { resolveFrame, type ResolvedFrame } from "../resolver/frame-resolver.js";
 import { resolveEasing } from "../resolver/easing-resolver.js";
 
@@ -293,7 +293,7 @@ export class StateMachine {
 // ── Frame Blending ────────────────────────────────────────────
 
 import type { ResolvedLayer } from "../resolver/frame-resolver.js";
-import type { AnimatableProperty } from "@atelier/types";
+import type { AnimatableProperty } from "@a-company/atelier-types";
 import { interpolateValue } from "../resolver/delta-resolver.js";
 
 /**

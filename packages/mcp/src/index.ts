@@ -1,4 +1,4 @@
-// @atelier/mcp — MCP server: AI authoring interface for animations
+// @a-company/atelier-mcp — MCP server: AI authoring interface for animations
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";

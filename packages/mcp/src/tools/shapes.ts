@@ -1,8 +1,8 @@
-// @atelier/mcp — Shape, fill, and stroke tools
+// @a-company/atelier-mcp — Shape, fill, and stroke tools
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, ShapeVisual } from "@atelier/types";
+import type { AtelierDocument, ShapeVisual } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {

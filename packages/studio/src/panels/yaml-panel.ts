@@ -1,5 +1,5 @@
-import type { AtelierDocument } from "@atelier/types";
-import { serializeAtelier } from "@atelier/schema";
+import type { AtelierDocument } from "@a-company/atelier-types";
+import { serializeAtelier } from "@a-company/atelier-schema";
 
 export class YamlPanel {
   readonly el: HTMLElement;

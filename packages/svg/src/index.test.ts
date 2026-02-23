@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import type { AtelierDocument } from "@atelier/types";
+import type { AtelierDocument } from "@a-company/atelier-types";
 import { renderFrameSVG, escapeXml, buildTransform } from "./index.js";
-import type { EffectiveLayer } from "@atelier/canvas";
+import type { EffectiveLayer } from "@a-company/atelier-canvas";
 
 // ── Test Documents ─────────────────────────────────────────
 

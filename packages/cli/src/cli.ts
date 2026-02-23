@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @atelier/cli — Entry point for the `atelier` command
+// @a-company/atelier-cli — Entry point for the `atelier` command
 
 import { Command } from "commander";
 import { validateCommand } from "./commands/validate.js";

@@ -1,4 +1,4 @@
-import type { Delta, AnimatableProperty } from "@atelier/types";
+import type { Delta, AnimatableProperty } from "@a-company/atelier-types";
 import type { LottieAnimatedValue, LottieAnimatedMultiValue, LottieKeyframe, LottieMultiKeyframe } from "./lottie-types.js";
 import { mapEasing, isLossyEasing } from "./map-easing.js";
 
