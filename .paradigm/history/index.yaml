@@ -1,0 +1,1848 @@
+version: '1.0'
+generated: '2026-02-22T00:13:50.730Z'
+by_symbol:
+  '#atelier-types':
+    symbol: '#atelier-types'
+    total_changes: 7
+    last_modified: '2026-02-22T00:10:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_5
+        id: h0047
+        ts: '2026-02-22T00:10:48Z'
+        type: implement
+        symbols:
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-svg'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: 7372cf1012c4b63cbee1b034a8b4055d791a9f49
+        intent: feature
+        files:
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-22/L-2026-02-22-001.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+        description: 'chore: record lore entry for paradigm doctor session'
+      - &ref_6
+        id: h0044
+        ts: '2026-02-21T23:55:51Z'
+        type: implement
+        symbols:
+          - '#asset-types'
+          - '#atelier-cli'
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-mcp'
+          - '#atelier-svg'
+          - '#atelier-types'
+          - '#audio-timing'
+          - '#audio-types'
+          - '#expression-evaluator'
+          - '#interaction-types'
+          - '#preset-types'
+          - '#shadow-types'
+          - '#variable-types'
+        author:
+          type: human
+          id: ascend
+        commit: ad5d16a9faac1df6ec0c9b36253bb82b461ad3fe
+        intent: fix
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/session-checkpoint.json
+          - .purpose
+          - CHANGELOG.md
+          - packages/core/.purpose
+          - packages/lottie/.purpose
+          - packages/math/.purpose
+          - packages/schema/.purpose
+          - packages/svg/.purpose
+          - packages/types/.purpose
+        description: 'fix(#paradigm): repair .purpose files and update framework for M10-M14 [0.25.1]'
+      - &ref_2
+        id: h0035
+        ts: '2026-02-21T04:56:54Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-react'
+          - '#atelier-schema'
+          - '#atelier-svg'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: 37e6e2ccb0638d43f52df0c2a3a22d2c942bcc34
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/wisdom/decisions/m8-architecture-m8-advanced-animation-capabilities-architecture.yaml
+          - .purpose
+          - CHANGELOG.md
+          - examples/hierarchical-states.atelier
+          - examples/state-transitions.atelier
+          - packages/cli/package.json
+          - packages/core/src/index.test.ts
+          - packages/core/src/index.ts
+          - packages/core/src/resolver/frame-resolver.ts
+          - packages/core/src/state/state-machine.ts
+          - packages/lottie/package.json
+          - packages/lottie/src/export-lottie.ts
+          - packages/lottie/src/index.test.ts
+          - packages/lottie/src/index.ts
+          - packages/lottie/src/lottie-types.ts
+          - packages/lottie/src/map-colors.ts
+          - packages/lottie/src/map-easing.ts
+          - packages/lottie/src/map-keyframes.ts
+          - packages/lottie/src/map-layers.ts
+          - packages/lottie/src/map-shapes.ts
+          - packages/lottie/src/warnings.ts
+          - packages/lottie/tsconfig.json
+          - packages/lottie/tsup.config.ts
+          - packages/react/package.json
+          - packages/react/src/Animation.tsx
+          - packages/react/src/index.test.tsx
+          - packages/react/src/index.ts
+          - packages/react/src/player.ts
+          - packages/react/src/useAnimation.ts
+          - packages/react/src/useAnimationState.ts
+          - packages/react/tsconfig.json
+          - packages/react/tsup.config.ts
+          - packages/react/vitest.config.ts
+          - packages/schema/src/state.ts
+          - packages/svg/package.json
+          - packages/svg/src/index.test.ts
+          - packages/svg/src/index.ts
+          - packages/svg/src/render-svg.ts
+          - packages/svg/src/svg-clip.ts
+          - packages/svg/src/svg-filters.ts
+          - packages/svg/src/svg-gradients.ts
+          - packages/svg/src/svg-properties.ts
+          - packages/svg/src/svg-shapes.ts
+          - packages/svg/src/svg-text.ts
+          - packages/svg/tsconfig.json
+          - packages/svg/tsup.config.ts
+          - packages/types/src/index.ts
+          - packages/types/src/state.ts
+          - pnpm-lock.yaml
+        description: 'feat(#atelier-core): M8 advanced animation capabilities — hierarchical states, state transitions, SVG renderer, Lottie export, React integration [0.19.0]'
+      - &ref_0
+        id: h0034
+        ts: '2026-02-21T02:29:13Z'
+        type: implement
+        symbols:
+          - '#atelier-canvas'
+          - '#atelier-core'
+          - '#atelier-math'
+          - '#atelier-mcp'
+          - '#atelier-schema'
+          - '#atelier-studio'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: 9e3cf96dd1f0005578947fb520ccff8a1df8fbf0
+        intent: feature
+        files:
+          - .purpose
+          - CHANGELOG.md
+          - examples/audio-sync.atelier
+          - examples/blend-modes.atelier
+          - examples/clip-path.atelier
+          - examples/expression-wobble.atelier
+          - examples/gradient-animation.atelier
+          - examples/motion-path.atelier
+          - packages/canvas/package.json
+          - packages/canvas/src/apply-properties.ts
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/render-frame.ts
+          - packages/cli/package.json
+          - packages/core/src/audio/audio-timing.ts
+          - packages/core/src/expressions/expression-evaluator.ts
+          - packages/core/src/index.test.ts
+          - packages/core/src/index.ts
+          - packages/core/src/resolver/delta-resolver.ts
+          - packages/math/src/index.test.ts
+          - packages/math/src/index.ts
+          - packages/math/src/path.ts
+          - packages/mcp/src/tools/deltas.ts
+          - packages/mcp/src/tools/presets.ts
+          - packages/schema/src/asset.ts
+          - packages/schema/src/delta.ts
+          - packages/schema/src/index.ts
+          - packages/schema/src/layer.ts
+          - packages/schema/src/state.ts
+          - packages/studio/package.json
+          - packages/studio/src/controls/easing-curve-editor.ts
+          - packages/studio/src/controls/easing-picker.ts
+          - packages/studio/src/styles.css
+          - packages/types/src/asset.ts
+          - packages/types/src/audio.ts
+          - packages/types/src/delta.ts
+          - packages/types/src/index.ts
+          - packages/types/src/layer.ts
+          - packages/types/src/state.ts
+          - pnpm-lock.yaml
+          - portal.yaml
+        description: 'feat(#atelier-core): M7 engine capabilities — blend modes, motion paths, clip paths, gradient animation, expressions, audio sync, easing curve editor [0.18.0]'
+      - &ref_1
+        id: h0032
+        ts: '2026-02-20T23:34:44Z'
+        type: implement
+        symbols:
+          - '#atelier-canvas'
+          - '#atelier-cli'
+          - '#atelier-core'
+          - '#atelier-math'
+          - '#atelier-mcp'
+          - '#atelier-schema'
+          - '#atelier-studio'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: c8d1bd0e29126c1c760c5de8fcdd0017b8e5bea1
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/log.jsonl
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .purpose
+          - AGENTS.md
+          - CHANGELOG.md
+          - README.md
+          - docs/ai-agent-guide.md
+          - docs/website-concept.md
+          - examples/easing-race.atelier
+          - examples/glow-pulse.atelier
+          - examples/hello-world.atelier
+          - examples/traffic-light.atelier
+          - packages/mcp/.purpose
+        description: 'docs: full documentation overhaul + website concept + canonical examples [0.17.2]'
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#atelier-math':
+    symbol: '#atelier-math'
+    total_changes: 4
+    last_modified: '2026-02-21T02:29:13Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_0
+      - *ref_1
+      - &ref_3
+        id: h0030
+        ts: '2026-02-20T23:31:09.653Z'
+        type: implement
+        symbols:
+          - '#atelier-types'
+          - '#atelier-math'
+          - '#atelier-schema'
+          - '#atelier-core'
+          - '#atelier-canvas'
+          - '#atelier-studio'
+          - '#atelier-mcp'
+          - '#atelier-cli'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Documentation overhaul + website concept: README.md full rewrite (v0.17.1, 8 packages, studio, render command, version history 0.8–0.17.1, docs section), AGENTS.md with Atelier overview, root .purpose restored, MCP .purpose tool count fix, ai-agent-guide updated to 22 properties + ecosystem section, 4 canonical .atelier example files (hello-world, easing-race, glow-pulse, traffic-light), website-concept.md keynote design doc'
+        files:
+          - README.md
+          - AGENTS.md
+          - .purpose
+          - packages/mcp/.purpose
+          - docs/ai-agent-guide.md
+          - examples/hello-world.atelier
+          - examples/easing-race.atelier
+          - examples/glow-pulse.atelier
+          - examples/traffic-light.atelier
+          - docs/website-concept.md
+          - CHANGELOG.md
+      - &ref_4
+        id: h0001
+        ts: '2026-02-13T22:50:31.717Z'
+        type: implement
+        symbols:
+          - '#atelier-types'
+          - '#atelier-math'
+          - '#atelier-schema'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 1: Format Spec — complete type definitions (44 types), pure math interpolation engine (easing, lerp, spring, color), Zod validation schemas with AI-readable errors and YAML parsing'
+        files:
+          - packages/types/src/
+          - packages/math/src/
+          - packages/schema/src/
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#atelier-schema':
+    symbol: '#atelier-schema'
+    total_changes: 5
+    last_modified: '2026-02-21T04:56:54Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_2
+      - *ref_0
+      - *ref_1
+      - *ref_3
+      - *ref_4
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#atelier-core':
+    symbol: '#atelier-core'
+    total_changes: 7
+    last_modified: '2026-02-22T00:10:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_5
+      - *ref_6
+      - *ref_2
+      - *ref_0
+      - *ref_1
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#frame-resolver':
+    symbol: '#frame-resolver'
+    total_changes: 1
+    last_modified: '2026-02-13T23:02:12.930Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_7
+        id: h0002
+        ts: '2026-02-13T23:02:12.930Z'
+        type: implement
+        symbols:
+          - '#atelier-core'
+          - '#frame-resolver'
+          - '#delta-resolver'
+          - '#document-builder'
+          - ^no-overlap
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 2: Engine Resolves Frames — resolveFrame(), resolveDelta(), DocumentBuilder fluent API, overlap validation, preset expansion, unit resolution'
+        files:
+          - packages/core/src/resolver/
+          - packages/core/src/builder/
+          - packages/core/src/validation/
+          - packages/core/src/units/
+          - packages/core/src/presets/
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#delta-resolver':
+    symbol: '#delta-resolver'
+    total_changes: 1
+    last_modified: '2026-02-13T23:02:12.930Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_7
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#document-builder':
+    symbol: '#document-builder'
+    total_changes: 1
+    last_modified: '2026-02-13T23:02:12.930Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_7
+    contributors:
+      human: []
+      agent:
+        - claude
+  ^no-overlap:
+    symbol: ^no-overlap
+    total_changes: 1
+    last_modified: '2026-02-13T23:02:12.930Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_7
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-canvas':
+    symbol: '#atelier-canvas'
+    total_changes: 4
+    last_modified: '2026-02-21T02:29:13Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_0
+      - *ref_1
+      - *ref_3
+      - &ref_8
+        id: h0005
+        ts: '2026-02-13T23:18:36.507Z'
+        type: implement
+        symbols:
+          - '#atelier-canvas'
+          - '#render-frame'
+          - '#shape-renderer'
+          - '#text-renderer'
+          - '#apply-properties'
+          - '#canvas-styles'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 3: First Rendered Frame — Canvas 2D renderer with RenderContext interface, shape/text renderers, fill/stroke styles (solid + gradient), transform stack with anchor points, percentage unit resolution at render time'
+        files:
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/styles.ts
+          - packages/canvas/src/apply-properties.ts
+          - packages/canvas/src/renderers/shape-renderer.ts
+          - packages/canvas/src/renderers/text-renderer.ts
+          - packages/canvas/src/render-frame.ts
+          - packages/canvas/src/index.ts
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#render-frame':
+    symbol: '#render-frame'
+    total_changes: 1
+    last_modified: '2026-02-13T23:18:36.507Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_8
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#shape-renderer':
+    symbol: '#shape-renderer'
+    total_changes: 2
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_9
+        id: h0025
+        ts: '2026-02-14T19:09:05.615Z'
+        type: implement
+        symbols:
+          - '#stroke-trim'
+          - '#shape-renderer'
+          - '#styles'
+          - '#apply-properties'
+          - '#property-panel'
+          - '#delta-panel'
+          - '#mcp-deltas'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Add strokeStart/strokeEnd (0–1) trim path animation support across the full stack: types, schema, canvas rendering (setLineDash + lineDashOffset simulation), effective layer resolution, property panel UI sliders, delta panel, and MCP tools. Includes perimeter calculation helpers for rect, ellipse, and path shapes.'
+        files:
+          - packages/types/src/shape.ts
+          - packages/types/src/delta.ts
+          - packages/schema/src/shape.ts
+          - packages/schema/src/delta.ts
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/styles.ts
+          - packages/canvas/src/apply-properties.ts
+          - packages/canvas/src/renderers/shape-renderer.ts
+          - packages/studio/src/panels/property-panel.ts
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/mcp/src/tools/deltas.ts
+      - *ref_8
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#text-renderer':
+    symbol: '#text-renderer'
+    total_changes: 1
+    last_modified: '2026-02-13T23:18:36.507Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_8
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#apply-properties':
+    symbol: '#apply-properties'
+    total_changes: 2
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+      - *ref_8
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#canvas-styles':
+    symbol: '#canvas-styles'
+    total_changes: 1
+    last_modified: '2026-02-13T23:18:36.507Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_8
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-mcp':
+    symbol: '#atelier-mcp'
+    total_changes: 8
+    last_modified: '2026-02-22T00:04:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_11
+        id: h0045
+        ts: '2026-02-22T00:04:48Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#atelier-lottie'
+          - '#atelier-mcp'
+          - '#atelier-react'
+          - '#atelier-svg'
+        author:
+          type: human
+          id: ascend
+        commit: 653d0fd47c52a620643b51d3633ef598ac258c80
+        intent: feature
+        files:
+          - README.md
+        description: 'docs(#atelier-cli): update README for v0.25.1 — 52 tools, 11 packages, version history'
+      - *ref_6
+      - &ref_12
+        id: h0036
+        ts: '2026-02-21T15:31:30Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#atelier-mcp'
+          - '#export-tools'
+          - '#layer-effects'
+          - '#state-config'
+        author:
+          type: human
+          id: ascend
+        commit: b0574c11c9b7cb0ae7482b29b7a7c840e50dd8b6
+        intent: feature
+        files:
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/export-lottie.ts
+          - packages/cli/src/commands/export-svg.ts
+          - packages/cli/src/commands/still.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/index.ts
+          - packages/mcp/package.json
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/export.ts
+          - packages/mcp/src/tools/layer-effects.ts
+          - packages/mcp/src/tools/state-config.ts
+          - pnpm-lock.yaml
+        description: 'feat(#atelier-mcp): M9 MCP + CLI parity — 10 new tools, 2 CLI commands, still PNG support [0.20.0]'
+      - *ref_0
+      - id: h0033
+        ts: '2026-02-21T00:25:24Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#atelier-mcp'
+        author:
+          type: human
+          id: ascend
+        commit: af84a0217266c9e99a9721be3bfb80698fc816d2
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .cursor/mcp.json
+          - .github/copilot-instructions.md
+          - .mcp.json
+          - .paradigm/agents.yaml
+          - .paradigm/config.yaml
+          - CHANGELOG.md
+          - CLAUDE.md
+          - README.md
+          - docs/PROPOSAL.md
+          - docs/contributing.md
+          - docs/getting-started.md
+          - packages/canvas/package.json
+          - packages/cli/package.json
+          - packages/cli/tsup.config.ts
+          - packages/core/package.json
+          - packages/math/package.json
+          - packages/mcp/README.md
+          - packages/mcp/package.json
+          - packages/schema/package.json
+          - packages/studio/package.json
+          - packages/types/package.json
+          - pnpm-lock.yaml
+        description: 'feat(#atelier-cli): publish as @a-company/atelier with bundled MCP server [0.17.3]'
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#mcp-store':
+    symbol: '#mcp-store'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_10
+        id: h0007
+        ts: '2026-02-13T23:33:39.797Z'
+        type: implement
+        symbols:
+          - '#atelier-mcp'
+          - '#mcp-store'
+          - '#mcp-document-tools'
+          - '#mcp-layer-tools'
+          - '#mcp-shape-tools'
+          - '#mcp-state-tools'
+          - '#mcp-delta-tools'
+          - '#mcp-preset-tools'
+          - '#mcp-preview-tools'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 4: AI Creates Animations — MCP server with 25 tools across 7 categories (document, layer, shape, state, delta, preset, preview), in-memory document store, structured error responses, full end-to-end workflow support'
+        files:
+          - packages/mcp/src/store.ts
+          - packages/mcp/src/tools/document.ts
+          - packages/mcp/src/tools/layers.ts
+          - packages/mcp/src/tools/shapes.ts
+          - packages/mcp/src/tools/states.ts
+          - packages/mcp/src/tools/deltas.ts
+          - packages/mcp/src/tools/presets.ts
+          - packages/mcp/src/tools/preview.ts
+          - packages/mcp/src/index.ts
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-document-tools':
+    symbol: '#mcp-document-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-layer-tools':
+    symbol: '#mcp-layer-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-shape-tools':
+    symbol: '#mcp-shape-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-state-tools':
+    symbol: '#mcp-state-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-delta-tools':
+    symbol: '#mcp-delta-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-preset-tools':
+    symbol: '#mcp-preset-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-preview-tools':
+    symbol: '#mcp-preview-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_10
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-cli':
+    symbol: '#atelier-cli'
+    total_changes: 9
+    last_modified: '2026-02-22T00:10:04Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0046
+        ts: '2026-02-22T00:10:04Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+        author:
+          type: human
+          id: ascend
+        commit: e7e473bab245a9b3034018a02f29149f3bb42503
+        intent: feature
+        files:
+          - packages/cli/package.json
+        description: 'chore(#atelier-cli): bump version to 0.25.1 for npm publish'
+      - *ref_11
+      - *ref_6
+      - *ref_12
+      - *ref_2
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#cli-validate':
+    symbol: '#cli-validate'
+    total_changes: 1
+    last_modified: '2026-02-13T23:40:00.871Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_13
+        id: h0009
+        ts: '2026-02-13T23:40:00.871Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#cli-validate'
+          - '#cli-info'
+          - '#cli-still'
+          - '#atelier-playground'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 5: Playback + CLI — CLI tool with validate/info/still commands, playground Vite app with canvas playback (play/pause/scrub), demo animation using DocumentBuilder'
+        files:
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/validate.ts
+          - packages/cli/src/commands/info.ts
+          - packages/cli/src/commands/still.ts
+          - packages/cli/src/index.ts
+          - apps/playground/src/main.ts
+          - apps/playground/src/demo.ts
+          - apps/playground/src/player.ts
+          - apps/playground/src/styles.css
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#cli-info':
+    symbol: '#cli-info'
+    total_changes: 1
+    last_modified: '2026-02-13T23:40:00.871Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#cli-still':
+    symbol: '#cli-still'
+    total_changes: 1
+    last_modified: '2026-02-13T23:40:00.871Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-playground':
+    symbol: '#atelier-playground'
+    total_changes: 1
+    last_modified: '2026-02-13T23:40:00.871Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#state-machine':
+    symbol: '#state-machine'
+    total_changes: 1
+    last_modified: '2026-02-13T23:47:34.057Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_14
+        id: h0011
+        ts: '2026-02-13T23:47:34.057Z'
+        type: implement
+        symbols:
+          - '#state-machine'
+          - '#template-resolver'
+          - '#mcp-template-tools'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 6: States & Templates — StateMachine class with tick/transition/seek/reset/playThrough, template variable substitution ({{var}} patterns with type preservation), 2 new MCP tools (instantiate_template, find_variables)'
+        files:
+          - packages/core/src/state/state-machine.ts
+          - packages/core/src/templates/template-resolver.ts
+          - packages/mcp/src/tools/templates.ts
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#template-resolver':
+    symbol: '#template-resolver'
+    total_changes: 1
+    last_modified: '2026-02-13T23:47:34.057Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_14
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-template-tools':
+    symbol: '#mcp-template-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:47:34.057Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_14
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-docs':
+    symbol: '#atelier-docs'
+    total_changes: 1
+    last_modified: '2026-02-14T10:37:43.151Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0013
+        ts: '2026-02-14T10:37:43.151Z'
+        type: implement
+        symbols:
+          - '#atelier-docs'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: '22-document documentation suite: root README rewrite, 9 package/app READMEs, format spec, architecture, MCP reference, builder guide, state machine guide, rendering pipeline, getting started, examples catalog, contributing guide, design decisions (10 ADRs), glossary (38 terms), AI agent guide'
+        files:
+          - README.md
+          - docs/format-spec.md
+          - docs/architecture.md
+          - packages/types/README.md
+          - packages/math/README.md
+          - packages/schema/README.md
+          - packages/core/README.md
+          - packages/canvas/README.md
+          - packages/mcp/README.md
+          - packages/cli/README.md
+          - apps/playground/README.md
+          - apps/showcase/README.md
+          - docs/mcp-reference.md
+          - docs/builder-guide.md
+          - docs/state-machine-guide.md
+          - docs/rendering-pipeline.md
+          - docs/getting-started.md
+          - docs/examples.md
+          - docs/contributing.md
+          - docs/design-decisions.md
+          - docs/glossary.md
+          - docs/ai-agent-guide.md
+          - CHANGELOG.md
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-studio':
+    symbol: '#atelier-studio'
+    total_changes: 4
+    last_modified: '2026-02-21T02:29:13Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_0
+      - *ref_1
+      - *ref_3
+      - &ref_15
+        id: h0015
+        ts: '2026-02-14T11:13:24.658Z'
+        type: implement
+        symbols:
+          - '#atelier-studio'
+          - '#canvas-panel'
+          - '#layer-panel'
+          - '#property-panel'
+          - '#delta-panel'
+          - '#yaml-panel'
+          - '#number-input'
+          - '#color-picker'
+          - '#select-input'
+          - '#slider-input'
+          - '#easing-picker'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'New @atelier/studio package: reusable editor widget with three view modes (preview, yaml, editor). Includes canvas+playback panel, layer sidebar, property inspector, delta editor, and syntax-highlighted YAML viewer. Integrated into showcase app with view toggle buttons. Updated getting-started.md with showcase run instructions.'
+        files:
+          - packages/studio/package.json
+          - packages/studio/tsconfig.json
+          - packages/studio/tsup.config.ts
+          - packages/studio/src/index.ts
+          - packages/studio/src/studio.ts
+          - packages/studio/src/player.ts
+          - packages/studio/src/theme.ts
+          - packages/studio/src/styles.css
+          - packages/studio/src/panels/canvas-panel.ts
+          - packages/studio/src/panels/layer-panel.ts
+          - packages/studio/src/panels/property-panel.ts
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/panels/yaml-panel.ts
+          - packages/studio/src/controls/number-input.ts
+          - packages/studio/src/controls/color-picker.ts
+          - packages/studio/src/controls/select-input.ts
+          - packages/studio/src/controls/slider-input.ts
+          - packages/studio/src/controls/easing-picker.ts
+          - apps/showcase/src/main.ts
+          - apps/showcase/src/styles.css
+          - apps/showcase/package.json
+          - docs/getting-started.md
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#canvas-panel':
+    symbol: '#canvas-panel'
+    total_changes: 1
+    last_modified: '2026-02-14T11:13:24.658Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#layer-panel':
+    symbol: '#layer-panel'
+    total_changes: 2
+    last_modified: '2026-02-14T17:19:38.749Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_16
+        id: h0019
+        ts: '2026-02-14T17:19:38.749Z'
+        type: implement
+        symbols:
+          - '#drag-reorder'
+          - '#layer-panel'
+          - '#delta-panel'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: Drag-to-reorder for layers and deltas — shared enableDragReorder() utility with HTML5 DnD, MutationObserver handle binding, accent drop indicators; layer panel grip handles with Z-order reordering; delta panel grip handles with flat-array index mapping for per-layer reorder
+        files:
+          - packages/studio/src/utils/drag-reorder.ts
+          - packages/studio/src/panels/layer-panel.ts
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/styles.css
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#property-panel':
+    symbol: '#property-panel'
+    total_changes: 2
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#delta-panel':
+    symbol: '#delta-panel'
+    total_changes: 6
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+      - id: h0023
+        ts: '2026-02-14T18:07:54.907Z'
+        type: implement
+        symbols:
+          - '#delta-panel'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: Add mini timeline bar to collapsed delta view — non-interactive visual segment showing frame range position relative to animation duration
+        files:
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/styles.css
+      - &ref_18
+        id: h0021
+        ts: '2026-02-14T17:56:19.446Z'
+        type: implement
+        symbols:
+          - '#delta-panel'
+          - '#range-slider'
+          - '#delta-types'
+          - '#delta-schema'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Add dual-thumb range slider for frame range visualization, optional delta name field with header display, and sort-by-start-frame button to delta panel. Add name?: string to Delta type and DeltaSchema.'
+        files:
+          - packages/types/src/delta.ts
+          - packages/schema/src/delta.ts
+          - packages/studio/src/controls/range-slider.ts
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/styles.css
+      - *ref_16
+      - &ref_17
+        id: h0017
+        ts: '2026-02-14T14:52:14.614Z'
+        type: implement
+        symbols:
+          - '#delta-panel'
+          - '#number-input'
+          - '#slider-input'
+          - '#color-picker'
+          - '#select-input'
+          - '#easing-picker'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: Add inline delta editor — clicking a delta header expands an editor with property-matched controls (SliderInput for opacity, ColorPicker for colors, NumberInput for numeric props), property dropdown to change animated property, EasingPicker, and range inputs. Only one delta expanded at a time. New deltas auto-expand. All changes mutate delta directly and fire onDeltaChange for live canvas updates.
+        files:
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/styles.css
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#yaml-panel':
+    symbol: '#yaml-panel'
+    total_changes: 1
+    last_modified: '2026-02-14T11:13:24.658Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#number-input':
+    symbol: '#number-input'
+    total_changes: 2
+    last_modified: '2026-02-14T14:52:14.614Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#color-picker':
+    symbol: '#color-picker'
+    total_changes: 2
+    last_modified: '2026-02-14T14:52:14.614Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#select-input':
+    symbol: '#select-input'
+    total_changes: 2
+    last_modified: '2026-02-14T14:52:14.614Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#slider-input':
+    symbol: '#slider-input'
+    total_changes: 2
+    last_modified: '2026-02-14T14:52:14.614Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#easing-picker':
+    symbol: '#easing-picker'
+    total_changes: 2
+    last_modified: '2026-02-14T14:52:14.614Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_15
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#drag-reorder':
+    symbol: '#drag-reorder'
+    total_changes: 1
+    last_modified: '2026-02-14T17:19:38.749Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_16
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#range-slider':
+    symbol: '#range-slider'
+    total_changes: 1
+    last_modified: '2026-02-14T17:56:19.446Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_18
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#delta-types':
+    symbol: '#delta-types'
+    total_changes: 1
+    last_modified: '2026-02-14T17:56:19.446Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_18
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#delta-schema':
+    symbol: '#delta-schema'
+    total_changes: 1
+    last_modified: '2026-02-14T17:56:19.446Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_18
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#stroke-trim':
+    symbol: '#stroke-trim'
+    total_changes: 1
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#styles':
+    symbol: '#styles'
+    total_changes: 1
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-deltas':
+    symbol: '#mcp-deltas'
+    total_changes: 1
+    last_modified: '2026-02-14T19:09:05.615Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_9
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#cli-render':
+    symbol: '#cli-render'
+    total_changes: 1
+    last_modified: '2026-02-15T13:17:58.490Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_19
+        id: h0027
+        ts: '2026-02-15T13:17:58.490Z'
+        type: implement
+        symbols:
+          - '#cli-render'
+          - '#render-pipeline'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: Added `atelier render` command — renders animation documents to MP4 or GIF via FFmpeg. Core render pipeline (render-pipeline.ts) handles frame loop, FFmpeg spawning, backpressure, and image preloading. Commander wrapper (render.ts) provides CLI UX with progress display and error messages.
+        files:
+          - packages/cli/src/commands/render-pipeline.ts
+          - packages/cli/src/commands/render.ts
+          - packages/cli/src/cli.ts
+          - packages/cli/src/index.ts
+          - packages/cli/package.json
+          - packages/cli/src/index.test.ts
+          - packages/cli/.purpose
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#render-pipeline':
+    symbol: '#render-pipeline'
+    total_changes: 1
+    last_modified: '2026-02-15T13:17:58.490Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_19
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#paradigm-config':
+    symbol: '#paradigm-config'
+    total_changes: 1
+    last_modified: '2026-02-20T22:52:11Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0029
+        ts: '2026-02-20T22:52:11Z'
+        type: implement
+        symbols:
+          - '#paradigm-config'
+        author:
+          type: human
+          id: ascend
+        commit: 7bcfdad472ccabe94797831970208774e6a98769
+        intent: feature
+        files:
+          - .claude/hooks/paradigm-postwrite.sh
+          - .claude/hooks/paradigm-precommit.sh
+          - .claude/hooks/paradigm-stop.sh
+          - .claude/settings.json
+          - .claude/settings.local.json
+          - .cursor/rules/paradigm-context.mdc
+          - .cursor/rules/paradigm-core.mdc
+          - .cursor/rules/paradigm-logging.mdc
+          - .paradigm/config.yaml
+          - .paradigm/flow-index.json
+          - .paradigm/model-cache.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .premise
+          - .purpose
+          - AGENTS.md
+          - CHANGELOG.md
+          - CLAUDE.md
+        description: 'chore: generalize paradigm config and add Claude Code hooks [0.17.1]'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-lottie':
+    symbol: '#atelier-lottie'
+    total_changes: 4
+    last_modified: '2026-02-22T00:10:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_5
+      - *ref_11
+      - *ref_6
+      - *ref_2
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-react':
+    symbol: '#atelier-react'
+    total_changes: 2
+    last_modified: '2026-02-22T00:04:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_11
+      - *ref_2
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-svg':
+    symbol: '#atelier-svg'
+    total_changes: 4
+    last_modified: '2026-02-22T00:10:48Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_5
+      - *ref_11
+      - *ref_6
+      - *ref_2
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#export-tools':
+    symbol: '#export-tools'
+    total_changes: 1
+    last_modified: '2026-02-21T15:31:30Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_12
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#layer-effects':
+    symbol: '#layer-effects'
+    total_changes: 1
+    last_modified: '2026-02-21T15:31:30Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_12
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#state-config':
+    symbol: '#state-config'
+    total_changes: 1
+    last_modified: '2026-02-21T15:31:30Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_12
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-asset-tools':
+    symbol: '#mcp-asset-tools'
+    total_changes: 2
+    last_modified: '2026-02-21T22:39:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_20
+        id: h0038
+        ts: '2026-02-21T22:39:27Z'
+        type: implement
+        symbols:
+          - '#cli-assets'
+          - '#mcp-asset-tools'
+        author:
+          type: human
+          id: ascend
+        commit: 4072444e267c69cadf6b8e17c34c671e4ba17e94
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-001.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/cli/.purpose
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/assets.ts
+          - packages/cli/src/index.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/assets.ts
+        description: 'feat(#atelier-mcp): M10 asset management — 3 new MCP tools, 1 CLI command [0.21.0]'
+      - &ref_21
+        id: h0037
+        ts: '2026-02-21T22:29:24.094Z'
+        type: implement
+        symbols:
+          - '#mcp-asset-tools'
+          - '#cli-assets'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'M10: Added 3 new MCP tools (atelier_add_asset, atelier_list_assets, atelier_remove_asset) for managing document assets without reloading the entire document. Added 1 CLI command (atelier assets). Total tools: 37→40. Version bumped to 0.21.0. All tests pass (87 MCP, 23 CLI).'
+        files:
+          - packages/mcp/src/tools/assets.ts
+          - packages/mcp/src/index.ts
+          - packages/cli/src/commands/assets.ts
+          - packages/cli/src/cli.ts
+          - packages/cli/src/index.ts
+          - packages/cli/package.json
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/.purpose
+          - packages/cli/.purpose
+          - CHANGELOG.md
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#cli-assets':
+    symbol: '#cli-assets'
+    total_changes: 2
+    last_modified: '2026-02-21T22:39:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+      - *ref_21
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#cli-variables':
+    symbol: '#cli-variables'
+    total_changes: 1
+    last_modified: '2026-02-21T23:24:34Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_22
+        id: h0039
+        ts: '2026-02-21T23:24:34Z'
+        type: implement
+        symbols:
+          - '#cli-variables'
+          - '#mcp-variable-tools'
+        author:
+          type: human
+          id: ascend
+        commit: e4b18ead2892db13d1110f1257be116a34834c90
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-002.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/cli/.purpose
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/variables.ts
+          - packages/cli/src/index.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/variables.ts
+        description: 'feat(#atelier-mcp): M11 variable management — 3 new MCP tools, 1 CLI command [0.22.0]'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-variable-tools':
+    symbol: '#mcp-variable-tools'
+    total_changes: 1
+    last_modified: '2026-02-21T23:24:34Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_22
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '@atelier/schema':
+    symbol: '@atelier/schema'
+    total_changes: 1
+    last_modified: '2026-02-21T23:28:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_23
+        id: h0040
+        ts: '2026-02-21T23:28:03Z'
+        type: implement
+        symbols:
+          - '@atelier/schema'
+          - '@atelier/types'
+          - '#mcp-interaction-tools'
+        author:
+          type: human
+          id: ascend
+        commit: 3b49ba13c47e6185ce85086fd2b2881d8505d1bc
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-003.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/interactions.ts
+          - packages/schema/src/index.ts
+          - packages/schema/src/interaction.ts
+          - packages/schema/src/layer.ts
+          - packages/types/src/index.ts
+          - packages/types/src/interaction.ts
+          - packages/types/src/layer.ts
+        description: 'feat(#atelier-mcp): M12 interactions & events — types, schema, 3 new MCP tools [0.23.0]'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '@atelier/types':
+    symbol: '@atelier/types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:28:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_23
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-interaction-tools':
+    symbol: '#mcp-interaction-tools'
+    total_changes: 1
+    last_modified: '2026-02-21T23:28:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_23
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-ref-tools':
+    symbol: '#mcp-ref-tools'
+    total_changes: 2
+    last_modified: '2026-02-21T23:32:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0042
+        ts: '2026-02-21T23:32:03Z'
+        type: implement
+        symbols:
+          - '#mcp-ref-tools'
+        author:
+          type: human
+          id: ascend
+        commit: a30546878544a45ed3f4b88f5280424f78ae48e4
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-004.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/session-checkpoint.json
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/refs.ts
+        description: 'feat(#mcp-ref-tools): M13 composition/nesting — 2 new ref layer tools [0.24.0]'
+      - id: h0041
+        ts: '2026-02-21T23:31:32.464Z'
+        type: implement
+        symbols:
+          - '#mcp-ref-tools'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'M13: Added 2 MCP tools (atelier_set_ref, atelier_resolve_refs) for composition/nesting — ref layer source setting with self-reference prevention, in-memory document resolution checking'
+        files:
+          - packages/mcp/src/tools/refs.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/.purpose
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#mcp-performance-tools':
+    symbol: '#mcp-performance-tools'
+    total_changes: 1
+    last_modified: '2026-02-21T23:35:26Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0043
+        ts: '2026-02-21T23:35:26Z'
+        type: implement
+        symbols:
+          - '#mcp-performance-tools'
+        author:
+          type: human
+          id: ascend
+        commit: 7b8e68ee06671db386b4ed433eb47fdf0b417008
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-21/L-2026-02-21-005.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/performance.ts
+        description: 'feat(#mcp-performance-tools): M14 performance analysis — 4 new tools [0.25.0]'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#asset-types':
+    symbol: '#asset-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#audio-timing':
+    symbol: '#audio-timing'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#audio-types':
+    symbol: '#audio-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#expression-evaluator':
+    symbol: '#expression-evaluator'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#interaction-types':
+    symbol: '#interaction-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#preset-types':
+    symbol: '#preset-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#shadow-types':
+    symbol: '#shadow-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#variable-types':
+    symbol: '#variable-types'
+    total_changes: 1
+    last_modified: '2026-02-21T23:55:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+co_changes: []
+fragile_symbols: []

@@ -1,10 +1,10 @@
 version: 1.0.0
-description: CLI tool — validate, info, still, and render commands for .atelier animation files
+description: CLI tool — validate, info, still, render, export-svg, export-lottie, assets, and variables commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
   - Validate command checks schema + delta overlaps
   - Info command outputs document summary
-  - Still command resolves a frame and outputs JSON
+  - Still command resolves a frame and outputs JSON or PNG
   - Render command produces MP4/GIF via FFmpeg (requires node-canvas + FFmpeg)
 components:
   cli-validate:
@@ -22,3 +22,15 @@ components:
   render-pipeline:
     description: Core render pipeline — frame loop, FFmpeg spawning, image preloading
     file: src/commands/render-pipeline.ts
+  cli-export-svg:
+    description: Export SVG command — renders a frame as SVG via @atelier/svg
+    file: src/commands/export-svg.ts
+  cli-export-lottie:
+    description: Export Lottie command — exports document to Lottie JSON via @atelier/lottie
+    file: src/commands/export-lottie.ts
+  cli-assets:
+    description: Assets command — lists all assets in a document with usage info
+    file: src/commands/assets.ts
+  cli-variables:
+    description: Variables command — lists all variables in a document with usage info
+    file: src/commands/variables.ts

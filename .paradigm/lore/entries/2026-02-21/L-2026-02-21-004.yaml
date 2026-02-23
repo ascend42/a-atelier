@@ -1,0 +1,10 @@
+id: L-2026-02-21-004
+type: session
+timestamp: '2026-02-21T23:31:50.896Z'
+author:
+  type: human
+  id: claude
+title: 'M13: Composition/nesting ref tools'
+summary: Added 2 MCP tools (atelier_set_ref, atelier_resolve_refs) for ref layer composition. Set ref source with self-reference prevention, resolve refs to check in-memory document resolution. 8 new tests, tool count 46→48, version 0.24.0.
+symbols_touched:
+  - '#mcp-ref-tools'

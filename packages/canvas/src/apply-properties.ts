@@ -1,4 +1,4 @@
-import type { Layer, Visual, ShapeVisual, TextVisual, Color, BlendMode, LinearGradientFill, RadialGradientFill } from "@atelier/types";
+import type { Layer, Visual, ShapeVisual, TextVisual, ImageVisual, Color, BlendMode, LinearGradientFill, RadialGradientFill } from "@atelier/types";
 import { colorToCSS } from "./styles.js";
 import { evaluatePathAtProgress } from "@atelier/math";
 import type { ResolvedLayer } from "@atelier/core";
@@ -36,6 +36,13 @@ export interface EffectiveLayer {
   blendMode: string;
   /** Motion path auto-rotation in degrees (applied additively to rotation) */
   motionPathAngle: number;
+  /** Whether this layer is visible (may be animated) */
+  visible: boolean;
+  /** Color tint overlay */
+  tint?: {
+    color: string;
+    amount: number;
+  };
 }
 
 /**
@@ -63,6 +70,7 @@ export function buildEffectiveLayer(
   const cp = computedProperties as Record<string, unknown>;
 
   const hasShadow = layer.shadow || cp["shadow.blur"] !== undefined || cp["shadow.color"] !== undefined;
+  const hasTint = layer.tint || cp["tint.amount"] !== undefined || cp["tint.color"] !== undefined;
 
   // Resolve base position
   let x = resolveUnit((cp["frame.x"] ?? layer.frame.x) as number | string, parentWidth);
@@ -101,6 +109,11 @@ export function buildEffectiveLayer(
     } : undefined,
     blendMode: (layer.blendMode as BlendMode) ?? "normal",
     motionPathAngle,
+    visible: (cp["visible"] as boolean) ?? layer.visible ?? true,
+    tint: hasTint ? {
+      color: colorToCSS((cp["tint.color"] ?? layer.tint?.color ?? "#FF0000") as Color),
+      amount: (cp["tint.amount"] as number) ?? layer.tint?.amount ?? 0,
+    } : undefined,
   };
 }
 
@@ -123,7 +136,14 @@ function buildEffectiveVisual(visual: Visual, cp: Record<string, unknown>): Visu
     cp["visual.style.fontSize"] !== undefined ||
     cp["visual.style.color"] !== undefined;
 
-  if (!hasVisualOverride) return visual;
+  const hasImageOverride =
+    cp["visual.image.sourceRect.x"] !== undefined ||
+    cp["visual.image.sourceRect.y"] !== undefined ||
+    cp["visual.image.sourceRect.width"] !== undefined ||
+    cp["visual.image.sourceRect.height"] !== undefined ||
+    cp["visual.image.frameIndex"] !== undefined;
+
+  if (!hasVisualOverride && !hasImageOverride) return visual;
 
   if (visual.type === "shape") {
     const v: ShapeVisual = { ...visual };
@@ -188,6 +208,33 @@ function buildEffectiveVisual(visual: Visual, cp: Record<string, unknown>): Visu
     if (fontSize !== v.style.fontSize || color !== v.style.color) {
       v.style = { ...v.style, fontSize, color: color as string };
     }
+    return v;
+  }
+
+  if (visual.type === "image" && hasImageOverride) {
+    const v: ImageVisual = { ...visual };
+
+    // Merge animated sourceRect fields
+    if (
+      cp["visual.image.sourceRect.x"] !== undefined ||
+      cp["visual.image.sourceRect.y"] !== undefined ||
+      cp["visual.image.sourceRect.width"] !== undefined ||
+      cp["visual.image.sourceRect.height"] !== undefined
+    ) {
+      const base = v.sourceRect ?? { x: 0, y: 0, width: 0, height: 0 };
+      v.sourceRect = {
+        x: (cp["visual.image.sourceRect.x"] as number) ?? base.x,
+        y: (cp["visual.image.sourceRect.y"] as number) ?? base.y,
+        width: (cp["visual.image.sourceRect.width"] as number) ?? base.width,
+        height: (cp["visual.image.sourceRect.height"] as number) ?? base.height,
+      };
+    }
+
+    // Merge animated frameIndex
+    if (cp["visual.image.frameIndex"] !== undefined) {
+      v.frameIndex = Math.floor(cp["visual.image.frameIndex"] as number);
+    }
+
     return v;
   }
 

@@ -1,0 +1,10 @@
+id: L-2026-02-21-003
+type: session
+timestamp: '2026-02-21T23:27:51.583Z'
+author:
+  type: human
+  id: unknown
+title: 'M12: Interactions & Events System'
+summary: 'Added Interaction type system (Trigger/Action/Interaction), schema validation, 3 new MCP tools (atelier_add_interaction, atelier_list_interactions, atelier_remove_interaction). Tools: 43→46. Version 0.23.0.'
+symbols_touched:
+  - '#mcp-interaction-tools'

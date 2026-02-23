@@ -1,6 +1,6 @@
 import type { Easing } from "./easing.js";
 
-/** Animatable layer properties */
+/** Animatable layer properties — runtime Zod source of truth is in @atelier/schema */
 export type AnimatableProperty =
   | "frame.x"
   | "frame.y"
@@ -28,7 +28,15 @@ export type AnimatableProperty =
   | "visual.fill.angle"
   | "visual.fill.center.x"
   | "visual.fill.center.y"
-  | "visual.fill.radius";
+  | "visual.fill.radius"
+  | "visual.image.sourceRect.x"
+  | "visual.image.sourceRect.y"
+  | "visual.image.sourceRect.width"
+  | "visual.image.sourceRect.height"
+  | "visual.image.frameIndex"
+  | "visible"
+  | "tint.color"
+  | "tint.amount";
 
 /** Frame range [start, end] — inclusive, 0-based */
 export type FrameRange = [number, number];

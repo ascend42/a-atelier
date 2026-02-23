@@ -29,6 +29,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       id: z.string().describe("Template document ID"),
       bindings: z.record(z.unknown()).describe("Variable bindings: { variableName: value }"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, bindings }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -56,6 +57,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       id: z.string().describe("Document ID"),
     },
+    { readOnlyHint: true, destructiveHint: false },
     async ({ id }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

@@ -1,12 +1,19 @@
 import type { AtelierDocument, ImageVisual, Shape } from "@atelier/types";
 import type { ResolvedFrame } from "@atelier/core";
-import type { RenderContext } from "./canvas-types.js";
+import type { RenderContext, DocumentResolver } from "./canvas-types.js";
 import { buildEffectiveLayer, type EffectiveLayer } from "./apply-properties.js";
 import { renderShape } from "./renderers/shape-renderer.js";
 import { renderText } from "./renderers/text-renderer.js";
 import { renderImage } from "./renderers/image-renderer.js";
 import { renderRef } from "./renderers/ref-renderer.js";
 import type { ImageCache } from "./image-cache.js";
+
+/** Options for renderFrame */
+export interface RenderOptions {
+  imageCache?: ImageCache;
+  documentResolver?: DocumentResolver;
+  maxRefDepth?: number;
+}
 
 /**
  * Render a resolved frame to a Canvas 2D context.
@@ -16,8 +23,21 @@ export function renderFrame(
   ctx: RenderContext,
   resolvedFrame: ResolvedFrame,
   doc: AtelierDocument,
-  imageCache?: ImageCache,
+  optsOrCache?: RenderOptions | ImageCache,
 ): void {
+  // Backward compatible: detect old ImageCache arg vs new RenderOptions
+  let imageCache: ImageCache | undefined;
+  let documentResolver: DocumentResolver | undefined;
+  let maxRefDepth = 4;
+
+  if (optsOrCache && typeof (optsOrCache as ImageCache).get === "function") {
+    imageCache = optsOrCache as ImageCache;
+  } else if (optsOrCache) {
+    const opts = optsOrCache as RenderOptions;
+    imageCache = opts.imageCache;
+    documentResolver = opts.documentResolver;
+    maxRefDepth = opts.maxRefDepth ?? 4;
+  }
   const { width, height } = doc.canvas;
 
   // Clear canvas
@@ -39,7 +59,7 @@ export function renderFrame(
     const { layer } = eff;
 
     // Skip invisible layers
-    if (layer.visible === false) continue;
+    if (!eff.visible) continue;
 
     // Skip fully transparent layers
     if (eff.opacity <= 0) continue;
@@ -98,23 +118,73 @@ export function renderFrame(
       applyClipPath(ctx, layer.clipPath, eff.width, eff.height);
     }
 
+    // Tint requires offscreen compositing — draw to offscreen if tint is active
+    const hasTint = eff.tint && eff.tint.amount > 0 && ctx.createOffscreen;
+    let renderCtx = ctx;
+    let offscreen: { ctx: RenderContext; canvas: unknown } | null = null;
+
+    if (hasTint) {
+      offscreen = ctx.createOffscreen!(eff.width, eff.height);
+      renderCtx = offscreen.ctx;
+    }
+
+    // Ref rendering options (passed through for sub-doc composition)
+    const refOpts = { documentResolver, maxRefDepth, imageCache };
+
     // Dispatch to type-specific renderer
     switch (layer.visual.type) {
       case "shape":
-        renderShape(ctx, eff);
+        renderShape(renderCtx, eff);
         break;
       case "text":
-        renderText(ctx, eff);
+        renderText(renderCtx, eff);
         break;
       case "image":
-        if (imageCache) renderImage(ctx, eff, imageCache);
+        if (imageCache) renderImage(renderCtx, eff, imageCache);
         break;
       case "group":
         // Groups are structural containers — no visual output
         break;
       case "ref":
-        renderRef(ctx, eff);
+        renderRef(renderCtx, eff, refOpts, doc);
         break;
+    }
+
+    // Apply tint via multiply composite on offscreen canvas
+    if (hasTint && offscreen && eff.tint) {
+      const offCtx = offscreen.ctx;
+      // Draw tint color over the content using multiply
+      offCtx.save();
+      offCtx.globalCompositeOperation = "multiply";
+      offCtx.fillStyle = eff.tint.color;
+      offCtx.fillRect(0, 0, eff.width, eff.height);
+      offCtx.restore();
+
+      // Clip to original content shape using destination-in
+      offCtx.save();
+      offCtx.globalCompositeOperation = "destination-in";
+      // Re-render the content to create the alpha mask
+      switch (layer.visual.type) {
+        case "shape": renderShape(offCtx, eff); break;
+        case "text": renderText(offCtx, eff); break;
+        case "image": if (imageCache) renderImage(offCtx, eff, imageCache); break;
+        case "ref": renderRef(offCtx, eff, refOpts, doc); break;
+      }
+      offCtx.restore();
+
+      // Blend tinted offscreen back with original at tint.amount alpha
+      // First draw original content
+      switch (layer.visual.type) {
+        case "shape": renderShape(ctx, eff); break;
+        case "text": renderText(ctx, eff); break;
+        case "image": if (imageCache) renderImage(ctx, eff, imageCache); break;
+        case "ref": renderRef(ctx, eff, refOpts, doc); break;
+      }
+      // Then overlay tinted version at tint amount
+      const prevAlpha = ctx.globalAlpha;
+      ctx.globalAlpha = eff.tint.amount;
+      ctx.drawImage(offscreen.canvas, 0, 0, eff.width, eff.height);
+      ctx.globalAlpha = prevAlpha;
     }
 
     ctx.restore();

@@ -31,6 +31,7 @@ export type { Shadow } from "./shadow.js";
 
 // layer.ts
 export type {
+  SpritesheetConfig,
   ShapeVisual,
   TextVisual,
   ImageVisual,
@@ -59,13 +60,16 @@ export type { AnimatableProperty, FrameRange, Delta } from "./delta.js";
 export type { Audio } from "./audio.js";
 
 // state.ts
-export type { State } from "./state.js";
+export type { State, StateTransitionConfig } from "./state.js";
 
 // preset.ts
 export type { PresetDelta, Preset } from "./preset.js";
 
 // variable.ts
 export type { VariableType, Variable } from "./variable.js";
+
+// interaction.ts
+export type { TriggerType, Trigger, ActionType, Action, Interaction } from "./interaction.js";
 
 // asset.ts
 export type { AssetType, Asset } from "./asset.js";

@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.18.0",
+  "version": "0.25.1",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -49,6 +49,8 @@
     "@atelier/schema": "workspace:*",
     "@atelier/core": "workspace:*",
     "@atelier/canvas": "workspace:*",
+    "@atelier/svg": "workspace:*",
+    "@atelier/lottie": "workspace:*",
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",

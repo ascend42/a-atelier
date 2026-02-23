@@ -1,0 +1,47 @@
+id: L-2026-02-22-001
+type: agent-session
+timestamp: '2026-02-22T00:10:30.836Z'
+author:
+  type: agent
+  id: claude
+  model: claude-opus-4-6
+title: Paradigm doctor fixes + framework update for M10-M14
+summary: 'Ran paradigm doctor, fixed all 6 issues: 3 YAML syntax errors (unquoted # keys in schema/types/math .purpose files), 2 missing # prefixes in core, created .purpose files for svg and lottie packages, added 6 missing type components and 2 missing core components, updated root .purpose with accurate counts (52 MCP tools, 9 CLI commands, 60+ types). Updated CHANGELOG and README version history through v0.25.1. Bumped npm version to 0.25.1, all 468 tests passing.'
+symbols_touched:
+  - '#atelier-types'
+  - '#atelier-core'
+  - '#atelier-mcp'
+  - '#atelier-cli'
+  - '#atelier-svg'
+  - '#atelier-lottie'
+  - '#expression-evaluator'
+  - '#audio-timing'
+  - '#shadow-types'
+  - '#audio-types'
+  - '#asset-types'
+  - '#variable-types'
+  - '#interaction-types'
+  - '#preset-types'
+files_created:
+  - packages/svg/.purpose
+  - packages/lottie/.purpose
+files_modified:
+  - .purpose
+  - packages/core/.purpose
+  - packages/math/.purpose
+  - packages/schema/.purpose
+  - packages/types/.purpose
+  - CHANGELOG.md
+  - README.md
+  - packages/cli/package.json
+verification:
+  status: pass
+  details:
+    build: pass
+    tests: pass
+    validation: pass
+tags:
+  - paradigm
+  - doctor
+  - maintenance
+  - npm-prep

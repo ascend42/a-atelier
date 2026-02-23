@@ -1,0 +1,11 @@
+id: L-2026-02-21-001
+type: session
+timestamp: '2026-02-21T22:31:16.383Z'
+author:
+  type: human
+  id: unknown
+title: 'M10: Asset Management MCP Tools'
+summary: 'Added 3 new MCP tools (atelier_add_asset, atelier_list_assets, atelier_remove_asset) for managing document assets. Added 1 CLI command (atelier assets). Tools: 37→40. Version 0.21.0.'
+symbols_touched:
+  - '#mcp-asset-tools'
+  - '#cli-assets'
