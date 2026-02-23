@@ -30,9 +30,16 @@ export function register(server: McpServer, store: DocumentStore): void {
       type: z.enum(["image", "svg", "font", "animation", "audio"]).describe("Asset type"),
       src: z.string().describe("File path or URL"),
       description: z.string().optional().describe("Human-readable description"),
+      spritesheet: z.object({
+        columns: z.number().int().positive().describe("Number of columns in the spritesheet grid"),
+        rows: z.number().int().positive().describe("Number of rows in the spritesheet grid"),
+        frameCount: z.number().int().positive().optional().describe("Total frame count (defaults to columns × rows)"),
+        frameWidth: z.number().positive().describe("Width of each frame in pixels"),
+        frameHeight: z.number().positive().describe("Height of each frame in pixels"),
+      }).optional().describe("Spritesheet metadata (image assets only)"),
     },
     { readOnlyHint: false, destructiveHint: false },
-    async ({ id, assetId, type, src, description }) => {
+    async ({ id, assetId, type, src, description, spritesheet }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
       const { doc } = result;
@@ -40,7 +47,12 @@ export function register(server: McpServer, store: DocumentStore): void {
       if (!doc.assets) doc.assets = {};
       if (doc.assets[assetId]) return err(`Asset "${assetId}" already exists`);
 
-      doc.assets[assetId] = { type, src, ...(description !== undefined ? { description } : {}) };
+      doc.assets[assetId] = {
+        type,
+        src,
+        ...(description !== undefined ? { description } : {}),
+        ...(spritesheet ? { spritesheet } : {}),
+      };
       return ok({ assetId, type, src });
     },
   );

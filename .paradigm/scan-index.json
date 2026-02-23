@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-21T23:55:51.704Z",
+    "generatedAt": "2026-02-22T00:20:32.889Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 11,
@@ -376,223 +376,55 @@
       "visualTags": [],
       "related": []
     },
-    "#svg-renderer": {
-      "id": "#svg-renderer",
-      "name": "#svg Renderer",
-      "symbol": "##svg-renderer",
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
       "visualTags": [],
       "related": [
-        "#svg-shapes",
-        "#svg-text",
-        "#svg-gradients",
-        "#svg-filters",
-        "#svg-clip",
-        "#svg-properties"
+        "#atelier-types"
       ]
     },
-    "#svg-shapes": {
-      "id": "#svg-shapes",
-      "name": "#svg Shapes",
-      "symbol": "##svg-shapes",
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation",
       "visualTags": [],
       "related": []
     },
-    "#svg-text": {
-      "id": "#svg-text",
-      "name": "#svg Text",
-      "symbol": "##svg-text",
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatableProperty enum and FrameRange refinement",
       "visualTags": [],
       "related": []
     },
-    "#svg-gradients": {
-      "id": "#svg-gradients",
-      "name": "#svg Gradients",
-      "symbol": "##svg-gradients",
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
       "visualTags": [],
       "related": []
     },
-    "#svg-filters": {
-      "id": "#svg-filters",
-      "name": "#svg Filters",
-      "symbol": "##svg-filters",
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-clip": {
-      "id": "#svg-clip",
-      "name": "#svg Clip",
-      "symbol": "##svg-clip",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-properties": {
-      "id": "#svg-properties",
-      "name": "#svg Properties",
-      "symbol": "##svg-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-panel": {
-      "id": "canvas-panel",
-      "name": "Canvas Panel",
-      "symbol": "#canvas-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
-      "visualTags": [],
-      "related": []
-    },
-    "layer-panel": {
-      "id": "layer-panel",
-      "name": "Layer Panel",
-      "symbol": "#layer-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
-      "visualTags": [],
-      "related": [
-        "#drag-reorder"
-      ]
-    },
-    "property-panel": {
-      "id": "property-panel",
-      "name": "Property Panel",
-      "symbol": "#property-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
-      "visualTags": [],
-      "related": [
-        "#number-input",
-        "#color-picker",
-        "#select-input",
-        "#slider-input",
-        "#delta-panel"
-      ]
-    },
-    "delta-panel": {
-      "id": "delta-panel",
-      "name": "Delta Panel",
-      "symbol": "#delta-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
-      "visualTags": [],
-      "related": [
-        "#number-input",
-        "#slider-input",
-        "#color-picker",
-        "#select-input",
-        "#easing-picker",
-        "#range-slider",
-        "#drag-reorder"
-      ]
-    },
-    "yaml-panel": {
-      "id": "yaml-panel",
-      "name": "Yaml Panel",
-      "symbol": "#yaml-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
-      "visualTags": [],
-      "related": []
-    },
-    "number-input": {
-      "id": "number-input",
-      "name": "Number Input",
-      "symbol": "#number-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Labeled number input control with optional step, min, max, suffix",
-      "visualTags": [
-        "input"
-      ],
-      "related": []
-    },
-    "color-picker": {
-      "id": "color-picker",
-      "name": "Color Picker",
-      "symbol": "#color-picker",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Color input with native color picker and hex text display",
-      "visualTags": [],
-      "related": []
-    },
-    "select-input": {
-      "id": "select-input",
-      "name": "Select Input",
-      "symbol": "#select-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Labeled dropdown select control",
-      "visualTags": [
-        "input",
-        "input"
-      ],
-      "related": []
-    },
-    "slider-input": {
-      "id": "slider-input",
-      "name": "Slider Input",
-      "symbol": "#slider-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Range slider control with label and value display",
-      "visualTags": [
-        "input"
-      ],
-      "related": []
-    },
-    "easing-picker": {
-      "id": "easing-picker",
-      "name": "Easing Picker",
-      "symbol": "#easing-picker",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Easing type selector with preset and structured easing options",
-      "visualTags": [],
-      "related": []
-    },
-    "range-slider": {
-      "id": "range-slider",
-      "name": "Range Slider",
-      "symbol": "#range-slider",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
-      "visualTags": [],
-      "related": []
-    },
-    "drag-reorder": {
-      "id": "drag-reorder",
-      "name": "Drag Reorder",
-      "symbol": "#drag-reorder",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
       "visualTags": [],
       "related": []
     },
@@ -766,6 +598,123 @@
       "visualTags": [
         "form"
       ],
+      "related": []
+    },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-renderer": {
+      "id": "#svg-renderer",
+      "name": "#svg Renderer",
+      "symbol": "##svg-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+      "visualTags": [],
+      "related": [
+        "#svg-shapes",
+        "#svg-text",
+        "#svg-gradients",
+        "#svg-filters",
+        "#svg-clip",
+        "#svg-properties"
+      ]
+    },
+    "#svg-shapes": {
+      "id": "#svg-shapes",
+      "name": "#svg Shapes",
+      "symbol": "##svg-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-text": {
+      "id": "#svg-text",
+      "name": "#svg Text",
+      "symbol": "##svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-gradients": {
+      "id": "#svg-gradients",
+      "name": "#svg Gradients",
+      "symbol": "##svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-filters": {
+      "id": "#svg-filters",
+      "name": "#svg Filters",
+      "symbol": "##svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-clip": {
+      "id": "#svg-clip",
+      "name": "#svg Clip",
+      "symbol": "##svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-properties": {
+      "id": "#svg-properties",
+      "name": "#svg Properties",
+      "symbol": "##svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+      "visualTags": [],
       "related": []
     },
     "#lottie-exporter": {
@@ -946,43 +895,146 @@
       "visualTags": [],
       "related": []
     },
-    "#easing-functions": {
-      "id": "#easing-functions",
-      "name": "#easing Functions",
-      "symbol": "##easing-functions",
+    "canvas-panel": {
+      "id": "canvas-panel",
+      "name": "Canvas Panel",
+      "symbol": "#canvas-panel",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
       "visualTags": [],
       "related": []
     },
-    "#spring-solver": {
-      "id": "#spring-solver",
-      "name": "#spring Solver",
-      "symbol": "##spring-solver",
+    "layer-panel": {
+      "id": "layer-panel",
+      "name": "Layer Panel",
+      "symbol": "#layer-panel",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
+      "visualTags": [],
+      "related": [
+        "#drag-reorder"
+      ]
+    },
+    "property-panel": {
+      "id": "property-panel",
+      "name": "Property Panel",
+      "symbol": "#property-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#color-picker",
+        "#select-input",
+        "#slider-input",
+        "#delta-panel"
+      ]
+    },
+    "delta-panel": {
+      "id": "delta-panel",
+      "name": "Delta Panel",
+      "symbol": "#delta-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#slider-input",
+        "#color-picker",
+        "#select-input",
+        "#easing-picker",
+        "#range-slider",
+        "#drag-reorder"
+      ]
+    },
+    "yaml-panel": {
+      "id": "yaml-panel",
+      "name": "Yaml Panel",
+      "symbol": "#yaml-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
       "visualTags": [],
       "related": []
     },
-    "#lerp-functions": {
-      "id": "#lerp-functions",
-      "name": "#lerp Functions",
-      "symbol": "##lerp-functions",
+    "number-input": {
+      "id": "number-input",
+      "name": "Number Input",
+      "symbol": "#number-input",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Labeled number input control with optional step, min, max, suffix",
+      "visualTags": [
+        "input"
+      ],
+      "related": []
+    },
+    "color-picker": {
+      "id": "color-picker",
+      "name": "Color Picker",
+      "symbol": "#color-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Color input with native color picker and hex text display",
       "visualTags": [],
       "related": []
     },
-    "#color-math": {
-      "id": "#color-math",
-      "name": "#color Math",
-      "symbol": "##color-math",
+    "select-input": {
+      "id": "select-input",
+      "name": "Select Input",
+      "symbol": "#select-input",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Labeled dropdown select control",
+      "visualTags": [
+        "input",
+        "input"
+      ],
+      "related": []
+    },
+    "slider-input": {
+      "id": "slider-input",
+      "name": "Slider Input",
+      "symbol": "#slider-input",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Range slider control with label and value display",
+      "visualTags": [
+        "input"
+      ],
+      "related": []
+    },
+    "easing-picker": {
+      "id": "easing-picker",
+      "name": "Easing Picker",
+      "symbol": "#easing-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Easing type selector with preset and structured easing options",
+      "visualTags": [],
+      "related": []
+    },
+    "range-slider": {
+      "id": "range-slider",
+      "name": "Range Slider",
+      "symbol": "#range-slider",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
+      "visualTags": [],
+      "related": []
+    },
+    "drag-reorder": {
+      "id": "drag-reorder",
+      "name": "Drag Reorder",
+      "symbol": "#drag-reorder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
       "visualTags": [],
       "related": []
     },
@@ -1038,58 +1090,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
       "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-schema": {
-      "id": "#document-schema",
-      "name": "#document Schema",
-      "symbol": "##document-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
-      "visualTags": [],
-      "related": [
-        "#atelier-types"
-      ]
-    },
-    "#layer-schema": {
-      "id": "#layer-schema",
-      "name": "#layer Schema",
-      "symbol": "##layer-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "LayerSchema and Visual discriminated union validation",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-schema": {
-      "id": "#delta-schema",
-      "name": "#delta Schema",
-      "symbol": "##delta-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema with AnimatableProperty enum and FrameRange refinement",
-      "visualTags": [],
-      "related": []
-    },
-    "#validation-functions": {
-      "id": "#validation-functions",
-      "name": "#validation Functions",
-      "symbol": "##validation-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
-      "visualTags": [],
-      "related": []
-    },
-    "#yaml-parser": {
-      "id": "#yaml-parser",
-      "name": "#yaml Parser",
-      "symbol": "##yaml-parser",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
       "visualTags": [],
       "related": []
     },
@@ -1567,81 +1567,25 @@
       "category": "components",
       "id": "#preset-types"
     },
-    "##svg-renderer": {
+    "##document-schema": {
       "category": "components",
-      "id": "#svg-renderer"
+      "id": "#document-schema"
     },
-    "##svg-shapes": {
+    "##layer-schema": {
       "category": "components",
-      "id": "#svg-shapes"
+      "id": "#layer-schema"
     },
-    "##svg-text": {
+    "##delta-schema": {
       "category": "components",
-      "id": "#svg-text"
+      "id": "#delta-schema"
     },
-    "##svg-gradients": {
+    "##validation-functions": {
       "category": "components",
-      "id": "#svg-gradients"
+      "id": "#validation-functions"
     },
-    "##svg-filters": {
+    "##yaml-parser": {
       "category": "components",
-      "id": "#svg-filters"
-    },
-    "##svg-clip": {
-      "category": "components",
-      "id": "#svg-clip"
-    },
-    "##svg-properties": {
-      "category": "components",
-      "id": "#svg-properties"
-    },
-    "#canvas-panel": {
-      "category": "components",
-      "id": "canvas-panel"
-    },
-    "#layer-panel": {
-      "category": "components",
-      "id": "layer-panel"
-    },
-    "#property-panel": {
-      "category": "components",
-      "id": "property-panel"
-    },
-    "#delta-panel": {
-      "category": "components",
-      "id": "delta-panel"
-    },
-    "#yaml-panel": {
-      "category": "components",
-      "id": "yaml-panel"
-    },
-    "#number-input": {
-      "category": "components",
-      "id": "number-input"
-    },
-    "#color-picker": {
-      "category": "components",
-      "id": "color-picker"
-    },
-    "#select-input": {
-      "category": "components",
-      "id": "select-input"
-    },
-    "#slider-input": {
-      "category": "components",
-      "id": "slider-input"
-    },
-    "#easing-picker": {
-      "category": "components",
-      "id": "easing-picker"
-    },
-    "#range-slider": {
-      "category": "components",
-      "id": "range-slider"
-    },
-    "#drag-reorder": {
-      "category": "components",
-      "id": "drag-reorder"
+      "id": "#yaml-parser"
     },
     "#mcp-store": {
       "category": "components",
@@ -1711,6 +1655,50 @@
       "category": "components",
       "id": "mcp-performance-tools"
     },
+    "##easing-functions": {
+      "category": "components",
+      "id": "#easing-functions"
+    },
+    "##spring-solver": {
+      "category": "components",
+      "id": "#spring-solver"
+    },
+    "##lerp-functions": {
+      "category": "components",
+      "id": "#lerp-functions"
+    },
+    "##color-math": {
+      "category": "components",
+      "id": "#color-math"
+    },
+    "##svg-renderer": {
+      "category": "components",
+      "id": "#svg-renderer"
+    },
+    "##svg-shapes": {
+      "category": "components",
+      "id": "#svg-shapes"
+    },
+    "##svg-text": {
+      "category": "components",
+      "id": "#svg-text"
+    },
+    "##svg-gradients": {
+      "category": "components",
+      "id": "#svg-gradients"
+    },
+    "##svg-filters": {
+      "category": "components",
+      "id": "#svg-filters"
+    },
+    "##svg-clip": {
+      "category": "components",
+      "id": "#svg-clip"
+    },
+    "##svg-properties": {
+      "category": "components",
+      "id": "#svg-properties"
+    },
     "##lottie-exporter": {
       "category": "components",
       "id": "#lottie-exporter"
@@ -1779,21 +1767,53 @@
       "category": "components",
       "id": "cli-variables"
     },
-    "##easing-functions": {
+    "#canvas-panel": {
       "category": "components",
-      "id": "#easing-functions"
+      "id": "canvas-panel"
     },
-    "##spring-solver": {
+    "#layer-panel": {
       "category": "components",
-      "id": "#spring-solver"
+      "id": "layer-panel"
     },
-    "##lerp-functions": {
+    "#property-panel": {
       "category": "components",
-      "id": "#lerp-functions"
+      "id": "property-panel"
     },
-    "##color-math": {
+    "#delta-panel": {
       "category": "components",
-      "id": "#color-math"
+      "id": "delta-panel"
+    },
+    "#yaml-panel": {
+      "category": "components",
+      "id": "yaml-panel"
+    },
+    "#number-input": {
+      "category": "components",
+      "id": "number-input"
+    },
+    "#color-picker": {
+      "category": "components",
+      "id": "color-picker"
+    },
+    "#select-input": {
+      "category": "components",
+      "id": "select-input"
+    },
+    "#slider-input": {
+      "category": "components",
+      "id": "slider-input"
+    },
+    "#easing-picker": {
+      "category": "components",
+      "id": "easing-picker"
+    },
+    "#range-slider": {
+      "category": "components",
+      "id": "range-slider"
+    },
+    "#drag-reorder": {
+      "category": "components",
+      "id": "drag-reorder"
     },
     "#render-frame": {
       "category": "components",
@@ -1814,26 +1834,6 @@
     "#canvas-styles": {
       "category": "components",
       "id": "canvas-styles"
-    },
-    "##document-schema": {
-      "category": "components",
-      "id": "#document-schema"
-    },
-    "##layer-schema": {
-      "category": "components",
-      "id": "#layer-schema"
-    },
-    "##delta-schema": {
-      "category": "components",
-      "id": "#delta-schema"
-    },
-    "##validation-functions": {
-      "category": "components",
-      "id": "#validation-functions"
-    },
-    "##yaml-parser": {
-      "category": "components",
-      "id": "#yaml-parser"
     },
     "##frame-resolver": {
       "category": "components",

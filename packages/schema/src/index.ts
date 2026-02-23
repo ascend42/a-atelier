@@ -17,6 +17,7 @@ export { ShadowSchema } from "./shadow.js";
 export {
   ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, GroupVisualSchema, RefVisualSchema,
   VisualSchema, LayerSchema, BlendModeSchema, MotionPathSchema,
+  SpritesheetConfigSchema, SourceRectSchema,
 } from "./layer.js";
 export { AnimatablePropertySchema, FrameRangeSchema, DeltaSchema } from "./delta.js";
 export { AudioSchema, StateSchema } from "./state.js";

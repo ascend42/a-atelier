@@ -177,6 +177,7 @@ describe("MCP Tools", () => {
     // M9 tools
     expect(toolNames).toContain("atelier_set_blend_mode");
     expect(toolNames).toContain("atelier_set_shadow");
+    expect(toolNames).toContain("atelier_set_tint");
     expect(toolNames).toContain("atelier_set_motion_path");
     expect(toolNames).toContain("atelier_set_clip_path");
     expect(toolNames).toContain("atelier_edit_visual");
@@ -205,7 +206,7 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_diff_frames");
     expect(toolNames).toContain("atelier_batch_preview");
     expect(toolNames).toContain("atelier_complexity");
-    expect(toolNames).toHaveLength(52);
+    expect(toolNames).toHaveLength(53);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -2166,6 +2167,274 @@ describe("MCP Tools", () => {
     it("atelier_complexity errors on nonexistent doc", async () => {
       const result = await callTool(client, "atelier_complexity", { id: "nonexistent" });
       expect(result._isError).toBe(true);
+    });
+  });
+
+  // ── New feature tools ─────────────────────────────────────
+
+  describe("new feature tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Feature Test",
+        width: 100,
+        height: 100,
+        fps: 30,
+      });
+      docId = result.id;
+    });
+
+    it("atelier_edit_visual sets sourceRect on image layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "img",
+        visual: { type: "image", assetId: "test", src: "test.png" },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId,
+        layerId: "img",
+        sourceRect: { x: 10, y: 20, width: 32, height: 32 },
+      });
+      expect(result.success).toBe(true);
+      expect(result.updated).toContain("sourceRect");
+
+      const doc = store.get(docId)!;
+      expect((doc.layers[0].visual as any).sourceRect).toEqual({ x: 10, y: 20, width: 32, height: 32 });
+    });
+
+    it("atelier_edit_visual removes sourceRect with null", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "img",
+        visual: { type: "image", assetId: "test", src: "test.png", sourceRect: { x: 0, y: 0, width: 32, height: 32 } },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId,
+        layerId: "img",
+        sourceRect: null,
+      });
+      expect(result.success).toBe(true);
+      expect(result.updated).toContain("sourceRect (removed)");
+    });
+
+    it("atelier_edit_visual sets spritesheet on image layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "sprite",
+        visual: { type: "image", assetId: "walk", src: "walk.png" },
+        x: 0, y: 0, width: 64, height: 64,
+      });
+
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId,
+        layerId: "sprite",
+        spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+        frameIndex: 3,
+      });
+      expect(result.success).toBe(true);
+      expect(result.updated).toContain("spritesheet");
+      expect(result.updated).toContain("frameIndex");
+
+      const doc = store.get(docId)!;
+      expect((doc.layers[0].visual as any).spritesheet.columns).toBe(4);
+      expect((doc.layers[0].visual as any).frameIndex).toBe(3);
+    });
+
+    it("atelier_edit_visual rejects image fields on shape layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+
+      const result = await callTool(client, "atelier_edit_visual", {
+        id: docId,
+        layerId: "rect",
+        sourceRect: { x: 0, y: 0, width: 32, height: 32 },
+      });
+      expect(result.error).toContain("image layers only");
+    });
+
+    it("atelier_set_tint sets tint on a layer", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "enemy",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+      });
+
+      const result = await callTool(client, "atelier_set_tint", {
+        id: docId,
+        layerId: "enemy",
+        tint: { color: "#FF0000", amount: 0.5 },
+      });
+      expect(result.success).toBe(true);
+      expect(result.hasTint).toBe(true);
+
+      const doc = store.get(docId)!;
+      expect(doc.layers[0].tint).toEqual({ color: "#FF0000", amount: 0.5 });
+    });
+
+    it("atelier_set_tint removes tint with null", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "enemy",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+        tint: { color: "#FF0000", amount: 0.5 },
+      });
+
+      const result = await callTool(client, "atelier_set_tint", {
+        id: docId,
+        layerId: "enemy",
+        tint: null,
+      });
+      expect(result.success).toBe(true);
+      expect(result.removed).toBe(true);
+
+      const doc = store.get(docId)!;
+      expect(doc.layers[0].tint).toBeUndefined();
+    });
+
+    it("atelier_add_layer creates layer with tint", async () => {
+      const result = await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "tinted",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+        tint: { color: "#00FF00", amount: 0.3 },
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(docId)!;
+      expect(doc.layers[0].tint).toEqual({ color: "#00FF00", amount: 0.3 });
+    });
+
+    it("atelier_add_asset accepts spritesheet metadata", async () => {
+      const result = await callTool(client, "atelier_add_asset", {
+        id: docId,
+        assetId: "walk-cycle",
+        type: "image",
+        src: "walk.png",
+        spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(docId)!;
+      expect(doc.assets!["walk-cycle"].spritesheet).toEqual({
+        columns: 4, rows: 2, frameWidth: 32, frameHeight: 32,
+      });
+    });
+
+    it("atelier_add_delta accepts visible property", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "flash",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+        visible: false,
+      });
+      await callTool(client, "atelier_add_state", {
+        id: docId,
+        stateName: "show",
+        duration: 20,
+      });
+
+      const result = await callTool(client, "atelier_add_delta", {
+        id: docId,
+        stateName: "show",
+        layer: "flash",
+        property: "visible",
+        range: [10, 10],
+        from: false,
+        to: true,
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(docId)!;
+      const delta = doc.states.show.deltas[0];
+      expect(delta.property).toBe("visible");
+      expect(delta.from).toBe(false);
+      expect(delta.to).toBe(true);
+    });
+
+    it("atelier_add_delta accepts tint.color property", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "enemy",
+        visual: { type: "shape", shape: { type: "rect" } },
+        x: 0, y: 0, width: 50, height: 50,
+        tint: { color: "#FF0000", amount: 0 },
+      });
+      await callTool(client, "atelier_add_state", {
+        id: docId,
+        stateName: "hit",
+        duration: 12,
+      });
+
+      const result = await callTool(client, "atelier_add_delta", {
+        id: docId,
+        stateName: "hit",
+        layer: "enemy",
+        property: "tint.color",
+        range: [0, 6],
+        from: "#FF0000",
+        to: "#FFFF00",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("atelier_add_delta accepts visual.image.frameIndex property", async () => {
+      await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "hero",
+        visual: {
+          type: "image",
+          assetId: "walk",
+          src: "walk.png",
+          spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+          frameIndex: 0,
+        },
+        x: 0, y: 0, width: 64, height: 64,
+      });
+      await callTool(client, "atelier_add_state", {
+        id: docId,
+        stateName: "walk",
+        duration: 32,
+      });
+
+      const result = await callTool(client, "atelier_add_delta", {
+        id: docId,
+        stateName: "walk",
+        layer: "hero",
+        property: "visual.image.frameIndex",
+        range: [0, 31],
+        from: 0,
+        to: 7,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("atelier_add_layer creates ref layer with state and frame", async () => {
+      const result = await callTool(client, "atelier_add_layer", {
+        id: docId,
+        layerId: "ext",
+        visual: { type: "ref", src: "other.atelier", state: "hover", frame: 5 },
+        x: 0, y: 0, width: 100, height: 100,
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(docId)!;
+      const layer = doc.layers.find(l => l.id === "ext");
+      expect(layer).toBeDefined();
+      expect((layer!.visual as any).state).toBe("hover");
+      expect((layer!.visual as any).frame).toBe(5);
     });
   });
 });

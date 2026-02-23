@@ -1,6 +1,6 @@
 import type { AtelierDocument } from "@atelier/types";
 import { resolveFrame } from "@atelier/core";
-import { renderFrame } from "@atelier/canvas";
+import { renderFrame, ImageCache } from "@atelier/canvas";
 import type { RenderContext } from "@atelier/canvas";
 
 export interface PlayerOptions {
@@ -21,6 +21,7 @@ export class AnimationPlayer {
   private _currentFrame = 0;
   private _isPlaying = false;
   private _currentState: string;
+  private imageCache: ImageCache;
 
   constructor(
     private doc: AtelierDocument,
@@ -30,6 +31,17 @@ export class AnimationPlayer {
     const stateNames = Object.keys(doc.states);
     this._currentState = stateNames[0] ?? "";
     this.frameDuration = 1000 / doc.canvas.fps;
+
+    this.imageCache = new ImageCache({
+      onLoad: () => this.renderCurrentFrame(),
+      createImage: (src, onLoad, onError) => {
+        const img = new Image();
+        img.onload = onLoad;
+        img.onerror = onError;
+        img.src = src;
+        return img;
+      },
+    });
 
     if (opts.autoplay !== false) {
       this.play();
@@ -97,7 +109,7 @@ export class AnimationPlayer {
     if (!ctx) return;
 
     const resolved = resolveFrame(this.doc, this._currentState, this._currentFrame);
-    renderFrame(ctx as unknown as RenderContext, resolved, this.doc);
+    renderFrame(ctx as unknown as RenderContext, resolved, this.doc, this.imageCache);
   }
 
   private tick = (timestamp: number): void => {

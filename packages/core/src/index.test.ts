@@ -53,6 +53,18 @@ describe("delta resolver", () => {
     expect(interpolateValue(0, 1, 1)).toBe(1);
   });
 
+  it("interpolateValue snaps booleans at midpoint", () => {
+    expect(interpolateValue(false, true, 0)).toBe(false);
+    expect(interpolateValue(false, true, 0.3)).toBe(false);
+    expect(interpolateValue(false, true, 0.49)).toBe(false);
+    expect(interpolateValue(false, true, 0.5)).toBe(true);
+    expect(interpolateValue(false, true, 0.8)).toBe(true);
+    expect(interpolateValue(false, true, 1)).toBe(true);
+    // Reverse direction
+    expect(interpolateValue(true, false, 0.3)).toBe(true);
+    expect(interpolateValue(true, false, 0.5)).toBe(false);
+  });
+
   it("resolveDeltaValue returns undefined outside range", () => {
     const delta: Delta = {
       layer: "test",
@@ -1457,5 +1469,218 @@ describe("blendResolvedFrames", () => {
     const blended = blendResolvedFrames(frameA as any, frameB as any, 0.5);
     expect(blended.layers[0].computedProperties["frame.x"]).toBeCloseTo(50);
     expect(blended.layers[0].computedProperties["frame.y"]).toBeCloseTo(100);
+  });
+});
+
+// ─── New Animatable Properties ──────────────────────────────
+
+describe("new animatable properties", () => {
+  it("resolves visual.image.frameIndex from deltas", () => {
+    const spriteDoc: AtelierDocument = {
+      version: "1.0",
+      name: "sprite-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "hero",
+          visual: {
+            type: "image",
+            assetId: "walk",
+            spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+            frameIndex: 0,
+          },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 64, height: 64 },
+        },
+      ],
+      states: {
+        walk: {
+          duration: 32,
+          deltas: [
+            {
+              layer: "hero",
+              property: "visual.image.frameIndex",
+              range: [0, 31] as [number, number],
+              from: 0,
+              to: 7,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(spriteDoc, "walk", 0);
+    expect(frame0.layers[0].computedProperties["visual.image.frameIndex"]).toBe(0);
+
+    const frameMid = resolveFrame(spriteDoc, "walk", 16);
+    const midVal = frameMid.layers[0].computedProperties["visual.image.frameIndex"] as number;
+    expect(midVal).toBeCloseTo(3.5, 0);
+
+    const frameEnd = resolveFrame(spriteDoc, "walk", 31);
+    expect(frameEnd.layers[0].computedProperties["visual.image.frameIndex"]).toBe(7);
+  });
+
+  it("resolves visible from deltas with ranged boolean (snaps at midpoint)", () => {
+    const visDoc: AtelierDocument = {
+      version: "1.0",
+      name: "vis-range-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "flash",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          visible: false,
+        },
+      ],
+      states: {
+        show: {
+          duration: 20,
+          deltas: [
+            {
+              layer: "flash",
+              property: "visible",
+              range: [10, 20] as [number, number],
+              from: false,
+              to: true,
+            },
+          ],
+        },
+      },
+    };
+
+    // Before range — no delta active
+    const before = resolveFrame(visDoc, "show", 9);
+    expect(before.layers[0].computedProperties["visible"]).toBeUndefined();
+
+    // At start of range (t=0) — still false
+    const atStart = resolveFrame(visDoc, "show", 10);
+    expect(atStart.layers[0].computedProperties["visible"]).toBe(false);
+
+    // At midpoint (t=0.5) — snaps to true
+    const atMid = resolveFrame(visDoc, "show", 15);
+    expect(atMid.layers[0].computedProperties["visible"]).toBe(true);
+
+    // At end (t=1) — true
+    const atEnd = resolveFrame(visDoc, "show", 20);
+    expect(atEnd.layers[0].computedProperties["visible"]).toBe(true);
+  });
+
+  it("resolves visible from deltas with instant range", () => {
+    const visDoc: AtelierDocument = {
+      version: "1.0",
+      name: "vis-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "flash",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          visible: false,
+        },
+      ],
+      states: {
+        show: {
+          duration: 20,
+          deltas: [
+            {
+              layer: "flash",
+              property: "visible",
+              range: [10, 10] as [number, number],
+              from: false,
+              to: true,
+            },
+          ],
+        },
+      },
+    };
+
+    const before = resolveFrame(visDoc, "show", 9);
+    expect(before.layers[0].computedProperties["visible"]).toBeUndefined();
+
+    const at = resolveFrame(visDoc, "show", 10);
+    expect(at.layers[0].computedProperties["visible"]).toBe(true);
+  });
+
+  it("resolves tint.amount from deltas", () => {
+    const tintDoc: AtelierDocument = {
+      version: "1.0",
+      name: "tint-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "enemy",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          tint: { color: "#FF0000", amount: 0 },
+        },
+      ],
+      states: {
+        hit: {
+          duration: 12,
+          deltas: [
+            {
+              layer: "enemy",
+              property: "tint.amount",
+              range: [0, 6] as [number, number],
+              from: 0,
+              to: 1,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(tintDoc, "hit", 0);
+    expect(frame0.layers[0].computedProperties["tint.amount"]).toBe(0);
+
+    const frame3 = resolveFrame(tintDoc, "hit", 3);
+    expect(frame3.layers[0].computedProperties["tint.amount"]).toBeCloseTo(0.5);
+
+    const frame6 = resolveFrame(tintDoc, "hit", 6);
+    expect(frame6.layers[0].computedProperties["tint.amount"]).toBe(1);
+  });
+
+  it("resolves visual.image.sourceRect.x from deltas", () => {
+    const srcRectDoc: AtelierDocument = {
+      version: "1.0",
+      name: "srcrect-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "crop",
+          visual: {
+            type: "image",
+            assetId: "atlas",
+            sourceRect: { x: 0, y: 0, width: 32, height: 32 },
+          },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 64, height: 64 },
+        },
+      ],
+      states: {
+        pan: {
+          duration: 30,
+          deltas: [
+            {
+              layer: "crop",
+              property: "visual.image.sourceRect.x",
+              range: [0, 29] as [number, number],
+              from: 0,
+              to: 100,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(srcRectDoc, "pan", 0);
+    expect(frame0.layers[0].computedProperties["visual.image.sourceRect.x"]).toBe(0);
+
+    const frameEnd = resolveFrame(srcRectDoc, "pan", 29);
+    expect(frameEnd.layers[0].computedProperties["visual.image.sourceRect.x"]).toBe(100);
   });
 });

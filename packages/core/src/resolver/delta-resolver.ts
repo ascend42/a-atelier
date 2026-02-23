@@ -73,6 +73,11 @@ export function interpolateValue(from: unknown, to: unknown, t: number): unknown
     return t >= 1 ? to : from;
   }
 
+  // Boolean interpolation — snap at midpoint for frame-precise control
+  if (typeof from === "boolean" && typeof to === "boolean") {
+    return t >= 0.5 ? to : from;
+  }
+
   // For unknown types, snap at end
   return t >= 1 ? to : from;
 }

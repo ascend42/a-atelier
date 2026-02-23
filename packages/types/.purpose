@@ -25,7 +25,7 @@ components:
     file: src/shape.ts
     tags: [types, shapes, visual]
   '#layer-types':
-    description: Layer, Visual union (shape, text, image, group, ref)
+    description: Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint
     file: src/layer.ts
     tags: [types, layers]
   '#easing-types':
@@ -33,7 +33,7 @@ components:
     file: src/easing.ts
     tags: [types, easing]
   '#delta-types':
-    description: Delta (animation instruction), AnimatableProperty, FrameRange
+    description: Delta (animation instruction), AnimatableProperty (35 members), FrameRange
     file: src/delta.ts
     tags: [types, animation]
   '#state-types':
@@ -53,7 +53,7 @@ components:
     file: src/audio.ts
     tags: [types, audio]
   '#asset-types':
-    description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio)
+    description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata
     file: src/asset.ts
     tags: [types, assets]
   '#variable-types':

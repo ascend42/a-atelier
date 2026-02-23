@@ -21,3 +21,20 @@ export function buildShadowFilter(eff: EffectiveLayer): { defs: string; filterRe
 
   return { defs: def, filterRef: `url(#${id})` };
 }
+
+/** Build SVG filter definition for tint effect (feFlood + feBlend multiply) */
+export function buildTintFilter(eff: EffectiveLayer): { defs: string; filterRef: string } | null {
+  if (!eff.tint || eff.tint.amount <= 0) return null;
+
+  const id = `filter-${++filterIdCounter}`;
+  const { color, amount } = eff.tint;
+
+  const def = [
+    `<filter id="${id}" x="0%" y="0%" width="100%" height="100%">`,
+    `<feFlood flood-color="${color}" flood-opacity="${amount}" result="tint" />`,
+    `<feBlend in="SourceGraphic" in2="tint" mode="multiply" />`,
+    `</filter>`,
+  ].join("");
+
+  return { defs: def, filterRef: `url(#${id})` };
+}

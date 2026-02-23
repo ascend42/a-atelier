@@ -18,7 +18,7 @@ components:
     file: src/layer.ts
     tags: [validation, schema]
   '#delta-schema':
-    description: DeltaSchema with AnimatableProperty enum and FrameRange refinement
+    description: DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement
     file: src/delta.ts
     tags: [validation, schema]
   '#validation-functions':

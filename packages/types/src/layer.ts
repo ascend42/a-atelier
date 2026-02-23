@@ -17,12 +17,27 @@ export interface TextVisual {
   style: TextStyle;
 }
 
+/** Spritesheet grid definition */
+export interface SpritesheetConfig {
+  columns: number;
+  rows: number;
+  frameCount?: number;
+  frameWidth: number;
+  frameHeight: number;
+}
+
 export interface ImageVisual {
   type: "image";
   /** Asset ID reference */
   assetId: string;
   /** Direct URL or data-URL for rendering */
   src?: string;
+  /** Source rectangle for cropping (9-arg drawImage) */
+  sourceRect?: { x: number; y: number; width: number; height: number };
+  /** Spritesheet grid overlay definition */
+  spritesheet?: SpritesheetConfig;
+  /** Current spritesheet frame index (animatable) */
+  frameIndex?: number;
 }
 
 export interface GroupVisual {
@@ -34,6 +49,10 @@ export interface RefVisual {
   type: "ref";
   /** Path to another .atelier file */
   src: string;
+  /** Which state to render from sub-document (defaults to first state) */
+  state?: string;
+  /** Which frame to render (defaults to parent frame, clamped to sub-doc duration) */
+  frame?: number;
 }
 
 export type Visual = ShapeVisual | TextVisual | ImageVisual | GroupVisual | RefVisual;
@@ -96,6 +115,8 @@ export interface Layer {
   motionPath?: MotionPath;
   /** Clip path — restricts rendering to within a shape */
   clipPath?: import("./shape.js").Shape;
+  /** Color tint overlay */
+  tint?: { color: string; amount: number };
   /** Interactive trigger-action bindings */
   interactions?: Interaction[];
 }

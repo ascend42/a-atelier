@@ -41,8 +41,21 @@ const VisualInputSchema = z.object({
   style: z.record(z.unknown()).optional(),
   // image visual fields
   assetId: z.string().optional(),
+  sourceRect: z.object({
+    x: z.number(), y: z.number(), width: z.number().positive(), height: z.number().positive(),
+  }).optional(),
+  spritesheet: z.object({
+    columns: z.number().int().positive(),
+    rows: z.number().int().positive(),
+    frameCount: z.number().int().positive().optional(),
+    frameWidth: z.number().positive(),
+    frameHeight: z.number().positive(),
+  }).optional(),
+  frameIndex: z.number().int().min(0).optional(),
   // ref visual fields
   src: z.string().optional(),
+  state: z.string().optional(),
+  frame: z.number().int().min(0).optional(),
 }).describe("Visual content definition");
 
 export function register(server: McpServer, store: DocumentStore): void {
@@ -66,9 +79,13 @@ export function register(server: McpServer, store: DocumentStore): void {
       anchorPoint: z.object({ x: z.number(), y: z.number() }).optional().describe("Anchor point (0-1 normalized)"),
       scale: z.object({ x: z.number(), y: z.number() }).optional().describe("Scale factors"),
       visible: z.boolean().optional().describe("Whether layer is visible"),
+      tint: z.object({
+        color: z.string().describe("Tint color (hex string)"),
+        amount: z.number().min(0).max(1).describe("Tint amount (0 = none, 1 = full)"),
+      }).optional().describe("Color tint overlay"),
     },
     { readOnlyHint: false, destructiveHint: false },
-    async ({ id, layerId, visual, x, y, width, height, description, tags, opacity, rotation, parentId, anchorPoint, scale, visible }) => {
+    async ({ id, layerId, visual, x, y, width, height, description, tags, opacity, rotation, parentId, anchorPoint, scale, visible, tint }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
       const { doc } = result;
@@ -96,6 +113,7 @@ export function register(server: McpServer, store: DocumentStore): void {
         ...(anchorPoint ? { anchorPoint } : {}),
         ...(scale ? { scale } : {}),
         ...(visible != null ? { visible } : {}),
+        ...(tint ? { tint } : {}),
       };
 
       doc.layers.push(layer);

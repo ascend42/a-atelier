@@ -31,10 +31,28 @@ export const TextVisualSchema = z.object({
   style: TextStyleSchema,
 });
 
+export const SpritesheetConfigSchema = z.object({
+  columns: z.number().int().positive(),
+  rows: z.number().int().positive(),
+  frameCount: z.number().int().positive().optional(),
+  frameWidth: z.number().positive(),
+  frameHeight: z.number().positive(),
+});
+
+export const SourceRectSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  width: z.number().positive(),
+  height: z.number().positive(),
+});
+
 export const ImageVisualSchema = z.object({
   type: z.literal("image"),
   assetId: z.string().min(1, "assetId is required"),
   src: z.string().optional(),
+  sourceRect: SourceRectSchema.optional(),
+  spritesheet: SpritesheetConfigSchema.optional(),
+  frameIndex: z.number().int().min(0).optional(),
 });
 
 export const GroupVisualSchema = z.object({
@@ -44,6 +62,8 @@ export const GroupVisualSchema = z.object({
 export const RefVisualSchema = z.object({
   type: z.literal("ref"),
   src: z.string().min(1, "src is required"),
+  state: z.string().optional(),
+  frame: z.number().int().min(0).optional(),
 });
 
 export const VisualSchema = z.discriminatedUnion("type", [
@@ -71,5 +91,9 @@ export const LayerSchema = z.object({
   blendMode: BlendModeSchema.optional(),
   motionPath: MotionPathSchema.optional(),
   clipPath: ShapeSchema.optional(),
+  tint: z.object({
+    color: z.string(),
+    amount: z.number().min(0).max(1),
+  }).optional(),
   interactions: z.array(InteractionSchema).optional(),
 });

@@ -349,6 +349,134 @@ describe("renderFrameSVG", () => {
     expect(svg).toContain("<text");
     expect(svg).toContain("Test SVG");
   });
+
+  it("renders image with sourceRect using viewBox crop", () => {
+    const srcRectDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [{
+        id: "img",
+        visual: {
+          type: "image",
+          assetId: "atlas",
+          src: "https://example.com/atlas.png",
+          sourceRect: { x: 32, y: 0, width: 32, height: 32 },
+        },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 64, height: 64 },
+      }],
+    };
+    const svg = renderFrameSVG(srcRectDoc, "default", 0);
+    expect(svg).toContain('viewBox="32 0 32 32"');
+    expect(svg).toContain("<image");
+  });
+
+  it("renders spritesheet image using viewBox crop with full sheet dimensions", () => {
+    const spritesheetDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [{
+        id: "sprite",
+        visual: {
+          type: "image",
+          assetId: "walk",
+          src: "https://example.com/walk.png",
+          spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+          frameIndex: 5,
+        },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 64, height: 64 },
+      }],
+    };
+    const svg = renderFrameSVG(spritesheetDoc, "default", 0);
+    // frameIndex 5 on 4-column grid: col=1, row=1 → viewBox="32 32 32 32"
+    expect(svg).toContain('viewBox="32 32 32 32"');
+    expect(svg).toContain("<image");
+    // Inner image should use full spritesheet dimensions (4*32=128, 2*32=64)
+    expect(svg).toContain('width="128"');
+    expect(svg).toContain('height="64"');
+  });
+
+  it("renders tint filter", () => {
+    const tintDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [{
+        ...basicDoc.layers[0],
+        tint: { color: "#FF0000", amount: 0.5 },
+      }],
+    };
+    const svg = renderFrameSVG(tintDoc, "default", 0);
+    expect(svg).toContain("<filter");
+    expect(svg).toContain("feFlood");
+    expect(svg).toContain("feBlend");
+    expect(svg).toContain('flood-color="#FF0000"');
+  });
+
+  it("omits invisible layers from SVG output", () => {
+    const visDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [
+        {
+          ...basicDoc.layers[0],
+          visible: false,
+        },
+      ],
+    };
+    const svg = renderFrameSVG(visDoc, "default", 0);
+    // Layer with visible: false should not produce any <g> group
+    expect(svg).not.toContain("<g");
+  });
+
+  it("renders ref placeholder without documentResolver", () => {
+    const refDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [{
+        id: "ext",
+        visual: { type: "ref", src: "other.atelier" },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 80, height: 60 },
+      }],
+    };
+    const svg = renderFrameSVG(refDoc, "default", 0);
+    expect(svg).toContain('stroke="#999"');
+    expect(svg).toContain('stroke-dasharray="4 2"');
+  });
+
+  it("renders ref sub-doc with documentResolver", () => {
+    const subDoc: AtelierDocument = {
+      version: "1.0",
+      name: "sub",
+      canvas: { width: 200, height: 200, fps: 30 },
+      layers: [
+        {
+          id: "sub-rect",
+          visual: { type: "shape", shape: { type: "rect" }, fill: { type: "solid", color: "#FF0000" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 200, height: 200 },
+        },
+      ],
+      states: { default: { duration: 1, deltas: [] } },
+    };
+
+    const refDoc: AtelierDocument = {
+      ...basicDoc,
+      layers: [{
+        id: "ext",
+        visual: { type: "ref", src: "sub.atelier" },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 80, height: 60 },
+      }],
+    };
+
+    const svg = renderFrameSVG(refDoc, "default", 0, {
+      documentResolver: (src) => src === "sub.atelier" ? subDoc : undefined,
+    });
+
+    // Should contain a nested <svg> with viewBox for the sub-doc
+    expect(svg).toContain('viewBox="0 0 200 200"');
+    // Should contain the sub-doc's rect
+    expect(svg).toContain('fill="#FF0000"');
+    // Should NOT contain the placeholder stroke
+    expect(svg).not.toContain('stroke="#999"');
+  });
 });
 
 // ── Utility functions ──────────────────────────────────────

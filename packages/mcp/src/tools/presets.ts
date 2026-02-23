@@ -3,6 +3,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { AtelierDocument, Preset, PresetDelta } from "@atelier/types";
+import { AnimatablePropertySchema, EasingSchema } from "@atelier/schema";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {
@@ -19,42 +20,9 @@ function err(message: string) {
   return { content: [{ type: "text" as const, text: JSON.stringify({ error: message }) }], isError: true as const };
 }
 
-const AnimatablePropertyEnum = z.enum([
-  "frame.x", "frame.y", "bounds.width", "bounds.height",
-  "opacity", "rotation", "scale.x", "scale.y",
-  "anchorPoint.x", "anchorPoint.y",
-  "visual.shape.cornerRadius", "visual.fill.color",
-  "visual.stroke.color", "visual.stroke.width",
-  "visual.stroke.start", "visual.stroke.end",
-  "visual.style.fontSize", "visual.style.color",
-  "shadow.color", "shadow.blur",
-  "shadow.offsetX", "shadow.offsetY",
-  "motionPath.progress",
-  "visual.fill.angle",
-  "visual.fill.center.x", "visual.fill.center.y",
-  "visual.fill.radius",
-]);
-
-const EasingInputSchema = z.union([
-  z.enum(["ease-in", "ease-out", "ease-in-out"]),
-  z.object({ type: z.literal("linear") }),
-  z.object({
-    type: z.literal("cubic-bezier"),
-    x1: z.number(), y1: z.number(), x2: z.number(), y2: z.number(),
-  }),
-  z.object({
-    type: z.literal("spring"),
-    mass: z.number().optional(),
-    stiffness: z.number().optional(),
-    damping: z.number().optional(),
-    velocity: z.number().optional(),
-  }),
-  z.object({
-    type: z.literal("step"),
-    steps: z.number().int().positive(),
-    position: z.enum(["start", "end"]).optional(),
-  }),
-]);
+// Canonical source: @atelier/schema — single source of truth for AnimatableProperty
+const AnimatablePropertyEnum = AnimatablePropertySchema;
+const EasingInputSchema = EasingSchema;
 
 const PresetDeltaSchema = z.object({
   property: AnimatablePropertyEnum.describe("Animatable property"),

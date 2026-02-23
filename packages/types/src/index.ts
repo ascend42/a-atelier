@@ -31,6 +31,7 @@ export type { Shadow } from "./shadow.js";
 
 // layer.ts
 export type {
+  SpritesheetConfig,
   ShapeVisual,
   TextVisual,
   ImageVisual,

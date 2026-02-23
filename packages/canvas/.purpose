@@ -3,7 +3,10 @@ description: Canvas 2D renderer — transforms resolved frame data into visual o
 context:
   - This package renders resolved animation frames to Canvas 2D contexts
   - Uses a minimal RenderContext interface to avoid DOM lib dependency
-  - Supports shape (rect, ellipse, path), text, and group layers
+  - Supports shape (rect, ellipse, path), text, image (with sourceRect/spritesheet crop), and group layers
+  - Image renderer supports 5-arg and 9-arg drawImage for sourceRect cropping and spritesheet grid rendering
+  - Tint compositing via offscreen canvas (multiply blend + destination-in alpha mask)
+  - EffectiveLayer includes visible, tint, and animated image properties
   - Transform stack handles translate, rotate, scale with anchor points
   - Percentage units resolved to pixels at render time
 components:

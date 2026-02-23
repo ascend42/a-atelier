@@ -90,6 +90,37 @@ export function register(server: McpServer, store: DocumentStore): void {
     },
   );
 
+  // ── atelier_set_tint ─────────────────────────────────────
+  server.tool(
+    "atelier_set_tint",
+    "Set or remove a color tint on a layer (works on any visual type)",
+    {
+      id: z.string().describe("Document ID"),
+      layerId: z.string().describe("Layer ID"),
+      tint: z.object({
+        color: z.string().describe("Tint color (hex string)"),
+        amount: z.number().min(0).max(1).describe("Tint amount (0 = none, 1 = full)"),
+      }).nullable().describe("Tint definition, or null to remove"),
+    },
+    { readOnlyHint: false, destructiveHint: false },
+    async ({ id, layerId, tint }) => {
+      const result = getDoc(store, id);
+      if ("error" in result) return err(result.error);
+      const { doc } = result;
+
+      const layer = doc.layers.find(l => l.id === layerId);
+      if (!layer) return err(`Layer "${layerId}" not found`);
+
+      if (tint === null) {
+        delete layer.tint;
+        return ok({ layerId, tint: null, removed: true });
+      }
+
+      layer.tint = tint;
+      return ok({ layerId, hasTint: true });
+    },
+  );
+
   // ── atelier_set_motion_path ───────────────────────────────
   server.tool(
     "atelier_set_motion_path",
@@ -182,6 +213,17 @@ export function register(server: McpServer, store: DocumentStore): void {
       // Image fields
       src: z.string().optional().describe("Image source URL (image layers only)"),
       assetId: z.string().optional().describe("Asset ID reference (image layers only)"),
+      sourceRect: z.object({
+        x: z.number(), y: z.number(), width: z.number().positive(), height: z.number().positive(),
+      }).nullable().optional().describe("Source rectangle crop (image layers only). Null to remove."),
+      spritesheet: z.object({
+        columns: z.number().int().positive(),
+        rows: z.number().int().positive(),
+        frameCount: z.number().int().positive().optional(),
+        frameWidth: z.number().positive(),
+        frameHeight: z.number().positive(),
+      }).nullable().optional().describe("Spritesheet config (image layers only). Null to remove."),
+      frameIndex: z.number().int().min(0).optional().describe("Spritesheet frame index (image layers only)"),
       // Shape fields
       shape: z.object({
         type: z.enum(["rect", "ellipse", "path"]),
@@ -201,7 +243,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       stroke: z.record(z.unknown()).optional().describe("New stroke definition (shape layers only)"),
     },
     { readOnlyHint: false, destructiveHint: false },
-    async ({ id, layerId, content, style, src, assetId, shape, fill, stroke }) => {
+    async ({ id, layerId, content, style, src, assetId, sourceRect, spritesheet, frameIndex, shape, fill, stroke }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
       const { doc } = result;
@@ -235,6 +277,31 @@ export function register(server: McpServer, store: DocumentStore): void {
         if (visualType !== "image") return err(`Cannot set "assetId" on ${visualType} layer — image layers only`);
         (layer.visual as ImageVisual).assetId = assetId;
         updated.push("assetId");
+      }
+      if (sourceRect !== undefined) {
+        if (visualType !== "image") return err(`Cannot set "sourceRect" on ${visualType} layer — image layers only`);
+        if (sourceRect === null) {
+          delete (layer.visual as ImageVisual).sourceRect;
+          updated.push("sourceRect (removed)");
+        } else {
+          (layer.visual as ImageVisual).sourceRect = sourceRect;
+          updated.push("sourceRect");
+        }
+      }
+      if (spritesheet !== undefined) {
+        if (visualType !== "image") return err(`Cannot set "spritesheet" on ${visualType} layer — image layers only`);
+        if (spritesheet === null) {
+          delete (layer.visual as ImageVisual).spritesheet;
+          updated.push("spritesheet (removed)");
+        } else {
+          (layer.visual as ImageVisual).spritesheet = spritesheet;
+          updated.push("spritesheet");
+        }
+      }
+      if (frameIndex !== undefined) {
+        if (visualType !== "image") return err(`Cannot set "frameIndex" on ${visualType} layer — image layers only`);
+        (layer.visual as ImageVisual).frameIndex = frameIndex;
+        updated.push("frameIndex");
       }
 
       // Shape fields

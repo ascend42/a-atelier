@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 52 tools
+description: MCP server — AI authoring interface for Atelier animations with 53 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -34,7 +34,7 @@ components:
     description: Template MCP tools — instantiate_template, find_variables
     file: src/tools/templates.ts
   mcp-layer-effect-tools:
-    description: Layer effect tools — set_blend_mode, set_shadow, set_motion_path, set_clip_path, edit_visual
+    description: Layer effect tools — set_blend_mode, set_shadow, set_tint, set_motion_path, set_clip_path, edit_visual (supports sourceRect, spritesheet, frameIndex)
     file: src/tools/layer-effects.ts
   mcp-state-config-tools:
     description: State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection

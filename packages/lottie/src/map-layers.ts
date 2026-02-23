@@ -87,6 +87,18 @@ function mapLayer(
     base.refId = layer.visual.assetId;
     base.w = toNum(layer.bounds.width);
     base.h = toNum(layer.bounds.height);
+
+    if (layer.visual.spritesheet) {
+      warnings.push(`Layer "${layer.id}": Spritesheet animation not supported in Lottie export`);
+    }
+    if (layer.visual.sourceRect) {
+      warnings.push(`Layer "${layer.id}": sourceRect cropping not supported in Lottie export`);
+    }
+  }
+
+  // Tint warning
+  if (layer.tint && layer.tint.amount > 0) {
+    warnings.push(`Layer "${layer.id}": Tint effect not supported in Lottie export`);
   }
 
   return base;

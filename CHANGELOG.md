@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.26.0] — 2026-02-22
+
+### Added
+- **Spritesheet animation** — grid-based sprite atlas support for image layers
+  - `SpritesheetConfig` on `ImageVisual` (columns, rows, frameCount, frameWidth, frameHeight)
+  - `frameIndex` animatable property on image layers with step-easing for cell snapping
+  - Canvas: 9-arg `drawImage` source-rect calculation from grid coordinates
+  - SVG: nested `<svg viewBox>` with full sheet dimensions for correct cropping
+  - `@atelier/schema` validation for spritesheet config (positive ints, required dimensions)
+- **Source-rect cropping** — viewport cropping for texture atlases and camera pans
+  - `sourceRect` on `ImageVisual` (x, y, width, height)
+  - All four sourceRect fields independently animatable (`visual.image.sourceRect.x/y/width/height`)
+  - Canvas: 9-arg `drawImage` with sourceRect coordinates
+  - SVG: nested `<svg viewBox>` crop
+- **Animatable visibility** — frame-precise show/hide via boolean midpoint snapping
+  - `visible` property on layers with boolean delta support
+  - Canvas: invisible layers skipped in render loop
+  - SVG: invisible layers omitted from output
+- **Image tinting** — color overlay via multiply compositing
+  - `tint` property on layers (`{ color: string; amount: number }`)
+  - Both `tint.color` (RGBA lerp) and `tint.amount` (linear lerp) are animatable
+  - Canvas: offscreen multiply pipeline with `destination-in` alpha clipping
+  - SVG: `<filter>` with `feFlood` + `feBlend mode="multiply"`
+  - `atelier_set_tint` MCP tool for setting/removing tint
+- **Ref layer sub-document composition** — embed one `.atelier` document inside another
+  - `DocumentResolver` callback API: `(src: string) => AtelierDocument | undefined`
+  - `RenderOptions` interface with `imageCache`, `documentResolver`, `maxRefDepth` (backward-compatible with old `imageCache?` arg)
+  - `RefVisual` extended with `state?` and `frame?` fields
+  - Canvas: recursive sub-document rendering with context scaling
+  - SVG: nested `<svg>` elements with viewBox scaling
+  - Cycle detection via visited-ref Set; max depth limiting (default 4)
+  - Lottie: warns on ref/spritesheet/sourceRect/tint features (no native equivalent)
+- 8 new animatable properties (27→35 total): `visual.image.sourceRect.x/y/width/height`, `visual.image.frameIndex`, `visible`, `tint.color`, `tint.amount`
+- ~60 new tests across all 5 packages (core, canvas, svg, schema, mcp)
+- Handoff doc for Pretend integration at `a-pretend/docs/ATELIER-INTEGRATION.md`
+
+### Fixed
+- Boolean interpolation now snaps at `t >= 0.5` (midpoint) instead of `t >= 1` (end), enabling frame-precise visibility control
+- SVG spritesheet viewBox now uses full sheet pixel dimensions (`columns * frameWidth` × `rows * frameHeight`) instead of destination `eff.width/height`
+
 ## [0.25.1] — 2026-02-21
 
 ### Fixed
