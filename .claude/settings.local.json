@@ -49,7 +49,16 @@
       "Bash(node:*)",
       "mcp__paradigm__paradigm_reindex",
       "mcp__paradigm__paradigm_session_recover",
-      "mcp__paradigm__paradigm_session_checkpoint"
+      "mcp__paradigm__paradigm_session_checkpoint",
+      "Bash(npx paradigm:*)",
+      "mcp__paradigm__paradigm_purpose_validate",
+      "mcp__paradigm__paradigm_navigate",
+      "mcp__paradigm__paradigm_lore_record",
+      "Bash(cd:*)",
+      "Bash(tail:*)",
+      "Bash(echo atelier CLI not found in PATH:*)",
+      "Bash(pnpm ls:*)",
+      "Bash(git diff:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

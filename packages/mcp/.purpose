@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 27 tools
+description: MCP server — AI authoring interface for Atelier animations with 53 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -33,3 +33,27 @@ components:
   mcp-template-tools:
     description: Template MCP tools — instantiate_template, find_variables
     file: src/tools/templates.ts
+  mcp-layer-effect-tools:
+    description: Layer effect tools — set_blend_mode, set_shadow, set_tint, set_motion_path, set_clip_path, edit_visual (supports sourceRect, spritesheet, frameIndex)
+    file: src/tools/layer-effects.ts
+  mcp-state-config-tools:
+    description: State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection
+    file: src/tools/state-config.ts
+  mcp-export-tools:
+    description: Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)
+    file: src/tools/export.ts
+  mcp-asset-tools:
+    description: Asset management tools — add_asset, list_assets, remove_asset with usage tracking
+    file: src/tools/assets.ts
+  mcp-variable-tools:
+    description: Variable management tools — add_variable, list_variables, remove_variable with usage tracking
+    file: src/tools/variables.ts
+  mcp-interaction-tools:
+    description: Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings
+    file: src/tools/interactions.ts
+  mcp-ref-tools:
+    description: Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)
+    file: src/tools/refs.ts
+  mcp-performance-tools:
+    description: Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)
+    file: src/tools/performance.ts

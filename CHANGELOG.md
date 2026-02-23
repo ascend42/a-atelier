@@ -4,6 +4,186 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.26.1] — 2026-02-23
+
+### Changed
+- **All 10 `@atelier/*` subpackages published to npm** — previously private, now available as individual packages:
+  - `@atelier/types` — TypeScript type definitions
+  - `@atelier/math` — Interpolation engine (easing, lerp, spring, color)
+  - `@atelier/schema` — Zod validation schemas
+  - `@atelier/core` — Animation engine (delta resolution, builder API)
+  - `@atelier/canvas` — Canvas 2D renderer and playback controller
+  - `@atelier/studio` — Reusable editor widget
+  - `@atelier/svg` — SVG renderer
+  - `@atelier/lottie` — Lottie JSON exporter
+  - `@atelier/react` — React integration (Animation component and hooks)
+  - `@atelier/mcp` — MCP server for AI authoring
+- All subpackages versioned at `0.25.1` to match CLI release
+- Added `publishConfig: { "access": "public" }` to all subpackages
+
+## [0.26.0] — 2026-02-22
+
+### Added
+- **Spritesheet animation** — grid-based sprite atlas support for image layers
+  - `SpritesheetConfig` on `ImageVisual` (columns, rows, frameCount, frameWidth, frameHeight)
+  - `frameIndex` animatable property on image layers with step-easing for cell snapping
+  - Canvas: 9-arg `drawImage` source-rect calculation from grid coordinates
+  - SVG: nested `<svg viewBox>` with full sheet dimensions for correct cropping
+  - `@atelier/schema` validation for spritesheet config (positive ints, required dimensions)
+- **Source-rect cropping** — viewport cropping for texture atlases and camera pans
+  - `sourceRect` on `ImageVisual` (x, y, width, height)
+  - All four sourceRect fields independently animatable (`visual.image.sourceRect.x/y/width/height`)
+  - Canvas: 9-arg `drawImage` with sourceRect coordinates
+  - SVG: nested `<svg viewBox>` crop
+- **Animatable visibility** — frame-precise show/hide via boolean midpoint snapping
+  - `visible` property on layers with boolean delta support
+  - Canvas: invisible layers skipped in render loop
+  - SVG: invisible layers omitted from output
+- **Image tinting** — color overlay via multiply compositing
+  - `tint` property on layers (`{ color: string; amount: number }`)
+  - Both `tint.color` (RGBA lerp) and `tint.amount` (linear lerp) are animatable
+  - Canvas: offscreen multiply pipeline with `destination-in` alpha clipping
+  - SVG: `<filter>` with `feFlood` + `feBlend mode="multiply"`
+  - `atelier_set_tint` MCP tool for setting/removing tint
+- **Ref layer sub-document composition** — embed one `.atelier` document inside another
+  - `DocumentResolver` callback API: `(src: string) => AtelierDocument | undefined`
+  - `RenderOptions` interface with `imageCache`, `documentResolver`, `maxRefDepth` (backward-compatible with old `imageCache?` arg)
+  - `RefVisual` extended with `state?` and `frame?` fields
+  - Canvas: recursive sub-document rendering with context scaling
+  - SVG: nested `<svg>` elements with viewBox scaling
+  - Cycle detection via visited-ref Set; max depth limiting (default 4)
+  - Lottie: warns on ref/spritesheet/sourceRect/tint features (no native equivalent)
+- 8 new animatable properties (27→35 total): `visual.image.sourceRect.x/y/width/height`, `visual.image.frameIndex`, `visible`, `tint.color`, `tint.amount`
+- ~60 new tests across all 5 packages (core, canvas, svg, schema, mcp)
+- Handoff doc for Pretend integration at `a-pretend/docs/ATELIER-INTEGRATION.md`
+
+### Fixed
+- Boolean interpolation now snaps at `t >= 0.5` (midpoint) instead of `t >= 1` (end), enabling frame-precise visibility control
+- SVG spritesheet viewBox now uses full sheet pixel dimensions (`columns * frameWidth` × `rows * frameHeight`) instead of destination `eff.width/height`
+
+## [0.25.1] — 2026-02-21
+
+### Fixed
+- 3 `.purpose` files with YAML syntax errors — `#`-prefixed component IDs in `packages/schema`, `packages/types`, and `packages/math` were parsed as YAML comments; now properly quoted
+- 2 unregistered components in `packages/core/.purpose` — `state-machine` and `template-resolver` now use `#` prefix convention
+- Root `.purpose` — MCP tool count updated from 27 to 52, CLI commands from 4 to 9, type count from 48 to 60+
+
+### Added
+- `packages/svg/.purpose` — 7 components (#svg-renderer, #svg-shapes, #svg-text, #svg-gradients, #svg-filters, #svg-clip, #svg-properties)
+- `packages/lottie/.purpose` — 8 components (#lottie-exporter, #lottie-types, #lottie-map-layers, #lottie-map-shapes, #lottie-map-keyframes, #lottie-map-colors, #lottie-map-easing, #lottie-warnings)
+- `packages/types/.purpose` — 6 missing type components (#shadow-types, #audio-types, #asset-types, #variable-types, #interaction-types, #preset-types)
+- `packages/core/.purpose` — 2 missing engine components (#expression-evaluator, #audio-timing)
+- Paradigm symbol count: 74 → 129 (125 components, 3 gates, 1 flow) across 11 .purpose files
+
+## [0.25.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 4 new MCP tools (48→52 total) for performance analysis:
+  - `atelier_profile` — profile frame resolution with timing breakdown, layer/delta/expression counts
+  - `atelier_diff_frames` — compare two frames and return only changed properties per layer
+  - `atelier_batch_preview` — resolve multiple frames at once (max 60) with aggregate timing
+  - `atelier_complexity` — analyze document complexity: layers, deltas, expressions, interactions, hierarchy depth, animated properties
+- ~11 new MCP tests (profile/diff/batch/complexity with timing, hierarchy, interactions)
+
+## [0.24.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 2 new MCP tools (46→48 total) for composition/nesting:
+  - `atelier_set_ref` — set the source reference on a ref-type layer (file path, URL, or in-memory document ID) with self-reference prevention
+  - `atelier_resolve_refs` — check which ref layers resolve to valid in-memory documents with target info
+- ~8 new MCP tests (ref set/resolve with in-memory resolution, self-reference prevention, error cases)
+
+## [0.23.0] — 2026-02-21
+
+### Added
+- `@atelier/types` — `Interaction` type system: `Trigger` (click, hover, pointerdown, pointerup, timer, signal), `Action` (go-to-state, emit-signal, set-variable, toggle-visibility), `Interaction` interface with id/trigger/action/description
+- `@atelier/types` — `interactions?: Interaction[]` on Layer interface
+- `@atelier/schema` — `TriggerSchema`, `ActionSchema`, `InteractionSchema` with contextual validation (timer requires delay, signal requires signal name, go-to-state requires state, set-variable requires variable+value)
+- `@atelier/schema` — `interactions` field on `LayerSchema`
+- `@atelier/mcp` — 3 new MCP tools (43→46 total) for interaction management:
+  - `atelier_add_interaction` — add a trigger-action binding to a layer with validation (state exists, target layer exists, timer has delay)
+  - `atelier_list_interactions` — list all interactions across all layers or filtered by layer
+  - `atelier_remove_interaction` — remove an interaction from a layer
+- ~11 new MCP tests (interaction add/list/remove with validation)
+
+## [0.22.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 3 new MCP tools (40→43 total) for variable management:
+  - `atelier_add_variable` — define a template variable on a document
+  - `atelier_list_variables` — list all variables with usage info (referenced vs unused, undeclared references)
+  - `atelier_remove_variable` — remove a variable with warnings if still referenced
+- `@a-company/atelier` — 1 new CLI command:
+  - `atelier variables <file>` — list all variables in an .atelier file with usage info
+- ~10 new MCP tests (variable add/list/remove with usage tracking)
+
+## [0.21.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 3 new MCP tools (37→40 total) for asset management:
+  - `atelier_add_asset` — register an external asset (image, SVG, font, animation, audio) on a document
+  - `atelier_list_assets` — list all assets with usage info (which layers/states reference them)
+  - `atelier_remove_asset` — remove an asset with warnings if still referenced by layers or state audio
+- `@a-company/atelier` — 1 new CLI command:
+  - `atelier assets <file>` — list all assets in an .atelier file with usage info
+- ~9 new MCP tests (asset add/list/remove with usage tracking)
+
+## [0.20.0] — 2026-02-21
+
+### Added
+- `@atelier/mcp` — 10 new MCP tools (27→37 total) for MCP + CLI parity with M7/M8 engine capabilities:
+  - **Layer Effects** (5): `atelier_set_blend_mode` (16 blend modes + null clear), `atelier_set_shadow` (color/blur/offset + null remove), `atelier_set_motion_path` (path points/autoRotate + null remove), `atelier_set_clip_path` (rect/ellipse/path + null remove), `atelier_edit_visual` (edit text content/style, image src/assetId, shape/fill/stroke post-creation with type validation)
+  - **State Config** (3): `atelier_set_audio` (audio track on state + null remove), `atelier_configure_transition` (state-to-state transitions with easing + null remove, validates target exists, rejects self-transition), `atelier_set_state_parent` (hierarchical state inheritance with cycle detection + null clear)
+  - **Export** (2): `atelier_export_svg` (frame→SVG string via `@atelier/svg`), `atelier_export_lottie` (document→Lottie JSON via `@atelier/lottie` with warnings)
+- `@a-company/atelier` — 2 new CLI commands:
+  - `atelier export-svg <file>` — export a frame as SVG (`-s/--state`, `-f/--frame`, `-o/--output`, `--xml-declaration`)
+  - `atelier export-lottie <file>` — export to Lottie JSON (`-s/--state`, `-o/--output`, warnings to stderr)
+- `@a-company/atelier` — `atelier still` now supports `--format png` with `-o/--output` for PNG rendering via node-canvas (JSON remains default)
+- ~28 new MCP tests (layer effects, state config, export tools, tool listing)
+- ~6 new CLI tests (SVG export, Lottie export)
+
+### Changed
+- `@atelier/mcp` — `@atelier/svg` and `@atelier/lottie` added as dependencies
+- `@a-company/atelier` — `@atelier/svg` and `@atelier/lottie` added as devDependencies
+
+## [0.19.0] — 2026-02-20
+
+### Added
+- `@atelier/types` — `parent?: string` on State interface: enables hierarchical state inheritance where child states inherit deltas from parent states (child overrides win on same layer+property)
+- `@atelier/types` — `StateTransitionConfig` interface: `duration` (frames) + `easing` for smooth crossfade transitions between states
+- `@atelier/types` — `transitions?: Record<string, StateTransitionConfig>` on State interface
+- `@atelier/schema` — `StateTransitionConfigSchema` validation; `parent` and `transitions` fields on `StateSchema`
+- `@atelier/core` — Hierarchical state resolution: `resolveAncestorChain()` walks parent chain (with cycle detection), `collectDeltas()` merges ancestor deltas (child wins per layer+property)
+- `@atelier/core` — State transition interpolation: `transitionTo()` with duration/easing, `isTransitioning()`, `getTransitionProgress()` for smooth crossfade blending
+- `@atelier/core` — `blendResolvedFrames()`: frame-level blending for state transitions — lerps numeric properties, color-lerps hex values, snaps discrete values at t >= 0.5, fades in/out layers unique to source/target
+- `@atelier/core` — Frame resolver accepts optional `overrideDeltas` parameter for hierarchical state resolution
+- `@atelier/svg` — New package: SVG renderer for static frame export (thumbnails, SSR, static export)
+  - `renderFrameSVG(doc, state, frame, opts?)` → SVG string with full visual fidelity
+  - Shape mapping: rect→`<rect>` (with rounded corners), ellipse→`<ellipse>`, path→`<path>` (with bezier curves)
+  - Fill/stroke rendering, linear/radial gradient `<defs>`, shadow `<filter>` (feDropShadow)
+  - Clip path support, blend modes via CSS `mix-blend-mode`, image/text layers
+  - Transform stack: translate, rotate, scale with anchor point support
+  - Options: `xmlDeclaration`, `viewBox`, `indent` control
+- `@atelier/lottie` — New package: Lottie JSON exporter (lossy, best-effort)
+  - `exportToLottie(doc, opts?)` → `{ json: LottieAnimation; warnings: string[] }`
+  - Full mapping: rect, ellipse, path shapes; solid/gradient fills; stroke; position/opacity/rotation animation
+  - Easing mapping: linear, cubic-bezier (exact), presets (mapped), spring (approximated as cubic-bezier), step (hold keyframes)
+  - Color mapping: hex/RGBA/HSLA → Lottie [r,g,b,a] 0–1 arrays
+  - Text layer support (basic), image layer with asset references, blend mode mapping
+  - Warnings for unsupported features: audio (dropped), expressions (dropped), shadows (dropped), motion paths, clip paths (partial)
+- `@atelier/react` — New package: React integration for embedding Atelier animations
+  - `<Animation>` component: renders to canvas with autoplay, loop, width/height, callbacks (onFrame, onComplete)
+  - `useAnimation()` hook: play/pause/seek controls, currentFrame/isPlaying state, canvas ref binding
+  - `useAnimationState()` hook: state machine controls for multi-state animations
+  - `AnimationPlayer` class: requestAnimationFrame loop with frame timing, play/pause/seek/loop
+  - Peer dependencies: React >= 18
+- 22 new tests for hierarchical states and state transitions (core package)
+- 26 new tests for SVG renderer
+- 37 new tests for Lottie exporter
+- 15 new tests for React integration (happy-dom + @testing-library/react)
+- `examples/hierarchical-states.atelier` — Three-level state inheritance (idle → hover → active) with scale/opacity overrides
+- `examples/state-transitions.atelier` — Day/night scene with smooth crossfade transition using cubic-bezier easing
+
 ## [0.18.0] — 2026-02-20
 
 ### Added

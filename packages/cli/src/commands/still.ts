@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
 import type { AtelierDocument } from "@atelier/types";
@@ -62,7 +62,7 @@ export function stillCommand(program: Command): void {
   program
     .command("still <file>")
     .description(
-      "Resolve a single frame and output as JSON",
+      "Resolve a single frame and output as JSON or render as PNG",
     )
     .option("-s, --state <name>", "State name (defaults to first state)")
     .option(
@@ -70,10 +70,16 @@ export function stillCommand(program: Command): void {
       "Frame number (defaults to 0)",
       "0",
     )
+    .option(
+      "--format <type>",
+      "Output format: json | png (default: json)",
+      "json",
+    )
+    .option("-o, --output <path>", "Output file path (default: stdout)")
     .action(
-      (
+      async (
         file: string,
-        options: { state?: string; frame: string },
+        options: { state?: string; frame: string; format: string; output?: string },
       ) => {
         const doc = readAndParse(file);
 
@@ -86,13 +92,51 @@ export function stillCommand(program: Command): void {
           return;
         }
 
+        if (options.format !== "json" && options.format !== "png") {
+          console.error(`Unknown format: "${options.format}". Use json or png.`);
+          process.exit(1);
+          return;
+        }
+
         try {
           const resolved = resolveStill(
             doc,
             options.state,
             frameNumber,
           );
-          console.log(JSON.stringify(resolved, null, 2));
+
+          if (options.format === "json") {
+            const json = JSON.stringify(resolved, null, 2);
+            if (options.output) {
+              writeFileSync(resolve(options.output), json, "utf-8");
+            } else {
+              console.log(json);
+            }
+          } else {
+            // PNG format — dynamic import of canvas
+            let canvasMod: typeof import("canvas");
+            try {
+              canvasMod = await import("canvas");
+            } catch {
+              console.error("PNG output requires the 'canvas' package. Install it: npm i canvas");
+              process.exit(1);
+              return;
+            }
+
+            const { renderFrame } = await import("@atelier/canvas");
+
+            const { createCanvas } = canvasMod;
+            const cvs = createCanvas(doc.canvas.width, doc.canvas.height);
+            const ctx = cvs.getContext("2d");
+            renderFrame(ctx as unknown as import("@atelier/canvas").RenderContext, resolved, doc);
+
+            const buffer = cvs.toBuffer("image/png");
+            if (options.output) {
+              writeFileSync(resolve(options.output), buffer);
+            } else {
+              process.stdout.write(buffer);
+            }
+          }
         } catch (err) {
           console.error(
             (err as Error).message,

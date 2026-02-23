@@ -1,0 +1,27 @@
+{
+  "sessionId": "smlykj2hs",
+  "startTime": 1771814371168,
+  "lastActivity": 1771817428959,
+  "breadcrumbs": [
+    {
+      "timestamp": 1771814386854,
+      "action": "tool-call",
+      "tool": "paradigm_status",
+      "summary": "Checked project status"
+    },
+    {
+      "timestamp": 1771817428933,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: agent-session"
+    },
+    {
+      "timestamp": 1771817436985,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    }
+  ],
+  "symbolsModified": [],
+  "filesExplored": []
+}

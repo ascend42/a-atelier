@@ -1,7 +1,9 @@
 {
   "name": "@atelier/core",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Animation engine — delta resolution, builder API, state machine",
   "type": "module",
   "main": "./dist/index.cjs",

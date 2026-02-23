@@ -1,7 +1,9 @@
 {
   "name": "@atelier/canvas",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Canvas 2D renderer and playback controller",
   "type": "module",
   "main": "./dist/index.cjs",

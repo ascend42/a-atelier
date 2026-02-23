@@ -15,6 +15,7 @@ import {
   isPercentage,
   expandPreset,
   StateMachine,
+  blendResolvedFrames,
   instantiateTemplate,
   findTemplateVariables,
   evaluateExpression,
@@ -50,6 +51,18 @@ describe("delta resolver", () => {
     expect(interpolateValue(0, 100, 0.5)).toBe(50);
     expect(interpolateValue(0, 1, 0)).toBe(0);
     expect(interpolateValue(0, 1, 1)).toBe(1);
+  });
+
+  it("interpolateValue snaps booleans at midpoint", () => {
+    expect(interpolateValue(false, true, 0)).toBe(false);
+    expect(interpolateValue(false, true, 0.3)).toBe(false);
+    expect(interpolateValue(false, true, 0.49)).toBe(false);
+    expect(interpolateValue(false, true, 0.5)).toBe(true);
+    expect(interpolateValue(false, true, 0.8)).toBe(true);
+    expect(interpolateValue(false, true, 1)).toBe(true);
+    // Reverse direction
+    expect(interpolateValue(true, false, 0.3)).toBe(true);
+    expect(interpolateValue(true, false, 0.5)).toBe(false);
   });
 
   it("resolveDeltaValue returns undefined outside range", () => {
@@ -1016,5 +1029,658 @@ describe("audio timing", () => {
     const audio = { src: "music.mp3", startFrame: 100 };
     const cues = computeAudioCues(audio, 90);
     expect(cues).toEqual([]);
+  });
+});
+
+// ─── Hierarchical States ──────────────────────────────────
+
+describe("hierarchical states", () => {
+  const hierarchicalDoc: AtelierDocument = {
+    version: "1.0",
+    name: "hierarchical-test",
+    canvas: { width: 100, height: 100, fps: 30 },
+    layers: [
+      {
+        id: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 100, height: 100 },
+        opacity: 0,
+      },
+      {
+        id: "circle",
+        visual: { type: "shape", shape: { type: "ellipse" } },
+        frame: { x: 50, y: 50 },
+        bounds: { width: 50, height: 50 },
+      },
+    ],
+    states: {
+      idle: {
+        duration: 10,
+        deltas: [
+          {
+            layer: "rect",
+            property: "opacity",
+            range: [0, 9] as [number, number],
+            from: 0,
+            to: 1,
+          },
+          {
+            layer: "circle",
+            property: "opacity",
+            range: [0, 9] as [number, number],
+            from: 0.5,
+            to: 0.5,
+          },
+        ],
+      },
+      hover: {
+        parent: "idle",
+        duration: 10,
+        deltas: [
+          // Override rect opacity from parent
+          {
+            layer: "rect",
+            property: "opacity",
+            range: [0, 9] as [number, number],
+            from: 0.8,
+            to: 1,
+          },
+          // Add new animation not in parent
+          {
+            layer: "rect",
+            property: "rotation",
+            range: [0, 9] as [number, number],
+            from: 0,
+            to: 15,
+          },
+        ],
+      },
+      active: {
+        parent: "hover",
+        duration: 10,
+        deltas: [
+          // Override hover's rotation
+          {
+            layer: "rect",
+            property: "rotation",
+            range: [0, 9] as [number, number],
+            from: 0,
+            to: 45,
+          },
+        ],
+      },
+    },
+  };
+
+  it("resolves parent state deltas alongside own", () => {
+    const sm = new StateMachine(hierarchicalDoc, "hover");
+    const result = sm.tick();
+    // rect.opacity from hover (overrides idle): 0.8
+    expect(result.resolved.layers[0].computedProperties.opacity).toBe(0.8);
+    // circle.opacity inherited from idle: 0.5
+    expect(result.resolved.layers[1].computedProperties.opacity).toBe(0.5);
+    // rect.rotation from hover: 0
+    expect(result.resolved.layers[0].computedProperties.rotation).toBe(0);
+  });
+
+  it("child overrides parent deltas for same layer+property", () => {
+    const sm = new StateMachine(hierarchicalDoc, "hover");
+    sm.seek(9); // last frame
+    const result = sm.tick();
+    // rect.opacity from hover (not idle)
+    expect(result.resolved.layers[0].computedProperties.opacity).toBe(1);
+    // rect.rotation from hover
+    expect(result.resolved.layers[0].computedProperties.rotation).toBe(15);
+  });
+
+  it("multi-level inheritance (grandchild)", () => {
+    const sm = new StateMachine(hierarchicalDoc, "active");
+    sm.seek(9);
+    const result = sm.tick();
+    // rect.rotation from active (overrides hover): 45
+    expect(result.resolved.layers[0].computedProperties.rotation).toBe(45);
+    // rect.opacity from hover (inherited through active, since active doesn't define it): 1
+    expect(result.resolved.layers[0].computedProperties.opacity).toBe(1);
+    // circle.opacity from idle (inherited through hover → active): 0.5
+    expect(result.resolved.layers[1].computedProperties.opacity).toBe(0.5);
+  });
+
+  it("resolveAncestorChain returns correct chain", () => {
+    const sm = new StateMachine(hierarchicalDoc, "idle");
+    expect(sm.resolveAncestorChain("idle")).toEqual(["idle"]);
+    expect(sm.resolveAncestorChain("hover")).toEqual(["idle", "hover"]);
+    expect(sm.resolveAncestorChain("active")).toEqual(["idle", "hover", "active"]);
+  });
+
+  it("detects circular parent references", () => {
+    const circularDoc: AtelierDocument = {
+      version: "1.0",
+      name: "circular",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [],
+      states: {
+        a: { parent: "b", duration: 10, deltas: [] },
+        b: { parent: "a", duration: 10, deltas: [] },
+      },
+    };
+    const sm = new StateMachine(circularDoc, "a");
+    expect(() => sm.resolveAncestorChain("a")).toThrow("Circular parent reference");
+  });
+
+  it("throws for missing parent state", () => {
+    const missingParentDoc: AtelierDocument = {
+      version: "1.0",
+      name: "missing-parent",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [],
+      states: {
+        child: { parent: "nonexistent", duration: 10, deltas: [] },
+      },
+    };
+    const sm = new StateMachine(missingParentDoc, "child");
+    expect(() => sm.resolveAncestorChain("child")).toThrow("not found");
+  });
+
+  it("collectDeltas merges parent and child deltas", () => {
+    const sm = new StateMachine(hierarchicalDoc, "hover");
+    const deltas = sm.collectDeltas("hover");
+    // Should have: rect.opacity (from hover), circle.opacity (from idle), rect.rotation (from hover)
+    expect(deltas).toHaveLength(3);
+    const rectOpacity = deltas.filter(d => d.layer === "rect" && d.property === "opacity");
+    expect(rectOpacity).toHaveLength(1);
+    expect(rectOpacity[0].from).toBe(0.8); // hover's version, not idle's
+  });
+
+  it("resolveAt with hierarchical state uses merged deltas", () => {
+    const sm = new StateMachine(hierarchicalDoc, "hover");
+    const resolved = sm.resolveAt("hover", 0);
+    // Should include circle.opacity from parent idle
+    expect(resolved.layers[1].computedProperties.opacity).toBe(0.5);
+  });
+
+  it("state without parent works normally", () => {
+    const sm = new StateMachine(hierarchicalDoc, "idle");
+    const result = sm.tick();
+    expect(result.resolved.layers[0].computedProperties.opacity).toBe(0);
+  });
+});
+
+// ─── State Transition Interpolation ──────────────────────────
+
+describe("state transition interpolation", () => {
+  const transDoc: AtelierDocument = {
+    version: "1.0",
+    name: "transition-test",
+    canvas: { width: 100, height: 100, fps: 30 },
+    layers: [
+      {
+        id: "rect",
+        visual: { type: "shape", shape: { type: "rect" } },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 100, height: 100 },
+        opacity: 1,
+      },
+    ],
+    states: {
+      intro: {
+        duration: 10,
+        deltas: [
+          {
+            layer: "rect",
+            property: "opacity",
+            range: [0, 9] as [number, number],
+            from: 0,
+            to: 1,
+          },
+        ],
+        transitions: {
+          outro: { duration: 5 },
+        },
+      },
+      outro: {
+        duration: 10,
+        deltas: [
+          {
+            layer: "rect",
+            property: "opacity",
+            range: [0, 9] as [number, number],
+            from: 1,
+            to: 0,
+          },
+        ],
+      },
+    },
+  };
+
+  it("isTransitioning returns false by default", () => {
+    const sm = new StateMachine(transDoc);
+    expect(sm.isTransitioning()).toBe(false);
+    expect(sm.getTransitionProgress()).toBeNull();
+  });
+
+  it("transition with config starts blended transition", () => {
+    const sm = new StateMachine(transDoc);
+    sm.tick(); // frame 0
+    sm.transition("outro");
+    expect(sm.isTransitioning()).toBe(true);
+    expect(sm.state).toBe("outro");
+  });
+
+  it("transition progress advances with tick", () => {
+    const sm = new StateMachine(transDoc);
+    sm.tick(); // frame 0
+    sm.transition("outro"); // starts 5-frame transition
+    // Progress starts at 0
+    expect(sm.getTransitionProgress()).toBe(0);
+    sm.tick(); // 1 frame into transition
+    const prog = sm.getTransitionProgress();
+    expect(prog).toBeGreaterThan(0);
+  });
+
+  it("transition completes after duration", () => {
+    const sm = new StateMachine(transDoc);
+    sm.transition("outro"); // 5-frame transition
+    for (let i = 0; i < 5; i++) sm.tick();
+    expect(sm.isTransitioning()).toBe(false);
+    expect(sm.state).toBe("outro");
+  });
+
+  it("transitionTo creates explicit transition", () => {
+    const sm = new StateMachine(transDoc);
+    sm.transitionTo("outro", 3);
+    expect(sm.isTransitioning()).toBe(true);
+    expect(sm.state).toBe("outro");
+    expect(sm.frame).toBe(0);
+
+    // After 3 ticks, transition should complete
+    for (let i = 0; i < 3; i++) sm.tick();
+    expect(sm.isTransitioning()).toBe(false);
+  });
+
+  it("transitionTo with easing applies easing to progress", () => {
+    const sm = new StateMachine(transDoc);
+    sm.transitionTo("outro", 10, "ease-in");
+    sm.tick(); // 1 frame in
+    const progress = sm.getTransitionProgress();
+    expect(progress).toBeDefined();
+    // ease-in at 10%: should be less than 0.1
+    expect(progress!).toBeLessThan(0.1);
+  });
+
+  it("transition without config is instant", () => {
+    const noTransDoc: AtelierDocument = {
+      ...transDoc,
+      states: {
+        intro: { duration: 10, deltas: transDoc.states.intro.deltas },
+        outro: transDoc.states.outro,
+      },
+    };
+    const sm = new StateMachine(noTransDoc);
+    sm.transition("outro");
+    expect(sm.isTransitioning()).toBe(false);
+    expect(sm.state).toBe("outro");
+  });
+
+  it("reset clears active transition", () => {
+    const sm = new StateMachine(transDoc);
+    sm.transitionTo("outro", 10);
+    expect(sm.isTransitioning()).toBe(true);
+    sm.reset("intro");
+    expect(sm.isTransitioning()).toBe(false);
+  });
+});
+
+// ─── Frame Blending ──────────────────────────────────────────
+
+describe("blendResolvedFrames", () => {
+  it("blends numeric properties", () => {
+    const frameA = {
+      frame: 0,
+      stateName: "a",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { opacity: 0 as unknown } as Record<string, unknown>,
+      }],
+    };
+    const frameB = {
+      frame: 0,
+      stateName: "b",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+      }],
+    };
+
+    const blended = blendResolvedFrames(frameA as any, frameB as any, 0.5);
+    expect(blended.layers[0].computedProperties.opacity).toBeCloseTo(0.5);
+  });
+
+  it("blends colors", () => {
+    const frameA = {
+      frame: 0, stateName: "a",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { "visual.fill.color": "#000000" as unknown } as Record<string, unknown>,
+      }],
+    };
+    const frameB = {
+      frame: 0, stateName: "b",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { "visual.fill.color": "#FFFFFF" as unknown } as Record<string, unknown>,
+      }],
+    };
+
+    const blended = blendResolvedFrames(frameA as any, frameB as any, 0.5);
+    // Should be some gray midpoint
+    const color = blended.layers[0].computedProperties["visual.fill.color"] as string;
+    expect(color).toBeDefined();
+    expect(typeof color).toBe("string");
+  });
+
+  it("fades in layers only present in target", () => {
+    const frameA = {
+      frame: 0, stateName: "a",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+      }],
+    };
+    const frameB = {
+      frame: 0, stateName: "b",
+      layers: [
+        {
+          id: "rect",
+          layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+          computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+        },
+        {
+          id: "circle",
+          layer: { id: "circle", visual: { type: "shape" as const, shape: { type: "ellipse" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 50, height: 50 } },
+          computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+        },
+      ],
+    };
+
+    const blended = blendResolvedFrames(frameA as any, frameB as any, 0.5);
+    expect(blended.layers).toHaveLength(2);
+    // circle is fading in — should have reduced opacity
+    const circle = blended.layers.find(l => l.id === "circle");
+    expect(circle).toBeDefined();
+    expect(circle!.computedProperties.opacity).toBeCloseTo(0.5);
+  });
+
+  it("fades out layers only present in source", () => {
+    const frameA = {
+      frame: 0, stateName: "a",
+      layers: [
+        {
+          id: "rect",
+          layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+          computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+        },
+        {
+          id: "extra",
+          layer: { id: "extra", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 50, height: 50 } },
+          computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+        },
+      ],
+    };
+    const frameB = {
+      frame: 0, stateName: "b",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { opacity: 1 as unknown } as Record<string, unknown>,
+      }],
+    };
+
+    const blended = blendResolvedFrames(frameA as any, frameB as any, 0.75);
+    const extra = blended.layers.find(l => l.id === "extra");
+    expect(extra).toBeDefined();
+    // fading out: opacity = 1 * (1 - 0.75) = 0.25
+    expect(extra!.computedProperties.opacity).toBeCloseTo(0.25);
+  });
+
+  it("snaps discrete values at t >= 0.5", () => {
+    const frameA = {
+      frame: 0, stateName: "a",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { "frame.x": 0 as unknown, "frame.y": 0 as unknown } as Record<string, unknown>,
+      }],
+    };
+    const frameB = {
+      frame: 0, stateName: "b",
+      layers: [{
+        id: "rect",
+        layer: { id: "rect", visual: { type: "shape" as const, shape: { type: "rect" as const } }, frame: { x: 0, y: 0 }, bounds: { width: 100, height: 100 } },
+        computedProperties: { "frame.x": 100 as unknown, "frame.y": 200 as unknown } as Record<string, unknown>,
+      }],
+    };
+
+    const blended = blendResolvedFrames(frameA as any, frameB as any, 0.5);
+    expect(blended.layers[0].computedProperties["frame.x"]).toBeCloseTo(50);
+    expect(blended.layers[0].computedProperties["frame.y"]).toBeCloseTo(100);
+  });
+});
+
+// ─── New Animatable Properties ──────────────────────────────
+
+describe("new animatable properties", () => {
+  it("resolves visual.image.frameIndex from deltas", () => {
+    const spriteDoc: AtelierDocument = {
+      version: "1.0",
+      name: "sprite-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "hero",
+          visual: {
+            type: "image",
+            assetId: "walk",
+            spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+            frameIndex: 0,
+          },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 64, height: 64 },
+        },
+      ],
+      states: {
+        walk: {
+          duration: 32,
+          deltas: [
+            {
+              layer: "hero",
+              property: "visual.image.frameIndex",
+              range: [0, 31] as [number, number],
+              from: 0,
+              to: 7,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(spriteDoc, "walk", 0);
+    expect(frame0.layers[0].computedProperties["visual.image.frameIndex"]).toBe(0);
+
+    const frameMid = resolveFrame(spriteDoc, "walk", 16);
+    const midVal = frameMid.layers[0].computedProperties["visual.image.frameIndex"] as number;
+    expect(midVal).toBeCloseTo(3.5, 0);
+
+    const frameEnd = resolveFrame(spriteDoc, "walk", 31);
+    expect(frameEnd.layers[0].computedProperties["visual.image.frameIndex"]).toBe(7);
+  });
+
+  it("resolves visible from deltas with ranged boolean (snaps at midpoint)", () => {
+    const visDoc: AtelierDocument = {
+      version: "1.0",
+      name: "vis-range-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "flash",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          visible: false,
+        },
+      ],
+      states: {
+        show: {
+          duration: 20,
+          deltas: [
+            {
+              layer: "flash",
+              property: "visible",
+              range: [10, 20] as [number, number],
+              from: false,
+              to: true,
+            },
+          ],
+        },
+      },
+    };
+
+    // Before range — no delta active
+    const before = resolveFrame(visDoc, "show", 9);
+    expect(before.layers[0].computedProperties["visible"]).toBeUndefined();
+
+    // At start of range (t=0) — still false
+    const atStart = resolveFrame(visDoc, "show", 10);
+    expect(atStart.layers[0].computedProperties["visible"]).toBe(false);
+
+    // At midpoint (t=0.5) — snaps to true
+    const atMid = resolveFrame(visDoc, "show", 15);
+    expect(atMid.layers[0].computedProperties["visible"]).toBe(true);
+
+    // At end (t=1) — true
+    const atEnd = resolveFrame(visDoc, "show", 20);
+    expect(atEnd.layers[0].computedProperties["visible"]).toBe(true);
+  });
+
+  it("resolves visible from deltas with instant range", () => {
+    const visDoc: AtelierDocument = {
+      version: "1.0",
+      name: "vis-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "flash",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          visible: false,
+        },
+      ],
+      states: {
+        show: {
+          duration: 20,
+          deltas: [
+            {
+              layer: "flash",
+              property: "visible",
+              range: [10, 10] as [number, number],
+              from: false,
+              to: true,
+            },
+          ],
+        },
+      },
+    };
+
+    const before = resolveFrame(visDoc, "show", 9);
+    expect(before.layers[0].computedProperties["visible"]).toBeUndefined();
+
+    const at = resolveFrame(visDoc, "show", 10);
+    expect(at.layers[0].computedProperties["visible"]).toBe(true);
+  });
+
+  it("resolves tint.amount from deltas", () => {
+    const tintDoc: AtelierDocument = {
+      version: "1.0",
+      name: "tint-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "enemy",
+          visual: { type: "shape", shape: { type: "rect" } },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 50, height: 50 },
+          tint: { color: "#FF0000", amount: 0 },
+        },
+      ],
+      states: {
+        hit: {
+          duration: 12,
+          deltas: [
+            {
+              layer: "enemy",
+              property: "tint.amount",
+              range: [0, 6] as [number, number],
+              from: 0,
+              to: 1,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(tintDoc, "hit", 0);
+    expect(frame0.layers[0].computedProperties["tint.amount"]).toBe(0);
+
+    const frame3 = resolveFrame(tintDoc, "hit", 3);
+    expect(frame3.layers[0].computedProperties["tint.amount"]).toBeCloseTo(0.5);
+
+    const frame6 = resolveFrame(tintDoc, "hit", 6);
+    expect(frame6.layers[0].computedProperties["tint.amount"]).toBe(1);
+  });
+
+  it("resolves visual.image.sourceRect.x from deltas", () => {
+    const srcRectDoc: AtelierDocument = {
+      version: "1.0",
+      name: "srcrect-test",
+      canvas: { width: 100, height: 100, fps: 30 },
+      layers: [
+        {
+          id: "crop",
+          visual: {
+            type: "image",
+            assetId: "atlas",
+            sourceRect: { x: 0, y: 0, width: 32, height: 32 },
+          },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 64, height: 64 },
+        },
+      ],
+      states: {
+        pan: {
+          duration: 30,
+          deltas: [
+            {
+              layer: "crop",
+              property: "visual.image.sourceRect.x",
+              range: [0, 29] as [number, number],
+              from: 0,
+              to: 100,
+            },
+          ],
+        },
+      },
+    };
+
+    const frame0 = resolveFrame(srcRectDoc, "pan", 0);
+    expect(frame0.layers[0].computedProperties["visual.image.sourceRect.x"]).toBe(0);
+
+    const frameEnd = resolveFrame(srcRectDoc, "pan", 29);
+    expect(frameEnd.layers[0].computedProperties["visual.image.sourceRect.x"]).toBe(100);
   });
 });

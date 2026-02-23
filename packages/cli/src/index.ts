@@ -6,6 +6,12 @@ export { infoCommand, getInfo } from "./commands/info.js";
 export type { DocumentInfo } from "./commands/info.js";
 export { stillCommand, resolveStill } from "./commands/still.js";
 export { renderCommand } from "./commands/render.js";
+export { exportSvgCommand } from "./commands/export-svg.js";
+export { exportLottieCommand } from "./commands/export-lottie.js";
+export { assetsCommand, getAssets } from "./commands/assets.js";
+export type { AssetInfo } from "./commands/assets.js";
+export { variablesCommand, getVariables } from "./commands/variables.js";
+export type { VariableInfo } from "./commands/variables.js";
 export {
   checkFfmpeg,
   buildFfmpegArgs,

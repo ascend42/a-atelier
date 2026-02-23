@@ -1,0 +1,86 @@
+id: L-2026-02-23-001
+type: agent-session
+timestamp: '2026-02-23T03:30:28.942Z'
+author:
+  type: agent
+  id: claude
+  model: claude-opus-4-6
+title: Implement game-engine features for Pretend (sourceRect, spritesheet, visibility, tint)
+summary: 'Implemented 5 phases of game-engine features across the full Atelier stack: consolidated AnimatableProperty enum (Phase 0A), fixed React ImageCache (Phase 0B), added EffectiveLayer.visible (Phase 0C), source-rect crop with 9-arg drawImage (Phase 1), spritesheet grid animation (Phase 2), animatable visibility (Phase 3), and layer-level tinting with offscreen compositing (Phase 4). AnimatableProperty grew from 27 to 35 members. MCP tools grew from 52 to 53 (added atelier_set_tint). All 321 tests pass across 5 packages, all builds and typechecks pass.'
+symbols_touched:
+  - '#layer-types'
+  - '#delta-types'
+  - '#asset-types'
+  - '#layer-schema'
+  - '#delta-schema'
+  - '#document-schema'
+  - '#apply-properties'
+  - '#render-frame'
+  - '#shape-renderer'
+  - '#text-renderer'
+  - mcp-layer-effect-tools
+  - mcp-layer-tools
+  - mcp-asset-tools
+  - mcp-delta-tools
+  - mcp-preset-tools
+symbols_created:
+  - '#spritesheet-config'
+  - '#source-rect'
+  - '#tint-effect'
+  - '#image-renderer'
+files_created:
+  - docs/pretend-handoff.md
+files_modified:
+  - packages/types/src/layer.ts
+  - packages/types/src/delta.ts
+  - packages/types/src/asset.ts
+  - packages/types/src/index.ts
+  - packages/schema/src/layer.ts
+  - packages/schema/src/delta.ts
+  - packages/schema/src/asset.ts
+  - packages/schema/src/index.ts
+  - packages/canvas/src/apply-properties.ts
+  - packages/canvas/src/render-frame.ts
+  - packages/canvas/src/canvas-types.ts
+  - packages/canvas/src/renderers/image-renderer.ts
+  - packages/svg/src/render-svg.ts
+  - packages/svg/src/svg-filters.ts
+  - packages/lottie/src/map-layers.ts
+  - packages/react/src/player.ts
+  - packages/mcp/src/tools/layers.ts
+  - packages/mcp/src/tools/layer-effects.ts
+  - packages/mcp/src/tools/assets.ts
+  - packages/mcp/src/tools/deltas.ts
+  - packages/mcp/src/tools/presets.ts
+  - packages/canvas/src/index.test.ts
+  - packages/core/src/index.test.ts
+  - packages/svg/src/index.test.ts
+  - packages/schema/src/index.test.ts
+  - packages/mcp/src/index.test.ts
+decisions:
+  - id: enum-consolidation
+    decision: Import AnimatablePropertySchema from @atelier/schema into MCP tools instead of maintaining local copies
+    rationale: Prevents sync bugs when adding 8+ new animatable properties — single source of truth
+  - id: frameIndex-at-visual-level
+    decision: Place frameIndex on ImageVisual (not inside spritesheet config)
+    rationale: frameIndex is the runtime-animated value, following the motionPath/progress pattern
+  - id: tint-on-layer
+    decision: Place tint on Layer (not ImageVisual) so any visual type can be tinted
+    rationale: Follows the same pattern as shadow — layer-level effects apply to all visual types
+  - id: spritesheet-requires-frame-dimensions
+    decision: Require frameWidth and frameHeight on spritesheet config
+    rationale: No auto-calculation from image dimensions avoids needing async image loading at config time
+verification:
+  status: pass
+  details:
+    build: pass (all 13 packages)
+    test: pass (321 tests across 5 packages)
+    typecheck: pass (pre-existing react test issue only)
+tags:
+  - game-engine
+  - pretend
+  - spritesheet
+  - sourceRect
+  - tint
+  - visibility
+  - animation

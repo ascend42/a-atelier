@@ -255,3 +255,145 @@ states:
     }
   });
 });
+
+describe("validateLayer — new features", () => {
+  it("accepts image layer with sourceRect", () => {
+    const result = validateLayer({
+      id: "img",
+      visual: {
+        type: "image",
+        assetId: "atlas",
+        sourceRect: { x: 0, y: 0, width: 32, height: 32 },
+      },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 64, height: 64 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts image layer with spritesheet", () => {
+    const result = validateLayer({
+      id: "sprite",
+      visual: {
+        type: "image",
+        assetId: "walk",
+        spritesheet: { columns: 4, rows: 2, frameWidth: 32, frameHeight: 32 },
+        frameIndex: 0,
+      },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 64, height: 64 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects spritesheet with missing frameWidth", () => {
+    const result = validateLayer({
+      id: "sprite",
+      visual: {
+        type: "image",
+        assetId: "walk",
+        spritesheet: { columns: 4, rows: 2 },
+      },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 64, height: 64 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts layer with tint", () => {
+    const result = validateLayer({
+      id: "tinted",
+      visual: { type: "shape", shape: { type: "rect" } },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 100, height: 100 },
+      tint: { color: "#FF0000", amount: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts ref layer with state and frame", () => {
+    const result = validateLayer({
+      id: "ext",
+      visual: { type: "ref", src: "other.atelier", state: "hover", frame: 5 },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 100, height: 100 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts ref layer with only src", () => {
+    const result = validateLayer({
+      id: "ext",
+      visual: { type: "ref", src: "other.atelier" },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 100, height: 100 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects ref layer with empty src", () => {
+    const result = validateLayer({
+      id: "ext",
+      visual: { type: "ref", src: "" },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 100, height: 100 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects ref layer with negative frame", () => {
+    const result = validateLayer({
+      id: "ext",
+      visual: { type: "ref", src: "other.atelier", frame: -1 },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 100, height: 100 },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("validateDelta — new properties", () => {
+  it("accepts visible property", () => {
+    const result = validateDelta({
+      layer: "flash",
+      property: "visible",
+      range: [10, 10],
+      from: false,
+      to: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts visual.image.frameIndex property", () => {
+    const result = validateDelta({
+      layer: "sprite",
+      property: "visual.image.frameIndex",
+      range: [0, 31],
+      from: 0,
+      to: 7,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts tint.amount property", () => {
+    const result = validateDelta({
+      layer: "enemy",
+      property: "tint.amount",
+      range: [0, 6],
+      from: 0,
+      to: 1,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts visual.image.sourceRect.x property", () => {
+    const result = validateDelta({
+      layer: "crop",
+      property: "visual.image.sourceRect.x",
+      range: [0, 30],
+      from: 0,
+      to: 100,
+    });
+    expect(result.success).toBe(true);
+  });
+});

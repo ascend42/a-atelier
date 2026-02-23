@@ -3,6 +3,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { AtelierDocument, Delta, AnimatableProperty, Easing } from "@atelier/types";
+import { AnimatablePropertySchema, EasingSchema } from "@atelier/schema";
 import { validateNoOverlap, expandPreset } from "@atelier/core";
 import type { DocumentStore } from "../store.js";
 
@@ -20,42 +21,9 @@ function err(message: string) {
   return { content: [{ type: "text" as const, text: JSON.stringify({ error: message }) }], isError: true as const };
 }
 
-const AnimatablePropertyEnum = z.enum([
-  "frame.x", "frame.y", "bounds.width", "bounds.height",
-  "opacity", "rotation", "scale.x", "scale.y",
-  "anchorPoint.x", "anchorPoint.y",
-  "visual.shape.cornerRadius", "visual.fill.color",
-  "visual.stroke.color", "visual.stroke.width",
-  "visual.stroke.start", "visual.stroke.end",
-  "visual.style.fontSize", "visual.style.color",
-  "shadow.color", "shadow.blur",
-  "shadow.offsetX", "shadow.offsetY",
-  "motionPath.progress",
-  "visual.fill.angle",
-  "visual.fill.center.x", "visual.fill.center.y",
-  "visual.fill.radius",
-]);
-
-const EasingInputSchema = z.union([
-  z.enum(["ease-in", "ease-out", "ease-in-out"]),
-  z.object({ type: z.literal("linear") }),
-  z.object({
-    type: z.literal("cubic-bezier"),
-    x1: z.number(), y1: z.number(), x2: z.number(), y2: z.number(),
-  }),
-  z.object({
-    type: z.literal("spring"),
-    mass: z.number().optional(),
-    stiffness: z.number().optional(),
-    damping: z.number().optional(),
-    velocity: z.number().optional(),
-  }),
-  z.object({
-    type: z.literal("step"),
-    steps: z.number().int().positive(),
-    position: z.enum(["start", "end"]).optional(),
-  }),
-]).describe("Easing function");
+// Canonical source: @atelier/schema — single source of truth for AnimatableProperty
+const AnimatablePropertyEnum = AnimatablePropertySchema;
+const EasingInputSchema = EasingSchema.describe("Easing function");
 
 export function register(server: McpServer, store: DocumentStore): void {
   // ── atelier_add_delta ───────────────────────────────────────
@@ -75,6 +43,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       tags: z.array(z.string()).optional().describe("Tags"),
       deltaId: z.string().optional().describe("Custom delta ID"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, layer, property, range, from, to, easing, description, tags, deltaId }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -134,6 +103,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       description: z.string().optional().describe("New description"),
       tags: z.array(z.string()).optional().describe("New tags"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, deltaIndex, layer, property, range, from, to, easing, description, tags }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -184,6 +154,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       stateName: z.string().describe("State name"),
       deltaIndex: z.number().int().min(0).describe("Delta index to remove"),
     },
+    { readOnlyHint: false, destructiveHint: true },
     async ({ id, stateName, deltaIndex }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);
@@ -221,6 +192,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       startFrame: z.number().int().min(0).optional().describe("Start frame (default: 0)"),
       duration: z.number().positive().int().optional().describe("Duration for preset (default: state duration)"),
     },
+    { readOnlyHint: false, destructiveHint: false },
     async ({ id, stateName, presetName, layerId, startFrame, duration }) => {
       const result = getDoc(store, id);
       if ("error" in result) return err(result.error);

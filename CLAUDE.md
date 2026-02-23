@@ -16,6 +16,7 @@ All context, symbols, and specifications live in the .paradigm/ directory.
 .paradigm/docs/        → Commands, patterns, troubleshooting
 .cursorrules           → IDE instructions (if using Cursor)
 portal.yaml            → Security/auth definitions
+.paradigm/lore/        → Project timeline and history
 ```
 
 ## Terminal Syntax
@@ -134,6 +135,35 @@ routes:
 3. Check `portal.yaml` for existing auth gates
 4. Check `.paradigm/docs/patterns.md` for coding patterns
 
+## Lore (Project Timeline)
+
+Lore records what happened, why, and what was learned — forming a queryable project history.
+
+### MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `paradigm_lore_search` | Search and filter lore entries by author, symbol, date, type |
+| `paradigm_lore_record` | Record a new lore entry (session, decision, milestone, etc.) |
+| `paradigm_lore_timeline` | Get project timeline summary with entry count and authors |
+
+### CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `paradigm lore` | List recent lore entries |
+| `paradigm lore record` | Interactively record a new entry |
+| `paradigm lore show <id>` | Show full details of an entry |
+| `paradigm lore review <id>` | Add human review to an entry |
+| `paradigm lore timeline` | Show project timeline summary |
+
+### When to Record Lore
+
+- After completing a feature or significant session
+- When making architectural decisions
+- After resolving incidents or bugs
+- At project milestones
+
 ## Paradigm Navigation
 
 Before exploring this codebase:
@@ -231,6 +261,8 @@ Keep it lightweight: `phase` + `context` are required, everything else is option
 | **Getting test data** | `paradigm_test_fixtures` for fixtures |
 | **Building a feature (3+ files)** | `paradigm_orchestrate_inline` mode="plan" |
 | **Task involves security + code** | `paradigm_orchestrate_inline` mode="plan" |
+| **Recording work done** | `paradigm_lore_record` to capture session history |
+| **Checking project history** | `paradigm_lore_timeline` for timeline overview |
 | **Finishing work session** | `paradigm_reindex` to rebuild static index |
 
 **Benefits**: ~100 tokens per query vs ~2000 for reading files. Always fresh data from live index.
@@ -530,6 +562,7 @@ automatically via `paradigm shift` or `paradigm hooks install`.
 | Add multi-step flow | Document as `$flow` in `.purpose` |
 | Rename/delete symbol | Update all `.purpose` references |
 | Learn antipattern | Add to `.paradigm/wisdom/antipatterns.yaml` |
+| Complete feature/session | Record lore entry via `paradigm_lore_record` |
 
 **CRITICAL: Authorization requires portal.yaml**
 

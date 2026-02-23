@@ -1,8 +1,9 @@
 // Main render entry
 export { renderFrame } from "./render-frame.js";
+export type { RenderOptions } from "./render-frame.js";
 
 // Types
-export type { RenderContext, GradientLike } from "./canvas-types.js";
+export type { RenderContext, GradientLike, DocumentResolver } from "./canvas-types.js";
 export type { EffectiveLayer } from "./apply-properties.js";
 
 // Image cache

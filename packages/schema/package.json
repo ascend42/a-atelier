@@ -1,7 +1,9 @@
 {
   "name": "@atelier/schema",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Zod validation schemas with AI-readable error messages",
   "type": "module",
   "main": "./dist/index.cjs",

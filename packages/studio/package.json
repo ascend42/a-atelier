@@ -1,7 +1,9 @@
 {
   "name": "@atelier/studio",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Reusable editor widget for Atelier animations — canvas preview, YAML viewer, and GUI editor",
   "type": "module",
   "main": "./dist/index.cjs",

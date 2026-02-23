@@ -55,8 +55,9 @@ export interface RenderContext {
   shadowOffsetX: number;
   shadowOffsetY: number;
 
-  // Image
+  // Image (5-arg: dest only, 9-arg: source + dest crop)
   drawImage(image: unknown, x: number, y: number, w: number, h: number): void;
+  drawImage(image: unknown, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
 
   // Line dash
   setLineDash(segments: number[]): void;
@@ -68,8 +69,14 @@ export interface RenderContext {
 
   // Canvas dimensions (for background fill)
   canvas: { width: number; height: number };
+
+  // Offscreen canvas for compositing effects (tinting). Optional — if unavailable, tint is skipped.
+  createOffscreen?: (width: number, height: number) => { ctx: RenderContext; canvas: unknown };
 }
 
 export interface GradientLike {
   addColorStop(offset: number, color: string): void;
 }
+
+/** Resolves a ref layer's src path to a loaded AtelierDocument */
+export type DocumentResolver = (src: string) => import("@atelier/types").AtelierDocument | undefined;

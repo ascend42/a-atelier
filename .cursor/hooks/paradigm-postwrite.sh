@@ -1,11 +1,12 @@
 #!/bin/sh
-# Paradigm Cursor PostWrite Hook
-# Fires after file edits to remind agents about .purpose files.
+# Paradigm Cursor PostWrite Hook (v2)
+# Fires after file edits.
+# Tracks modified source files in .paradigm/.pending-review
+# and outputs compliance reminders.
 # Installed by: paradigm hooks install --cursor
 #
 # Hook type: afterFileEdit
 # Exit 0 always (never blocks — advisory only)
-# Prints reminder if the edited file's directory has no .purpose file
 
 # Read JSON from stdin (hook input)
 INPUT=$(cat)
@@ -29,9 +30,9 @@ case "$FILE_PATH" in
   *.purpose|portal.yaml|*.md|*.lock|*.log|*.json|*.yaml|*.yml|.gitignore|.env*) exit 0 ;;
 esac
 
-# Skip .paradigm directory
+# Skip .paradigm, .claude, and .cursor directories
 case "$FILE_PATH" in
-  */.paradigm/*|.paradigm/*) exit 0 ;;
+  */.paradigm/*|.paradigm/*|*/.claude/*|.claude/*|*/.cursor/*|.cursor/*) exit 0 ;;
 esac
 
 # Not a paradigm project — pass
@@ -39,26 +40,59 @@ if [ ! -d ".paradigm" ]; then
   exit 0
 fi
 
+# Convert to relative path (strip project root prefix)
+PROJECT_ROOT="$(pwd)"
+REL_PATH="$FILE_PATH"
+case "$FILE_PATH" in
+  "$PROJECT_ROOT"/*) REL_PATH=$(echo "$FILE_PATH" | sed "s|^$PROJECT_ROOT/||") ;;
+esac
+
+# If still absolute, file is outside project — skip
+case "$REL_PATH" in
+  /*) exit 0 ;;
+esac
+
+# Track: append to .paradigm/.pending-review (deduplicated)
+PENDING_FILE=".paradigm/.pending-review"
+if [ -f "$PENDING_FILE" ]; then
+  if ! grep -qxF "$REL_PATH" "$PENDING_FILE" 2>/dev/null; then
+    echo "$REL_PATH" >> "$PENDING_FILE"
+  fi
+else
+  echo "$REL_PATH" > "$PENDING_FILE"
+fi
+
+# Count pending files
+PENDING_COUNT=$(wc -l < "$PENDING_FILE" | tr -d ' ')
+
 # Walk up from the file's directory to find a .purpose file
-dir=$(dirname "$FILE_PATH")
-found_purpose=false
+dir=$(dirname "$REL_PATH")
+found_purpose=""
 
 while [ "$dir" != "." ] && [ "$dir" != "/" ] && [ "$dir" != "" ]; do
   if [ -f "$dir/.purpose" ]; then
-    found_purpose=true
+    found_purpose="$dir/.purpose"
     break
   fi
   dir=$(dirname "$dir")
 done
 
 # Check root .purpose
-if [ "$found_purpose" = false ] && [ -f ".purpose" ]; then
-  found_purpose=true
+if [ -z "$found_purpose" ] && [ -f ".purpose" ]; then
+  found_purpose=".purpose"
 fi
 
-if [ "$found_purpose" = false ]; then
-  file_dir=$(dirname "$FILE_PATH")
-  echo "[paradigm] No .purpose file covers $file_dir — consider creating one with paradigm_purpose_init." >&2
+if [ -z "$found_purpose" ]; then
+  file_dir=$(dirname "$REL_PATH")
+  echo "" >&2
+  echo "[paradigm] No .purpose file covers $file_dir/" >&2
+  echo "  Create one: paradigm_purpose_init + paradigm_purpose_add_component" >&2
+  echo "  $PENDING_COUNT file(s) pending review. The stop hook WILL BLOCK." >&2
+elif [ "$PENDING_COUNT" -gt 0 ] && [ "$((PENDING_COUNT % 3))" -eq 0 ]; then
+  echo "" >&2
+  echo "[paradigm] $PENDING_COUNT source file(s) modified. Update $found_purpose:" >&2
+  echo "  -> #components, ~aspects (with anchors), !signals, \$flows, ^gates" >&2
+  echo "  The stop hook WILL BLOCK if .purpose files aren't updated." >&2
 fi
 
 exit 0

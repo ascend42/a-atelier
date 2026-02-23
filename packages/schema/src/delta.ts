@@ -29,6 +29,14 @@ export const AnimatablePropertySchema = z.enum([
   "visual.fill.center.x",
   "visual.fill.center.y",
   "visual.fill.radius",
+  "visual.image.sourceRect.x",
+  "visual.image.sourceRect.y",
+  "visual.image.sourceRect.width",
+  "visual.image.sourceRect.height",
+  "visual.image.frameIndex",
+  "visible",
+  "tint.color",
+  "tint.amount",
 ]);
 
 export const FrameRangeSchema = z.tuple([

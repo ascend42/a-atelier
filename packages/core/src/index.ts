@@ -28,8 +28,8 @@ export { resolveUnit, isPercentage, parsePercentage } from "./units/resolve-unit
 export { expandPreset } from "./presets/preset-resolver.js";
 
 // State machine
-export { StateMachine } from "./state/state-machine.js";
-export type { StateTransition, PlaybackState } from "./state/state-machine.js";
+export { StateMachine, blendResolvedFrames } from "./state/state-machine.js";
+export type { StateTransition, PlaybackState, ActiveTransition } from "./state/state-machine.js";
 
 // Templates
 export { instantiateTemplate, findTemplateVariables } from "./templates/template-resolver.js";

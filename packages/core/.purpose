@@ -47,12 +47,22 @@ components:
       - presets
       - expansion
     file: src/presets/preset-resolver.ts
-  state-machine:
+  '#state-machine':
     description: StateMachine class — manages state transitions, tick-based playback, transition history
     file: src/state/state-machine.ts
-  template-resolver:
+    tags: [state, playback]
+  '#template-resolver':
     description: Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns
     file: src/templates/template-resolver.ts
+    tags: [templates, variables]
+  '#expression-evaluator':
+    description: Safe recursive descent expression evaluator — supports math functions, context variables (t, frame, duration, progress), ternary, no eval()
+    file: src/expressions/expression-evaluator.ts
+    tags: [expressions, math, engine]
+  '#audio-timing':
+    description: Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation
+    file: src/audio/audio-timing.ts
+    tags: [audio, timing, playback]
 gates:
   ^no-overlap:
     description: Rejects delta additions that overlap with existing deltas on same property

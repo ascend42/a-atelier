@@ -1,0 +1,11 @@
+id: L-2026-02-21-002
+type: session
+timestamp: '2026-02-21T23:24:25.304Z'
+author:
+  type: human
+  id: unknown
+title: 'M11: Variable Management MCP Tools'
+summary: 'Added 3 new MCP tools (atelier_add_variable, atelier_list_variables, atelier_remove_variable) and 1 CLI command (atelier variables). Tools: 40→43. Version 0.22.0.'
+symbols_touched:
+  - '#mcp-variable-tools'
+  - '#cli-variables'

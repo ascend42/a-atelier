@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 0.17.1** | 8 packages | 2 apps
+**Version 0.25.1** | 11 packages | 2 apps
 
 ---
 
@@ -39,9 +39,10 @@ Atelier is a monorepo containing a full animation pipeline:
 4. **Render** resolved frames to Canvas 2D with shapes, text, gradients, and transforms
 5. **Edit** animations in a browser-based studio with GUI panels, undo/redo, and drag-to-reorder
 6. **Export** to MP4, WebM, or GIF from the browser (WebCodecs) or CLI (FFmpeg)
-7. **Author** animations through 27 MCP tools that an AI agent can call directly
+7. **Export** to SVG strings or Lottie JSON for web and motion design workflows
+8. **Author** animations through 52 MCP tools that an AI agent can call directly
 
-The engine supports 22 animatable properties, 5 easing types (linear, cubic-bezier, ease presets, spring, step), state machines (intro/main/outro flows), template instantiation with variable substitution, animation presets, and overlap validation.
+The engine supports 27 animatable properties, 5 easing types (linear, cubic-bezier, ease presets, spring, step), hierarchical state machines with smooth transitions, template instantiation with variable substitution, animation presets, expression-driven animation, blend modes, motion paths, clip paths, audio sync, asset/variable management, layer interactions, and overlap validation.
 
 ---
 
@@ -74,7 +75,7 @@ Add the MCP server to your Claude Desktop configuration:
 }
 ```
 
-The agent gains access to 27 tools for creating and manipulating animations:
+The agent gains access to 52 tools across 16 groups for creating and manipulating animations:
 
 ```
 atelier_create        -- create a new document
@@ -83,6 +84,9 @@ atelier_add_state     -- define an animation state
 atelier_add_delta     -- animate a property over a frame range
 atelier_preview       -- resolve a frame and inspect the result
 atelier_validate      -- check document validity
+atelier_export_svg    -- export a frame as SVG
+atelier_export_lottie -- export document to Lottie JSON
+atelier_profile       -- profile frame resolution performance
 ```
 
 ### Path 2: Programmatic (Builder API)
@@ -134,12 +138,21 @@ atelier validate animation.atelier
 # Print document summary (canvas, layers, states, presets)
 atelier info animation.atelier
 
-# Resolve a single frame to JSON
+# Resolve a single frame to JSON or PNG
 atelier still animation.atelier --state intro --frame 30
+atelier still animation.atelier --state intro --frame 30 --format png -o frame.png
 
 # Render to MP4 or GIF (requires FFmpeg + node-canvas)
 atelier render animation.atelier -o output.mp4
 atelier render animation.atelier -o output.gif -f gif
+
+# Export to SVG or Lottie
+atelier export-svg animation.atelier --state intro --frame 0 -o frame.svg
+atelier export-lottie animation.atelier -o animation.json
+
+# Inspect assets and variables
+atelier assets animation.atelier
+atelier variables animation.atelier
 ```
 
 ---
@@ -148,14 +161,17 @@ atelier render animation.atelier -o output.gif -f gif
 
 | Package | Description | Key Exports |
 |---------|-------------|-------------|
-| [`@atelier/types`](packages/types) | 44 pure TypeScript type definitions, zero runtime | `AtelierDocument`, `Layer`, `Delta`, `State`, `Canvas`, `Easing`, `AnimatableProperty`, shape/color/unit types |
-| [`@atelier/math`](packages/math) | Pure interpolation engine | `linear`, `cubicBezier`, `easeIn`, `easeOut`, `easeInOut`, `step`, `spring`, `lerp`, `clamp`, `hexToRgba`, `lerpRgba`, `lerpHsla` |
+| [`@atelier/types`](packages/types) | 60+ pure TypeScript type definitions, zero runtime | `AtelierDocument`, `Layer`, `Delta`, `State`, `Canvas`, `Easing`, `AnimatableProperty`, `Shadow`, `Audio`, `Asset`, `Variable`, `Interaction`, shape/color/unit types |
+| [`@atelier/math`](packages/math) | Pure interpolation engine | `linear`, `cubicBezier`, `easeIn`, `easeOut`, `easeInOut`, `step`, `spring`, `lerp`, `clamp`, `hexToRgba`, `lerpRgba`, `lerpHsla`, `evaluatePathAtProgress` |
 | [`@atelier/schema`](packages/schema) | Zod validation + YAML parse/serialize | `validateDocument`, `validateLayer`, `validateDelta`, `parseAtelier`, `serializeAtelier`, all Zod schemas |
-| [`@atelier/core`](packages/core) | Animation engine | `resolveFrame`, `DocumentBuilder`, `createDocument`, `StateMachine`, `instantiateTemplate`, `expandPreset`, `validateNoOverlap` |
+| [`@atelier/core`](packages/core) | Animation engine | `resolveFrame`, `DocumentBuilder`, `createDocument`, `StateMachine`, `blendResolvedFrames`, `instantiateTemplate`, `expandPreset`, `evaluateExpression`, `computeAudioState`, `validateNoOverlap` |
 | [`@atelier/canvas`](packages/canvas) | Canvas 2D renderer | `renderFrame`, `buildEffectiveLayer`, `colorToCSS`, `renderShape`, `renderText`, `ImageCache` |
+| [`@atelier/svg`](packages/svg) | SVG string renderer | `renderFrameSVG`, shape/gradient/filter/clip/text mapping to SVG elements |
+| [`@atelier/lottie`](packages/lottie) | Lottie JSON exporter (lossy, best-effort) | `exportToLottie`, layer/shape/keyframe/easing/color mapping with warnings |
+| [`@atelier/react`](packages/react) | React integration | `Animation`, `useAnimation`, `useAnimationState`, `AnimationPlayer` |
 | [`@atelier/studio`](packages/studio) | Browser editor widget + video/GIF export | `AtelierStudio`, `exportDocument`, `supportsWebCodecs`, CSS panels and controls |
-| [`@atelier/mcp`](packages/mcp) | MCP server (27 tools) for AI authoring | `createServer`, `DocumentStore` |
-| [`@atelier/cli`](packages/cli) | CLI tool (4 commands) | `validateFile`, `getInfo`, `resolveStill`, `renderDocument` |
+| [`@atelier/mcp`](packages/mcp) | MCP server (52 tools) for AI authoring | `createServer`, `DocumentStore` |
+| [`@atelier/cli`](packages/cli) | CLI tool (9 commands) | `validateFile`, `getInfo`, `resolveStill`, `renderDocument`, `exportSvg`, `exportLottie` |
 
 ---
 
@@ -182,12 +198,12 @@ atelier render animation.atelier -o output.gif -f gif
             |
             v
       @atelier/canvas
-        /   |    \
-       v    v     v
- studio   mcp    cli
+       / |  |  \   \
+      v  v  v   v   v
+ svg lottie react studio mcp cli
 ```
 
-`types` and `math` have no internal dependencies and build in parallel. Each subsequent layer depends only on the packages above it. `studio`, `mcp`, and `cli` all depend on `canvas` and can build in parallel.
+`types` and `math` have no internal dependencies and build in parallel. Each subsequent layer depends only on the packages above it. `svg`, `lottie`, `react`, `studio`, `mcp`, and `cli` all depend on `canvas`/`core` and can build in parallel.
 
 ---
 
@@ -276,7 +292,7 @@ states:
 
 ### Reference
 - [Format Specification](docs/format-spec.md) -- complete `.atelier` YAML format, every field and constraint
-- [MCP Reference](docs/mcp-reference.md) -- all 27 MCP tools with parameters and responses
+- [MCP Reference](docs/mcp-reference.md) -- all 52 MCP tools with parameters and responses
 - [Architecture](docs/architecture.md) -- package design, dependency flow, rendering pipeline
 - [Rendering Pipeline](docs/rendering-pipeline.md) -- frame resolution through canvas output
 
@@ -293,6 +309,17 @@ states:
 
 | Version | Milestone |
 |---------|-----------|
+| 0.25.1 | Paradigm framework repair: fix .purpose YAML errors, add svg/lottie/types/core coverage |
+| 0.25.0 | M14: Performance analysis — 4 new MCP tools (profile, diff, batch, complexity) |
+| 0.24.0 | M13: Composition/nesting — 2 new MCP ref layer tools |
+| 0.23.0 | M12: Interactions & events — trigger-action bindings, 3 new MCP tools |
+| 0.22.0 | M11: Variable management — 3 new MCP tools, 1 CLI command |
+| 0.21.0 | M10: Asset management — 3 new MCP tools, 1 CLI command |
+| 0.20.0 | M9: MCP + CLI parity — 10 new MCP tools, 2 CLI commands, still PNG support |
+| 0.19.0 | M8: Hierarchical states, state transitions, `@atelier/svg`, `@atelier/lottie`, `@atelier/react` |
+| 0.18.0 | M7: Blend modes, motion paths, clip paths, gradient animation, expressions, audio sync |
+| 0.17.3 | Rename to a-atelier, CLI as `@a-company/atelier`, MCP binary |
+| 0.17.2 | README overhaul, AGENTS.md, docs updates |
 | 0.17.1 | Paradigm config generalization, Claude Code hooks |
 | 0.17.0 | Studio browser export: MP4 (WebCodecs), WebM (VP9), GIF (built-in encoder) |
 | 0.16.0 | CLI `atelier render` command: MP4/GIF export via FFmpeg |
