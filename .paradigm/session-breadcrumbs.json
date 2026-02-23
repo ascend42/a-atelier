@@ -1,72 +1,27 @@
 {
-  "sessionId": "smlwywrdn",
-  "startTime": 1771717592219,
-  "lastActivity": 1771718005667,
+  "sessionId": "smlykj2hs",
+  "startTime": 1771814371168,
+  "lastActivity": 1771817428959,
   "breadcrumbs": [
     {
-      "timestamp": 1771717609390,
+      "timestamp": 1771814386854,
       "action": "tool-call",
       "tool": "paradigm_status",
       "summary": "Checked project status"
     },
     {
-      "timestamp": 1771717612051,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
-    },
-    {
-      "timestamp": 1771717620816,
-      "action": "tool-call",
-      "tool": "paradigm_navigate",
-      "symbol": "aspects",
-      "summary": "Navigate explore: aspects"
-    },
-    {
-      "timestamp": 1771717743783,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
-    {
-      "timestamp": 1771717808941,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1771717984671,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
-    },
-    {
-      "timestamp": 1771717984717,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1771718005665,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1771718013011,
-      "action": "tool-call",
-      "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=complete, Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, "
-    },
-    {
-      "timestamp": 1771719030830,
+      "timestamp": 1771817428933,
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: agent-session"
+    },
+    {
+      "timestamp": 1771817436985,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
-  "symbolsModified": [
-    "aspects"
-  ],
+  "symbolsModified": [],
   "filesExplored": []
 }

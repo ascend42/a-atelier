@@ -1,11 +1,16 @@
 {
   "mcpServers": {
     "paradigm": {
-      "command": "paradigm-mcp",
+      "command": "npx",
       "args": [
+        "--package=@a-company/paradigm",
+        "-y",
+        "paradigm-mcp",
         "."
-      ],
-      "cwd": "/Users/ascend/Documents/GitHub/a-atelier"
+      ]
+    },
+    "atelier": {
+      "command": "atelier-mcp"
     }
   }
 }

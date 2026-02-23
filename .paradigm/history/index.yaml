@@ -1,14 +1,35 @@
 version: '1.0'
-generated: '2026-02-22T00:10:11.969Z'
+generated: '2026-02-22T00:13:50.730Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
-    total_changes: 6
-    last_modified: '2026-02-21T23:55:51Z'
+    total_changes: 7
+    last_modified: '2026-02-22T00:10:48Z'
     stability_score: 1
     fragility: low
     recent:
       - &ref_5
+        id: h0047
+        ts: '2026-02-22T00:10:48Z'
+        type: implement
+        symbols:
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-svg'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: 7372cf1012c4b63cbee1b034a8b4055d791a9f49
+        intent: feature
+        files:
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-02-22/L-2026-02-22-001.yaml
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+        description: 'chore: record lore entry for paradigm doctor session'
+      - &ref_6
         id: h0044
         ts: '2026-02-21T23:55:51Z'
         type: implement
@@ -49,7 +70,7 @@ by_symbol:
           - packages/svg/.purpose
           - packages/types/.purpose
         description: 'fix(#paradigm): repair .purpose files and update framework for M10-M14 [0.25.1]'
-      - &ref_3
+      - &ref_2
         id: h0035
         ts: '2026-02-21T04:56:54Z'
         type: implement
@@ -214,7 +235,21 @@ by_symbol:
           - examples/traffic-light.atelier
           - packages/mcp/.purpose
         description: 'docs: full documentation overhaul + website concept + canonical examples [0.17.2]'
-      - &ref_2
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#atelier-math':
+    symbol: '#atelier-math'
+    total_changes: 4
+    last_modified: '2026-02-21T02:29:13Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_0
+      - *ref_1
+      - &ref_3
         id: h0030
         ts: '2026-02-20T23:31:09.653Z'
         type: implement
@@ -244,21 +279,6 @@ by_symbol:
           - examples/traffic-light.atelier
           - docs/website-concept.md
           - CHANGELOG.md
-    contributors:
-      human:
-        - ascend
-      agent:
-        - claude
-  '#atelier-math':
-    symbol: '#atelier-math'
-    total_changes: 4
-    last_modified: '2026-02-21T02:29:13Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_0
-      - *ref_1
-      - *ref_2
       - &ref_4
         id: h0001
         ts: '2026-02-13T22:50:31.717Z'
@@ -288,10 +308,10 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_3
+      - *ref_2
       - *ref_0
       - *ref_1
-      - *ref_2
+      - *ref_3
       - *ref_4
     contributors:
       human:
@@ -300,16 +320,16 @@ by_symbol:
         - claude
   '#atelier-core':
     symbol: '#atelier-core'
-    total_changes: 6
-    last_modified: '2026-02-21T23:55:51Z'
+    total_changes: 7
+    last_modified: '2026-02-22T00:10:48Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_5
-      - *ref_3
+      - *ref_6
+      - *ref_2
       - *ref_0
       - *ref_1
-      - *ref_2
     contributors:
       human:
         - ascend
@@ -322,7 +342,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_6
+      - &ref_7
         id: h0002
         ts: '2026-02-13T23:02:12.930Z'
         type: implement
@@ -354,7 +374,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_6
+      - *ref_7
     contributors:
       human: []
       agent:
@@ -366,7 +386,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_6
+      - *ref_7
     contributors:
       human: []
       agent:
@@ -378,7 +398,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_6
+      - *ref_7
     contributors:
       human: []
       agent:
@@ -392,8 +412,8 @@ by_symbol:
     recent:
       - *ref_0
       - *ref_1
-      - *ref_2
-      - &ref_7
+      - *ref_3
+      - &ref_8
         id: h0005
         ts: '2026-02-13T23:18:36.507Z'
         type: implement
@@ -429,7 +449,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -441,7 +461,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_8
+      - &ref_9
         id: h0025
         ts: '2026-02-14T19:09:05.615Z'
         type: implement
@@ -470,7 +490,7 @@ by_symbol:
           - packages/studio/src/panels/property-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/mcp/src/tools/deltas.ts
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -482,7 +502,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -494,8 +514,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_9
       - *ref_8
-      - *ref_7
     contributors:
       human: []
       agent:
@@ -507,7 +527,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -519,7 +539,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_10
+      - &ref_11
         id: h0045
         ts: '2026-02-22T00:04:48Z'
         type: implement
@@ -537,8 +557,8 @@ by_symbol:
         files:
           - README.md
         description: 'docs(#atelier-cli): update README for v0.25.1 — 52 tools, 11 packages, version history'
-      - *ref_5
-      - &ref_11
+      - *ref_6
+      - &ref_12
         id: h0036
         ts: '2026-02-21T15:31:30Z'
         type: implement
@@ -620,7 +640,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_9
+      - &ref_10
         id: h0007
         ts: '2026-02-13T23:33:39.797Z'
         type: implement
@@ -660,7 +680,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -672,7 +692,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -684,7 +704,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -696,7 +716,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -708,7 +728,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -720,7 +740,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -732,7 +752,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -757,10 +777,10 @@ by_symbol:
         files:
           - packages/cli/package.json
         description: 'chore(#atelier-cli): bump version to 0.25.1 for npm publish'
-      - *ref_10
-      - *ref_5
       - *ref_11
-      - *ref_3
+      - *ref_6
+      - *ref_12
+      - *ref_2
     contributors:
       human:
         - ascend
@@ -773,7 +793,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_12
+      - &ref_13
         id: h0009
         ts: '2026-02-13T23:40:00.871Z'
         type: implement
@@ -809,7 +829,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human: []
       agent:
@@ -821,7 +841,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human: []
       agent:
@@ -833,7 +853,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human: []
       agent:
@@ -845,7 +865,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_13
+      - &ref_14
         id: h0011
         ts: '2026-02-13T23:47:34.057Z'
         type: implement
@@ -873,7 +893,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_14
     contributors:
       human: []
       agent:
@@ -885,7 +905,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_14
     contributors:
       human: []
       agent:
@@ -944,8 +964,8 @@ by_symbol:
     recent:
       - *ref_0
       - *ref_1
-      - *ref_2
-      - &ref_14
+      - *ref_3
+      - &ref_15
         id: h0015
         ts: '2026-02-14T11:13:24.658Z'
         type: implement
@@ -1001,7 +1021,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1013,7 +1033,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_15
+      - &ref_16
         id: h0019
         ts: '2026-02-14T17:19:38.749Z'
         type: implement
@@ -1031,7 +1051,7 @@ by_symbol:
           - packages/studio/src/panels/layer-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1043,8 +1063,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
-      - *ref_14
+      - *ref_9
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1056,7 +1076,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
       - id: h0023
         ts: '2026-02-14T18:07:54.907Z'
         type: implement
@@ -1070,7 +1090,7 @@ by_symbol:
         files:
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - &ref_17
+      - &ref_18
         id: h0021
         ts: '2026-02-14T17:56:19.446Z'
         type: implement
@@ -1090,8 +1110,8 @@ by_symbol:
           - packages/studio/src/controls/range-slider.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_15
-      - &ref_16
+      - *ref_16
+      - &ref_17
         id: h0017
         ts: '2026-02-14T14:52:14.614Z'
         type: implement
@@ -1121,7 +1141,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1133,8 +1153,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
-      - *ref_14
+      - *ref_17
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1146,8 +1166,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
-      - *ref_14
+      - *ref_17
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1159,8 +1179,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
-      - *ref_14
+      - *ref_17
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1172,8 +1192,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
-      - *ref_14
+      - *ref_17
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1185,8 +1205,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
-      - *ref_14
+      - *ref_17
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1198,7 +1218,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_15
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1210,7 +1230,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1222,7 +1242,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1234,7 +1254,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1246,7 +1266,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
@@ -1258,7 +1278,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
@@ -1270,7 +1290,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
@@ -1282,7 +1302,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_18
+      - &ref_19
         id: h0027
         ts: '2026-02-15T13:17:58.490Z'
         type: implement
@@ -1313,7 +1333,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_18
+      - *ref_19
     contributors:
       human: []
       agent:
@@ -1361,14 +1381,15 @@ by_symbol:
       agent: []
   '#atelier-lottie':
     symbol: '#atelier-lottie'
-    total_changes: 3
-    last_modified: '2026-02-22T00:04:48Z'
+    total_changes: 4
+    last_modified: '2026-02-22T00:10:48Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
       - *ref_5
-      - *ref_3
+      - *ref_11
+      - *ref_6
+      - *ref_2
     contributors:
       human:
         - ascend
@@ -1380,22 +1401,23 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
-      - *ref_3
+      - *ref_11
+      - *ref_2
     contributors:
       human:
         - ascend
       agent: []
   '#atelier-svg':
     symbol: '#atelier-svg'
-    total_changes: 3
-    last_modified: '2026-02-22T00:04:48Z'
+    total_changes: 4
+    last_modified: '2026-02-22T00:10:48Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
       - *ref_5
-      - *ref_3
+      - *ref_11
+      - *ref_6
+      - *ref_2
     contributors:
       human:
         - ascend
@@ -1407,7 +1429,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_11
+      - *ref_12
     contributors:
       human:
         - ascend
@@ -1419,7 +1441,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_11
+      - *ref_12
     contributors:
       human:
         - ascend
@@ -1431,7 +1453,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_11
+      - *ref_12
     contributors:
       human:
         - ascend
@@ -1443,7 +1465,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_19
+      - &ref_20
         id: h0038
         ts: '2026-02-21T22:39:27Z'
         type: implement
@@ -1474,7 +1496,7 @@ by_symbol:
           - packages/mcp/src/index.ts
           - packages/mcp/src/tools/assets.ts
         description: 'feat(#atelier-mcp): M10 asset management — 3 new MCP tools, 1 CLI command [0.21.0]'
-      - &ref_20
+      - &ref_21
         id: h0037
         ts: '2026-02-21T22:29:24.094Z'
         type: implement
@@ -1509,8 +1531,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_19
       - *ref_20
+      - *ref_21
     contributors:
       human:
         - ascend
@@ -1523,7 +1545,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_21
+      - &ref_22
         id: h0039
         ts: '2026-02-21T23:24:34Z'
         type: implement
@@ -1564,7 +1586,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_21
+      - *ref_22
     contributors:
       human:
         - ascend
@@ -1576,7 +1598,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_22
+      - &ref_23
         id: h0040
         ts: '2026-02-21T23:28:03Z'
         type: implement
@@ -1620,7 +1642,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_22
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -1632,7 +1654,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_22
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -1733,7 +1755,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1745,7 +1767,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1757,7 +1779,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1769,7 +1791,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1781,7 +1803,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1793,7 +1815,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1805,7 +1827,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
@@ -1817,7 +1839,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_5
+      - *ref_6
     contributors:
       human:
         - ascend
