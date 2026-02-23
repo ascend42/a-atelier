@@ -1,7 +1,9 @@
 {
   "name": "@atelier/svg",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "SVG renderer — render any frame as an SVG string",
   "type": "module",
   "main": "./dist/index.cjs",

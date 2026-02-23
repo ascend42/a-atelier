@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.26.1] — 2026-02-23
+
+### Changed
+- **All 10 `@atelier/*` subpackages published to npm** — previously private, now available as individual packages:
+  - `@atelier/types` — TypeScript type definitions
+  - `@atelier/math` — Interpolation engine (easing, lerp, spring, color)
+  - `@atelier/schema` — Zod validation schemas
+  - `@atelier/core` — Animation engine (delta resolution, builder API)
+  - `@atelier/canvas` — Canvas 2D renderer and playback controller
+  - `@atelier/studio` — Reusable editor widget
+  - `@atelier/svg` — SVG renderer
+  - `@atelier/lottie` — Lottie JSON exporter
+  - `@atelier/react` — React integration (Animation component and hooks)
+  - `@atelier/mcp` — MCP server for AI authoring
+- All subpackages versioned at `0.25.1` to match CLI release
+- Added `publishConfig: { "access": "public" }` to all subpackages
+
 ## [0.26.0] — 2026-02-22
 
 ### Added

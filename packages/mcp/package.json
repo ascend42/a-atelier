@@ -1,7 +1,9 @@
 {
   "name": "@atelier/mcp",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "MCP server — AI authoring interface for animations",
   "type": "module",
   "main": "./dist/index.cjs",

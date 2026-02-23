@@ -1,7 +1,9 @@
 {
   "name": "@atelier/react",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "React integration — Animation component and hooks for Atelier animations",
   "type": "module",
   "main": "./dist/index.cjs",

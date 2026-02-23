@@ -1,7 +1,9 @@
 {
   "name": "@atelier/lottie",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.25.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Lottie JSON exporter — convert .atelier documents to Lottie format",
   "type": "module",
   "main": "./dist/index.cjs",
