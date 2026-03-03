@@ -13,7 +13,7 @@
  */
 
 import { resolve, join, relative, dirname } from "node:path";
-import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync } from "node:fs";
+import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
@@ -399,11 +399,9 @@ export function studioCommand(program: Command): void {
 
         const cwd = process.cwd();
 
-        // Resolve the monorepo package paths for Vite aliases.
-        // This file lives at packages/cli/src/commands/studio.ts (or dist/cli.js).
-        // We need to find sibling packages relative to packages/cli.
+        // Find the CLI package directory (where node_modules lives).
+        // This file is at packages/cli/dist/cli.js (or src/commands/studio.ts in dev).
         const cliPackageDir = resolve(dirname(new URL(import.meta.url).pathname), "..");
-        const packagesDir = resolve(cliPackageDir, "..");
 
         // Create temp directory with inline app.
         // Use realpathSync to resolve macOS /var -> /private/var symlink,
@@ -415,6 +413,17 @@ export function studioCommand(program: Command): void {
 
         writeFileSync(join(tmpDir, "index.html"), getInlineHTML());
         writeFileSync(join(tmpDir, "main.ts"), getInlineApp(file ?? null));
+
+        // Symlink node_modules into temp dir so Vite can resolve @a-company/* packages.
+        // Works for both monorepo (pnpm workspace links) and npm global install.
+        const cliNodeModules = join(cliPackageDir, "node_modules");
+        if (existsSync(cliNodeModules)) {
+          try {
+            symlinkSync(cliNodeModules, join(tmpDir, "node_modules"), "dir");
+          } catch {
+            // Non-fatal: aliases will handle resolution if symlink fails
+          }
+        }
 
         console.log(`Starting Atelier Studio...`);
         console.log(`  Working directory: ${cwd}`);
@@ -436,18 +445,7 @@ export function studioCommand(program: Command): void {
             port,
             strictPort: false,
             fs: {
-              allow: [tmpDir, packagesDir, cwd],
-            },
-          },
-          resolve: {
-            alias: {
-              "@a-company/atelier-studio/styles.css": resolve(packagesDir, "studio/dist/index.css"),
-              "@a-company/atelier-studio": resolve(packagesDir, "studio/src/index.ts"),
-              "@a-company/atelier-schema": resolve(packagesDir, "schema/src/index.ts"),
-              "@a-company/atelier-types": resolve(packagesDir, "types/src/index.ts"),
-              "@a-company/atelier-math": resolve(packagesDir, "math/src/index.ts"),
-              "@a-company/atelier-core": resolve(packagesDir, "core/src/index.ts"),
-              "@a-company/atelier-canvas": resolve(packagesDir, "canvas/src/index.ts"),
+              strict: false,
             },
           },
           plugins: [

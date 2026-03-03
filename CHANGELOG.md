@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.27.3] — 2026-03-03
+
+### Fixed
+- `atelier studio` — replaced hardcoded monorepo alias paths with node_modules symlink into temp dir; now works for both npm global install and monorepo development
+- Disabled Vite `server.fs.strict` so the dev server can follow symlinks to package sources
+
 ## [0.27.2] — 2026-03-03
 
 ### Fixed
