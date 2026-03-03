@@ -73,7 +73,7 @@ function getInlineHTML(): string {
 
 function getInlineApp(initialFile: string | null): string {
   const initialFileStr = initialFile ? JSON.stringify(initialFile) : "null";
-  return `import { AtelierStudio } from "@a-company/atelier-studio";
+  return `import { AtelierStudio, exportDocument, ImageCache } from "@a-company/atelier-studio";
 import "@a-company/atelier-studio/styles.css";
 import { parseAtelier, serializeAtelier } from "@a-company/atelier-schema";
 
@@ -107,6 +107,98 @@ async function saveFileContent(path: string, content: string): Promise<void> {
     headers: { "Content-Type": "text/plain" },
     body: content,
   });
+}
+
+async function saveExportBlob(path: string, blob: Blob): Promise<void> {
+  const buf = await blob.arrayBuffer();
+  await fetch("/api/export?path=" + encodeURIComponent(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/octet-stream" },
+    body: buf,
+  });
+}
+
+async function exportAll(format: "gif" | "mp4" | "webm"): Promise<void> {
+  if (files.length === 0) return;
+
+  // Create progress overlay
+  const overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:10000";
+  const card = document.createElement("div");
+  card.style.cssText = "background:#333;border:1px solid #4A4A4A;border-radius:8px;padding:32px 40px;min-width:360px;color:#F5F0EB;font-family:'Cormorant Garamond',Georgia,serif";
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+
+  const title = document.createElement("div");
+  title.style.cssText = "font-size:18px;margin-bottom:16px;font-weight:600";
+  title.textContent = "Exporting All Files…";
+  card.appendChild(title);
+
+  const fileLabel = document.createElement("div");
+  fileLabel.style.cssText = "font-size:13px;color:#A89F95;margin-bottom:8px;font-family:'SF Mono','Fira Code',monospace";
+  card.appendChild(fileLabel);
+
+  const progress = document.createElement("progress");
+  progress.style.cssText = "width:100%;height:6px;appearance:none;-webkit-appearance:none";
+  progress.max = files.length;
+  progress.value = 0;
+  card.appendChild(progress);
+
+  const statusText = document.createElement("div");
+  statusText.style.cssText = "font-size:12px;color:#A89F95;margin-top:8px";
+  card.appendChild(statusText);
+
+  let exported = 0;
+  let errors = 0;
+
+  for (const file of files) {
+    fileLabel.textContent = file.path;
+    statusText.textContent = (exported + errors + 1) + " / " + files.length;
+
+    try {
+      const content = await fetchFileContent(file.path);
+      const result = parseAtelier(content);
+      if (!result.success) {
+        errors++;
+        progress.value = exported + errors;
+        continue;
+      }
+
+      const doc = result.data;
+      const w = doc.canvas.width;
+      const h = doc.canvas.height;
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const imageCache = new ImageCache();
+
+      const exportResult = await exportDocument(doc, canvas, imageCache, {
+        format,
+        onProgress: ({ percent }) => {
+          statusText.textContent = (exported + errors + 1) + " / " + files.length + " — " + percent + "%";
+        },
+      });
+
+      // Save alongside the source file: e.g. "dir/my-anim.atelier" → "dir/my-anim.gif"
+      const outPath = file.path.replace(/\\.atelier$/, "." + format);
+      await saveExportBlob(outPath, exportResult.blob);
+      exported++;
+    } catch {
+      errors++;
+    }
+    progress.value = exported + errors;
+  }
+
+  // Done
+  title.textContent = "Export Complete";
+  fileLabel.textContent = "";
+  statusText.textContent = exported + " exported" + (errors > 0 ? ", " + errors + " failed" : "");
+
+  const closeBtn = document.createElement("button");
+  closeBtn.style.cssText = "margin-top:16px;padding:6px 20px;background:#3D3D3D;color:#F5F0EB;border:1px solid #4A4A4A;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px";
+  closeBtn.textContent = "Close";
+  closeBtn.addEventListener("click", () => document.body.removeChild(overlay));
+  card.appendChild(closeBtn);
 }
 
 // ── Theme (matches branded theme from showcase) ──
@@ -255,6 +347,26 @@ const sidebarList = document.createElement("div");
 sidebarList.className = "sidebar__list";
 sidebar.appendChild(sidebarList);
 
+const sidebarFooter = document.createElement("div");
+sidebarFooter.style.cssText = "padding:12px 16px;border-top:1px solid #4A4A4A;display:flex;gap:8px;align-items:center";
+const exportAllSelect = document.createElement("select");
+exportAllSelect.style.cssText = "flex:1;background:#3D3D3D;color:#F5F0EB;border:1px solid #4A4A4A;border-radius:4px;padding:4px 8px;font-size:11px;font-family:'SF Mono','Fira Code',monospace;cursor:pointer";
+for (const [val, label] of [["gif","GIF"],["mp4","MP4"],["webm","WebM"]] as const) {
+  const o = document.createElement("option");
+  o.value = val;
+  o.textContent = label;
+  exportAllSelect.appendChild(o);
+}
+sidebarFooter.appendChild(exportAllSelect);
+const exportAllBtn = document.createElement("button");
+exportAllBtn.style.cssText = "background:#C75B39;color:#F5F0EB;border:none;border-radius:4px;padding:5px 12px;font-size:11px;font-family:inherit;cursor:pointer;white-space:nowrap";
+exportAllBtn.textContent = "Export All";
+exportAllBtn.addEventListener("click", () => {
+  exportAll(exportAllSelect.value as "gif" | "mp4" | "webm");
+});
+sidebarFooter.appendChild(exportAllBtn);
+sidebar.appendChild(sidebarFooter);
+
 const main = document.createElement("div");
 main.className = "main";
 
@@ -319,6 +431,9 @@ async function loadFile(path: string): Promise<void> {
     studio = null;
   }
 
+  // Set filename for export downloads (strip path and .atelier extension)
+  const baseName = path.split("/").pop()?.replace(/\\.atelier$/, "") || null;
+
   studio = new AtelierStudio(editorContainer, {
     mode: "full",
     initialTab: "yaml",
@@ -345,6 +460,7 @@ async function loadFile(path: string): Promise<void> {
     },
   });
   studio.setTheme(theme);
+  studio.setFilename(baseName);
   studio.loadDocument(result.data);
 }
 
@@ -506,6 +622,30 @@ export function studioCommand(program: Command): void {
                       });
                       return;
                     }
+                  }
+
+                  if (url.pathname === "/api/export" && req.method === "POST") {
+                    const filePath = url.searchParams.get("path");
+                    if (!filePath || !isSafePath(filePath)) {
+                      res.statusCode = 400;
+                      res.end("Invalid path");
+                      return;
+                    }
+
+                    const absPath = resolve(cwd, filePath);
+                    const chunks: Buffer[] = [];
+                    req.on("data", (chunk: Buffer) => { chunks.push(chunk); });
+                    req.on("end", () => {
+                      try {
+                        mkdirSync(dirname(absPath), { recursive: true });
+                        writeFileSync(absPath, Buffer.concat(chunks));
+                        res.end("OK");
+                      } catch {
+                        res.statusCode = 500;
+                        res.end("Write failed");
+                      }
+                    });
+                    return;
                   }
 
                   if (url.pathname === "/api/cwd") {

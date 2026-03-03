@@ -34,6 +34,7 @@ export class AtelierStudio {
 
   private doc: AtelierDocument | null = null;
   private originalDoc: AtelierDocument | null = null;
+  private currentFilename: string | null = null;
   private currentTab: RightTab;
   private stateName = "";
   private abortController = new AbortController();
@@ -182,6 +183,10 @@ export class AtelierStudio {
   setTab(tab: RightTab): void {
     this.currentTab = tab;
     this.applyTab();
+  }
+
+  setFilename(name: string | null): void {
+    this.currentFilename = name;
   }
 
   destroy(): void {
@@ -371,6 +376,7 @@ export class AtelierStudio {
       this.canvasPanel.getCanvas(),
       this.canvasPanel.getImageCache(),
       this.root,
+      this.currentFilename ?? undefined,
     );
   }
 }

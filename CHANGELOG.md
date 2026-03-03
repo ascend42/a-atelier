@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.28.0] — 2026-03-03
+
+### Added
+- **Export filename** — single-file export now uses the loaded file's name (e.g., `the-brain.gif`) instead of hardcoded `animation.gif`
+  - `AtelierStudio.setFilename(name)` public API added
+  - `ExportDialog.show()` accepts optional `filename` parameter
+- **Export All** — batch-export every `.atelier` file from the sidebar in one click
+  - Format picker (GIF / MP4 / WebM) in sidebar footer
+  - Iterates all files, renders each to offscreen canvas, saves output alongside source file
+  - Progress overlay with per-file and overall progress
+- **`POST /api/export`** — new binary write endpoint for saving export output to disk
+- `ImageCache` re-exported from `@a-company/atelier-studio` for standalone rendering use
+
 ## [0.27.4] — 2026-03-03
 
 ### Fixed

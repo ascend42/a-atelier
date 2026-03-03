@@ -14,6 +14,7 @@ export class ExportDialog {
   private dialog: HTMLElement | null = null;
   private blobUrl: string | null = null;
   private parentEl: HTMLElement | null = null;
+  private filename: string | null = null;
 
   /**
    * Mount the export overlay into the given parent element.
@@ -24,7 +25,9 @@ export class ExportDialog {
     canvas: HTMLCanvasElement,
     imageCache: ImageCache,
     parentEl: HTMLElement,
+    filename?: string,
   ): void {
+    this.filename = filename ?? null;
     this.parentEl = parentEl;
 
     // Overlay
@@ -212,7 +215,7 @@ export class ExportDialog {
 
     const downloadBtn = document.createElement("a");
     downloadBtn.href = this.blobUrl;
-    downloadBtn.download = `animation.${ext}`;
+    downloadBtn.download = `${this.filename || "animation"}.${ext}`;
     downloadBtn.className = "atel-toolbar__btn atel-toolbar__btn--active atel-export-download";
     downloadBtn.textContent = `Download .${ext}`;
     this.dialog.appendChild(downloadBtn);
