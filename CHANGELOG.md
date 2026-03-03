@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.27.1] — 2026-03-03
+
+### Fixed
+- `atelier studio` — Vite pre-transform error on macOS ("Failed to load url /main.ts") caused by `/var` → `/private/var` symlink mismatch; temp directory now uses `realpathSync` for canonical path
+- `atelier studio` — added `server.fs.allow` so Vite can access workspace packages from the temp directory root
+
 ## [0.27.0] — 2026-03-03
 
 ### Added

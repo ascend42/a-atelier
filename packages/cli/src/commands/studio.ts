@@ -13,7 +13,7 @@
  */
 
 import { resolve, join, relative, dirname } from "node:path";
-import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
@@ -405,10 +405,13 @@ export function studioCommand(program: Command): void {
         const cliPackageDir = resolve(dirname(new URL(import.meta.url).pathname), "..");
         const packagesDir = resolve(cliPackageDir, "..");
 
-        // Create temp directory with inline app
+        // Create temp directory with inline app.
+        // Use realpathSync to resolve macOS /var -> /private/var symlink,
+        // which Vite normalizes internally when resolving file paths.
         const tmpId = randomBytes(4).toString("hex");
-        const tmpDir = join(tmpdir(), `atelier-studio-${tmpId}`);
-        mkdirSync(tmpDir, { recursive: true });
+        const tmpDirRaw = join(tmpdir(), `atelier-studio-${tmpId}`);
+        mkdirSync(tmpDirRaw, { recursive: true });
+        const tmpDir = realpathSync(tmpDirRaw);
 
         writeFileSync(join(tmpDir, "index.html"), getInlineHTML());
         writeFileSync(join(tmpDir, "main.ts"), getInlineApp(file ?? null));
@@ -432,6 +435,9 @@ export function studioCommand(program: Command): void {
           server: {
             port,
             strictPort: false,
+            fs: {
+              allow: [tmpDir, packagesDir, cwd],
+            },
           },
           resolve: {
             alias: {
