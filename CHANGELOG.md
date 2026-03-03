@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.28.2] — 2026-03-03
+
+### Fixed
+- MP4 export now tries H.264 High Profile (Level 5.1/4.2/4.0) before falling back to Baseline 3.1 — fixes `codec not supported` error for 1080p@60fps documents
+
 ## [0.28.1] — 2026-03-03
 
 ### Fixed

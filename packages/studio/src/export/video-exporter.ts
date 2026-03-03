@@ -150,17 +150,24 @@ async function exportMP4(
   const encWidth = width % 2 === 0 ? width : width + 1;
   const encHeight = height % 2 === 0 ? height : height + 1;
 
-  // Validate codec support before starting
-  const codecConfig: VideoEncoderConfig = {
-    codec: "avc1.42001f",
-    width: encWidth,
-    height: encHeight,
-    bitrate: 5_000_000,
-    framerate: fps,
-  };
+  // Try H.264 profiles from highest capability to lowest
+  const codecCandidates: VideoEncoderConfig[] = [
+    { codec: "avc1.640033", width: encWidth, height: encHeight, bitrate: 5_000_000, framerate: fps }, // High 5.1 (4K)
+    { codec: "avc1.64002a", width: encWidth, height: encHeight, bitrate: 5_000_000, framerate: fps }, // High 4.2 (1080p60)
+    { codec: "avc1.640028", width: encWidth, height: encHeight, bitrate: 5_000_000, framerate: fps }, // High 4.0 (1080p30)
+    { codec: "avc1.42001f", width: encWidth, height: encHeight, bitrate: 5_000_000, framerate: fps }, // Baseline 3.1 (720p)
+  ];
 
-  const support = await VideoEncoder.isConfigSupported(codecConfig);
-  if (!support.supported) {
+  let support: VideoEncoderSupport | null = null;
+  for (const candidate of codecCandidates) {
+    const result = await VideoEncoder.isConfigSupported(candidate);
+    if (result.supported) {
+      support = result;
+      break;
+    }
+  }
+
+  if (!support?.supported) {
     throw new Error(
       `H.264 codec not supported for ${encWidth}\u00D7${encHeight} at ${fps}fps. ` +
       `Try exporting as GIF or WebM instead.`,
