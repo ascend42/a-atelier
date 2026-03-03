@@ -232,8 +232,9 @@ describe("frame resolver", () => {
 describe("overlap validator", () => {
   it("detects overlapping ranges", () => {
     expect(rangesOverlap([0, 10], [5, 15])).toBe(true);
-    expect(rangesOverlap([0, 10], [10, 20])).toBe(true);
+    expect(rangesOverlap([0, 10], [10, 20])).toBe(false); // boundary-touching is allowed
     expect(rangesOverlap([0, 10], [11, 20])).toBe(false);
+    expect(rangesOverlap([0, 10], [9, 20])).toBe(true);
   });
 
   it("validateNoOverlap returns null for no overlap", () => {

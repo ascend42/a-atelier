@@ -24,7 +24,7 @@ export const StepEasingSchema = z.object({
   position: z.enum(["start", "end"]).optional(),
 });
 
-export const EasingPresetSchema = z.enum(["ease-in", "ease-out", "ease-in-out"]);
+export const EasingPresetSchema = z.enum(["linear", "ease-in", "ease-out", "ease-in-out"]);
 
 export const EasingSchema = z.union([
   LinearEasingSchema,

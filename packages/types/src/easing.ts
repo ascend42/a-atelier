@@ -25,6 +25,6 @@ export interface StepEasing {
 }
 
 /** Named easing presets */
-export type EasingPreset = "ease-in" | "ease-out" | "ease-in-out";
+export type EasingPreset = "linear" | "ease-in" | "ease-out" | "ease-in-out";
 
 export type Easing = LinearEasing | CubicBezierEasing | SpringEasing | StepEasing | EasingPreset;

@@ -10,9 +10,11 @@ export interface OverlapError {
 
 /**
  * Check if two frame ranges overlap.
+ * Boundary-touching ranges (e.g., [0-50] and [50-90]) are allowed —
+ * only ranges that share more than a single boundary frame are overlaps.
  */
 export function rangesOverlap(a: FrameRange, b: FrameRange): boolean {
-  return a[0] <= b[1] && b[0] <= a[1];
+  return a[0] < b[1] && b[0] < a[1];
 }
 
 /**

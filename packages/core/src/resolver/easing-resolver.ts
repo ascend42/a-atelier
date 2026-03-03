@@ -11,6 +11,7 @@ export function resolveEasing(easing: Easing | undefined): (t: number) => number
   // String presets
   if (typeof easing === "string") {
     switch (easing) {
+      case "linear": return linear;
       case "ease-in": return easeIn;
       case "ease-out": return easeOut;
       case "ease-in-out": return easeInOut;
