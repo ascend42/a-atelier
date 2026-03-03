@@ -5,6 +5,7 @@ const shared = {
   clean: false,
   sourcemap: true,
   noExternal: [/^@atelier\//],
+  external: ["vite"],
 };
 
 export default defineConfig([

@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.27.0] — 2026-03-03
+
+### Added
+- **`atelier studio` CLI command** — launch the browser-based AtelierStudio editor from any directory with `.atelier` files
+  - Vite dev server with HMR, serving an inline app with the `AtelierStudio` widget
+  - File sidebar grouped by folder, auto-discovers all `.atelier` files recursively
+  - REST API middleware: `GET /api/files`, `GET /api/file`, `POST /api/file`, `GET /api/cwd`
+  - Auto-save with 800ms debounce and save status indicator
+  - Path traversal protection on file API
+  - `--port` option (default 4321), `--no-open` to skip browser launch
+  - Accepts optional `[file]` argument to open a specific file on launch
+
+### Changed
+- `@a-company/atelier` CLI now depends on `vite` and `@a-company/atelier-studio` at runtime (for the studio command)
+- `vite` externalized in tsup config to avoid bundling
+
 ## [0.26.1] — 2026-02-23
 
 ### Changed
