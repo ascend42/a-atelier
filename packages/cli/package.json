@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.27.1",
+  "version": "0.27.2",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -28,7 +28,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@a-company/atelier-studio": "workspace:*",
+    "@a-company/atelier-studio": ">=0.25.1",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "commander": "^13.0.0",
     "vite": "^6.1.0",

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.27.2] — 2026-03-03
+
+### Fixed
+- `@a-company/atelier-studio` dependency changed from `workspace:*` to `>=0.25.1` so npm global install works
+
 ## [0.27.1] — 2026-03-03
 
 ### Fixed
