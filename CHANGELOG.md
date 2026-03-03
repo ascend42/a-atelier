@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.27.4] — 2026-03-03
+
+### Fixed
+- CLI `atelier studio` — removed stale `resolve.alias` paths that broke global npm install (was looking for `@a-company/studio/src/index.ts` instead of `@a-company/atelier-studio`)
+
+## [0.25.2] — 2026-03-03
+
+### Fixed
+- `@a-company/atelier-types` — added `"linear"` to `EasingPreset` string union (was only accepted as `{ type: "linear" }` object form)
+- `@a-company/atelier-schema` — added `"linear"` to `EasingPresetSchema` enum
+- `@a-company/atelier-core` — added explicit `"linear"` case in easing resolver string switch
+- `@a-company/atelier-core` — overlap validator now allows boundary-touching delta ranges (e.g., `[0-50]` + `[50-90]`); changed from inclusive to strict inequality
+- `@a-company/atelier-studio` — version bump to pick up fixed schema/core/types deps
+
 ## [0.27.3] — 2026-03-03
 
 ### Fixed
