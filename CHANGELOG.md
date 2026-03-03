@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.28.1] — 2026-03-03
+
+### Fixed
+- `atelier --version` now reads from package.json instead of hardcoded `0.1.0`
+- Export All batch export now logs errors to browser console for debugging
+
 ## [0.28.0] — 2026-03-03
 
 ### Added

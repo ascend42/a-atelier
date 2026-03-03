@@ -183,7 +183,8 @@ async function exportAll(format: "gif" | "mp4" | "webm"): Promise<void> {
       const outPath = file.path.replace(/\\.atelier$/, "." + format);
       await saveExportBlob(outPath, exportResult.blob);
       exported++;
-    } catch {
+    } catch (e) {
+      console.error("Export failed:", file.path, e);
       errors++;
     }
     progress.value = exported + errors;
@@ -193,6 +194,7 @@ async function exportAll(format: "gif" | "mp4" | "webm"): Promise<void> {
   title.textContent = "Export Complete";
   fileLabel.textContent = "";
   statusText.textContent = exported + " exported" + (errors > 0 ? ", " + errors + " failed" : "");
+  if (errors > 0) console.warn("Export All finished with " + errors + " error(s). Check console for details.");
 
   const closeBtn = document.createElement("button");
   closeBtn.style.cssText = "margin-top:16px;padding:6px 20px;background:#3D3D3D;color:#F5F0EB;border:1px solid #4A4A4A;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px";
