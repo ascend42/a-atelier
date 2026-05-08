@@ -7,10 +7,11 @@ context:
   - No-overlap validation ensures deterministic animation behavior
 components:
   '#frame-resolver':
-    description: Given document + frame number, computes resolved state of all layers
+    description: Given document + frame number, computes resolved state of all layers; computes videoSourceTime (seconds into source video) for VideoVisual layers
     tags:
       - resolver
       - engine
+      - video
     file: src/resolver/frame-resolver.ts
   '#delta-resolver':
     description: Per-property interpolation — resolves delta value at a given frame

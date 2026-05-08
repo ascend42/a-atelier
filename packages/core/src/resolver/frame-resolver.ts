@@ -8,6 +8,8 @@ export interface ResolvedLayer {
   layer: Layer;
   /** Computed property overrides from active deltas */
   computedProperties: Partial<Record<AnimatableProperty, unknown>>;
+  /** Seconds into source video to seek to — only present for video visual layers */
+  videoSourceTime?: number;
 }
 
 /** The resolved state of an entire document at a specific frame */
@@ -54,7 +56,21 @@ export function resolveFrame(
       }
     }
 
-    return { id: layer.id, layer, computedProperties };
+    const resolvedLayer: ResolvedLayer = { id: layer.id, layer, computedProperties };
+
+    if (layer.visual.type === "video") {
+      const video = layer.visual;
+      const fps = doc.canvas.fps;
+      const startFrame = video.startFrame ?? 0;
+      const sourceOffset = video.sourceOffset ?? 0;
+      const playbackRate = video.playbackRate ?? 1.0;
+      const relativeFrame = Math.max(0, frame - startFrame);
+      const sourceTime = (relativeFrame / fps) * playbackRate + sourceOffset;
+      resolvedLayer.videoSourceTime =
+        video.sourceEnd !== undefined ? Math.min(sourceTime, video.sourceEnd) : sourceTime;
+    }
+
+    return resolvedLayer;
   });
 
   return { frame, stateName, layers: resolvedLayers };

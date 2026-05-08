@@ -55,6 +55,19 @@ export const ImageVisualSchema = z.object({
   frameIndex: z.number().int().min(0).optional(),
 });
 
+export const VideoVisualSchema = z.object({
+  type: z.literal("video"),
+  assetId: z.string().min(1, "assetId is required"),
+  src: z.string().optional(),
+  startFrame: z.number().int().min(0).optional(),
+  sourceOffset: z.number().min(0).optional(),
+  sourceEnd: z.number().positive().optional(),
+  playbackRate: z.number().positive().optional(),
+  volume: z.number().min(0).max(1).optional(),
+  muted: z.boolean().optional(),
+  objectFit: z.enum(["contain", "cover", "fill"]).optional(),
+});
+
 export const GroupVisualSchema = z.object({
   type: z.literal("group"),
 });
@@ -70,6 +83,7 @@ export const VisualSchema = z.discriminatedUnion("type", [
   ShapeVisualSchema,
   TextVisualSchema,
   ImageVisualSchema,
+  VideoVisualSchema,
   GroupVisualSchema,
   RefVisualSchema,
 ]);

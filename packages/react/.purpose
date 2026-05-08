@@ -1,0 +1,23 @@
+version: 1.0.0
+description: React components and hooks for embedding Atelier animations — Animation component, useAnimation/useAnimationState hooks, AnimationPlayer
+context:
+  - Thin React wrapper over the core animation engine
+  - Animation component handles mounting/unmounting of AnimationPlayer
+  - useAnimation drives playback state, useAnimationState exposes frame-level state
+components:
+  animation:
+    description: React component that mounts an AnimationPlayer and manages its lifecycle
+    type: component
+    file: src/Animation.tsx
+  use-animation:
+    description: Hook that drives animation playback state — play, pause, seek, loop controls
+    type: hook
+    file: src/useAnimation.ts
+  use-animation-state:
+    description: Hook that exposes frame-level resolved state for reactive rendering
+    type: hook
+    file: src/useAnimationState.ts
+  animation-player:
+    description: Low-level player class for advanced usage — direct frame control outside the React component model
+    file: src/player.ts
+    type: service

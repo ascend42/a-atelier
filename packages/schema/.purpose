@@ -14,17 +14,17 @@ components:
     tags: [validation, schema]
     components: ["#atelier-types"]
   '#layer-schema':
-    description: LayerSchema and Visual discriminated union validation
+    description: LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)
     file: src/layer.ts
-    tags: [validation, schema]
+    tags: [validation, schema, video]
   '#delta-schema':
     description: DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement
     file: src/delta.ts
     tags: [validation, schema]
   '#validation-functions':
-    description: validateDocument, validateLayer, validateDelta — typed results with error formatting
+    description: validateDocument, validateLayer, validateDelta, validateVideoLayer — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints
     file: src/validate.ts
-    tags: [validation, api]
+    tags: [validation, api, video]
   '#yaml-parser':
     description: parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)
     file: src/parse.ts
@@ -35,3 +35,5 @@ gates:
     description: Document passes full Zod schema validation
   ^valid-delta:
     description: Delta references valid property and has valid frame range
+  ^valid-video-layer:
+    description: VideoVisual passes semantic checks — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty

@@ -1,14 +1,19 @@
 version: 1.0.0
-description: CLI tool — validate, info, still, render, export-svg, export-lottie, assets, and variables commands for .atelier animation files
+description: CLI tool — lint, validate, info, still, render, export-svg, export-lottie, assets, and variables commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
-  - Validate command checks schema + delta overlaps
+  - Lint command runs all named gates (^valid-document, ^valid-delta, ^valid-video-layer) with grouped output and --json flag
+  - Validate command checks schema + delta overlaps (legacy, predates named gates)
   - Info command outputs document summary
   - Still command resolves a frame and outputs JSON or PNG
   - Render command produces MP4/GIF via FFmpeg (requires node-canvas + FFmpeg)
 components:
+  cli-lint:
+    description: Lint command — runs ^valid-document, ^valid-delta, ^valid-video-layer gates across one or more files; supports --json for CI
+    file: src/commands/lint.ts
+    tags: [lint, gates, ci, video]
   cli-validate:
-    description: Validate command — checks .atelier files for schema validity and delta overlaps
+    description: Validate command — checks .atelier files for schema validity and delta overlaps (legacy; lint is preferred)
     file: src/commands/validate.ts
   cli-info:
     description: Info command — outputs document summary (canvas, layers, states, presets)

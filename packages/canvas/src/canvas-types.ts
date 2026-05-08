@@ -80,3 +80,17 @@ export interface GradientLike {
 
 /** Resolves a ref layer's src path to a loaded AtelierDocument */
 export type DocumentResolver = (src: string) => import("@a-company/atelier-types").AtelierDocument | undefined;
+
+/**
+ * Provides a rendered video frame as a drawable image for a given source time.
+ * Returns null if the frame isn't ready (caller skips draw and retries next tick).
+ * Preview mode: backed by HTMLVideoElement.currentTime seeks.
+ * Export mode: backed by Mediabunny/WebCodecs for deterministic frame extraction.
+ * Return type is `object` to avoid DOM lib dependency — at runtime: HTMLVideoElement | ImageBitmap | HTMLCanvasElement.
+ */
+export type VideoFrameProvider = (
+  src: string,
+  sourceTime: number,
+  width: number,
+  height: number,
+) => object | null;

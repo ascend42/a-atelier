@@ -3,20 +3,22 @@ description: Canvas 2D renderer — transforms resolved frame data into visual o
 context:
   - This package renders resolved animation frames to Canvas 2D contexts
   - Uses a minimal RenderContext interface to avoid DOM lib dependency
-  - Supports shape (rect, ellipse, path), text, image (with sourceRect/spritesheet crop), and group layers
+  - Supports shape (rect, ellipse, path), text, image (with sourceRect/spritesheet crop), video, and group layers
   - Image renderer supports 5-arg and 9-arg drawImage for sourceRect cropping and spritesheet grid rendering
+  - Video renderer uses injected VideoFrameProvider (preview: HTMLVideoElement, export: WebCodecs/Mediabunny)
   - Tint compositing via offscreen canvas (multiply blend + destination-in alpha mask)
   - EffectiveLayer includes visible, tint, and animated image properties
   - Transform stack handles translate, rotate, scale with anchor points
   - Percentage units resolved to pixels at render time
 components:
   render-frame:
-    description: Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers
+    description: Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer
     components:
       - '#frame-resolver'
       - '#apply-properties'
       - '#shape-renderer'
       - '#text-renderer'
+      - '#video-renderer'
     file: src/render-frame.ts
   shape-renderer:
     description: Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim
@@ -24,6 +26,10 @@ components:
   text-renderer:
     description: Renders text layers with font building, fill color, and alignment
     file: src/renderers/text-renderer.ts
+  video-renderer:
+    description: Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)
+    file: src/renderers/video-renderer.ts
+    tags: [video, renderer]
   apply-properties:
     description: Merges computed animation properties over layer defaults, resolves percentage units to pixels
     file: src/apply-properties.ts

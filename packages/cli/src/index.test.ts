@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { serializeAtelier } from "@a-company/atelier-schema";
 import { validateFile } from "./commands/validate.js";
+import { lintFile } from "./commands/lint.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
@@ -372,5 +373,134 @@ describe("exportToLottie (export-lottie)", () => {
     // VALID_DOC uses ease-out easing which may produce warnings
     const { warnings } = exportToLottie(VALID_DOC);
     expect(Array.isArray(warnings)).toBe(true);
+  });
+});
+
+// ─── Lint Tests ───────────────────────────────────────────────
+
+describe("lintFile", () => {
+  it("passes all gates for a valid document with no video layers", () => {
+    const yaml = serializeAtelier(VALID_DOC);
+    const filePath = writeTmpFile("lint-valid.atelier", yaml);
+    const result = lintFile(filePath);
+    expect(result.valid).toBe(true);
+    expect(result.gates).toHaveLength(3);
+    expect(result.gates.every((g) => g.pass)).toBe(true);
+    expect(result.gates.map((g) => g.gate)).toEqual([
+      "^valid-document",
+      "^valid-delta",
+      "^valid-video-layer",
+    ]);
+  });
+
+  it("fails ^valid-document and skips remaining gates on schema-invalid input", () => {
+    const filePath = writeTmpFile("lint-bad-schema.atelier", "name: broken\n");
+    const result = lintFile(filePath);
+    expect(result.valid).toBe(false);
+    expect(result.gates).toHaveLength(1);
+    expect(result.gates[0].gate).toBe("^valid-document");
+    expect(result.gates[0].pass).toBe(false);
+  });
+
+  it("fails ^valid-delta for overlapping deltas", () => {
+    const yaml = serializeAtelier(OVERLAP_DOC);
+    const filePath = writeTmpFile("lint-overlap.atelier", yaml);
+    const result = lintFile(filePath);
+    expect(result.valid).toBe(false);
+    const deltaGate = result.gates.find((g) => g.gate === "^valid-delta");
+    expect(deltaGate?.pass).toBe(false);
+    expect(deltaGate?.errors.some((e) => e.includes("Overlapping"))).toBe(true);
+  });
+
+  it("passes ^valid-video-layer for a valid video layer with videoMeta", () => {
+    const videoDoc: AtelierDocument = {
+      ...VALID_DOC,
+      name: "video-test",
+      layers: [
+        {
+          id: "clip",
+          visual: { type: "video", assetId: "v1", sourceOffset: 0, sourceEnd: 5 },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 1920, height: 1080 },
+        },
+      ],
+      assets: {
+        v1: {
+          type: "video",
+          src: "clip.mp4",
+          videoMeta: { duration: 10, fps: 30, width: 1920, height: 1080 },
+        },
+      },
+    };
+    const yaml = serializeAtelier(videoDoc);
+    const filePath = writeTmpFile("lint-video-valid.atelier", yaml);
+    const result = lintFile(filePath);
+    const videoGate = result.gates.find((g) => g.gate === "^valid-video-layer");
+    expect(videoGate?.pass).toBe(true);
+  });
+
+  it("fails ^valid-video-layer when sourceEnd <= sourceOffset", () => {
+    const videoDoc: AtelierDocument = {
+      ...VALID_DOC,
+      name: "video-bad",
+      layers: [
+        {
+          id: "clip",
+          visual: { type: "video", assetId: "v1", sourceOffset: 8, sourceEnd: 5 },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 1920, height: 1080 },
+        },
+      ],
+      assets: {
+        v1: {
+          type: "video",
+          src: "clip.mp4",
+          videoMeta: { duration: 10, fps: 30, width: 1920, height: 1080 },
+        },
+      },
+    };
+    const yaml = serializeAtelier(videoDoc);
+    const filePath = writeTmpFile("lint-video-bad-range.atelier", yaml);
+    const result = lintFile(filePath);
+    expect(result.valid).toBe(false);
+    const videoGate = result.gates.find((g) => g.gate === "^valid-video-layer");
+    expect(videoGate?.pass).toBe(false);
+    expect(videoGate?.errors.some((e) => e.includes("sourceEnd"))).toBe(true);
+  });
+
+  it("fails ^valid-video-layer when sourceEnd exceeds videoMeta.duration", () => {
+    const videoDoc: AtelierDocument = {
+      ...VALID_DOC,
+      name: "video-exceed",
+      layers: [
+        {
+          id: "clip",
+          visual: { type: "video", assetId: "v1", sourceEnd: 15 },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 1920, height: 1080 },
+        },
+      ],
+      assets: {
+        v1: {
+          type: "video",
+          src: "clip.mp4",
+          videoMeta: { duration: 10, fps: 30, width: 1920, height: 1080 },
+        },
+      },
+    };
+    const yaml = serializeAtelier(videoDoc);
+    const filePath = writeTmpFile("lint-video-exceed.atelier", yaml);
+    const result = lintFile(filePath);
+    expect(result.valid).toBe(false);
+    const videoGate = result.gates.find((g) => g.gate === "^valid-video-layer");
+    expect(videoGate?.pass).toBe(false);
+    expect(videoGate?.errors.some((e) => e.includes("exceeds asset duration"))).toBe(true);
+  });
+
+  it("reports error for missing file", () => {
+    const result = lintFile("/nonexistent/file.atelier");
+    expect(result.valid).toBe(false);
+    expect(result.gates[0].gate).toBe("^valid-document");
+    expect(result.gates[0].errors[0]).toContain("Cannot read file");
   });
 });

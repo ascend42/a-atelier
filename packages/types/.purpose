@@ -25,9 +25,9 @@ components:
     file: src/shape.ts
     tags: [types, shapes, visual]
   '#layer-types':
-    description: Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint
+    description: Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint
     file: src/layer.ts
-    tags: [types, layers]
+    tags: [types, layers, video]
   '#easing-types':
     description: Easing definitions — linear, cubic-bezier, spring, step, presets
     file: src/easing.ts
@@ -53,9 +53,9 @@ components:
     file: src/audio.ts
     tags: [types, audio]
   '#asset-types':
-    description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata
+    description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata
     file: src/asset.ts
-    tags: [types, assets]
+    tags: [types, assets, video]
   '#variable-types':
     description: VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)
     file: src/variable.ts

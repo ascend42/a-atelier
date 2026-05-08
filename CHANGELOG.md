@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.29.0] — 2026-05-07
+
+### Added
+- **`VideoVisual` layer type** — first-class video layer across the full stack
+  - `VideoVisual` added to the `Visual` discriminated union with `startFrame`, `sourceOffset`, `sourceEnd`, `playbackRate`, `volume`, `muted`, `objectFit`
+  - `"video"` added to `AssetType`; `videoMeta` (duration/fps/width/height) added to `Asset`
+  - `VideoVisualSchema` exported from `@a-company/atelier-schema`
+  - `videoSourceTime` computed on `ResolvedLayer` in `@a-company/atelier-core` — accounts for `startFrame`, `playbackRate`, `sourceOffset`, and `sourceEnd` clamping
+  - `VideoFrameProvider` injectable callback type in `@a-company/atelier-canvas`; `videoFrameProvider` option in `RenderOptions` — supports both preview (HTMLVideoElement) and export (WebCodecs/Mediabunny) backends without coupling to DOM globals
+  - New `video-renderer.ts` in `@a-company/atelier-canvas` — follows `image-renderer` injection pattern
+- **`validateVideoLayer`** — semantic gate (`^valid-video-layer`) exported from `@a-company/atelier-schema`; enforces `sourceEnd > sourceOffset` and `sourceEnd ≤ videoMeta.duration`
+- **`atelier lint`** CLI command — runs all named gates (`^valid-document`, `^valid-delta`, `^valid-video-layer`) across one or more files with gate-grouped output; `--json` flag for CI pipelines
+
 ## [0.28.2] — 2026-03-03
 
 ### Fixed

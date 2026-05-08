@@ -4,6 +4,7 @@
 import { createRequire } from "node:module";
 import { Command } from "commander";
 import { validateCommand } from "./commands/validate.js";
+import { lintCommand } from "./commands/lint.js";
 import { infoCommand } from "./commands/info.js";
 import { stillCommand } from "./commands/still.js";
 import { renderCommand } from "./commands/render.js";
@@ -22,6 +23,7 @@ program
 
 // Register commands
 validateCommand(program);
+lintCommand(program);
 infoCommand(program);
 stillCommand(program);
 renderCommand(program);

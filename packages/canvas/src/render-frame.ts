@@ -1,10 +1,11 @@
-import type { AtelierDocument, ImageVisual, Shape } from "@a-company/atelier-types";
+import type { AtelierDocument, ImageVisual, VideoVisual, Shape } from "@a-company/atelier-types";
 import type { ResolvedFrame } from "@a-company/atelier-core";
-import type { RenderContext, DocumentResolver } from "./canvas-types.js";
+import type { RenderContext, DocumentResolver, VideoFrameProvider } from "./canvas-types.js";
 import { buildEffectiveLayer, type EffectiveLayer } from "./apply-properties.js";
 import { renderShape } from "./renderers/shape-renderer.js";
 import { renderText } from "./renderers/text-renderer.js";
 import { renderImage } from "./renderers/image-renderer.js";
+import { renderVideo } from "./renderers/video-renderer.js";
 import { renderRef } from "./renderers/ref-renderer.js";
 import type { ImageCache } from "./image-cache.js";
 
@@ -13,6 +14,7 @@ export interface RenderOptions {
   imageCache?: ImageCache;
   documentResolver?: DocumentResolver;
   maxRefDepth?: number;
+  videoFrameProvider?: VideoFrameProvider;
 }
 
 /**
@@ -28,6 +30,7 @@ export function renderFrame(
   // Backward compatible: detect old ImageCache arg vs new RenderOptions
   let imageCache: ImageCache | undefined;
   let documentResolver: DocumentResolver | undefined;
+  let videoFrameProvider: VideoFrameProvider | undefined;
   let maxRefDepth = 4;
 
   if (optsOrCache && typeof (optsOrCache as ImageCache).get === "function") {
@@ -36,6 +39,7 @@ export function renderFrame(
     const opts = optsOrCache as RenderOptions;
     imageCache = opts.imageCache;
     documentResolver = opts.documentResolver;
+    videoFrameProvider = opts.videoFrameProvider;
     maxRefDepth = opts.maxRefDepth ?? 4;
   }
   const { width, height } = doc.canvas;
@@ -47,11 +51,15 @@ export function renderFrame(
   // Build effective layers into a map for ancestor transform lookups
   const effMap = new Map<string, EffectiveLayer>();
   const effList: EffectiveLayer[] = [];
+  const videoSourceTimeMap = new Map<string, number>();
 
   for (const resolvedLayer of resolvedFrame.layers) {
     const eff = buildEffectiveLayer(resolvedLayer, width, height);
     effMap.set(resolvedLayer.layer.id, eff);
     effList.push(eff);
+    if (resolvedLayer.videoSourceTime !== undefined) {
+      videoSourceTimeMap.set(resolvedLayer.layer.id, resolvedLayer.videoSourceTime);
+    }
   }
 
   // Render each layer in order (painters algorithm — first = back)
@@ -69,6 +77,14 @@ export function renderFrame(
       const iv = eff.visual as ImageVisual;
       if (!iv.src && iv.assetId && doc.assets?.[iv.assetId]) {
         iv.src = doc.assets[iv.assetId].src;
+      }
+    }
+
+    // Resolve assetId → src for video visuals
+    if (layer.visual.type === "video") {
+      const vv = eff.visual as VideoVisual;
+      if (!vv.src && vv.assetId && doc.assets?.[vv.assetId]) {
+        vv.src = doc.assets[vv.assetId].src;
       }
     }
 
@@ -142,6 +158,11 @@ export function renderFrame(
       case "image":
         if (imageCache) renderImage(renderCtx, eff, imageCache);
         break;
+      case "video":
+        if (videoFrameProvider) {
+          renderVideo(renderCtx, eff, videoSourceTimeMap.get(layer.id) ?? 0, videoFrameProvider);
+        }
+        break;
       case "group":
         // Groups are structural containers — no visual output
         break;
@@ -168,6 +189,7 @@ export function renderFrame(
         case "shape": renderShape(offCtx, eff); break;
         case "text": renderText(offCtx, eff); break;
         case "image": if (imageCache) renderImage(offCtx, eff, imageCache); break;
+        case "video": if (videoFrameProvider) renderVideo(offCtx, eff, videoSourceTimeMap.get(layer.id) ?? 0, videoFrameProvider); break;
         case "ref": renderRef(offCtx, eff, refOpts, doc); break;
       }
       offCtx.restore();
@@ -178,6 +200,7 @@ export function renderFrame(
         case "shape": renderShape(ctx, eff); break;
         case "text": renderText(ctx, eff); break;
         case "image": if (imageCache) renderImage(ctx, eff, imageCache); break;
+        case "video": if (videoFrameProvider) renderVideo(ctx, eff, videoSourceTimeMap.get(layer.id) ?? 0, videoFrameProvider); break;
         case "ref": renderRef(ctx, eff, refOpts, doc); break;
       }
       // Then overlay tinted version at tint amount

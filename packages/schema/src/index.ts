@@ -15,7 +15,8 @@ export {
 } from "./easing.js";
 export { ShadowSchema } from "./shadow.js";
 export {
-  ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, GroupVisualSchema, RefVisualSchema,
+  ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, VideoVisualSchema,
+  GroupVisualSchema, RefVisualSchema,
   VisualSchema, LayerSchema, BlendModeSchema, MotionPathSchema,
   SpritesheetConfigSchema, SourceRectSchema,
 } from "./layer.js";
@@ -28,7 +29,7 @@ export { TriggerTypeSchema, TriggerSchema, ActionTypeSchema, ActionSchema, Inter
 export { CanvasSchema, AtelierDocumentSchema } from "./document.js";
 
 // Validation functions
-export { validateDocument, validateLayer, validateDelta } from "./validate.js";
+export { validateDocument, validateLayer, validateDelta, validateVideoLayer } from "./validate.js";
 export type { ValidationResult, ValidationError } from "./validate.js";
 
 // YAML parsing

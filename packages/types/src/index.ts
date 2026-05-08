@@ -35,6 +35,7 @@ export type {
   ShapeVisual,
   TextVisual,
   ImageVisual,
+  VideoVisual,
   GroupVisual,
   RefVisual,
   Visual,

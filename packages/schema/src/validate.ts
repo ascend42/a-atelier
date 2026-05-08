@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, Delta } from "@a-company/atelier-types";
+import type { AtelierDocument, Layer, Delta, VideoVisual } from "@a-company/atelier-types";
 import { AtelierDocumentSchema } from "./document.js";
 import { LayerSchema } from "./layer.js";
 import { DeltaSchema } from "./delta.js";
@@ -47,4 +47,45 @@ export function validateDelta(input: unknown): ValidationResult<Delta> {
     return { success: true, data: result.data as Delta };
   }
   return { success: false, errors: formatErrors(result.error) };
+}
+
+/**
+ * Validate a VideoVisual layer against semantic constraints (^valid-video-layer gate).
+ * Checks beyond Zod: sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration.
+ */
+export function validateVideoLayer(
+  visual: VideoVisual,
+  videoMetaDuration?: number,
+): ValidationResult<VideoVisual> {
+  const errors: ValidationError[] = [];
+
+  if (!visual.assetId) {
+    errors.push({ path: "assetId", message: "assetId is required" });
+  }
+
+  const sourceOffset = visual.sourceOffset ?? 0;
+  if (visual.sourceEnd !== undefined) {
+    if (visual.sourceEnd <= sourceOffset) {
+      errors.push({
+        path: "sourceEnd",
+        message: `sourceEnd (${visual.sourceEnd}) must be greater than sourceOffset (${sourceOffset})`,
+      });
+    }
+    if (videoMetaDuration !== undefined && visual.sourceEnd > videoMetaDuration) {
+      errors.push({
+        path: "sourceEnd",
+        message: `sourceEnd (${visual.sourceEnd}) exceeds asset duration (${videoMetaDuration})`,
+      });
+    }
+  }
+
+  if (videoMetaDuration !== undefined && sourceOffset >= videoMetaDuration) {
+    errors.push({
+      path: "sourceOffset",
+      message: `sourceOffset (${sourceOffset}) is at or beyond asset duration (${videoMetaDuration})`,
+    });
+  }
+
+  if (errors.length > 0) return { success: false, errors };
+  return { success: true, data: visual };
 }

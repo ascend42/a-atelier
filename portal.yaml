@@ -1,8 +1,23 @@
-version: "1.0"
-
-# Atelier is a library + CLI + MCP server — no HTTP routes.
-# MCP tools use stdio transport (not HTTP) and have no auth gates.
-# This file exists to satisfy Paradigm compliance checks.
-
-gates: {}
+version: '1.0'
+gates:
+  no-overlap:
+    description: Rejects delta additions that overlap with existing deltas on the same layer+property
+    type: validation
+    location: packages/core/src/builder/document-builder.ts
+    prizes: []
+  valid-document:
+    description: Validates that an AtelierDocument conforms to the schema — required fields, type constraints, and structural integrity
+    type: validation
+    location: packages/schema
+    prizes: []
+  valid-delta:
+    description: Validates that a Delta object conforms to the schema — property types, value ranges, and easing references
+    type: validation
+    location: packages/schema
+    prizes: []
+  valid-video-layer:
+    description: Validates a VideoVisual layer — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty
+    type: validation
+    location: packages/schema/src/validate.ts
+    prizes: []
 routes: {}

@@ -40,6 +40,28 @@ export interface ImageVisual {
   frameIndex?: number;
 }
 
+export interface VideoVisual {
+  type: "video";
+  /** Asset ID reference */
+  assetId: string;
+  /** Direct URL or data-URL for rendering */
+  src?: string;
+  /** Composition frame when the video clip begins playing (temporal anchor) */
+  startFrame?: number;
+  /** Seconds into the source video to begin playback from */
+  sourceOffset?: number;
+  /** Seconds of source video to stop at (undefined = play to end) */
+  sourceEnd?: number;
+  /** Playback speed multiplier (1.0 = normal) */
+  playbackRate?: number;
+  /** Volume 0–1 (for export/audio pipelines) */
+  volume?: number;
+  /** Mute audio track */
+  muted?: boolean;
+  /** How to fit video into the layer bounds */
+  objectFit?: "contain" | "cover" | "fill";
+}
+
 export interface GroupVisual {
   type: "group";
 }
@@ -55,7 +77,7 @@ export interface RefVisual {
   frame?: number;
 }
 
-export type Visual = ShapeVisual | TextVisual | ImageVisual | GroupVisual | RefVisual;
+export type Visual = ShapeVisual | TextVisual | ImageVisual | VideoVisual | GroupVisual | RefVisual;
 
 /** Canvas 2D composite operations */
 export type BlendMode =

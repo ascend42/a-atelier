@@ -1,4 +1,4 @@
-export type AssetType = "image" | "svg" | "font" | "animation" | "audio";
+export type AssetType = "image" | "svg" | "font" | "animation" | "audio" | "video";
 
 /** A referenced external asset */
 export interface Asset {
@@ -8,4 +8,6 @@ export interface Asset {
   description?: string;
   /** Spritesheet metadata for image assets */
   spritesheet?: { columns: number; rows: number; frameCount?: number; frameWidth: number; frameHeight: number };
+  /** Video duration and frame rate metadata (required for ^valid-video-layer gate) */
+  videoMeta?: { duration: number; fps: number; width: number; height: number };
 }
