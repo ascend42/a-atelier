@@ -85,6 +85,23 @@ log.signal('!login-success').info('User authenticated');
 
 See `.paradigm/specs/logger.md` for full specification.
 
+## Paradigm Probe
+
+When the user says "**paradigm probe**" with an image:
+
+1. Analyze the image for UI elements
+2. Cross-reference with `.paradigm/probe-index.json`
+3. Return structured mapping of visual elements to code
+
+| Mode | Use Case |
+|------|----------|
+| `paradigm probe` | Map any image to code |
+| `paradigm probe ui` | Screenshot of running app |
+| `paradigm probe design` | Mockup - gap analysis |
+| `paradigm probe error` | Error screenshot |
+
+See `.paradigm/specs/probe.md` for full protocol.
+
 ## When to Update Paradigm Files
 
 - When adding a feature, create/update the nearest .purpose file
@@ -155,7 +172,7 @@ See `.paradigm/docs/commands.md` for full reference.
 
 - `.paradigm/specs/symbols.md` - Symbol system reference
 - `.paradigm/specs/logger.md` - Logging specification
-- `.paradigm/specs/scan.md` - Scan protocol
+- `.paradigm/specs/probe.md` - Probe protocol
 - `.paradigm/docs/commands.md` - CLI reference
 - `.paradigm/docs/patterns.md` - Coding patterns
 - `.paradigm/docs/troubleshooting.md` - Common issues

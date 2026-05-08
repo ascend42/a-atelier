@@ -1,0 +1,47 @@
+id: L-2026-05-07-ascend-184120-001
+type: agent-session
+timestamp: '2026-05-07T18:41:20.376Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: atelier lint CLI — gate-named validation command
+summary: Added `atelier lint <files...>` command that runs all three named gates (^valid-document, ^valid-delta, ^valid-video-layer) and groups output by gate name with pass/fail per gate. Supports --json flag for CI pipelines. Also exported VideoVisualSchema and validateVideoLayer from the schema package index which were missing. 7 new tests added, all 57 CLI + schema tests pass.
+symbols_touched:
+  - ^valid-document
+  - ^valid-delta
+  - ^valid-video-layer
+  - '#validation-functions'
+  - '#layer-schema'
+symbols_created:
+  - '#cli-lint'
+files_created:
+  - packages/cli/src/commands/lint.ts
+files_modified:
+  - packages/cli/src/cli.ts
+  - packages/cli/src/index.test.ts
+  - packages/schema/src/index.ts
+  - packages/cli/.purpose
+lines_added: 145
+decisions:
+  - id: lint-vs-validate-separate
+    decision: Added lint as a new command rather than extending validate
+    rationale: Lint surfaces named gates with grouped output; validate is a lower-level legacy command. Keeping them separate means validate stays predictably simple and lint can evolve independently as gates are added
+verification:
+  status: pass
+  details:
+    cli-tests: 30/30 pass
+    schema-tests: 27/27 pass
+    cli-build: pass
+    schema-build: pass
+tags:
+  - cli
+  - lint
+  - gates
+  - video
+  - ci
+confidence: 0.98
+git_context:
+  ref: c1d1eb6f770d5604bd52164ee251de41531bb7f4
+  branch: main
+  dirty: true

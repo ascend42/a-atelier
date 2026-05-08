@@ -2,12 +2,17 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-02-23T03:30:37.037Z",
+    "generatedAt": "2026-05-06T23:29:45.223Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 11,
+      "purposeFiles": 12,
       "portalFiles": 1,
       "premiseFiles": 0
+    },
+    "componentTypes": {
+      "component": 1,
+      "hook": 2,
+      "service": 1
     }
   },
   "components": {
@@ -226,6 +231,156 @@
       "visualTags": [],
       "related": []
     },
+    "#unit-types": {
+      "id": "#unit-types",
+      "name": "#unit Types",
+      "symbol": "##unit-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Pixel, Percentage, and UnitValue type definitions",
+      "visualTags": [],
+      "related": []
+    },
+    "#coordinate-types": {
+      "id": "#coordinate-types",
+      "name": "#coordinate Types",
+      "symbol": "##coordinate-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Frame, Bounds, AnchorPoint spatial types",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-types": {
+      "id": "#color-types",
+      "name": "#color Types",
+      "symbol": "##color-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+      "visualTags": [],
+      "related": []
+    },
+    "#shape-types": {
+      "id": "#shape-types",
+      "name": "#shape Types",
+      "symbol": "##shape-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+      "visualTags": [],
+      "related": []
+    },
+    "#layer-types": {
+      "id": "#layer-types",
+      "name": "#layer Types",
+      "symbol": "##layer-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-types": {
+      "id": "#easing-types",
+      "name": "#easing Types",
+      "symbol": "##easing-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-types": {
+      "id": "#delta-types",
+      "name": "#delta Types",
+      "symbol": "##delta-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
+      "visualTags": [],
+      "related": []
+    },
+    "#state-types": {
+      "id": "#state-types",
+      "name": "#state Types",
+      "symbol": "##state-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "State (named choreography with duration and deltas)",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-types": {
+      "id": "#document-types",
+      "name": "#document Types",
+      "symbol": "##document-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDocument root type, Canvas config",
+      "visualTags": [],
+      "related": []
+    },
+    "#shadow-types": {
+      "id": "#shadow-types",
+      "name": "#shadow Types",
+      "symbol": "##shadow-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
+      "visualTags": [],
+      "related": []
+    },
+    "#audio-types": {
+      "id": "#audio-types",
+      "name": "#audio Types",
+      "symbol": "##audio-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
+      "visualTags": [],
+      "related": []
+    },
+    "#asset-types": {
+      "id": "#asset-types",
+      "name": "#asset Types",
+      "symbol": "##asset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata",
+      "visualTags": [],
+      "related": []
+    },
+    "#variable-types": {
+      "id": "#variable-types",
+      "name": "#variable Types",
+      "symbol": "##variable-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
+      "visualTags": [],
+      "related": []
+    },
+    "#interaction-types": {
+      "id": "#interaction-types",
+      "name": "#interaction Types",
+      "symbol": "##interaction-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-types": {
+      "id": "#preset-types",
+      "name": "#preset Types",
+      "symbol": "##preset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "PresetDelta, Preset — reusable animation delta templates",
+      "visualTags": [],
+      "related": []
+    },
     "#svg-renderer": {
       "id": "#svg-renderer",
       "name": "#svg Renderer",
@@ -300,58 +455,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
       "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-schema": {
-      "id": "#document-schema",
-      "name": "#document Schema",
-      "symbol": "##document-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
-      "visualTags": [],
-      "related": [
-        "#atelier-types"
-      ]
-    },
-    "#layer-schema": {
-      "id": "#layer-schema",
-      "name": "#layer Schema",
-      "symbol": "##layer-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "LayerSchema and Visual discriminated union validation",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-schema": {
-      "id": "#delta-schema",
-      "name": "#delta Schema",
-      "symbol": "##delta-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
-      "visualTags": [],
-      "related": []
-    },
-    "#validation-functions": {
-      "id": "#validation-functions",
-      "name": "#validation Functions",
-      "symbol": "##validation-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
-      "visualTags": [],
-      "related": []
-    },
-    "#yaml-parser": {
-      "id": "#yaml-parser",
-      "name": "#yaml Parser",
-      "symbol": "##yaml-parser",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
       "visualTags": [],
       "related": []
     },
@@ -497,6 +600,102 @@
       "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
       "visualTags": [],
       "related": []
+    },
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+      "visualTags": [],
+      "related": [
+        "#atelier-types"
+      ]
+    },
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
+      "visualTags": [],
+      "related": []
+    },
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
+      "visualTags": [],
+      "related": []
+    },
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "visualTags": [],
+      "related": []
+    },
+    "animation": {
+      "id": "animation",
+      "name": "Animation",
+      "symbol": "#animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "React component that mounts an AnimationPlayer and manages its lifecycle",
+      "visualTags": [],
+      "related": [],
+      "componentType": "component"
+    },
+    "use-animation": {
+      "id": "use-animation",
+      "name": "Use Animation",
+      "symbol": "#use-animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that drives animation playback state — play, pause, seek, loop controls",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "use-animation-state": {
+      "id": "use-animation-state",
+      "name": "Use Animation State",
+      "symbol": "#use-animation-state",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that exposes frame-level resolved state for reactive rendering",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "animation-player": {
+      "id": "animation-player",
+      "name": "Animation Player",
+      "symbol": "#animation-player",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Low-level player class for advanced usage — direct frame control outside the React component model",
+      "visualTags": [],
+      "related": [],
+      "componentType": "service"
     },
     "mcp-store": {
       "id": "mcp-store",
@@ -908,6 +1107,61 @@
       "visualTags": [],
       "related": []
     },
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
+    },
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
+    },
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
+    },
     "cli-validate": {
       "id": "cli-validate",
       "name": "Cli Validate",
@@ -995,211 +1249,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
       "description": "Variables command — lists all variables in a document with usage info",
-      "visualTags": [],
-      "related": []
-    },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
-      "visualTags": [],
-      "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer"
-      ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "visualTags": [],
-      "related": []
-    },
-    "#unit-types": {
-      "id": "#unit-types",
-      "name": "#unit Types",
-      "symbol": "##unit-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Pixel, Percentage, and UnitValue type definitions",
-      "visualTags": [],
-      "related": []
-    },
-    "#coordinate-types": {
-      "id": "#coordinate-types",
-      "name": "#coordinate Types",
-      "symbol": "##coordinate-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Frame, Bounds, AnchorPoint spatial types",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-types": {
-      "id": "#color-types",
-      "name": "#color Types",
-      "symbol": "##color-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
-      "visualTags": [],
-      "related": []
-    },
-    "#shape-types": {
-      "id": "#shape-types",
-      "name": "#shape Types",
-      "symbol": "##shape-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
-      "visualTags": [],
-      "related": []
-    },
-    "#layer-types": {
-      "id": "#layer-types",
-      "name": "#layer Types",
-      "symbol": "##layer-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
-      "visualTags": [],
-      "related": []
-    },
-    "#easing-types": {
-      "id": "#easing-types",
-      "name": "#easing Types",
-      "symbol": "##easing-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-types": {
-      "id": "#delta-types",
-      "name": "#delta Types",
-      "symbol": "##delta-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
-      "visualTags": [],
-      "related": []
-    },
-    "#state-types": {
-      "id": "#state-types",
-      "name": "#state Types",
-      "symbol": "##state-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "State (named choreography with duration and deltas)",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-types": {
-      "id": "#document-types",
-      "name": "#document Types",
-      "symbol": "##document-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AtelierDocument root type, Canvas config",
-      "visualTags": [],
-      "related": []
-    },
-    "#shadow-types": {
-      "id": "#shadow-types",
-      "name": "#shadow Types",
-      "symbol": "##shadow-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
-      "visualTags": [],
-      "related": []
-    },
-    "#audio-types": {
-      "id": "#audio-types",
-      "name": "#audio Types",
-      "symbol": "##audio-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
-      "visualTags": [],
-      "related": []
-    },
-    "#asset-types": {
-      "id": "#asset-types",
-      "name": "#asset Types",
-      "symbol": "##asset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata",
-      "visualTags": [],
-      "related": []
-    },
-    "#variable-types": {
-      "id": "#variable-types",
-      "name": "#variable Types",
-      "symbol": "##variable-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
-      "visualTags": [],
-      "related": []
-    },
-    "#interaction-types": {
-      "id": "#interaction-types",
-      "name": "#interaction Types",
-      "symbol": "##interaction-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-types": {
-      "id": "#preset-types",
-      "name": "#preset Types",
-      "symbol": "##preset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "PresetDelta, Preset — reusable animation delta templates",
       "visualTags": [],
       "related": []
     },
@@ -1426,9 +1475,37 @@
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
       "description": "Rejects delta additions that overlap with existing deltas on same property",
       "related": []
+    },
+    "no-overlap": {
+      "id": "no-overlap",
+      "name": "No Overlap",
+      "symbol": "^no-overlap",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Rejects delta additions that overlap with existing deltas on the same layer+property",
+      "related": []
+    },
+    "valid-document": {
+      "id": "valid-document",
+      "name": "Valid Document",
+      "symbol": "^valid-document",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Validates that an AtelierDocument conforms to the schema — required fields, type constraints, and structural integrity",
+      "related": []
+    },
+    "valid-delta": {
+      "id": "valid-delta",
+      "name": "Valid Delta",
+      "symbol": "^valid-delta",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Validates that a Delta object conforms to the schema — property types, value ranges, and easing references",
+      "related": []
     }
   },
   "signals": {},
+  "aspects": {},
   "screens": {},
   "symbolMap": {
     "#animation-engine": {
@@ -1507,6 +1584,66 @@
       "category": "components",
       "id": "atelier-cli"
     },
+    "##unit-types": {
+      "category": "components",
+      "id": "#unit-types"
+    },
+    "##coordinate-types": {
+      "category": "components",
+      "id": "#coordinate-types"
+    },
+    "##color-types": {
+      "category": "components",
+      "id": "#color-types"
+    },
+    "##shape-types": {
+      "category": "components",
+      "id": "#shape-types"
+    },
+    "##layer-types": {
+      "category": "components",
+      "id": "#layer-types"
+    },
+    "##easing-types": {
+      "category": "components",
+      "id": "#easing-types"
+    },
+    "##delta-types": {
+      "category": "components",
+      "id": "#delta-types"
+    },
+    "##state-types": {
+      "category": "components",
+      "id": "#state-types"
+    },
+    "##document-types": {
+      "category": "components",
+      "id": "#document-types"
+    },
+    "##shadow-types": {
+      "category": "components",
+      "id": "#shadow-types"
+    },
+    "##audio-types": {
+      "category": "components",
+      "id": "#audio-types"
+    },
+    "##asset-types": {
+      "category": "components",
+      "id": "#asset-types"
+    },
+    "##variable-types": {
+      "category": "components",
+      "id": "#variable-types"
+    },
+    "##interaction-types": {
+      "category": "components",
+      "id": "#interaction-types"
+    },
+    "##preset-types": {
+      "category": "components",
+      "id": "#preset-types"
+    },
     "##svg-renderer": {
       "category": "components",
       "id": "#svg-renderer"
@@ -1534,26 +1671,6 @@
     "##svg-properties": {
       "category": "components",
       "id": "#svg-properties"
-    },
-    "##document-schema": {
-      "category": "components",
-      "id": "#document-schema"
-    },
-    "##layer-schema": {
-      "category": "components",
-      "id": "#layer-schema"
-    },
-    "##delta-schema": {
-      "category": "components",
-      "id": "#delta-schema"
-    },
-    "##validation-functions": {
-      "category": "components",
-      "id": "#validation-functions"
-    },
-    "##yaml-parser": {
-      "category": "components",
-      "id": "#yaml-parser"
     },
     "#canvas-panel": {
       "category": "components",
@@ -1602,6 +1719,42 @@
     "#drag-reorder": {
       "category": "components",
       "id": "drag-reorder"
+    },
+    "##document-schema": {
+      "category": "components",
+      "id": "#document-schema"
+    },
+    "##layer-schema": {
+      "category": "components",
+      "id": "#layer-schema"
+    },
+    "##delta-schema": {
+      "category": "components",
+      "id": "#delta-schema"
+    },
+    "##validation-functions": {
+      "category": "components",
+      "id": "#validation-functions"
+    },
+    "##yaml-parser": {
+      "category": "components",
+      "id": "#yaml-parser"
+    },
+    "#animation": {
+      "category": "components",
+      "id": "animation"
+    },
+    "#use-animation": {
+      "category": "components",
+      "id": "use-animation"
+    },
+    "#use-animation-state": {
+      "category": "components",
+      "id": "use-animation-state"
+    },
+    "#animation-player": {
+      "category": "components",
+      "id": "animation-player"
     },
     "#mcp-store": {
       "category": "components",
@@ -1763,6 +1916,26 @@
       "category": "components",
       "id": "#audio-timing"
     },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
+    },
     "#cli-validate": {
       "category": "components",
       "id": "cli-validate"
@@ -1798,86 +1971,6 @@
     "#cli-variables": {
       "category": "components",
       "id": "cli-variables"
-    },
-    "#render-frame": {
-      "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
-    },
-    "##unit-types": {
-      "category": "components",
-      "id": "#unit-types"
-    },
-    "##coordinate-types": {
-      "category": "components",
-      "id": "#coordinate-types"
-    },
-    "##color-types": {
-      "category": "components",
-      "id": "#color-types"
-    },
-    "##shape-types": {
-      "category": "components",
-      "id": "#shape-types"
-    },
-    "##layer-types": {
-      "category": "components",
-      "id": "#layer-types"
-    },
-    "##easing-types": {
-      "category": "components",
-      "id": "#easing-types"
-    },
-    "##delta-types": {
-      "category": "components",
-      "id": "#delta-types"
-    },
-    "##state-types": {
-      "category": "components",
-      "id": "#state-types"
-    },
-    "##document-types": {
-      "category": "components",
-      "id": "#document-types"
-    },
-    "##shadow-types": {
-      "category": "components",
-      "id": "#shadow-types"
-    },
-    "##audio-types": {
-      "category": "components",
-      "id": "#audio-types"
-    },
-    "##asset-types": {
-      "category": "components",
-      "id": "#asset-types"
-    },
-    "##variable-types": {
-      "category": "components",
-      "id": "#variable-types"
-    },
-    "##interaction-types": {
-      "category": "components",
-      "id": "#interaction-types"
-    },
-    "##preset-types": {
-      "category": "components",
-      "id": "#preset-types"
     },
     "^^valid-document": {
       "category": "gates",
@@ -1946,6 +2039,18 @@
     "#frame-resolver": {
       "category": "components",
       "id": "frame-resolver"
+    },
+    "^no-overlap": {
+      "category": "gates",
+      "id": "no-overlap"
+    },
+    "^valid-document": {
+      "category": "gates",
+      "id": "valid-document"
+    },
+    "^valid-delta": {
+      "category": "gates",
+      "id": "valid-delta"
     }
   }
 }

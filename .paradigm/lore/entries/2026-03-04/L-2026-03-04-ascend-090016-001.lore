@@ -1,0 +1,95 @@
+id: L-2026-03-04-ascend-090016-001
+type: milestone
+timestamp: '2026-03-04T09:00:16.076Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Export Filename + Export All Batch Export
+summary: Added smart export filenames and batch Export All to Atelier Studio. Single-file exports now use the loaded file's name instead of hardcoded "animation". A new Export All button in the sidebar footer lets users batch-render every .atelier file to GIF, MP4, or WebM, saved alongside the source files. Also fixed H.264 codec profile selection for 1080p@60fps MP4 export and the CLI --version display.
+symbols_touched:
+  - '#export-dialog'
+  - '#studio'
+  - '#cli-studio'
+  - '#video-exporter'
+files_modified:
+  - packages/studio/src/export/export-dialog.ts
+  - packages/studio/src/export/video-exporter.ts
+  - packages/studio/src/studio.ts
+  - packages/studio/src/index.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/cli.ts
+  - CHANGELOG.md
+lines_added: 180
+lines_removed: 15
+decisions:
+  - id: d-export-all-offscreen
+    decision: Create fresh offscreen canvas + ImageCache per file in batch export
+    rationale: Ensures clean state between exports, avoids image cache collisions between different documents
+  - id: d-binary-endpoint
+    decision: Add separate /api/export endpoint for binary writes
+    rationale: Existing /api/file uses text encoding — binary export data (GIF/MP4/WebM blobs) needs raw Buffer handling
+  - id: d-h264-candidates
+    decision: Try H.264 High Profile levels 5.1/4.2/4.0 before Baseline 3.1
+    rationale: Baseline 3.1 only supports 720p. Most keynote files are 1920x1080@60fps. Matches the multi-candidate pattern already used by WebM export
+errors_encountered:
+  - description: 'Export All: 0 exported, 50 failed — all files silently failed'
+    resolution: Added error logging to catch block; root cause was MP4 codec profile too low for 1080p
+    time_to_fix: 10min
+  - description: H.264 codec not supported for 1920x1080 at 60fps
+    resolution: Changed from single Baseline 3.1 codec to multi-candidate High Profile list
+    time_to_fix: 5min
+  - description: atelier --version showed 0.1.0 instead of actual version
+    resolution: Replaced hardcoded string with createRequire reading package.json
+    time_to_fix: 2min
+learnings:
+  - H.264 Baseline Profile Level 3.1 (avc1.42001f) maxes out at 720p — need High Profile for 1080p+
+  - WebCodecs VideoEncoder.isConfigSupported() is the correct way to probe codec support before encoding
+  - Turbo cache can serve stale builds after source changes — use --force flag when iterating quickly
+  - Silent catch blocks in batch operations make debugging impossible — always log errors
+verification:
+  status: pass
+  details:
+    build: pass
+    export_all_gif: pass
+    export_all_webm: pass
+    export_all_mp4: pass
+    single_export_filename: pass
+    npm_publish: pass
+tags:
+  - feature
+  - export
+  - batch
+  - mp4
+  - gif
+  - webm
+  - cli
+body: |-
+  ## What We Built
+
+  ### Export Filename
+  The ExportDialog previously hardcoded all downloads as `animation.{ext}`. Now it accepts an optional filename parameter, and AtelierStudio exposes a `setFilename()` public API. When the CLI inline app loads a file, it extracts the base name (e.g., `the-brain` from `the-brain.atelier`) and passes it through so downloads match the source file name.
+
+  ### Export All
+  New batch export feature accessible from the sidebar footer in the studio CLI. Users pick a format (GIF/MP4/WebM) and click "Export All" — the system iterates every loaded .atelier file, parses it, creates an offscreen canvas + ImageCache, calls `exportDocument()`, and POSTs the binary output to a new `/api/export` endpoint that writes files to disk alongside the source.
+
+  A progress overlay shows current file name and overall progress count. Errors are logged to the browser console for debugging.
+
+  ### H.264 Profile Fix
+  MP4 export was using `avc1.42001f` (Baseline Level 3.1) which only supports up to 720p. Updated to try High Profile candidates (Level 5.1 → 4.2 → 4.0) before falling back, matching the multi-candidate pattern already used by WebM export. This fixed the "codec not supported for 1920×1080 at 60fps" error.
+
+  ### CLI Version Fix
+  `atelier --version` was hardcoded to `0.1.0`. Changed to read dynamically from package.json via `createRequire`.
+
+  ## Architecture Decisions
+  - Export All creates a fresh offscreen canvas and ImageCache per file rather than reusing a shared one, ensuring clean state between exports
+  - Binary export uses a separate `/api/export` endpoint (not the existing `/api/file` text endpoint) to handle raw binary data correctly
+  - H.264 codec selection follows the same candidate-list pattern as WebM for consistency
+linked_commits:
+  - '0361247'
+  - 83b696a
+  - c1d1eb6
+git_context:
+  ref: c1d1eb6f770d5604bd52164ee251de41531bb7f4
+  branch: main
+  dirty: true

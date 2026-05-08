@@ -1,0 +1,15 @@
+version: '1.0'
+active:
+  - advocate
+  - architect
+  - builder
+  - compliance
+  - debugger
+  - documentor
+  - dx
+  - performance
+  - qa
+  - release
+  - reviewer
+  - security
+  - tester

@@ -1,0 +1,2589 @@
+{
+  "version": "1.0",
+  "name": "Generated Graph",
+  "projectId": "a-atelier",
+  "lastModified": "2026-05-06T23:26:55.875Z",
+  "nodes": [
+    {
+      "id": "sym-animation-engine",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "animation-engine",
+          "name": "animation-engine",
+          "category": "component",
+          "prefix": "#",
+          "description": "Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing; hierarchical states with parent inheritance; smooth state transition interpolation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#animation-engine"
+      }
+    },
+    {
+      "id": "sym-rendering",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "rendering",
+          "name": "rendering",
+          "category": "component",
+          "prefix": "#",
+          "description": "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim, blend modes, motion paths, clip paths",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#rendering"
+      }
+    },
+    {
+      "id": "sym-svg-renderer",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-renderer",
+          "name": "svg-renderer",
+          "category": "component",
+          "prefix": "#",
+          "description": "SVG renderer — render any frame as an SVG string for thumbnails, SSR, and static export",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#svg-renderer"
+      }
+    },
+    {
+      "id": "sym-lottie-export",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-export",
+          "name": "lottie-export",
+          "category": "component",
+          "prefix": "#",
+          "description": "Lottie JSON exporter — lossy but best-effort conversion of .atelier documents to Lottie format",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#lottie-export"
+      }
+    },
+    {
+      "id": "sym-react-integration",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "react-integration",
+          "name": "react-integration",
+          "category": "component",
+          "prefix": "#",
+          "description": "React integration — Animation component, useAnimation hook, useAnimationState hook for embedding Atelier in React apps",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#react-integration"
+      }
+    },
+    {
+      "id": "sym-ai-authoring",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "ai-authoring",
+          "name": "ai-authoring",
+          "category": "component",
+          "prefix": "#",
+          "description": "MCP server with 52 tools across 16 groups for AI agents to create, edit, preview, export, and analyze animations",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#ai-authoring"
+      }
+    },
+    {
+      "id": "sym-studio",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "studio",
+          "name": "studio",
+          "category": "component",
+          "prefix": "#",
+          "description": "Browser editor widget — canvas preview, YAML viewer, GUI editor, undo/redo, drag-to-reorder, MP4/WebM/GIF export",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#studio"
+      }
+    },
+    {
+      "id": "sym-cli",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli",
+          "name": "cli",
+          "category": "component",
+          "prefix": "#",
+          "description": "Command-line tool — validate, info, still, render, export-svg, export-lottie, assets, variables (9 commands)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#cli"
+      }
+    },
+    {
+      "id": "sym-atelier-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-types",
+          "name": "atelier-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "60+ TypeScript type definitions across 16 modules — layers, deltas, easing, states, shadows, audio, assets, variables, interactions, presets",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-types"
+      }
+    },
+    {
+      "id": "sym-atelier-math",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-math",
+          "name": "atelier-math",
+          "category": "component",
+          "prefix": "#",
+          "description": "Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-math"
+      }
+    },
+    {
+      "id": "sym-atelier-schema",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-schema",
+          "name": "atelier-schema",
+          "category": "component",
+          "prefix": "#",
+          "description": "Zod validation schemas + YAML parse/serialize with AI-readable errors",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-schema"
+      }
+    },
+    {
+      "id": "sym-atelier-core",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 0
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-core",
+          "name": "atelier-core",
+          "category": "component",
+          "prefix": "#",
+          "description": "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing, unit resolver",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-core"
+      }
+    },
+    {
+      "id": "sym-atelier-canvas",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-canvas",
+          "name": "atelier-canvas",
+          "category": "component",
+          "prefix": "#",
+          "description": "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-canvas"
+      }
+    },
+    {
+      "id": "sym-atelier-svg",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-svg",
+          "name": "atelier-svg",
+          "category": "component",
+          "prefix": "#",
+          "description": "SVG renderer — renderFrameSVG, shape/gradient/filter/clip/text mapping to SVG elements",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-svg"
+      }
+    },
+    {
+      "id": "sym-atelier-lottie",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-lottie",
+          "name": "atelier-lottie",
+          "category": "component",
+          "prefix": "#",
+          "description": "Lottie JSON exporter — exportToLottie, layer/shape/keyframe/easing/color mapping with unsupported feature warnings",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-lottie"
+      }
+    },
+    {
+      "id": "sym-atelier-react",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-react",
+          "name": "atelier-react",
+          "category": "component",
+          "prefix": "#",
+          "description": "React integration — Animation component, useAnimation/useAnimationState hooks, AnimationPlayer class",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-react"
+      }
+    },
+    {
+      "id": "sym-atelier-studio",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-studio",
+          "name": "atelier-studio",
+          "category": "component",
+          "prefix": "#",
+          "description": "Main widget class — mounts into any DOM element, manages view switching and panel coordination",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#atelier-studio"
+      }
+    },
+    {
+      "id": "sym-atelier-mcp",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-mcp",
+          "name": "atelier-mcp",
+          "category": "component",
+          "prefix": "#",
+          "description": "MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-mcp"
+      }
+    },
+    {
+      "id": "sym-atelier-cli",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "atelier-cli",
+          "name": "atelier-cli",
+          "category": "component",
+          "prefix": "#",
+          "description": "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose"
+        },
+        "label": "#atelier-cli"
+      }
+    },
+    {
+      "id": "sym-#unit-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#unit-types",
+          "name": "#unit-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Pixel, Percentage, and UnitValue type definitions",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##unit-types"
+      }
+    },
+    {
+      "id": "sym-#coordinate-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#coordinate-types",
+          "name": "#coordinate-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Frame, Bounds, AnchorPoint spatial types",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##coordinate-types"
+      }
+    },
+    {
+      "id": "sym-#color-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#color-types",
+          "name": "#color-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##color-types"
+      }
+    },
+    {
+      "id": "sym-#shape-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#shape-types",
+          "name": "#shape-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##shape-types"
+      }
+    },
+    {
+      "id": "sym-#layer-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 80
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#layer-types",
+          "name": "#layer-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##layer-types"
+      }
+    },
+    {
+      "id": "sym-#easing-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#easing-types",
+          "name": "#easing-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##easing-types"
+      }
+    },
+    {
+      "id": "sym-#delta-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#delta-types",
+          "name": "#delta-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##delta-types"
+      }
+    },
+    {
+      "id": "sym-#state-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#state-types",
+          "name": "#state-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "State (named choreography with duration and deltas)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##state-types"
+      }
+    },
+    {
+      "id": "sym-#document-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#document-types",
+          "name": "#document-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "AtelierDocument root type, Canvas config",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##document-types"
+      }
+    },
+    {
+      "id": "sym-#shadow-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#shadow-types",
+          "name": "#shadow-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##shadow-types"
+      }
+    },
+    {
+      "id": "sym-#audio-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#audio-types",
+          "name": "#audio-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##audio-types"
+      }
+    },
+    {
+      "id": "sym-#asset-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#asset-types",
+          "name": "#asset-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##asset-types"
+      }
+    },
+    {
+      "id": "sym-#variable-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#variable-types",
+          "name": "#variable-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##variable-types"
+      }
+    },
+    {
+      "id": "sym-#interaction-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#interaction-types",
+          "name": "#interaction-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##interaction-types"
+      }
+    },
+    {
+      "id": "sym-#preset-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#preset-types",
+          "name": "#preset-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "PresetDelta, Preset — reusable animation delta templates",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose"
+        },
+        "label": "##preset-types"
+      }
+    },
+    {
+      "id": "sym-#svg-renderer",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-renderer",
+          "name": "#svg-renderer",
+          "category": "component",
+          "prefix": "#",
+          "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-renderer"
+      }
+    },
+    {
+      "id": "sym-#svg-shapes",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 160
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-shapes",
+          "name": "#svg-shapes",
+          "category": "component",
+          "prefix": "#",
+          "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-shapes"
+      }
+    },
+    {
+      "id": "sym-#svg-text",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-text",
+          "name": "#svg-text",
+          "category": "component",
+          "prefix": "#",
+          "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-text"
+      }
+    },
+    {
+      "id": "sym-#svg-gradients",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-gradients",
+          "name": "#svg-gradients",
+          "category": "component",
+          "prefix": "#",
+          "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-gradients"
+      }
+    },
+    {
+      "id": "sym-#svg-filters",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-filters",
+          "name": "#svg-filters",
+          "category": "component",
+          "prefix": "#",
+          "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-filters"
+      }
+    },
+    {
+      "id": "sym-#svg-clip",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-clip",
+          "name": "#svg-clip",
+          "category": "component",
+          "prefix": "#",
+          "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-clip"
+      }
+    },
+    {
+      "id": "sym-#svg-properties",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#svg-properties",
+          "name": "#svg-properties",
+          "category": "component",
+          "prefix": "#",
+          "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "##svg-properties"
+      }
+    },
+    {
+      "id": "sym-canvas-panel",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "canvas-panel",
+          "name": "canvas-panel",
+          "category": "component",
+          "prefix": "#",
+          "description": "Canvas rendering and playback panel with play/pause/scrub controls",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#canvas-panel"
+      }
+    },
+    {
+      "id": "sym-layer-panel",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "layer-panel",
+          "name": "layer-panel",
+          "category": "component",
+          "prefix": "#",
+          "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#layer-panel"
+      }
+    },
+    {
+      "id": "sym-property-panel",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "property-panel",
+          "name": "property-panel",
+          "category": "component",
+          "prefix": "#",
+          "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#property-panel"
+      }
+    },
+    {
+      "id": "sym-delta-panel",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "delta-panel",
+          "name": "delta-panel",
+          "category": "component",
+          "prefix": "#",
+          "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#delta-panel"
+      }
+    },
+    {
+      "id": "sym-yaml-panel",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "yaml-panel",
+          "name": "yaml-panel",
+          "category": "component",
+          "prefix": "#",
+          "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#yaml-panel"
+      }
+    },
+    {
+      "id": "sym-number-input",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "number-input",
+          "name": "number-input",
+          "category": "component",
+          "prefix": "#",
+          "description": "Labeled number input control with optional step, min, max, suffix",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#number-input"
+      }
+    },
+    {
+      "id": "sym-color-picker",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 240
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "color-picker",
+          "name": "color-picker",
+          "category": "component",
+          "prefix": "#",
+          "description": "Color input with native color picker and hex text display",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#color-picker"
+      }
+    },
+    {
+      "id": "sym-select-input",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "select-input",
+          "name": "select-input",
+          "category": "component",
+          "prefix": "#",
+          "description": "Labeled dropdown select control",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#select-input"
+      }
+    },
+    {
+      "id": "sym-slider-input",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "slider-input",
+          "name": "slider-input",
+          "category": "component",
+          "prefix": "#",
+          "description": "Range slider control with label and value display",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#slider-input"
+      }
+    },
+    {
+      "id": "sym-easing-picker",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "easing-picker",
+          "name": "easing-picker",
+          "category": "component",
+          "prefix": "#",
+          "description": "Easing type selector with preset and structured easing options",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#easing-picker"
+      }
+    },
+    {
+      "id": "sym-range-slider",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "range-slider",
+          "name": "range-slider",
+          "category": "component",
+          "prefix": "#",
+          "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#range-slider"
+      }
+    },
+    {
+      "id": "sym-drag-reorder",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "drag-reorder",
+          "name": "drag-reorder",
+          "category": "component",
+          "prefix": "#",
+          "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose"
+        },
+        "label": "#drag-reorder"
+      }
+    },
+    {
+      "id": "sym-#document-schema",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#document-schema",
+          "name": "#document-schema",
+          "category": "component",
+          "prefix": "#",
+          "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "##document-schema"
+      }
+    },
+    {
+      "id": "sym-#layer-schema",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#layer-schema",
+          "name": "#layer-schema",
+          "category": "component",
+          "prefix": "#",
+          "description": "LayerSchema and Visual discriminated union validation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "##layer-schema"
+      }
+    },
+    {
+      "id": "sym-#delta-schema",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#delta-schema",
+          "name": "#delta-schema",
+          "category": "component",
+          "prefix": "#",
+          "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "##delta-schema"
+      }
+    },
+    {
+      "id": "sym-#validation-functions",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#validation-functions",
+          "name": "#validation-functions",
+          "category": "component",
+          "prefix": "#",
+          "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "##validation-functions"
+      }
+    },
+    {
+      "id": "sym-#yaml-parser",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#yaml-parser",
+          "name": "#yaml-parser",
+          "category": "component",
+          "prefix": "#",
+          "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "##yaml-parser"
+      }
+    },
+    {
+      "id": "sym-mcp-store",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-store",
+          "name": "mcp-store",
+          "category": "component",
+          "prefix": "#",
+          "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-store"
+      }
+    },
+    {
+      "id": "sym-mcp-document-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 320
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-document-tools",
+          "name": "mcp-document-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-document-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-layer-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-layer-tools",
+          "name": "mcp-layer-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Layer management tools — add, edit, remove, list, reorder",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-layer-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-shape-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-shape-tools",
+          "name": "mcp-shape-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-shape-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-state-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-state-tools",
+          "name": "mcp-state-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "State management tools — add, edit, remove, list animation states",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-state-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-delta-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-delta-tools",
+          "name": "mcp-delta-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-delta-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-preset-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-preset-tools",
+          "name": "mcp-preset-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Preset tools — define reusable animation presets, list available presets",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-preset-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-preview-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-preview-tools",
+          "name": "mcp-preview-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-preview-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-template-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-template-tools",
+          "name": "mcp-template-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Template MCP tools — instantiate_template, find_variables",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-template-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-layer-effect-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-layer-effect-tools",
+          "name": "mcp-layer-effect-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Layer effect tools — set_blend_mode, set_shadow, set_tint, set_motion_path, set_clip_path, edit_visual (supports sourceRect, spritesheet, frameIndex)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-layer-effect-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-state-config-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-state-config-tools",
+          "name": "mcp-state-config-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-state-config-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-export-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-export-tools",
+          "name": "mcp-export-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-export-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-asset-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-asset-tools",
+          "name": "mcp-asset-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Asset management tools — add_asset, list_assets, remove_asset with usage tracking",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-asset-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-variable-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 400
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-variable-tools",
+          "name": "mcp-variable-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Variable management tools — add_variable, list_variables, remove_variable with usage tracking",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-variable-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-interaction-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-interaction-tools",
+          "name": "mcp-interaction-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-interaction-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-ref-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-ref-tools",
+          "name": "mcp-ref-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-ref-tools"
+      }
+    },
+    {
+      "id": "sym-mcp-performance-tools",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "mcp-performance-tools",
+          "name": "mcp-performance-tools",
+          "category": "component",
+          "prefix": "#",
+          "description": "Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose"
+        },
+        "label": "#mcp-performance-tools"
+      }
+    },
+    {
+      "id": "sym-#easing-functions",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#easing-functions",
+          "name": "#easing-functions",
+          "category": "component",
+          "prefix": "#",
+          "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose"
+        },
+        "label": "##easing-functions"
+      }
+    },
+    {
+      "id": "sym-#spring-solver",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#spring-solver",
+          "name": "#spring-solver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose"
+        },
+        "label": "##spring-solver"
+      }
+    },
+    {
+      "id": "sym-#lerp-functions",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lerp-functions",
+          "name": "#lerp-functions",
+          "category": "component",
+          "prefix": "#",
+          "description": "Linear interpolation, clamp, array lerp, range remap",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose"
+        },
+        "label": "##lerp-functions"
+      }
+    },
+    {
+      "id": "sym-#color-math",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#color-math",
+          "name": "#color-math",
+          "category": "component",
+          "prefix": "#",
+          "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose"
+        },
+        "label": "##color-math"
+      }
+    },
+    {
+      "id": "sym-#lottie-exporter",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-exporter",
+          "name": "#lottie-exporter",
+          "category": "component",
+          "prefix": "#",
+          "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-exporter"
+      }
+    },
+    {
+      "id": "sym-#lottie-types",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-types",
+          "name": "#lottie-types",
+          "category": "component",
+          "prefix": "#",
+          "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-types"
+      }
+    },
+    {
+      "id": "sym-#lottie-map-layers",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-map-layers",
+          "name": "#lottie-map-layers",
+          "category": "component",
+          "prefix": "#",
+          "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-map-layers"
+      }
+    },
+    {
+      "id": "sym-#lottie-map-shapes",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-map-shapes",
+          "name": "#lottie-map-shapes",
+          "category": "component",
+          "prefix": "#",
+          "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-map-shapes"
+      }
+    },
+    {
+      "id": "sym-#lottie-map-keyframes",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 480
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-map-keyframes",
+          "name": "#lottie-map-keyframes",
+          "category": "component",
+          "prefix": "#",
+          "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-map-keyframes"
+      }
+    },
+    {
+      "id": "sym-#lottie-map-colors",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-map-colors",
+          "name": "#lottie-map-colors",
+          "category": "component",
+          "prefix": "#",
+          "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-map-colors"
+      }
+    },
+    {
+      "id": "sym-#lottie-map-easing",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-map-easing",
+          "name": "#lottie-map-easing",
+          "category": "component",
+          "prefix": "#",
+          "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-map-easing"
+      }
+    },
+    {
+      "id": "sym-#lottie-warnings",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#lottie-warnings",
+          "name": "#lottie-warnings",
+          "category": "component",
+          "prefix": "#",
+          "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "##lottie-warnings"
+      }
+    },
+    {
+      "id": "sym-#frame-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#frame-resolver",
+          "name": "#frame-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Given document + frame number, computes resolved state of all layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##frame-resolver"
+      }
+    },
+    {
+      "id": "sym-#delta-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#delta-resolver",
+          "name": "#delta-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Per-property interpolation — resolves delta value at a given frame",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##delta-resolver"
+      }
+    },
+    {
+      "id": "sym-#easing-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#easing-resolver",
+          "name": "#easing-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Bridges Easing type definitions to executable math functions",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##easing-resolver"
+      }
+    },
+    {
+      "id": "sym-#document-builder",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#document-builder",
+          "name": "#document-builder",
+          "category": "component",
+          "prefix": "#",
+          "description": "Fluent API for constructing AtelierDocument objects with validation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##document-builder"
+      }
+    },
+    {
+      "id": "sym-#overlap-validator",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#overlap-validator",
+          "name": "#overlap-validator",
+          "category": "component",
+          "prefix": "#",
+          "description": "Validates no overlapping deltas exist on same layer+property",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##overlap-validator"
+      }
+    },
+    {
+      "id": "sym-#unit-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#unit-resolver",
+          "name": "#unit-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##unit-resolver"
+      }
+    },
+    {
+      "id": "sym-#preset-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#preset-resolver",
+          "name": "#preset-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Expands preset definitions into concrete deltas for a layer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##preset-resolver"
+      }
+    },
+    {
+      "id": "sym-#state-machine",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#state-machine",
+          "name": "#state-machine",
+          "category": "component",
+          "prefix": "#",
+          "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##state-machine"
+      }
+    },
+    {
+      "id": "sym-#template-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 560
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#template-resolver",
+          "name": "#template-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##template-resolver"
+      }
+    },
+    {
+      "id": "sym-#expression-evaluator",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#expression-evaluator",
+          "name": "#expression-evaluator",
+          "category": "component",
+          "prefix": "#",
+          "description": "Safe recursive descent expression evaluator — supports math functions, context variables (t, frame, duration, progress), ternary, no eval()",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##expression-evaluator"
+      }
+    },
+    {
+      "id": "sym-#audio-timing",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "#audio-timing",
+          "name": "#audio-timing",
+          "category": "component",
+          "prefix": "#",
+          "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "##audio-timing"
+      }
+    },
+    {
+      "id": "sym-cli-validate",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-validate",
+          "name": "cli-validate",
+          "category": "component",
+          "prefix": "#",
+          "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-validate"
+      }
+    },
+    {
+      "id": "sym-cli-info",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-info",
+          "name": "cli-info",
+          "category": "component",
+          "prefix": "#",
+          "description": "Info command — outputs document summary (canvas, layers, states, presets)",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-info"
+      }
+    },
+    {
+      "id": "sym-cli-still",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-still",
+          "name": "cli-still",
+          "category": "component",
+          "prefix": "#",
+          "description": "Still command — resolves a frame and outputs computed layer states as JSON",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-still"
+      }
+    },
+    {
+      "id": "sym-cli-render",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-render",
+          "name": "cli-render",
+          "category": "component",
+          "prefix": "#",
+          "description": "Render command — renders animation to MP4 or GIF via FFmpeg",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-render"
+      }
+    },
+    {
+      "id": "sym-render-pipeline",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "render-pipeline",
+          "name": "render-pipeline",
+          "category": "component",
+          "prefix": "#",
+          "description": "Core render pipeline — frame loop, FFmpeg spawning, image preloading",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#render-pipeline"
+      }
+    },
+    {
+      "id": "sym-cli-export-svg",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-export-svg",
+          "name": "cli-export-svg",
+          "category": "component",
+          "prefix": "#",
+          "description": "Export SVG command — renders a frame as SVG via @atelier/svg",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-export-svg"
+      }
+    },
+    {
+      "id": "sym-cli-export-lottie",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-export-lottie",
+          "name": "cli-export-lottie",
+          "category": "component",
+          "prefix": "#",
+          "description": "Export Lottie command — exports document to Lottie JSON via @atelier/lottie",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-export-lottie"
+      }
+    },
+    {
+      "id": "sym-cli-assets",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-assets",
+          "name": "cli-assets",
+          "category": "component",
+          "prefix": "#",
+          "description": "Assets command — lists all assets in a document with usage info",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-assets"
+      }
+    },
+    {
+      "id": "sym-cli-variables",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "cli-variables",
+          "name": "cli-variables",
+          "category": "component",
+          "prefix": "#",
+          "description": "Variables command — lists all variables in a document with usage info",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose"
+        },
+        "label": "#cli-variables"
+      }
+    },
+    {
+      "id": "sym-render-frame",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 640
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "render-frame",
+          "name": "render-frame",
+          "category": "component",
+          "prefix": "#",
+          "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#render-frame"
+      }
+    },
+    {
+      "id": "sym-shape-renderer",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "shape-renderer",
+          "name": "shape-renderer",
+          "category": "component",
+          "prefix": "#",
+          "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#shape-renderer"
+      }
+    },
+    {
+      "id": "sym-text-renderer",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "text-renderer",
+          "name": "text-renderer",
+          "category": "component",
+          "prefix": "#",
+          "description": "Renders text layers with font building, fill color, and alignment",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#text-renderer"
+      }
+    },
+    {
+      "id": "sym-apply-properties",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "apply-properties",
+          "name": "apply-properties",
+          "category": "component",
+          "prefix": "#",
+          "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#apply-properties"
+      }
+    },
+    {
+      "id": "sym-canvas-styles",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "canvas-styles",
+          "name": "canvas-styles",
+          "category": "component",
+          "prefix": "#",
+          "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#canvas-styles"
+      }
+    },
+    {
+      "id": "sym-svg-shapes",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-shapes",
+          "name": "svg-shapes",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-shapes"
+      }
+    },
+    {
+      "id": "sym-svg-text",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-text",
+          "name": "svg-text",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-text"
+      }
+    },
+    {
+      "id": "sym-svg-gradients",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-gradients",
+          "name": "svg-gradients",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-gradients"
+      }
+    },
+    {
+      "id": "sym-svg-filters",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-filters",
+          "name": "svg-filters",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-filters"
+      }
+    },
+    {
+      "id": "sym-svg-clip",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-clip",
+          "name": "svg-clip",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-clip"
+      }
+    },
+    {
+      "id": "sym-svg-properties",
+      "type": "symbolNode",
+      "position": {
+        "x": 1980,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "svg-properties",
+          "name": "svg-properties",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##svg-renderer",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose"
+        },
+        "label": "#svg-properties"
+      }
+    },
+    {
+      "id": "sym-lottie-map-layers",
+      "type": "symbolNode",
+      "position": {
+        "x": 2200,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-map-layers",
+          "name": "lottie-map-layers",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-exporter",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-map-layers"
+      }
+    },
+    {
+      "id": "sym-lottie-warnings",
+      "type": "symbolNode",
+      "position": {
+        "x": 2420,
+        "y": 720
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-warnings",
+          "name": "lottie-warnings",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-exporter",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-warnings"
+      }
+    },
+    {
+      "id": "sym-lottie-map-shapes",
+      "type": "symbolNode",
+      "position": {
+        "x": 0,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-map-shapes",
+          "name": "lottie-map-shapes",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-map-layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-map-shapes"
+      }
+    },
+    {
+      "id": "sym-lottie-map-keyframes",
+      "type": "symbolNode",
+      "position": {
+        "x": 220,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-map-keyframes",
+          "name": "lottie-map-keyframes",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-map-layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-map-keyframes"
+      }
+    },
+    {
+      "id": "sym-lottie-map-colors",
+      "type": "symbolNode",
+      "position": {
+        "x": 440,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-map-colors",
+          "name": "lottie-map-colors",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-map-layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-map-colors"
+      }
+    },
+    {
+      "id": "sym-lottie-map-easing",
+      "type": "symbolNode",
+      "position": {
+        "x": 660,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "lottie-map-easing",
+          "name": "lottie-map-easing",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from ##lottie-map-layers",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose"
+        },
+        "label": "#lottie-map-easing"
+      }
+    },
+    {
+      "id": "sym-frame-resolver",
+      "type": "symbolNode",
+      "position": {
+        "x": 880,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "frame-resolver",
+          "name": "frame-resolver",
+          "category": "component",
+          "prefix": "#",
+          "description": "Referenced from #render-frame",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose"
+        },
+        "label": "#frame-resolver"
+      }
+    },
+    {
+      "id": "sym-$frame-resolution",
+      "type": "symbolNode",
+      "position": {
+        "x": 1100,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "$frame-resolution",
+          "name": "$frame-resolution",
+          "category": "flow",
+          "prefix": "$",
+          "description": "Document + frame number → computed layer states",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "$$frame-resolution"
+      }
+    },
+    {
+      "id": "sym-^valid-document",
+      "type": "symbolNode",
+      "position": {
+        "x": 1320,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "^valid-document",
+          "name": "^valid-document",
+          "category": "gate",
+          "prefix": "^",
+          "description": "Document passes full Zod schema validation",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "^^valid-document"
+      }
+    },
+    {
+      "id": "sym-^valid-delta",
+      "type": "symbolNode",
+      "position": {
+        "x": 1540,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "^valid-delta",
+          "name": "^valid-delta",
+          "category": "gate",
+          "prefix": "^",
+          "description": "Delta references valid property and has valid frame range",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose"
+        },
+        "label": "^^valid-delta"
+      }
+    },
+    {
+      "id": "sym-^no-overlap",
+      "type": "symbolNode",
+      "position": {
+        "x": 1760,
+        "y": 800
+      },
+      "data": {
+        "type": "symbol",
+        "symbol": {
+          "id": "^no-overlap",
+          "name": "^no-overlap",
+          "category": "gate",
+          "prefix": "^",
+          "description": "Rejects delta additions that overlap with existing deltas on same property",
+          "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose"
+        },
+        "label": "^^no-overlap"
+      }
+    }
+  ],
+  "edges": []
+}

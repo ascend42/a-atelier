@@ -1,0 +1,77 @@
+id: L-2026-05-07-ascend-182424-001
+type: agent-session
+timestamp: '2026-05-07T18:24:24.867Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Phase 1 — VideoLayer type implementation across types/schema/core/canvas
+summary: Implemented VideoVisual as a first-class Visual type across 4 packages (types, schema, core, canvas). Added VideoFrameProvider injection pattern to the canvas renderer, videoSourceTime computation to the frame resolver, validateVideoLayer semantic gate in schema, and videoMeta to Asset. All 171 existing tests pass; all 4 packages build clean.
+symbols_touched:
+  - '#asset-types'
+  - '#layer-types'
+  - '#layer-schema'
+  - '#validation-functions'
+  - '#frame-resolver'
+  - '#video-renderer'
+  - ^valid-video-layer
+symbols_created:
+  - '#video-renderer'
+  - ^valid-video-layer
+files_created:
+  - packages/canvas/src/renderers/video-renderer.ts
+files_modified:
+  - packages/types/src/asset.ts
+  - packages/types/src/layer.ts
+  - packages/types/src/index.ts
+  - packages/schema/src/asset.ts
+  - packages/schema/src/layer.ts
+  - packages/schema/src/validate.ts
+  - packages/core/src/resolver/frame-resolver.ts
+  - packages/canvas/src/canvas-types.ts
+  - packages/canvas/src/render-frame.ts
+  - portal.yaml
+  - packages/types/.purpose
+  - packages/schema/.purpose
+  - packages/canvas/.purpose
+  - packages/core/.purpose
+lines_added: 120
+decisions:
+  - id: video-frame-provider-injection
+    decision: VideoFrameProvider is an injected callback in RenderOptions, not a global singleton
+    rationale: Mirrors the ImageCache injection pattern — keeps canvas package environment-agnostic and allows swapping preview (HTMLVideoElement) vs export (WebCodecs/Mediabunny) providers without touching renderer code
+  - id: videometa-on-asset-now
+    decision: Added videoMeta to Asset in Phase 1 rather than deferring
+    rationale: Makes ^valid-video-layer gate load-bearing (can actually check sourceEnd ≤ duration) rather than decorative — advisor explicitly flagged decorative gates as an antipattern
+  - id: startframe-as-temporal-anchor
+    decision: startFrame on VideoVisual controls when the clip begins in composition time
+    rationale: Video clips need an explicit clip-in point in composition space; all other layer temporal presence is controlled via opacity deltas, but that model doesn't suit video which starts decoding from a specific source offset
+errors_encountered:
+  - description: VideoVisual not exported from packages/types/src/index.ts
+    resolution: Added VideoVisual to the export list in index.ts
+    time_to_fix: 1 min
+  - description: VideoFrameProvider return type used DOM globals (HTMLVideoElement, ImageBitmap, HTMLCanvasElement) which canvas package excludes from tsconfig
+    resolution: Changed return type to object | null with JSDoc explaining runtime types
+    time_to_fix: 2 min
+verification:
+  status: pass
+  details:
+    schema-tests: 27/27 pass
+    core-tests: 118/118 pass
+    canvas-tests: 26/26 pass
+    types-build: pass
+    schema-build: pass
+    core-build: pass
+    canvas-build: pass
+tags:
+  - video
+  - phase-1
+  - visual-types
+  - renderer
+  - schema
+  - gate
+confidence: 0.97
+git_context:
+  ref: c1d1eb6f770d5604bd52164ee251de41531bb7f4
+  branch: main
+  dirty: true

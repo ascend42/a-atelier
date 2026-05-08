@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-02-23T03:30:37.050Z",
+  "generatedAt": "2026-05-06T23:29:45.227Z",
   "flows": {
     "$frame-resolution": {
       "id": "$frame-resolution",
@@ -8,27 +8,42 @@
       "steps": [
         {
           "id": "step-1",
-          "action": "group deltas by layer+property"
+          "action": "group deltas by layer+property",
+          "symbol": "#frame-resolver"
         },
         {
           "id": "step-2",
-          "action": "compute progress and apply easing"
+          "action": "compute progress and apply easing",
+          "symbol": "#delta-resolver"
         },
         {
           "id": "step-3",
-          "action": "resolve easing type to math function"
+          "action": "resolve easing type to math function",
+          "symbol": "#easing-resolver"
         },
         {
           "id": "step-4",
-          "action": "interpolate value"
+          "action": "interpolate value",
+          "symbol": "#delta-resolver"
         },
         {
           "id": "step-5",
-          "action": "merge into ResolvedFrame"
+          "action": "merge into ResolvedFrame",
+          "symbol": "#frame-resolver"
         }
       ],
       "definedIn": "packages/core/.purpose"
     }
   },
-  "symbolToFlows": {}
+  "symbolToFlows": {
+    "#frame-resolver": [
+      "$frame-resolution"
+    ],
+    "#delta-resolver": [
+      "$frame-resolution"
+    ],
+    "#easing-resolver": [
+      "$frame-resolution"
+    ]
+  }
 }

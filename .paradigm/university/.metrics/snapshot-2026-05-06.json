@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "captured_at": "2026-05-06T23:42:10.366Z",
+  "project_salt_hash": "bf9de1f19dc977d1ceaf92d6e3c161711c8943376853ab771950c93f9451fb2f",
+  "packs": {
+    "count": 0,
+    "by_tenant_kind": {
+      "first_party": 0,
+      "project": 0,
+      "external": 0
+    }
+  },
+  "project_pack": {
+    "exists": false,
+    "entry_counts": {
+      "notes": 0,
+      "policies": 0,
+      "quizzes": 0,
+      "paths": 0,
+      "diplomas": 0
+    },
+    "disciplines": 0,
+    "last_modified_days_ago": 0
+  },
+  "activity": {
+    "quiz_completions_last_30d": 0,
+    "entries_created_last_30d": 0
+  }
+}

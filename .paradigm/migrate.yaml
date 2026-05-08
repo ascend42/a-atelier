@@ -1,0 +1,58 @@
+version: "1.0"
+cliVersion: 6.3.1
+lastMigrated: "2026-05-06T23:26:55.836Z"
+applied:
+  - id: legacy-file-to-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: legacy-scan-index-location
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-specs-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-docs-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-purpose-required-config
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-discipline-config
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-wisdom-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-history-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-lore-directory
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: migrate-assessments-to-lore
+    appliedAt: "2026-05-06T23:26:55.829Z"
+    cliVersion: 6.3.1
+  - id: add-prompts-directory
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-tag-bank-config
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-tasks-directory
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-personas-directory
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-protocols-directory
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-habits-directory
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: add-component-types-config
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1
+  - id: sync-templates
+    appliedAt: "2026-05-06T23:26:55.831Z"
+    cliVersion: 6.3.1

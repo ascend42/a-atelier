@@ -1,25 +1,109 @@
 {
-  "sessionId": "smlykj2hs",
-  "startTime": 1771814371168,
-  "lastActivity": 1771817428959,
+  "sessionId": "smouosp1h",
+  "startTime": 1778110021061,
+  "lastActivity": 1778178839888,
   "breadcrumbs": [
     {
-      "timestamp": 1771814386854,
+      "timestamp": 1778110175233,
       "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
+      "tool": "paradigm_portal_add_gate",
+      "summary": "portal_add_gate: no-overlap"
     },
     {
-      "timestamp": 1771817428933,
+      "timestamp": 1778110175375,
+      "action": "tool-call",
+      "tool": "paradigm_portal_add_gate",
+      "summary": "portal_add_gate: valid-document"
+    },
+    {
+      "timestamp": 1778110175419,
+      "action": "tool-call",
+      "tool": "paradigm_portal_add_gate",
+      "summary": "portal_add_gate: valid-delta"
+    },
+    {
+      "timestamp": 1778110175452,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_init",
+      "summary": "purpose_init: packages/react"
+    },
+    {
+      "timestamp": 1778110180325,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/react"
+    },
+    {
+      "timestamp": 1778110182054,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/react"
+    },
+    {
+      "timestamp": 1778110183363,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/react"
+    },
+    {
+      "timestamp": 1778110185205,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/react"
+    },
+    {
+      "timestamp": 1778110192766,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Studio export improvements — batch export, H.264 High Profil"
+    },
+    {
+      "timestamp": 1778110336475,
+      "action": "tool-call",
+      "tool": "paradigm_agent_list",
+      "summary": "agent_list: all"
+    },
+    {
+      "timestamp": 1778110842926,
+      "action": "tool-call",
+      "tool": "paradigm_agent_activate",
+      "summary": "agent_activate: performance"
+    },
+    {
+      "timestamp": 1778110842966,
+      "action": "tool-call",
+      "tool": "paradigm_agent_activate",
+      "summary": "agent_activate: dx"
+    },
+    {
+      "timestamp": 1778110842988,
+      "action": "tool-call",
+      "tool": "paradigm_agent_activate",
+      "summary": "agent_activate: release"
+    },
+    {
+      "timestamp": 1778178264820,
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: agent-session"
     },
     {
-      "timestamp": 1771817436985,
+      "timestamp": 1778178662370,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_agent_list",
+      "summary": "agent_list: project"
+    },
+    {
+      "timestamp": 1778178839761,
+      "action": "tool-call",
+      "tool": "paradigm_orchestrate_inline",
+      "summary": "orchestrate_inline: Determine the optimal implementation order for the remaining"
+    },
+    {
+      "timestamp": 1778179280364,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: agent-session"
     }
   ],
   "symbolsModified": [],

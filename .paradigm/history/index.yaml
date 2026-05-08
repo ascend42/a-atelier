@@ -1,13 +1,185 @@
 version: '1.0'
-generated: '2026-02-22T00:13:50.730Z'
+generated: '2026-03-03T20:43:51.298Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
-    total_changes: 7
-    last_modified: '2026-02-22T00:10:48Z'
+    total_changes: 9
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_0
+        id: h0050
+        ts: '2026-02-23T22:11:51Z'
+        type: implement
+        symbols:
+          - '#atelier-canvas'
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-math'
+          - '#atelier-mcp'
+          - '#atelier-react'
+          - '#atelier-schema'
+          - '#atelier-studio'
+          - '#atelier-svg'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: b1d3ad5f9caa150635cf407cfd3b231e7def49c2
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - apps/playground/package.json
+          - apps/playground/src/demo.ts
+          - apps/playground/src/main.ts
+          - apps/showcase/package.json
+          - apps/showcase/src/examples/composition.ts
+          - apps/showcase/src/examples/easing.ts
+          - apps/showcase/src/examples/index.ts
+          - apps/showcase/src/examples/motion.ts
+          - apps/showcase/src/examples/presets.ts
+          - apps/showcase/src/examples/shapes.ts
+          - apps/showcase/src/examples/states.ts
+          - apps/showcase/src/examples/styles.ts
+          - apps/showcase/src/examples/templates.ts
+          - apps/showcase/src/main.ts
+          - packages/canvas/package.json
+          - packages/canvas/src/apply-properties.ts
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/index.test.ts
+          - packages/canvas/src/render-frame.ts
+          - packages/canvas/src/renderers/image-renderer.ts
+          - packages/canvas/src/renderers/ref-renderer.ts
+          - packages/canvas/src/renderers/shape-renderer.ts
+          - packages/canvas/src/renderers/text-renderer.ts
+          - packages/canvas/src/styles.ts
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/assets.ts
+          - packages/cli/src/commands/export-lottie.ts
+          - packages/cli/src/commands/export-svg.ts
+          - packages/cli/src/commands/info.ts
+          - packages/cli/src/commands/render-pipeline.ts
+          - packages/cli/src/commands/render.ts
+          - packages/cli/src/commands/still.ts
+          - packages/cli/src/commands/validate.ts
+          - packages/cli/src/commands/variables.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/index.ts
+          - packages/core/package.json
+          - packages/core/src/audio/audio-timing.ts
+          - packages/core/src/builder/document-builder.ts
+          - packages/core/src/index.test.ts
+          - packages/core/src/presets/preset-resolver.ts
+          - packages/core/src/resolver/delta-resolver.ts
+          - packages/core/src/resolver/easing-resolver.ts
+          - packages/core/src/resolver/frame-resolver.ts
+          - packages/core/src/state/state-machine.ts
+          - packages/core/src/templates/template-resolver.ts
+          - packages/core/src/units/resolve-units.ts
+          - packages/core/src/validation/overlap-validator.ts
+          - packages/lottie/package.json
+          - packages/lottie/src/export-lottie.ts
+          - packages/lottie/src/index.test.ts
+          - packages/lottie/src/map-colors.ts
+          - packages/lottie/src/map-easing.ts
+          - packages/lottie/src/map-keyframes.ts
+          - packages/lottie/src/map-layers.ts
+          - packages/lottie/src/map-shapes.ts
+          - packages/lottie/src/warnings.ts
+          - packages/math/package.json
+          - packages/mcp/package.json
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/store.ts
+          - packages/mcp/src/tools/assets.ts
+          - packages/mcp/src/tools/deltas.ts
+          - packages/mcp/src/tools/document.ts
+          - packages/mcp/src/tools/export.ts
+          - packages/mcp/src/tools/interactions.ts
+          - packages/mcp/src/tools/layer-effects.ts
+          - packages/mcp/src/tools/layers.ts
+          - packages/mcp/src/tools/performance.ts
+          - packages/mcp/src/tools/presets.ts
+          - packages/mcp/src/tools/preview.ts
+          - packages/mcp/src/tools/refs.ts
+          - packages/mcp/src/tools/shapes.ts
+          - packages/mcp/src/tools/state-config.ts
+          - packages/mcp/src/tools/states.ts
+          - packages/mcp/src/tools/templates.ts
+          - packages/mcp/src/tools/variables.ts
+          - packages/react/package.json
+          - packages/react/src/Animation.tsx
+          - packages/react/src/index.test.tsx
+          - packages/react/src/player.ts
+          - packages/react/src/useAnimation.ts
+          - packages/react/src/useAnimationState.ts
+          - packages/schema/package.json
+          - packages/schema/src/index.ts
+          - packages/schema/src/parse.ts
+          - packages/schema/src/validate.ts
+          - packages/studio/package.json
+          - packages/studio/src/controls/easing-curve-editor.ts
+          - packages/studio/src/controls/easing-picker.ts
+          - packages/studio/src/controls/fill-editor.ts
+          - packages/studio/src/controls/gradient-editor.ts
+          - packages/studio/src/export/export-dialog.ts
+          - packages/studio/src/export/video-exporter.ts
+          - packages/studio/src/index.test.ts
+          - packages/studio/src/panels/canvas-panel.ts
+          - packages/studio/src/panels/delta-panel.ts
+          - packages/studio/src/panels/layer-panel.ts
+          - packages/studio/src/panels/property-panel.ts
+          - packages/studio/src/panels/yaml-panel.ts
+          - packages/studio/src/studio.ts
+          - packages/svg/package.json
+          - packages/svg/src/index.test.ts
+          - packages/svg/src/render-svg.ts
+          - packages/svg/src/svg-clip.ts
+          - packages/svg/src/svg-filters.ts
+          - packages/svg/src/svg-gradients.ts
+          - packages/svg/src/svg-properties.ts
+          - packages/svg/src/svg-shapes.ts
+          - packages/svg/src/svg-text.ts
+          - packages/types/package.json
+          - packages/types/src/delta.ts
+          - packages/types/src/index.test.ts
+          - packages/types/src/index.ts
+          - pnpm-lock.yaml
+        description: 'chore: rename @atelier/* packages to @a-company/atelier-* for npm publish [0.26.1]'
+      - &ref_1
+        id: h0049
+        ts: '2026-02-23T21:58:39Z'
+        type: implement
+        symbols:
+          - '#atelier-canvas'
+          - '#atelier-core'
+          - '#atelier-lottie'
+          - '#atelier-math'
+          - '#atelier-mcp'
+          - '#atelier-react'
+          - '#atelier-schema'
+          - '#atelier-studio'
+          - '#atelier-svg'
+          - '#atelier-types'
+        author:
+          type: human
+          id: ascend
+        commit: 6d13b7882051ed5e89987d3a56d9477c16e86187
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - packages/canvas/package.json
+          - packages/core/package.json
+          - packages/lottie/package.json
+          - packages/math/package.json
+          - packages/mcp/package.json
+          - packages/react/package.json
+          - packages/schema/package.json
+          - packages/studio/package.json
+          - packages/svg/package.json
+          - packages/types/package.json
+        description: 'chore: prepare all @atelier/* subpackages for npm publish [0.26.1]'
       - &ref_5
         id: h0047
         ts: '2026-02-22T00:10:48Z'
@@ -141,7 +313,21 @@ by_symbol:
           - packages/types/src/state.ts
           - pnpm-lock.yaml
         description: 'feat(#atelier-core): M8 advanced animation capabilities — hierarchical states, state transitions, SVG renderer, Lottie export, React integration [0.19.0]'
-      - &ref_0
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#atelier-math':
+    symbol: '#atelier-math'
+    total_changes: 6
+    last_modified: '2026-02-23T22:11:51Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_0
+      - *ref_1
+      - &ref_3
         id: h0034
         ts: '2026-02-21T02:29:13Z'
         type: implement
@@ -200,7 +386,7 @@ by_symbol:
           - pnpm-lock.yaml
           - portal.yaml
         description: 'feat(#atelier-core): M7 engine capabilities — blend modes, motion paths, clip paths, gradient animation, expressions, audio sync, easing curve editor [0.18.0]'
-      - &ref_1
+      - &ref_4
         id: h0032
         ts: '2026-02-20T23:34:44Z'
         type: implement
@@ -235,21 +421,7 @@ by_symbol:
           - examples/traffic-light.atelier
           - packages/mcp/.purpose
         description: 'docs: full documentation overhaul + website concept + canonical examples [0.17.2]'
-    contributors:
-      human:
-        - ascend
-      agent:
-        - claude
-  '#atelier-math':
-    symbol: '#atelier-math'
-    total_changes: 4
-    last_modified: '2026-02-21T02:29:13Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_0
-      - *ref_1
-      - &ref_3
+      - &ref_8
         id: h0030
         ts: '2026-02-20T23:31:09.653Z'
         type: implement
@@ -279,23 +451,6 @@ by_symbol:
           - examples/traffic-light.atelier
           - docs/website-concept.md
           - CHANGELOG.md
-      - &ref_4
-        id: h0001
-        ts: '2026-02-13T22:50:31.717Z'
-        type: implement
-        symbols:
-          - '#atelier-types'
-          - '#atelier-math'
-          - '#atelier-schema'
-        author:
-          type: agent
-          id: claude
-        intent: feature
-        description: 'Milestone 1: Format Spec — complete type definitions (44 types), pure math interpolation engine (easing, lerp, spring, color), Zod validation schemas with AI-readable errors and YAML parsing'
-        files:
-          - packages/types/src/
-          - packages/math/src/
-          - packages/schema/src/
     contributors:
       human:
         - ascend
@@ -303,14 +458,14 @@ by_symbol:
         - claude
   '#atelier-schema':
     symbol: '#atelier-schema'
-    total_changes: 5
-    last_modified: '2026-02-21T04:56:54Z'
+    total_changes: 7
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_2
       - *ref_0
       - *ref_1
+      - *ref_2
       - *ref_3
       - *ref_4
     contributors:
@@ -320,16 +475,16 @@ by_symbol:
         - claude
   '#atelier-core':
     symbol: '#atelier-core'
-    total_changes: 7
-    last_modified: '2026-02-22T00:10:48Z'
+    total_changes: 9
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_0
+      - *ref_1
       - *ref_5
       - *ref_6
       - *ref_2
-      - *ref_0
-      - *ref_1
     contributors:
       human:
         - ascend
@@ -369,14 +524,73 @@ by_symbol:
         - claude
   '#delta-resolver':
     symbol: '#delta-resolver'
-    total_changes: 1
-    last_modified: '2026-02-13T23:02:12.930Z'
+    total_changes: 2
+    last_modified: '2026-02-23T04:09:19Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_20
+        id: h0048
+        ts: '2026-02-23T04:09:19Z'
+        type: implement
+        symbols:
+          - '#canvas-renderer'
+          - '#delta-resolver'
+          - '#image-renderer'
+          - '#mcp-deltas'
+          - '#mcp-layer-effects'
+          - '#mcp-layers'
+          - '#ref-renderer'
+          - '#schema-delta'
+          - '#schema-layer'
+          - '#svg-renderer'
+        author:
+          type: human
+          id: ascend
+        commit: 9671bc8a20e6abe4130e4ef7b787aa038875977f
+        intent: feature
+        files:
+          - .paradigm/lore/entries/2026-02-23/L-2026-02-23-001.yaml
+          - .paradigm/scan-index.json
+          - CHANGELOG.md
+          - packages/canvas/.purpose
+          - packages/canvas/src/apply-properties.ts
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/index.test.ts
+          - packages/canvas/src/index.ts
+          - packages/canvas/src/render-frame.ts
+          - packages/canvas/src/renderers/image-renderer.ts
+          - packages/canvas/src/renderers/ref-renderer.ts
+          - packages/core/src/index.test.ts
+          - packages/core/src/resolver/delta-resolver.ts
+          - packages/lottie/src/map-layers.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/tools/assets.ts
+          - packages/mcp/src/tools/deltas.ts
+          - packages/mcp/src/tools/layer-effects.ts
+          - packages/mcp/src/tools/layers.ts
+          - packages/mcp/src/tools/presets.ts
+          - packages/react/src/player.ts
+          - packages/schema/.purpose
+          - packages/schema/src/asset.ts
+          - packages/schema/src/delta.ts
+          - packages/schema/src/index.test.ts
+          - packages/schema/src/index.ts
+          - packages/schema/src/layer.ts
+          - packages/svg/src/index.test.ts
+          - packages/svg/src/render-svg.ts
+          - packages/svg/src/svg-filters.ts
+          - packages/types/.purpose
+          - packages/types/src/asset.ts
+          - packages/types/src/delta.ts
+          - packages/types/src/index.ts
+          - packages/types/src/layer.ts
+        description: 'feat(#pretend-integration): add spritesheet, sourceRect, visibility, tint, and ref composition [0.26.0]'
       - *ref_7
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#document-builder':
@@ -405,15 +619,29 @@ by_symbol:
         - claude
   '#atelier-canvas':
     symbol: '#atelier-canvas'
-    total_changes: 4
-    last_modified: '2026-02-21T02:29:13Z'
+    total_changes: 6
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_0
       - *ref_1
       - *ref_3
-      - &ref_8
+      - *ref_4
+      - *ref_8
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#render-frame':
+    symbol: '#render-frame'
+    total_changes: 1
+    last_modified: '2026-02-13T23:18:36.507Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_9
         id: h0005
         ts: '2026-02-13T23:18:36.507Z'
         type: implement
@@ -438,19 +666,6 @@ by_symbol:
           - packages/canvas/src/render-frame.ts
           - packages/canvas/src/index.ts
     contributors:
-      human:
-        - ascend
-      agent:
-        - claude
-  '#render-frame':
-    symbol: '#render-frame'
-    total_changes: 1
-    last_modified: '2026-02-13T23:18:36.507Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_8
-    contributors:
       human: []
       agent:
         - claude
@@ -461,7 +676,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_9
+      - &ref_10
         id: h0025
         ts: '2026-02-14T19:09:05.615Z'
         type: implement
@@ -490,7 +705,7 @@ by_symbol:
           - packages/studio/src/panels/property-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/mcp/src/tools/deltas.ts
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
@@ -502,7 +717,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
@@ -514,8 +729,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_10
       - *ref_9
-      - *ref_8
     contributors:
       human: []
       agent:
@@ -527,19 +742,21 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_8
+      - *ref_9
     contributors:
       human: []
       agent:
         - claude
   '#atelier-mcp':
     symbol: '#atelier-mcp'
-    total_changes: 8
-    last_modified: '2026-02-22T00:04:48Z'
+    total_changes: 10
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_11
+      - *ref_0
+      - *ref_1
+      - &ref_12
         id: h0045
         ts: '2026-02-22T00:04:48Z'
         type: implement
@@ -558,7 +775,7 @@ by_symbol:
           - README.md
         description: 'docs(#atelier-cli): update README for v0.25.1 — 52 tools, 11 packages, version history'
       - *ref_6
-      - &ref_12
+      - &ref_13
         id: h0036
         ts: '2026-02-21T15:31:30Z'
         type: implement
@@ -591,43 +808,6 @@ by_symbol:
           - packages/mcp/src/tools/state-config.ts
           - pnpm-lock.yaml
         description: 'feat(#atelier-mcp): M9 MCP + CLI parity — 10 new tools, 2 CLI commands, still PNG support [0.20.0]'
-      - *ref_0
-      - id: h0033
-        ts: '2026-02-21T00:25:24Z'
-        type: implement
-        symbols:
-          - '#atelier-cli'
-          - '#atelier-mcp'
-        author:
-          type: human
-          id: ascend
-        commit: af84a0217266c9e99a9721be3bfb80698fc816d2
-        intent: feature
-        files:
-          - .claude/settings.local.json
-          - .cursor/mcp.json
-          - .github/copilot-instructions.md
-          - .mcp.json
-          - .paradigm/agents.yaml
-          - .paradigm/config.yaml
-          - CHANGELOG.md
-          - CLAUDE.md
-          - README.md
-          - docs/PROPOSAL.md
-          - docs/contributing.md
-          - docs/getting-started.md
-          - packages/canvas/package.json
-          - packages/cli/package.json
-          - packages/cli/tsup.config.ts
-          - packages/core/package.json
-          - packages/math/package.json
-          - packages/mcp/README.md
-          - packages/mcp/package.json
-          - packages/schema/package.json
-          - packages/studio/package.json
-          - packages/types/package.json
-          - pnpm-lock.yaml
-        description: 'feat(#atelier-cli): publish as @a-company/atelier with bundled MCP server [0.17.3]'
     contributors:
       human:
         - ascend
@@ -640,7 +820,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_10
+      - &ref_11
         id: h0007
         ts: '2026-02-13T23:33:39.797Z'
         type: implement
@@ -680,7 +860,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -692,7 +872,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -704,7 +884,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -716,7 +896,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -728,7 +908,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -740,7 +920,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -752,7 +932,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -777,9 +957,9 @@ by_symbol:
         files:
           - packages/cli/package.json
         description: 'chore(#atelier-cli): bump version to 0.25.1 for npm publish'
-      - *ref_11
-      - *ref_6
       - *ref_12
+      - *ref_6
+      - *ref_13
       - *ref_2
     contributors:
       human:
@@ -793,7 +973,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_13
+      - &ref_14
         id: h0009
         ts: '2026-02-13T23:40:00.871Z'
         type: implement
@@ -829,7 +1009,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_14
     contributors:
       human: []
       agent:
@@ -841,7 +1021,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_14
     contributors:
       human: []
       agent:
@@ -853,7 +1033,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_14
     contributors:
       human: []
       agent:
@@ -865,7 +1045,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_14
+      - &ref_15
         id: h0011
         ts: '2026-02-13T23:47:34.057Z'
         type: implement
@@ -893,7 +1073,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -905,7 +1085,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -957,15 +1137,29 @@ by_symbol:
         - claude
   '#atelier-studio':
     symbol: '#atelier-studio'
-    total_changes: 4
-    last_modified: '2026-02-21T02:29:13Z'
+    total_changes: 6
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_0
       - *ref_1
       - *ref_3
-      - &ref_15
+      - *ref_4
+      - *ref_8
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#canvas-panel':
+    symbol: '#canvas-panel'
+    total_changes: 1
+    last_modified: '2026-02-14T11:13:24.658Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_16
         id: h0015
         ts: '2026-02-14T11:13:24.658Z'
         type: implement
@@ -1010,19 +1204,6 @@ by_symbol:
           - apps/showcase/package.json
           - docs/getting-started.md
     contributors:
-      human:
-        - ascend
-      agent:
-        - claude
-  '#canvas-panel':
-    symbol: '#canvas-panel'
-    total_changes: 1
-    last_modified: '2026-02-14T11:13:24.658Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_15
-    contributors:
       human: []
       agent:
         - claude
@@ -1033,7 +1214,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_16
+      - &ref_17
         id: h0019
         ts: '2026-02-14T17:19:38.749Z'
         type: implement
@@ -1051,7 +1232,7 @@ by_symbol:
           - packages/studio/src/panels/layer-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_15
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1063,8 +1244,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
-      - *ref_15
+      - *ref_10
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1076,7 +1257,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
       - id: h0023
         ts: '2026-02-14T18:07:54.907Z'
         type: implement
@@ -1090,7 +1271,7 @@ by_symbol:
         files:
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - &ref_18
+      - &ref_19
         id: h0021
         ts: '2026-02-14T17:56:19.446Z'
         type: implement
@@ -1110,8 +1291,8 @@ by_symbol:
           - packages/studio/src/controls/range-slider.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_16
-      - &ref_17
+      - *ref_17
+      - &ref_18
         id: h0017
         ts: '2026-02-14T14:52:14.614Z'
         type: implement
@@ -1141,7 +1322,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_15
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1153,8 +1334,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
-      - *ref_15
+      - *ref_18
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1166,8 +1347,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
-      - *ref_15
+      - *ref_18
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1179,8 +1360,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
-      - *ref_15
+      - *ref_18
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1192,8 +1373,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
-      - *ref_15
+      - *ref_18
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1205,8 +1386,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
-      - *ref_15
+      - *ref_18
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1218,7 +1399,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
+      - *ref_17
     contributors:
       human: []
       agent:
@@ -1230,7 +1411,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_18
+      - *ref_19
     contributors:
       human: []
       agent:
@@ -1242,7 +1423,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_18
+      - *ref_19
     contributors:
       human: []
       agent:
@@ -1254,7 +1435,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_18
+      - *ref_19
     contributors:
       human: []
       agent:
@@ -1266,7 +1447,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -1278,21 +1459,23 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
         - claude
   '#mcp-deltas':
     symbol: '#mcp-deltas'
-    total_changes: 1
-    last_modified: '2026-02-14T19:09:05.615Z'
+    total_changes: 2
+    last_modified: '2026-02-23T04:09:19Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_20
+      - *ref_10
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#cli-render':
@@ -1302,7 +1485,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_19
+      - &ref_21
         id: h0027
         ts: '2026-02-15T13:17:58.490Z'
         type: implement
@@ -1333,7 +1516,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_19
+      - *ref_21
     contributors:
       human: []
       agent:
@@ -1381,27 +1564,30 @@ by_symbol:
       agent: []
   '#atelier-lottie':
     symbol: '#atelier-lottie'
-    total_changes: 4
-    last_modified: '2026-02-22T00:10:48Z'
+    total_changes: 6
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_0
+      - *ref_1
       - *ref_5
-      - *ref_11
+      - *ref_12
       - *ref_6
-      - *ref_2
     contributors:
       human:
         - ascend
       agent: []
   '#atelier-react':
     symbol: '#atelier-react'
-    total_changes: 2
-    last_modified: '2026-02-22T00:04:48Z'
+    total_changes: 4
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_11
+      - *ref_0
+      - *ref_1
+      - *ref_12
       - *ref_2
     contributors:
       human:
@@ -1409,15 +1595,16 @@ by_symbol:
       agent: []
   '#atelier-svg':
     symbol: '#atelier-svg'
-    total_changes: 4
-    last_modified: '2026-02-22T00:10:48Z'
+    total_changes: 6
+    last_modified: '2026-02-23T22:11:51Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_0
+      - *ref_1
       - *ref_5
-      - *ref_11
+      - *ref_12
       - *ref_6
-      - *ref_2
     contributors:
       human:
         - ascend
@@ -1429,7 +1616,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human:
         - ascend
@@ -1441,7 +1628,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human:
         - ascend
@@ -1453,7 +1640,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_12
+      - *ref_13
     contributors:
       human:
         - ascend
@@ -1465,7 +1652,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_20
+      - &ref_22
         id: h0038
         ts: '2026-02-21T22:39:27Z'
         type: implement
@@ -1496,7 +1683,7 @@ by_symbol:
           - packages/mcp/src/index.ts
           - packages/mcp/src/tools/assets.ts
         description: 'feat(#atelier-mcp): M10 asset management — 3 new MCP tools, 1 CLI command [0.21.0]'
-      - &ref_21
+      - &ref_23
         id: h0037
         ts: '2026-02-21T22:29:24.094Z'
         type: implement
@@ -1531,8 +1718,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
-      - *ref_21
+      - *ref_22
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -1545,7 +1732,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_22
+      - &ref_24
         id: h0039
         ts: '2026-02-21T23:24:34Z'
         type: implement
@@ -1586,7 +1773,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_22
+      - *ref_24
     contributors:
       human:
         - ascend
@@ -1598,7 +1785,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_23
+      - &ref_25
         id: h0040
         ts: '2026-02-21T23:28:03Z'
         type: implement
@@ -1642,7 +1829,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_23
+      - *ref_25
     contributors:
       human:
         - ascend
@@ -1654,7 +1841,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_23
+      - *ref_25
     contributors:
       human:
         - ascend
@@ -1840,6 +2027,363 @@ by_symbol:
     fragility: low
     recent:
       - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#canvas-renderer':
+    symbol: '#canvas-renderer'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#image-renderer':
+    symbol: '#image-renderer'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-layer-effects':
+    symbol: '#mcp-layer-effects'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-layers':
+    symbol: '#mcp-layers'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#ref-renderer':
+    symbol: '#ref-renderer'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#schema-delta':
+    symbol: '#schema-delta'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#schema-layer':
+    symbol: '#schema-layer'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#svg-renderer':
+    symbol: '#svg-renderer'
+    total_changes: 1
+    last_modified: '2026-02-23T04:09:19Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_20
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli':
+    symbol: '#cli'
+    total_changes: 4
+    last_modified: '2026-03-03T16:51:31Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_26
+        id: h0054
+        ts: '2026-03-03T16:51:31Z'
+        type: implement
+        symbols:
+          - '#cli'
+          - '#studio'
+        author:
+          type: human
+          id: ascend
+        commit: cfa630251dc63c39216426887836d44c7ca5c656
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/commands/studio.ts
+        description: 'fix(#studio): use node_modules symlink instead of monorepo aliases [0.27.3]'
+      - id: h0053
+        ts: '2026-03-03T16:39:13Z'
+        type: implement
+        symbols:
+          - '#cli'
+        author:
+          type: human
+          id: ascend
+        commit: 809cafd96604c80a3696233f4032f0208423d6c0
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+        description: 'fix(#cli): replace workspace:* with real semver for npm install [0.27.2]'
+      - &ref_27
+        id: h0052
+        ts: '2026-03-03T16:22:05Z'
+        type: implement
+        symbols:
+          - '#cli'
+          - '#studio'
+        author:
+          type: human
+          id: ascend
+        commit: 3470a181f53625a50b101ba5d6be5aa32212aab5
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/commands/studio.ts
+        description: 'fix(#studio): resolve Vite pre-transform error on macOS [0.27.1]'
+      - &ref_28
+        id: h0051
+        ts: '2026-03-03T15:38:19Z'
+        type: implement
+        symbols:
+          - '#cli'
+          - '#studio'
+        author:
+          type: human
+          id: ascend
+        commit: 697372bb10bce44520a8fa86ca02b2a9671f0819
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/tsup.config.ts
+          - pnpm-lock.yaml
+        description: 'feat(#studio): add `atelier studio` CLI command for browser-based editing [0.27.0]'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio':
+    symbol: '#studio'
+    total_changes: 5
+    last_modified: '2026-03-03T20:19:05Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_31
+        id: h0057
+        ts: '2026-03-03T20:19:05Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#export-dialog'
+          - '#studio'
+        author:
+          type: human
+          id: ascend
+        commit: 0361247315510e5c63d56ad6ca2dd4cd118d92ba
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/commands/studio.ts
+          - packages/studio/package.json
+          - packages/studio/src/export/export-dialog.ts
+          - packages/studio/src/index.ts
+          - packages/studio/src/studio.ts
+        description: 'feat(#studio): export filename from loaded file, add Export All batch export [0.28.0]'
+      - &ref_29
+        id: h0056
+        ts: '2026-03-03T17:38:46Z'
+        type: implement
+        symbols:
+          - '#schema'
+          - '#studio'
+        author:
+          type: human
+          id: ascend
+        commit: a014974918c3dd3907ef5e1ee3ef85bc3a227d31
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/core/package.json
+          - packages/schema/package.json
+          - packages/studio/package.json
+          - packages/types/package.json
+        description: 'chore: bump subpackages to 0.25.2, CLI to 0.27.4 for npm publish'
+      - *ref_26
+      - *ref_27
+      - *ref_28
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#core':
+    symbol: '#core'
+    total_changes: 1
+    last_modified: '2026-03-03T17:01:45Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_30
+        id: h0055
+        ts: '2026-03-03T17:01:45Z'
+        type: implement
+        symbols:
+          - '#core'
+          - '#schema'
+          - '#types'
+        author:
+          type: human
+          id: ascend
+        commit: f92a9aff3f4055de20945c2b0885c18e22489c0f
+        intent: fix
+        files:
+          - packages/core/src/index.test.ts
+          - packages/core/src/resolver/easing-resolver.ts
+          - packages/core/src/validation/overlap-validator.ts
+          - packages/schema/src/easing.ts
+          - packages/types/src/easing.ts
+        description: 'fix(#schema): accept "linear" easing string, allow boundary-touching deltas'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#schema':
+    symbol: '#schema'
+    total_changes: 2
+    last_modified: '2026-03-03T17:38:46Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_29
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#types':
+    symbol: '#types'
+    total_changes: 1
+    last_modified: '2026-03-03T17:01:45Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-studio':
+    symbol: '#cli-studio'
+    total_changes: 2
+    last_modified: '2026-03-03T20:36:23Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0058
+        ts: '2026-03-03T20:36:23Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+        author:
+          type: human
+          id: ascend
+        commit: 83b696a6bc47e4e7904949ec3411e5e9b2aa5f35
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/studio.ts
+        description: 'fix(#cli): read version from package.json, log Export All errors [0.28.1]'
+      - *ref_31
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#export-dialog':
+    symbol: '#export-dialog'
+    total_changes: 2
+    last_modified: '2026-03-03T20:43:46Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_32
+        id: h0059
+        ts: '2026-03-03T20:43:46Z'
+        type: implement
+        symbols:
+          - '#export-dialog'
+          - '#video-exporter'
+        author:
+          type: human
+          id: ascend
+        commit: c1d1eb6f770d5604bd52164ee251de41531bb7f4
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/cli/package.json
+          - packages/studio/package.json
+          - packages/studio/src/export/video-exporter.ts
+        description: 'fix(#studio): try H.264 High Profile for MP4 export at 1080p+ [0.28.2]'
+      - *ref_31
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#video-exporter':
+    symbol: '#video-exporter'
+    total_changes: 1
+    last_modified: '2026-03-03T20:43:46Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_32
     contributors:
       human:
         - ascend

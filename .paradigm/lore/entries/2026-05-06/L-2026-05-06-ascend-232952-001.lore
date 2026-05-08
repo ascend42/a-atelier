@@ -1,0 +1,36 @@
+id: L-2026-05-06-ascend-232952-001
+type: agent-session
+timestamp: '2026-05-06T23:29:52.784Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Studio export improvements — batch export, H.264 High Profile, filename from loaded file
+summary: Added Export All batch export feature to the studio, loading the export filename from the currently loaded file. Fixed H.264 High Profile encoding for MP4 export at 1080p+. Fixed CLI version reading from package.json and added error logging for Export All failures.
+symbols_touched:
+  - '#studio'
+  - '#cli'
+  - '#video-exporter'
+  - '#export-dialog'
+files_modified:
+  - packages/studio/src/export/export-dialog.ts
+  - packages/studio/src/export/video-exporter.ts
+  - packages/studio/src/index.ts
+  - packages/studio/src/studio.ts
+  - packages/cli/src/cli.ts
+  - packages/cli/src/commands/studio.ts
+tags:
+  - export
+  - studio
+  - cli
+  - video
+  - h264
+linked_commits:
+  - c1d1eb6
+  - 83b696a
+  - '0361247'
+confidence: 0.85
+git_context:
+  ref: c1d1eb6f770d5604bd52164ee251de41531bb7f4
+  branch: main
+  dirty: true
