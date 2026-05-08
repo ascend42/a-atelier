@@ -1,0 +1,419 @@
+version: "1.0"
+name: "What's Inside"
+description: "Reveal staggered. Six building blocks fade in one at a time with ~25 frame stagger, each with accent keyword and description. Bottom summary text lands last."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Building block 1: Layers ---
+  - id: block1-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 200, y: 200 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block1-keyword
+    visual:
+      type: text
+      content: "Layers"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 230, y: 220 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block1-desc
+    visual:
+      type: text
+      content: "Shapes, text, images, groups"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 230, y: 260 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Building block 2: States ---
+  - id: block2-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 740, y: 200 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block2-keyword
+    visual:
+      type: text
+      content: "States"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 770, y: 220 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block2-desc
+    visual:
+      type: text
+      content: "Idle, hover, active -- with transitions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 770, y: 260 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Building block 3: Deltas ---
+  - id: block3-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 1280, y: 200 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block3-keyword
+    visual:
+      type: text
+      content: "Deltas"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 1310, y: 220 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block3-desc
+    visual:
+      type: text
+      content: "Frame-by-frame property animation"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1310, y: 260 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Building block 4: Presets ---
+  - id: block4-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 200, y: 440 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block4-keyword
+    visual:
+      type: text
+      content: "Presets"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 230, y: 460 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block4-desc
+    visual:
+      type: text
+      content: "fade-in, slide-up -- reusable patterns"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 230, y: 500 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Building block 5: Variables ---
+  - id: block5-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 740, y: 440 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block5-keyword
+    visual:
+      type: text
+      content: "Variables"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 770, y: 460 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block5-desc
+    visual:
+      type: text
+      content: "Template substitution"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 770, y: 500 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Building block 6: Interactions ---
+  - id: block6-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 1 }
+    frame: { x: 1280, y: 440 }
+    bounds: { width: 440, height: 100 }
+    opacity: 0
+
+  - id: block6-keyword
+    visual:
+      type: text
+      content: "Interactions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 1310, y: 460 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: block6-desc
+    visual:
+      type: text
+      content: "Click, hover, timer -- trigger anything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1310, y: 500 }
+    bounds: { width: 380, height: 24 }
+    opacity: 0
+
+  # --- Bottom summary text ---
+  - id: summary
+    visual:
+      type: text
+      content: "27 animatable properties. 5 easing types. Stateful, interactive, declarative."
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 310, y: 720 }
+    bounds: { width: 1300, height: 40 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # --- Block 1: Layers (frames 0-40) ---
+      - layer: block1-box
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block1-box
+        property: frame.y
+        range: [0, 30]
+        from: 220
+        to: 200
+        easing: ease-out
+      - layer: block1-keyword
+        property: opacity
+        range: [5, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block1-desc
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Block 2: States (frames 25-65) ---
+      - layer: block2-box
+        property: opacity
+        range: [25, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block2-box
+        property: frame.y
+        range: [25, 55]
+        from: 220
+        to: 200
+        easing: ease-out
+      - layer: block2-keyword
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block2-desc
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Block 3: Deltas (frames 50-90) ---
+      - layer: block3-box
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block3-box
+        property: frame.y
+        range: [50, 80]
+        from: 220
+        to: 200
+        easing: ease-out
+      - layer: block3-keyword
+        property: opacity
+        range: [55, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block3-desc
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Block 4: Presets (frames 75-115) ---
+      - layer: block4-box
+        property: opacity
+        range: [75, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block4-box
+        property: frame.y
+        range: [75, 105]
+        from: 460
+        to: 440
+        easing: ease-out
+      - layer: block4-keyword
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block4-desc
+        property: opacity
+        range: [85, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Block 5: Variables (frames 100-140) ---
+      - layer: block5-box
+        property: opacity
+        range: [100, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block5-box
+        property: frame.y
+        range: [100, 130]
+        from: 460
+        to: 440
+        easing: ease-out
+      - layer: block5-keyword
+        property: opacity
+        range: [105, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block5-desc
+        property: opacity
+        range: [110, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Block 6: Interactions (frames 125-165) ---
+      - layer: block6-box
+        property: opacity
+        range: [125, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block6-box
+        property: frame.y
+        range: [125, 155]
+        from: 460
+        to: 440
+        easing: ease-out
+      - layer: block6-keyword
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: block6-desc
+        property: opacity
+        range: [135, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Summary text (frames 220-270) ---
+      - layer: summary
+        property: opacity
+        range: [220, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: summary
+        property: frame.y
+        range: [220, 270]
+        from: 740
+        to: 720
+        easing: ease-out

@@ -1,0 +1,431 @@
+version: "1.0"
+name: Two Modes
+description: "Sequence -> hold. Left half shows Drawing Mode with canvas, stroke, and scrubber. Right half shows Video Practice Mode with video frame, segment markers, and pulsing highlight. Center tagline lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "Two Modes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # --- LEFT HALF: Drawing Mode ---
+
+  # Canvas rect
+  - id: draw-canvas
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 100, y: 200 }
+    bounds: { width: 400, height: 320 }
+    opacity: 0
+
+  - id: draw-canvas-label
+    visual:
+      type: text
+      content: "Drawing Mode"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 150, y: 160 }
+    bounds: { width: 300, height: 36 }
+    opacity: 0
+
+  # Stroke line (thin rect that draws across the canvas)
+  - id: stroke-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 140, y: 360 }
+    bounds: { width: 320, height: 3 }
+    opacity: 0
+
+  # Scrubber bar beneath canvas
+  - id: scrubber-track
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 140, y: 545 }
+    bounds: { width: 320, height: 8 }
+    opacity: 0
+
+  # Scrubber filled portion
+  - id: scrubber-fill
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 140, y: 545 }
+    bounds: { width: 0, height: 8 }
+    opacity: 0
+
+  # Scrubber handle
+  - id: scrubber-handle
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 134, y: 541 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  # Drawing mode description
+  - id: draw-desc
+    visual:
+      type: text
+      content: "Every stroke recorded. Scrub through like a video."
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 100, y: 580 }
+    bounds: { width: 400, height: 48 }
+    opacity: 0
+
+  # --- RIGHT HALF: Video Practice Mode ---
+
+  # Video frame rect
+  - id: video-frame
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 1020, y: 200 }
+    bounds: { width: 400, height: 320 }
+    opacity: 0
+
+  - id: video-frame-label
+    visual:
+      type: text
+      content: "Video Practice Mode"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1040, y: 160 }
+    bounds: { width: 360, height: 36 }
+    opacity: 0
+
+  # Play icon placeholder inside video frame
+  - id: video-play-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1190, y: 330 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  # Timeline bar beneath video
+  - id: timeline-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 1060, y: 545 }
+    bounds: { width: 320, height: 8 }
+    opacity: 0
+
+  # Segment markers on timeline
+  - id: segment-1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1060, y: 542 }
+    bounds: { width: 60, height: 14 }
+    opacity: 0
+
+  - id: segment-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1130, y: 542 }
+    bounds: { width: 80, height: 14 }
+    opacity: 0
+
+  - id: segment-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1220, y: 542 }
+    bounds: { width: 70, height: 14 }
+    opacity: 0
+
+  - id: segment-4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1300, y: 542 }
+    bounds: { width: 80, height: 14 }
+    opacity: 0
+
+  # Highlight on segment-2 (pulsing)
+  - id: segment-highlight
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 3 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1128, y: 539 }
+    bounds: { width: 84, height: 20 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Video mode description
+  - id: video-desc
+    visual:
+      type: text
+      content: "Import. Segment. Loop. Mirror. Master."
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1020, y: 580 }
+    bounds: { width: 400, height: 48 }
+    opacity: 0
+
+  # --- CENTER TEXT ---
+  - id: center-tagline
+    visual:
+      type: text
+      content: "Learn over time, through time."
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 700 }
+    bounds: { width: 1000, height: 48 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Drawing Mode appears ---
+
+      # Canvas appears
+      - layer: draw-canvas
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: draw-canvas
+        property: frame.x
+        range: [30, 60]
+        from: 60
+        to: 100
+        easing: ease-out
+      - layer: draw-canvas-label
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Stroke line draws across (frame.x moves left as it "draws")
+      - layer: stroke-line
+        property: opacity
+        range: [70, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stroke-line
+        property: scale.x
+        range: [70, 140]
+        from: 0
+        to: 1
+        easing: ease-in-out
+
+      # Scrubber bar appears
+      - layer: scrubber-track
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: scrubber-fill
+        property: opacity
+        range: [125, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: scrubber-handle
+        property: opacity
+        range: [125, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Scrubber fill grows and handle moves
+      - layer: scrubber-fill
+        property: scale.x
+        range: [145, 220]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: scrubber-handle
+        property: frame.x
+        range: [145, 220]
+        from: 134
+        to: 444
+        easing: ease-in-out
+
+      # Drawing description
+      - layer: draw-desc
+        property: opacity
+        range: [160, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Video Practice Mode appears ---
+
+      # Video frame appears
+      - layer: video-frame
+        property: opacity
+        range: [180, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: video-frame
+        property: frame.x
+        range: [180, 210]
+        from: 1060
+        to: 1020
+        easing: ease-out
+      - layer: video-frame-label
+        property: opacity
+        range: [185, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Play icon
+      - layer: video-play-icon
+        property: opacity
+        range: [200, 220]
+        from: 0
+        to: 0.6
+        easing: ease-out
+
+      # Timeline bar appears
+      - layer: timeline-bar
+        property: opacity
+        range: [220, 245]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Segment markers appear with stagger
+      - layer: segment-1
+        property: opacity
+        range: [245, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: segment-2
+        property: opacity
+        range: [255, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: segment-3
+        property: opacity
+        range: [265, 280]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: segment-4
+        property: opacity
+        range: [275, 290]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Segment highlight appears and pulses
+      - layer: segment-highlight
+        property: opacity
+        range: [290, 310]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: segment-highlight
+        property: shadow.blur
+        range: [310, 350]
+        from: 0
+        to: 16
+        easing: ease-in-out
+      - layer: segment-highlight
+        property: shadow.blur
+        range: [350, 390]
+        from: 16
+        to: 4
+        easing: ease-in-out
+      - layer: segment-highlight
+        property: shadow.blur
+        range: [390, 430]
+        from: 4
+        to: 16
+        easing: ease-in-out
+
+      # Video mode description
+      - layer: video-desc
+        property: opacity
+        range: [300, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Center tagline ---
+      - layer: center-tagline
+        property: opacity
+        range: [400, 440]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: center-tagline
+        property: frame.y
+        range: [400, 440]
+        from: 730
+        to: 700
+        easing: ease-out

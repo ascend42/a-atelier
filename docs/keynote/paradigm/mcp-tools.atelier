@@ -1,0 +1,602 @@
+version: "1.0"
+name: "MCP \u2014 The Tool Ecosystem"
+description: "Sequence -> hold. Large 50+ counter in center, tool category cards fan out in a grid below with rapid stagger, bottom text about token efficiency."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Large number counter — shows the final value
+  - id: counter-number
+    visual:
+      type: text
+      content: "50+"
+      style:
+        fontFamily: sans-serif
+        fontSize: 120
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 100 }
+    bounds: { width: 600, height: 140 }
+    opacity: 0
+
+  - id: counter-label
+    visual:
+      type: text
+      content: "MCP tools"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#888888"
+        textAlign: center
+    frame: { x: 710, y: 250 }
+    bounds: { width: 500, height: 40 }
+    opacity: 0
+
+  # --- Tool cards: 2 rows of 4, evenly spaced ---
+
+  # Card 1: Navigate
+  - id: card-navigate-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 180, y: 400 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-navigate-title
+    visual:
+      type: text
+      content: "Navigate"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 210, y: 420 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-navigate-desc
+    visual:
+      type: text
+      content: "Find anything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 210, y: 458 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 2: Ripple
+  - id: card-ripple-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 570, y: 400 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-ripple-title
+    visual:
+      type: text
+      content: "Ripple"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 600, y: 420 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-ripple-desc
+    visual:
+      type: text
+      content: "Check impact"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 600, y: 458 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 3: Gates
+  - id: card-gates-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 960, y: 400 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-gates-title
+    visual:
+      type: text
+      content: "Gates"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 990, y: 420 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-gates-desc
+    visual:
+      type: text
+      content: "Auth requirements"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 990, y: 458 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 4: Flows
+  - id: card-flows-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 1350, y: 400 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-flows-title
+    visual:
+      type: text
+      content: "Flows"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#EF4444"
+        textAlign: left
+    frame: { x: 1380, y: 420 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-flows-desc
+    visual:
+      type: text
+      content: "Validate processes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1380, y: 458 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 5: Wisdom
+  - id: card-wisdom-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 180, y: 570 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-wisdom-title
+    visual:
+      type: text
+      content: "Wisdom"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 210, y: 590 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-wisdom-desc
+    visual:
+      type: text
+      content: "Past decisions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 210, y: 628 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 6: Search
+  - id: card-search-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 570, y: 570 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-search-title
+    visual:
+      type: text
+      content: "Search"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 600, y: 590 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-search-desc
+    visual:
+      type: text
+      content: "Query the graph"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 600, y: 628 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 7: Orchestrate
+  - id: card-orchestrate-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 960, y: 570 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-orchestrate-title
+    visual:
+      type: text
+      content: "Orchestrate"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 990, y: 590 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-orchestrate-desc
+    visual:
+      type: text
+      content: "Multi-agent"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 990, y: 628 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Card 8: Status
+  - id: card-status-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1350, y: 570 }
+    bounds: { width: 340, height: 120 }
+    opacity: 0
+
+  - id: card-status-title
+    visual:
+      type: text
+      content: "Status"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 1380, y: 590 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+  - id: card-status-desc
+    visual:
+      type: text
+      content: "100-token overview"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1380, y: 628 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Bottom text
+  - id: bottom-text
+    visual:
+      type: text
+      content: "~100 tokens per query vs ~2,000 for reading a file."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 360, y: 820 }
+    bounds: { width: 1200, height: 36 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Counter number scales up from small
+      - layer: counter-number
+        property: opacity
+        range: [0, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: counter-number
+        property: scale.x
+        range: [0, 40]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: counter-number
+        property: scale.y
+        range: [0, 40]
+        from: 0.5
+        to: 1
+        easing: ease-out
+
+      # Counter label
+      - layer: counter-label
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 1: Navigate (stagger 0) ---
+      - layer: card-navigate-bg
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-navigate-bg
+        property: frame.y
+        range: [70, 90]
+        from: 430
+        to: 400
+        easing: ease-out
+      - layer: card-navigate-title
+        property: opacity
+        range: [75, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-navigate-desc
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 2: Ripple (stagger +10) ---
+      - layer: card-ripple-bg
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-ripple-bg
+        property: frame.y
+        range: [80, 100]
+        from: 430
+        to: 400
+        easing: ease-out
+      - layer: card-ripple-title
+        property: opacity
+        range: [85, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-ripple-desc
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 3: Gates (stagger +20) ---
+      - layer: card-gates-bg
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-gates-bg
+        property: frame.y
+        range: [90, 110]
+        from: 430
+        to: 400
+        easing: ease-out
+      - layer: card-gates-title
+        property: opacity
+        range: [95, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-gates-desc
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 4: Flows (stagger +30) ---
+      - layer: card-flows-bg
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-flows-bg
+        property: frame.y
+        range: [100, 120]
+        from: 430
+        to: 400
+        easing: ease-out
+      - layer: card-flows-title
+        property: opacity
+        range: [105, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-flows-desc
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 5: Wisdom (stagger +40) ---
+      - layer: card-wisdom-bg
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-wisdom-bg
+        property: frame.y
+        range: [110, 130]
+        from: 600
+        to: 570
+        easing: ease-out
+      - layer: card-wisdom-title
+        property: opacity
+        range: [115, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-wisdom-desc
+        property: opacity
+        range: [120, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 6: Search (stagger +50) ---
+      - layer: card-search-bg
+        property: opacity
+        range: [120, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-search-bg
+        property: frame.y
+        range: [120, 140]
+        from: 600
+        to: 570
+        easing: ease-out
+      - layer: card-search-title
+        property: opacity
+        range: [125, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-search-desc
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 7: Orchestrate (stagger +60) ---
+      - layer: card-orchestrate-bg
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-orchestrate-bg
+        property: frame.y
+        range: [130, 150]
+        from: 600
+        to: 570
+        easing: ease-out
+      - layer: card-orchestrate-title
+        property: opacity
+        range: [135, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-orchestrate-desc
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Card 8: Status (stagger +70) ---
+      - layer: card-status-bg
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-status-bg
+        property: frame.y
+        range: [140, 160]
+        from: 600
+        to: 570
+        easing: ease-out
+      - layer: card-status-title
+        property: opacity
+        range: [145, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-status-desc
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Bottom text fades in
+      - layer: bottom-text
+        property: opacity
+        range: [220, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bottom-text
+        property: frame.y
+        range: [220, 260]
+        from: 845
+        to: 820
+        easing: ease-out

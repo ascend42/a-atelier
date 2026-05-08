@@ -1,0 +1,592 @@
+version: "1.0"
+name: Not a VPN
+description: "Sequence -> hold. Traditional VPN diagram grays out, replaced by Badgermole's per-connection split routing."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Traditional VPN diagram (top) ---
+  - id: vpn-user
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 260, y: 260 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+
+  - id: vpn-user-label
+    visual:
+      type: text
+      content: "You"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 255, y: 330 }
+    bounds: { width: 70, height: 24 }
+    opacity: 0
+
+  - id: vpn-pipe
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#444444" }
+    frame: { x: 360, y: 275 }
+    bounds: { width: 500, height: 30 }
+    opacity: 0
+
+  - id: vpn-pipe-label
+    visual:
+      type: text
+      content: "Single encrypted tunnel"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#666666"
+        textAlign: center
+    frame: { x: 460, y: 255 }
+    bounds: { width: 300, height: 20 }
+    opacity: 0
+
+  - id: vpn-server
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 900, y: 240 }
+    bounds: { width: 120, height: 100 }
+    opacity: 0
+
+  - id: vpn-server-label
+    visual:
+      type: text
+      content: "VPN Server"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 900, y: 350 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  - id: vpn-internet
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 1100, y: 250 }
+    bounds: { width: 80, height: 80 }
+    opacity: 0
+
+  - id: vpn-internet-label
+    visual:
+      type: text
+      content: "Internet"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1090, y: 340 }
+    bounds: { width: 100, height: 24 }
+    opacity: 0
+
+  - id: vpn-tagline
+    visual:
+      type: text
+      content: "On or off. That's it."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 460, y: 390 }
+    bounds: { width: 500, height: 40 }
+    opacity: 0
+
+  # --- Badgermole diagram (bottom) ---
+  - id: bm-user
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 260, y: 600 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+
+  - id: bm-user-label
+    visual:
+      type: text
+      content: "You"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 255, y: 670 }
+    bounds: { width: 70, height: 24 }
+    opacity: 0
+
+  # Green stream (WireGuard / banking)
+  - id: stream-green
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 360, y: 590 }
+    bounds: { width: 400, height: 12 }
+    opacity: 0
+
+  - id: stream-green-dest
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#0D3D2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 800, y: 570 }
+    bounds: { width: 160, height: 60 }
+    opacity: 0
+
+  - id: stream-green-label
+    visual:
+      type: text
+      content: "WireGuard"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 810, y: 582 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  - id: stream-green-desc
+    visual:
+      type: text
+      content: "Banking, sensitive"
+      style:
+        fontFamily: sans-serif
+        fontSize: 13
+        color: "#888888"
+        textAlign: center
+    frame: { x: 810, y: 604 }
+    bounds: { width: 140, height: 20 }
+    opacity: 0
+
+  # Purple stream (Tor / anonymous)
+  - id: stream-purple
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 360, y: 622 }
+    bounds: { width: 400, height: 12 }
+    opacity: 0
+
+  - id: stream-purple-dest
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#2E1A3E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 800, y: 640 }
+    bounds: { width: 160, height: 60 }
+    opacity: 0
+
+  - id: stream-purple-label
+    visual:
+      type: text
+      content: "Tor"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 810, y: 652 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  - id: stream-purple-desc
+    visual:
+      type: text
+      content: "Anonymous"
+      style:
+        fontFamily: sans-serif
+        fontSize: 13
+        color: "#888888"
+        textAlign: center
+    frame: { x: 810, y: 674 }
+    bounds: { width: 140, height: 20 }
+    opacity: 0
+
+  # Gray stream (Direct / streaming)
+  - id: stream-gray
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#666666" }
+    frame: { x: 360, y: 654 }
+    bounds: { width: 400, height: 12 }
+    opacity: 0
+
+  - id: stream-gray-dest
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A1A" }
+      stroke: { color: "#666666", width: 2 }
+    frame: { x: 800, y: 710 }
+    bounds: { width: 160, height: 60 }
+    opacity: 0
+
+  - id: stream-gray-label
+    visual:
+      type: text
+      content: "Direct"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#666666"
+        textAlign: center
+    frame: { x: 810, y: 722 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  - id: stream-gray-desc
+    visual:
+      type: text
+      content: "Streaming, no tunnel"
+      style:
+        fontFamily: sans-serif
+        fontSize: 13
+        color: "#888888"
+        textAlign: center
+    frame: { x: 810, y: 744 }
+    bounds: { width: 140, height: 20 }
+    opacity: 0
+
+  # Badgermole tagline
+  - id: bm-tagline
+    visual:
+      type: text
+      content: "A personal network policy engine. Per-connection intelligence."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 310, y: 840 }
+    bounds: { width: 900, height: 40 }
+    opacity: 0
+
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "Not a VPN"
+      style:
+        fontFamily: sans-serif
+        fontSize: 56
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- VPN diagram appears (frames 20-90) ---
+      - layer: vpn-user
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: vpn-user-label
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      - layer: vpn-pipe
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: vpn-pipe-label
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      - layer: vpn-server
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: vpn-server-label
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      - layer: vpn-internet
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: vpn-internet-label
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      - layer: vpn-tagline
+        property: opacity
+        range: [100, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- VPN diagram grays out and shifts up (frames 160-220) ---
+      - layer: vpn-user
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-user-label
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-pipe
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-pipe-label
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-server
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-server-label
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-internet
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-internet-label
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: vpn-tagline
+        property: opacity
+        range: [160, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+
+      # Shift VPN diagram up
+      - layer: vpn-user
+        property: frame.y
+        range: [160, 210]
+        from: 260
+        to: 180
+        easing: ease-in-out
+      - layer: vpn-user-label
+        property: frame.y
+        range: [160, 210]
+        from: 330
+        to: 250
+        easing: ease-in-out
+      - layer: vpn-pipe
+        property: frame.y
+        range: [160, 210]
+        from: 275
+        to: 195
+        easing: ease-in-out
+      - layer: vpn-pipe-label
+        property: frame.y
+        range: [160, 210]
+        from: 255
+        to: 175
+        easing: ease-in-out
+      - layer: vpn-server
+        property: frame.y
+        range: [160, 210]
+        from: 240
+        to: 160
+        easing: ease-in-out
+      - layer: vpn-server-label
+        property: frame.y
+        range: [160, 210]
+        from: 350
+        to: 270
+        easing: ease-in-out
+      - layer: vpn-internet
+        property: frame.y
+        range: [160, 210]
+        from: 250
+        to: 170
+        easing: ease-in-out
+      - layer: vpn-internet-label
+        property: frame.y
+        range: [160, 210]
+        from: 340
+        to: 260
+        easing: ease-in-out
+      - layer: vpn-tagline
+        property: frame.y
+        range: [160, 210]
+        from: 390
+        to: 310
+        easing: ease-in-out
+
+      # --- Badgermole diagram appears below (frames 220-380) ---
+      - layer: bm-user
+        property: opacity
+        range: [220, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bm-user-label
+        property: opacity
+        range: [220, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Green stream
+      - layer: stream-green
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-green-dest
+        property: opacity
+        range: [260, 285]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-green-label
+        property: opacity
+        range: [270, 290]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-green-desc
+        property: opacity
+        range: [270, 290]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Purple stream
+      - layer: stream-purple
+        property: opacity
+        range: [285, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-purple-dest
+        property: opacity
+        range: [295, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-purple-label
+        property: opacity
+        range: [305, 325]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-purple-desc
+        property: opacity
+        range: [305, 325]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Gray stream
+      - layer: stream-gray
+        property: opacity
+        range: [320, 345]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-gray-dest
+        property: opacity
+        range: [330, 355]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-gray-label
+        property: opacity
+        range: [340, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stream-gray-desc
+        property: opacity
+        range: [340, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Badgermole tagline
+      - layer: bm-tagline
+        property: opacity
+        range: [370, 400]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bm-tagline
+        property: frame.y
+        range: [370, 400]
+        from: 860
+        to: 840
+        easing: ease-out

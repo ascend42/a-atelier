@@ -1,0 +1,662 @@
+version: "1.0"
+name: P2P Architecture
+description: "Sequence -> hold. Centralized model with user nodes connecting to server, dims, then P2P model takes over with direct encrypted connections."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "Architecture"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 40 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # --- Centralized section (top half) ---
+  - id: central-label
+    visual:
+      type: text
+      content: "Centralized"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 810, y: 120 }
+    bounds: { width: 300, height: 40 }
+    opacity: 0
+
+  # Central server (big rect)
+  - id: server
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 860, y: 230 }
+    bounds: { width: 200, height: 120 }
+    opacity: 0
+
+  - id: server-label
+    visual:
+      type: text
+      content: "Server"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 890, y: 275 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  # User nodes (centralized) — 5 circles around server
+  - id: c-user1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 580, y: 180 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: c-user2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 680, y: 320 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: c-user3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1200, y: 180 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: c-user4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1300, y: 320 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: c-user5
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 940, y: 400 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  # Connection lines from users to server (thin rects)
+  - id: c-line1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 620, y: 200 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  - id: c-line2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 720, y: 340 }
+    bounds: { width: 140, height: 2 }
+    opacity: 0
+
+  - id: c-line3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 1060, y: 200 }
+    bounds: { width: 140, height: 2 }
+    opacity: 0
+
+  - id: c-line4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 1060, y: 340 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  - id: c-line5
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 960, y: 350 }
+    bounds: { width: 2, height: 50 }
+    opacity: 0
+
+  - id: central-desc
+    visual:
+      type: text
+      content: "Every message, call, file — through someone else's machine."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 510, y: 470 }
+    bounds: { width: 900, height: 28 }
+    opacity: 0
+
+  # --- P2P section (bottom half, takes over) ---
+  - id: p2p-label
+    visual:
+      type: text
+      content: "Peer-to-Peer"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 810, y: 540 }
+    bounds: { width: 300, height: 40 }
+    opacity: 0
+
+  # P2P user nodes — same 5 positions, shifted to bottom half
+  - id: p-user1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 560, y: 640 }
+    bounds: { width: 44, height: 44 }
+    opacity: 0
+
+  - id: p-user2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 760, y: 760 }
+    bounds: { width: 44, height: 44 }
+    opacity: 0
+
+  - id: p-user3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1100, y: 640 }
+    bounds: { width: 44, height: 44 }
+    opacity: 0
+
+  - id: p-user4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1300, y: 760 }
+    bounds: { width: 44, height: 44 }
+    opacity: 0
+
+  - id: p-user5
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 940, y: 840 }
+    bounds: { width: 44, height: 44 }
+    opacity: 0
+
+  # Direct connection lines between P2P users
+  - id: p-line1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 604, y: 662 }
+    bounds: { width: 156, height: 2 }
+    opacity: 0
+
+  - id: p-line2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 604, y: 662 }
+    bounds: { width: 496, height: 2 }
+    opacity: 0
+
+  - id: p-line3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 804, y: 782 }
+    bounds: { width: 296, height: 2 }
+    opacity: 0
+
+  - id: p-line4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1144, y: 662 }
+    bounds: { width: 156, height: 2 }
+    opacity: 0
+
+  - id: p-line5
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 984, y: 862 }
+    bounds: { width: 316, height: 2 }
+    opacity: 0
+
+  # Lock icons on connections (small green ellipses)
+  - id: lock1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 672, y: 654 }
+    bounds: { width: 18, height: 18 }
+    opacity: 0
+
+  - id: lock2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 842, y: 654 }
+    bounds: { width: 18, height: 18 }
+    opacity: 0
+
+  - id: lock3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 942, y: 774 }
+    bounds: { width: 18, height: 18 }
+    opacity: 0
+
+  - id: lock4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1212, y: 654 }
+    bounds: { width: 18, height: 18 }
+    opacity: 0
+
+  - id: lock5
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1132, y: 854 }
+    bounds: { width: 18, height: 18 }
+    opacity: 0
+
+  - id: signal-label
+    visual:
+      type: text
+      content: "Signal Protocol encryption"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 760, y: 900 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  - id: p2p-desc
+    visual:
+      type: text
+      content: "Direct connections. End-to-end encrypted. No middleman."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 960 }
+    bounds: { width: 1000, height: 40 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Centralized label
+      - layer: central-label
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Server appears
+      - layer: server
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: server-label
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Centralized user nodes appear
+      - layer: c-user1
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: c-user2
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: c-user3
+        property: opacity
+        range: [60, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: c-user4
+        property: opacity
+        range: [65, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: c-user5
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection lines to server
+      - layer: c-line1
+        property: opacity
+        range: [75, 95]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: c-line2
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: c-line3
+        property: opacity
+        range: [85, 105]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: c-line4
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: c-line5
+        property: opacity
+        range: [95, 115]
+        from: 0
+        to: 0.6
+        easing: ease-out
+
+      # Central description
+      - layer: central-desc
+        property: opacity
+        range: [110, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Top half dims ---
+      - layer: central-label
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: server
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: server-label
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-user1
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-user2
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-user3
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-user4
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-user5
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: c-line1
+        property: opacity
+        range: [200, 240]
+        from: 0.6
+        to: 0.08
+        easing: ease-in
+      - layer: c-line2
+        property: opacity
+        range: [200, 240]
+        from: 0.6
+        to: 0.08
+        easing: ease-in
+      - layer: c-line3
+        property: opacity
+        range: [200, 240]
+        from: 0.6
+        to: 0.08
+        easing: ease-in
+      - layer: c-line4
+        property: opacity
+        range: [200, 240]
+        from: 0.6
+        to: 0.08
+        easing: ease-in
+      - layer: c-line5
+        property: opacity
+        range: [200, 240]
+        from: 0.6
+        to: 0.08
+        easing: ease-in
+      - layer: central-desc
+        property: opacity
+        range: [200, 240]
+        from: 1
+        to: 0.15
+        easing: ease-in
+
+      # --- P2P section takes over ---
+      - layer: p2p-label
+        property: opacity
+        range: [250, 280]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # P2P user nodes appear
+      - layer: p-user1
+        property: opacity
+        range: [270, 295]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p-user2
+        property: opacity
+        range: [275, 300]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p-user3
+        property: opacity
+        range: [280, 305]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p-user4
+        property: opacity
+        range: [285, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p-user5
+        property: opacity
+        range: [290, 315]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Direct connection lines draw in
+      - layer: p-line1
+        property: opacity
+        range: [310, 335]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: p-line2
+        property: opacity
+        range: [315, 340]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: p-line3
+        property: opacity
+        range: [320, 345]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: p-line4
+        property: opacity
+        range: [325, 350]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: p-line5
+        property: opacity
+        range: [330, 355]
+        from: 0
+        to: 0.7
+        easing: ease-out
+
+      # Lock icons appear on connections
+      - layer: lock1
+        property: opacity
+        range: [340, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lock2
+        property: opacity
+        range: [345, 365]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lock3
+        property: opacity
+        range: [350, 370]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lock4
+        property: opacity
+        range: [355, 375]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lock5
+        property: opacity
+        range: [360, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Signal Protocol label
+      - layer: signal-label
+        property: opacity
+        range: [380, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Final description
+      - layer: p2p-desc
+        property: opacity
+        range: [410, 450]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p2p-desc
+        property: frame.y
+        range: [410, 450]
+        from: 980
+        to: 960
+        easing: ease-out

@@ -1,0 +1,626 @@
+version: "1.0"
+name: Pricing Tiers
+description: "Reveal staggered. Three pricing cards drop in left to right with 200ms stagger. Growth card gets glow + Most Popular badge. Holds at final state."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "Simple, Transparent Pricing"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 60 }
+    bounds: { width: 900, height: 70 }
+    opacity: 0
+
+  # ═══════════════════════════════════
+  # Card 1: Starter ($29/mo)
+  # ═══════════════════════════════════
+
+  - id: card1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 140, y: 220 }
+    bounds: { width: 480, height: 680 }
+    opacity: 0
+
+  - id: card1-tier
+    visual:
+      type: text
+      content: "Starter"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 250, y: 270 }
+    bounds: { width: 260, height: 44 }
+    opacity: 0
+
+  - id: card1-price
+    visual:
+      type: text
+      content: "$29/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 230, y: 340 }
+    bounds: { width: 300, height: 56 }
+    opacity: 0
+
+  - id: card1-annual
+    visual:
+      type: text
+      content: "$19/mo billed annually"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 230, y: 400 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # Divider inside card 1
+  - id: card1-divider
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 200, y: 450 }
+    bounds: { width: 360, height: 1 }
+    opacity: 0
+
+  - id: card1-feat1
+    visual:
+      type: text
+      content: "1,000 events / month"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 220, y: 490 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card1-feat2
+    visual:
+      type: text
+      content: "1 ad account"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 220, y: 540 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card1-feat3
+    visual:
+      type: text
+      content: "1 CRM integration"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 220, y: 590 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  # ═══════════════════════════════════
+  # Card 2: Growth ($99/mo) — Most Popular
+  # ═══════════════════════════════════
+
+  - id: card2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 3 }
+    frame: { x: 720, y: 200 }
+    bounds: { width: 480, height: 720 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # "Most Popular" badge
+  - id: card2-badge-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 870, y: 188 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: card2-badge-text
+    visual:
+      type: text
+      content: "Most Popular"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 885, y: 194 }
+    bounds: { width: 150, height: 22 }
+    opacity: 0
+
+  - id: card2-tier
+    visual:
+      type: text
+      content: "Growth"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 830, y: 260 }
+    bounds: { width: 260, height: 44 }
+    opacity: 0
+
+  - id: card2-price
+    visual:
+      type: text
+      content: "$99/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 810, y: 330 }
+    bounds: { width: 300, height: 56 }
+    opacity: 0
+
+  - id: card2-annual
+    visual:
+      type: text
+      content: "$66/mo billed annually"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 810, y: 390 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # Divider inside card 2
+  - id: card2-divider
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 780, y: 440 }
+    bounds: { width: 360, height: 1 }
+    opacity: 0
+
+  - id: card2-feat1
+    visual:
+      type: text
+      content: "Unlimited events"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 800, y: 480 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card2-feat2
+    visual:
+      type: text
+      content: "Unlimited ad accounts"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 800, y: 530 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card2-feat3
+    visual:
+      type: text
+      content: "Unlimited CRM integrations"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 790, y: 580 }
+    bounds: { width: 340, height: 28 }
+    opacity: 0
+
+  - id: card2-feat4
+    visual:
+      type: text
+      content: "Priority support"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 800, y: 630 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  # ═══════════════════════════════════
+  # Card 3: Agency ($299/mo)
+  # ═══════════════════════════════════
+
+  - id: card3-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1300, y: 220 }
+    bounds: { width: 480, height: 680 }
+    opacity: 0
+
+  - id: card3-tier
+    visual:
+      type: text
+      content: "Agency"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1410, y: 270 }
+    bounds: { width: 260, height: 44 }
+    opacity: 0
+
+  - id: card3-price
+    visual:
+      type: text
+      content: "$299/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1380, y: 340 }
+    bounds: { width: 320, height: 56 }
+    opacity: 0
+
+  - id: card3-annual
+    visual:
+      type: text
+      content: "$200/mo billed annually"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1390, y: 400 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # Divider inside card 3
+  - id: card3-divider
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 1360, y: 450 }
+    bounds: { width: 360, height: 1 }
+    opacity: 0
+
+  - id: card3-feat1
+    visual:
+      type: text
+      content: "Unlimited everything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1380, y: 490 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card3-feat2
+    visual:
+      type: text
+      content: "Multi-client management"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1370, y: 540 }
+    bounds: { width: 340, height: 28 }
+    opacity: 0
+
+  - id: card3-feat3
+    visual:
+      type: text
+      content: "Team access"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1380, y: 590 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: card3-feat4
+    visual:
+      type: text
+      content: "White label"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1380, y: 640 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ═══════════════════════════════════
+      # Card 1: Starter — drops in first
+      # ═══════════════════════════════════
+      - layer: card1-bg
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-bg
+        property: frame.y
+        range: [30, 55]
+        from: 160
+        to: 220
+        easing: ease-out
+
+      - layer: card1-tier
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-price
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-annual
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-divider
+        property: opacity
+        range: [60, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-feat1
+        property: opacity
+        range: [65, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-feat2
+        property: opacity
+        range: [70, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-feat3
+        property: opacity
+        range: [75, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ═══════════════════════════════════
+      # Card 2: Growth — drops in 200ms (12 frames) later
+      # ═══════════════════════════════════
+      - layer: card2-bg
+        property: opacity
+        range: [42, 67]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-bg
+        property: frame.y
+        range: [42, 67]
+        from: 140
+        to: 200
+        easing: ease-out
+
+      - layer: card2-tier
+        property: opacity
+        range: [52, 72]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-price
+        property: opacity
+        range: [62, 82]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-annual
+        property: opacity
+        range: [67, 87]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-divider
+        property: opacity
+        range: [72, 87]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-feat1
+        property: opacity
+        range: [77, 92]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-feat2
+        property: opacity
+        range: [82, 97]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-feat3
+        property: opacity
+        range: [87, 102]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-feat4
+        property: opacity
+        range: [92, 107]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Badge appears after card is visible
+      - layer: card2-badge-bg
+        property: opacity
+        range: [100, 118]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-badge-bg
+        property: scale.x
+        range: [100, 118]
+        from: 0.6
+        to: 1
+        easing: ease-out
+      - layer: card2-badge-bg
+        property: scale.y
+        range: [100, 118]
+        from: 0.6
+        to: 1
+        easing: ease-out
+      - layer: card2-badge-text
+        property: opacity
+        range: [105, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ═══════════════════════════════════
+      # Card 3: Agency — drops in another 200ms (12 frames) later
+      # ═══════════════════════════════════
+      - layer: card3-bg
+        property: opacity
+        range: [54, 79]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-bg
+        property: frame.y
+        range: [54, 79]
+        from: 160
+        to: 220
+        easing: ease-out
+
+      - layer: card3-tier
+        property: opacity
+        range: [64, 84]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-price
+        property: opacity
+        range: [74, 94]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-annual
+        property: opacity
+        range: [79, 99]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-divider
+        property: opacity
+        range: [84, 99]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-feat1
+        property: opacity
+        range: [89, 104]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-feat2
+        property: opacity
+        range: [94, 109]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-feat3
+        property: opacity
+        range: [99, 114]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-feat4
+        property: opacity
+        range: [104, 119]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ═══════════════════════════════════
+      # Growth card glow effect (after all cards are in)
+      # ═══════════════════════════════════
+      - layer: card2-bg
+        property: shadow.blur
+        range: [130, 180]
+        from: 0
+        to: 30
+        easing: ease-in-out
+      - layer: card2-bg
+        property: shadow.color
+        range: [130, 180]
+        from: "#10B981"
+        to: "#10B981"
+        easing: linear

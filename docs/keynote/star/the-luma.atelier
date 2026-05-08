@@ -1,0 +1,279 @@
+version: "1.0"
+name: The Luma
+description: "Reveal -> hold. Center STAR title appears with subtle glow settling. Four qualities fade in at N/E/S/W positions with staggered timing: Persistent, Personal, Evolving, Yours. Each has accent keyword and dimmed description."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Center: STAR title ---
+  - id: star-title
+    visual:
+      type: text
+      content: "STAR"
+      style:
+        fontFamily: sans-serif
+        fontSize: 96
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 760, y: 460 }
+    bounds: { width: 400, height: 110 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # --- Top (N): Persistent ---
+  - id: quality-top-keyword
+    visual:
+      type: text
+      content: "Persistent"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 760, y: 220 }
+    bounds: { width: 400, height: 46 }
+    opacity: 0
+
+  - id: quality-top-desc
+    visual:
+      type: text
+      content: "Remembers everything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 760, y: 270 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Right (E): Personal ---
+  - id: quality-right-keyword
+    visual:
+      type: text
+      content: "Personal"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1300, y: 480 }
+    bounds: { width: 400, height: 46 }
+    opacity: 0
+
+  - id: quality-right-desc
+    visual:
+      type: text
+      content: "Runs on your machine"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1300, y: 530 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Bottom (S): Evolving ---
+  - id: quality-bottom-keyword
+    visual:
+      type: text
+      content: "Evolving"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 760, y: 740 }
+    bounds: { width: 400, height: 46 }
+    opacity: 0
+
+  - id: quality-bottom-desc
+    visual:
+      type: text
+      content: "Gets smarter every day"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 760, y: 790 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Left (W): Yours ---
+  - id: quality-left-keyword
+    visual:
+      type: text
+      content: "Yours"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 220, y: 480 }
+    bounds: { width: 400, height: 46 }
+    opacity: 0
+
+  - id: quality-left-desc
+    visual:
+      type: text
+      content: "Your data never leaves"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 220, y: 530 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # --- STAR title fades in with glow (frames 0-60) ---
+      - layer: star-title
+        property: opacity
+        range: [0, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: star-title
+        property: scale.x
+        range: [0, 40]
+        from: 0.9
+        to: 1
+        easing: ease-out
+      - layer: star-title
+        property: scale.y
+        range: [0, 40]
+        from: 0.9
+        to: 1
+        easing: ease-out
+      # Glow builds then settles
+      - layer: star-title
+        property: shadow.blur
+        range: [0, 50]
+        from: 0
+        to: 40
+        easing: ease-out
+      - layer: star-title
+        property: shadow.blur
+        range: [50, 90]
+        from: 40
+        to: 20
+        easing: ease-in-out
+
+      # --- Top (N): Persistent (frames 100-145) ---
+      - layer: quality-top-keyword
+        property: opacity
+        range: [100, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-top-keyword
+        property: frame.y
+        range: [100, 135]
+        from: 240
+        to: 220
+        easing: ease-out
+      - layer: quality-top-desc
+        property: opacity
+        range: [115, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-top-desc
+        property: frame.y
+        range: [115, 150]
+        from: 285
+        to: 270
+        easing: ease-out
+
+      # --- Right (E): Personal (~25 frame stagger, frames 125-170) ---
+      - layer: quality-right-keyword
+        property: opacity
+        range: [125, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-right-keyword
+        property: frame.x
+        range: [125, 160]
+        from: 1280
+        to: 1300
+        easing: ease-out
+      - layer: quality-right-desc
+        property: opacity
+        range: [140, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-right-desc
+        property: frame.x
+        range: [140, 175]
+        from: 1280
+        to: 1300
+        easing: ease-out
+
+      # --- Bottom (S): Evolving (~25 frame stagger, frames 150-195) ---
+      - layer: quality-bottom-keyword
+        property: opacity
+        range: [150, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-bottom-keyword
+        property: frame.y
+        range: [150, 185]
+        from: 720
+        to: 740
+        easing: ease-out
+      - layer: quality-bottom-desc
+        property: opacity
+        range: [165, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-bottom-desc
+        property: frame.y
+        range: [165, 200]
+        from: 770
+        to: 790
+        easing: ease-out
+
+      # --- Left (W): Yours (~25 frame stagger, frames 175-220) ---
+      - layer: quality-left-keyword
+        property: opacity
+        range: [175, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-left-keyword
+        property: frame.x
+        range: [175, 210]
+        from: 240
+        to: 220
+        easing: ease-out
+      - layer: quality-left-desc
+        property: opacity
+        range: [190, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: quality-left-desc
+        property: frame.x
+        range: [190, 225]
+        from: 240
+        to: 220
+        easing: ease-out
+
+      # --- Holds through frame 420 ---

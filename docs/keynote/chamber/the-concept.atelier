@@ -1,0 +1,552 @@
+version: "1.0"
+name: The Concept
+description: "Sequence -> hold. Dry waveform on left, room wireframe in center with source and listener, arrow draws in, concentric rings ripple outward, processed waveform appears on right."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Concept"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 60 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # Left: Dry waveform (thin horizontal rect)
+  - id: dry-waveform
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 120, y: 458 }
+    bounds: { width: 300, height: 4 }
+    opacity: 0
+
+  - id: dry-waveform-top
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 180, y: 440 }
+    bounds: { width: 180, height: 2 }
+    opacity: 0
+
+  - id: dry-waveform-bottom
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 180, y: 478 }
+    bounds: { width: 180, height: 2 }
+    opacity: 0
+
+  - id: dry-label
+    visual:
+      type: text
+      content: "Dry audio"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 170, y: 510 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  # Center: Room wireframe (rect with lighter stroke, no fill)
+  - id: room
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 660, y: 300 }
+    bounds: { width: 600, height: 360 }
+    opacity: 0
+
+  - id: room-label
+    visual:
+      type: text
+      content: "Room"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 900, y: 310 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Sound source dot (inside room)
+  - id: source-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 820, y: 450 }
+    bounds: { width: 20, height: 20 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: source-label
+    visual:
+      type: text
+      content: "Source"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 800, y: 478 }
+    bounds: { width: 60, height: 20 }
+    opacity: 0
+
+  # Listener dot (inside room)
+  - id: listener-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1080, y: 450 }
+    bounds: { width: 20, height: 20 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: listener-label
+    visual:
+      type: text
+      content: "Listener"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1055, y: 478 }
+    bounds: { width: 70, height: 20 }
+    opacity: 0
+
+  # Arrow from waveform into room (thin rect)
+  - id: arrow
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 420, y: 459 }
+    bounds: { width: 0, height: 2 }
+    opacity: 0
+
+  # Concentric ripple rings from source
+  - id: ring1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#F59E0B", width: 1 }
+    frame: { x: 790, y: 420 }
+    bounds: { width: 80, height: 80 }
+    opacity: 0
+
+  - id: ring2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#F59E0B", width: 1 }
+    frame: { x: 760, y: 390 }
+    bounds: { width: 140, height: 140 }
+    opacity: 0
+
+  - id: ring3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#F59E0B", width: 1 }
+    frame: { x: 730, y: 360 }
+    bounds: { width: 200, height: 200 }
+    opacity: 0
+
+  - id: ring4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#F59E0B", width: 1 }
+    frame: { x: 700, y: 330 }
+    bounds: { width: 260, height: 260 }
+    opacity: 0
+
+  # Right: Processed waveform (richer — taller bars)
+  - id: proc-waveform
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1500, y: 448 }
+    bounds: { width: 300, height: 4 }
+    opacity: 0
+
+  - id: proc-waveform-top
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1540, y: 420 }
+    bounds: { width: 220, height: 3 }
+    opacity: 0
+
+  - id: proc-waveform-bottom
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1540, y: 476 }
+    bounds: { width: 220, height: 3 }
+    opacity: 0
+
+  - id: proc-waveform-peak1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1580, y: 405 }
+    bounds: { width: 2, height: 90 }
+    opacity: 0
+
+  - id: proc-waveform-peak2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1640, y: 415 }
+    bounds: { width: 2, height: 70 }
+    opacity: 0
+
+  - id: proc-waveform-peak3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1700, y: 410 }
+    bounds: { width: 2, height: 80 }
+    opacity: 0
+
+  - id: proc-label
+    visual:
+      type: text
+      content: "Processed audio"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1550, y: 510 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  # Tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "Make it sound like you were there."
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 740 }
+    bounds: { width: 900, height: 50 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Left: Dry waveform appears
+      - layer: dry-waveform
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dry-waveform-top
+        property: opacity
+        range: [35, 65]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: dry-waveform-bottom
+        property: opacity
+        range: [35, 65]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: dry-label
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Center: Room wireframe appears
+      - layer: room
+        property: opacity
+        range: [70, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: room-label
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Source and listener dots appear
+      - layer: source-dot
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: source-dot
+        property: shadow.blur
+        range: [100, 130]
+        from: 0
+        to: 12
+        easing: ease-out
+      - layer: source-label
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      - layer: listener-dot
+        property: opacity
+        range: [120, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: listener-dot
+        property: shadow.blur
+        range: [120, 150]
+        from: 0
+        to: 12
+        easing: ease-out
+      - layer: listener-label
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Arrow draws from waveform into room
+      - layer: arrow
+        property: opacity
+        range: [150, 160]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: arrow
+        property: scale.x
+        range: [160, 220]
+        from: 0
+        to: 1
+        easing: ease-in-out
+
+      # Concentric rings ripple outward from source, growing and fading
+      - layer: ring1
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: ring1
+        property: scale.x
+        range: [230, 280]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring1
+        property: scale.y
+        range: [230, 280]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring1
+        property: opacity
+        range: [270, 310]
+        from: 0.8
+        to: 0.15
+        easing: ease-in
+
+      - layer: ring2
+        property: opacity
+        range: [250, 270]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: ring2
+        property: scale.x
+        range: [250, 300]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring2
+        property: scale.y
+        range: [250, 300]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring2
+        property: opacity
+        range: [290, 330]
+        from: 0.6
+        to: 0.1
+        easing: ease-in
+
+      - layer: ring3
+        property: opacity
+        range: [270, 290]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: ring3
+        property: scale.x
+        range: [270, 320]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring3
+        property: scale.y
+        range: [270, 320]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring3
+        property: opacity
+        range: [310, 350]
+        from: 0.4
+        to: 0.05
+        easing: ease-in
+
+      - layer: ring4
+        property: opacity
+        range: [290, 310]
+        from: 0
+        to: 0.3
+        easing: ease-out
+      - layer: ring4
+        property: scale.x
+        range: [290, 340]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring4
+        property: scale.y
+        range: [290, 340]
+        from: 0.5
+        to: 1.2
+        easing: ease-out
+      - layer: ring4
+        property: opacity
+        range: [330, 370]
+        from: 0.3
+        to: 0
+        easing: ease-in
+
+      # Right: Processed waveform appears
+      - layer: proc-waveform
+        property: opacity
+        range: [340, 370]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: proc-waveform-top
+        property: opacity
+        range: [345, 375]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: proc-waveform-bottom
+        property: opacity
+        range: [345, 375]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: proc-waveform-peak1
+        property: opacity
+        range: [350, 380]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: proc-waveform-peak2
+        property: opacity
+        range: [355, 385]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: proc-waveform-peak3
+        property: opacity
+        range: [360, 390]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: proc-label
+        property: opacity
+        range: [370, 400]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Tagline lands with amber glow
+      - layer: tagline
+        property: opacity
+        range: [410, 450]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [410, 450]
+        from: 770
+        to: 740
+        easing: ease-out
+      - layer: tagline
+        property: shadow.blur
+        range: [430, 470]
+        from: 0
+        to: 20
+        easing: ease-in-out

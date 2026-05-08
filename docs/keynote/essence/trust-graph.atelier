@@ -1,0 +1,736 @@
+version: "1.0"
+name: The Trust Graph
+description: "Sequence -> loop. A user node at center connects to three Witness nodes, each confirming a Rune trait. Runes pulse as Witnesses confirm them, then the graph expands and a pulse loops through connections."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Trust Graph"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 610, y: 60 }
+    bounds: { width: 700, height: 60 }
+    opacity: 0
+
+  # --- Center user node ---
+  - id: user-node
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#9B59B6", width: 3 }
+    frame: { x: 885, y: 440 }
+    bounds: { width: 150, height: 150 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: user-label
+    visual:
+      type: text
+      content: "You"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 920, y: 502 }
+    bounds: { width: 80, height: 30 }
+    opacity: 0
+
+  # --- Rune labels on user node ---
+  - id: rune-kind-badge
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 870, y: 600 }
+    bounds: { width: 70, height: 28 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-kind-text
+    visual:
+      type: text
+      content: "Kind"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 872, y: 604 }
+    bounds: { width: 66, height: 20 }
+    opacity: 0
+
+  - id: rune-reliable-badge
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 948, y: 600 }
+    bounds: { width: 90, height: 28 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-reliable-text
+    visual:
+      type: text
+      content: "Reliable"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 950, y: 604 }
+    bounds: { width: 86, height: 20 }
+    opacity: 0
+
+  - id: rune-creative-badge
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 1046, y: 600 }
+    bounds: { width: 86, height: 28 }
+    opacity: 0
+    shadow:
+      color: "#E91E8F"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-creative-text
+    visual:
+      type: text
+      content: "Creative"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 1048, y: 604 }
+    bounds: { width: 82, height: 20 }
+    opacity: 0
+
+  # --- Connection lines (thin rects stretching from user to witnesses) ---
+  - id: line-w1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 720, y: 380 }
+    bounds: { width: 200, height: 3 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: line-w2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1040, y: 380 }
+    bounds: { width: 200, height: 3 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: line-w3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 920, y: 280 }
+    bounds: { width: 3, height: 160 }
+    opacity: 0
+    shadow:
+      color: "#E91E8F"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # --- Witness nodes ---
+  - id: witness-1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 600, y: 320 }
+    bounds: { width: 110, height: 110 }
+    opacity: 0
+
+  - id: witness-1-label
+    visual:
+      type: text
+      content: "Witness"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 618, y: 355 }
+    bounds: { width: 74, height: 22 }
+    opacity: 0
+
+  - id: witness-1-rune
+    visual:
+      type: text
+      content: "Kind"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 618, y: 378 }
+    bounds: { width: 74, height: 20 }
+    opacity: 0
+
+  - id: witness-2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 1210, y: 320 }
+    bounds: { width: 110, height: 110 }
+    opacity: 0
+
+  - id: witness-2-label
+    visual:
+      type: text
+      content: "Witness"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1228, y: 355 }
+    bounds: { width: 74, height: 22 }
+    opacity: 0
+
+  - id: witness-2-rune
+    visual:
+      type: text
+      content: "Reliable"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1228, y: 378 }
+    bounds: { width: 74, height: 20 }
+    opacity: 0
+
+  - id: witness-3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#E91E8F", width: 2 }
+    frame: { x: 905, y: 160 }
+    bounds: { width: 110, height: 110 }
+    opacity: 0
+
+  - id: witness-3-label
+    visual:
+      type: text
+      content: "Witness"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#E91E8F"
+        textAlign: center
+    frame: { x: 923, y: 195 }
+    bounds: { width: 74, height: 22 }
+    opacity: 0
+
+  - id: witness-3-rune
+    visual:
+      type: text
+      content: "Creative"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 923, y: 218 }
+    bounds: { width: 74, height: 20 }
+    opacity: 0
+
+  # --- Extended connections from Witnesses (their own network) ---
+  - id: ext-line-1a
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 500, y: 350 }
+    bounds: { width: 100, height: 2 }
+    opacity: 0
+
+  - id: ext-node-1a
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 460, y: 335 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: ext-line-2a
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1320, y: 350 }
+    bounds: { width: 100, height: 2 }
+    opacity: 0
+
+  - id: ext-node-2a
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1420, y: 335 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  - id: ext-line-3a
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 940, y: 120 }
+    bounds: { width: 2, height: 40 }
+    opacity: 0
+
+  - id: ext-node-3a
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 920, y: 80 }
+    bounds: { width: 40, height: 40 }
+    opacity: 0
+
+  # Pulse dot that travels through connections
+  - id: pulse-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 950, y: 510 }
+    bounds: { width: 14, height: 14 }
+    opacity: 0
+    shadow:
+      color: "#F5F0EB"
+      blur: 8
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 600
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # User node appears
+      - layer: user-node
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: user-node
+        property: scale.x
+        range: [20, 50]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: user-node
+        property: scale.y
+        range: [20, 50]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: user-label
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Witness 1 fades in with connection line
+      - layer: line-w1
+        property: opacity
+        range: [60, 80]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: witness-1
+        property: opacity
+        range: [70, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-1-label
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-1-rune
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Witness 2 fades in with connection line
+      - layer: line-w2
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: witness-2
+        property: opacity
+        range: [110, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-2-label
+        property: opacity
+        range: [115, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-2-rune
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Witness 3 fades in with connection line
+      - layer: line-w3
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: witness-3
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-3-label
+        property: opacity
+        range: [155, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-3-rune
+        property: opacity
+        range: [160, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Rune confirmations: pulse/glow one at a time ---
+
+      # Rune "Kind" confirmed by Witness 1
+      - layer: rune-kind-badge
+        property: opacity
+        range: [200, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-kind-text
+        property: opacity
+        range: [205, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-kind-badge
+        property: shadow.blur
+        range: [210, 240]
+        from: 0
+        to: 18
+        easing: ease-in-out
+      - layer: rune-kind-badge
+        property: shadow.blur
+        range: [240, 260]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: line-w1
+        property: shadow.blur
+        range: [210, 240]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: line-w1
+        property: shadow.blur
+        range: [240, 260]
+        from: 12
+        to: 2
+        easing: ease-in-out
+
+      # Rune "Reliable" confirmed by Witness 2
+      - layer: rune-reliable-badge
+        property: opacity
+        range: [260, 280]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-reliable-text
+        property: opacity
+        range: [265, 285]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-reliable-badge
+        property: shadow.blur
+        range: [270, 300]
+        from: 0
+        to: 18
+        easing: ease-in-out
+      - layer: rune-reliable-badge
+        property: shadow.blur
+        range: [300, 320]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: line-w2
+        property: shadow.blur
+        range: [270, 300]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: line-w2
+        property: shadow.blur
+        range: [300, 320]
+        from: 12
+        to: 2
+        easing: ease-in-out
+
+      # Rune "Creative" confirmed by Witness 3
+      - layer: rune-creative-badge
+        property: opacity
+        range: [320, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-creative-text
+        property: opacity
+        range: [325, 345]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-creative-badge
+        property: shadow.blur
+        range: [330, 360]
+        from: 0
+        to: 18
+        easing: ease-in-out
+      - layer: rune-creative-badge
+        property: shadow.blur
+        range: [360, 380]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: line-w3
+        property: shadow.blur
+        range: [330, 360]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: line-w3
+        property: shadow.blur
+        range: [360, 380]
+        from: 12
+        to: 2
+        easing: ease-in-out
+
+      # User node glows after all confirmations
+      - layer: user-node
+        property: shadow.blur
+        range: [380, 410]
+        from: 0
+        to: 25
+        easing: ease-in-out
+
+      # --- Graph expands: extended connections appear ---
+      - layer: ext-line-1a
+        property: opacity
+        range: [400, 420]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: ext-node-1a
+        property: opacity
+        range: [410, 430]
+        from: 0
+        to: 0.7
+        easing: ease-out
+
+      - layer: ext-line-2a
+        property: opacity
+        range: [420, 440]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: ext-node-2a
+        property: opacity
+        range: [430, 450]
+        from: 0
+        to: 0.7
+        easing: ease-out
+
+      - layer: ext-line-3a
+        property: opacity
+        range: [440, 460]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: ext-node-3a
+        property: opacity
+        range: [450, 470]
+        from: 0
+        to: 0.7
+        easing: ease-out
+
+      # --- Looping pulse through connections ---
+
+      # Pulse dot appears at user, travels to witness-1 area
+      - layer: pulse-dot
+        property: opacity
+        range: [480, 490]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pulse-dot
+        property: frame.x
+        range: [490, 520]
+        from: 950
+        to: 645
+        easing: ease-in-out
+      - layer: pulse-dot
+        property: frame.y
+        range: [490, 520]
+        from: 510
+        to: 370
+        easing: ease-in-out
+
+      # Pulse fades, reappears at user, travels to witness-2
+      - layer: pulse-dot
+        property: opacity
+        range: [520, 525]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pulse-dot
+        property: frame.x
+        range: [525, 530]
+        from: 645
+        to: 950
+        easing: linear
+      - layer: pulse-dot
+        property: frame.y
+        range: [525, 530]
+        from: 370
+        to: 510
+        easing: linear
+      - layer: pulse-dot
+        property: opacity
+        range: [530, 535]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pulse-dot
+        property: frame.x
+        range: [535, 560]
+        from: 950
+        to: 1258
+        easing: ease-in-out
+      - layer: pulse-dot
+        property: frame.y
+        range: [535, 560]
+        from: 510
+        to: 370
+        easing: ease-in-out
+
+      # Pulse fades, reappears at user, travels to witness-3
+      - layer: pulse-dot
+        property: opacity
+        range: [560, 565]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pulse-dot
+        property: frame.x
+        range: [565, 570]
+        from: 1258
+        to: 950
+        easing: linear
+      - layer: pulse-dot
+        property: frame.y
+        range: [565, 570]
+        from: 370
+        to: 510
+        easing: linear
+      - layer: pulse-dot
+        property: opacity
+        range: [570, 575]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pulse-dot
+        property: frame.y
+        range: [575, 600]
+        from: 510
+        to: 210
+        easing: ease-in-out
+
+      # Pulse fades at end
+      - layer: pulse-dot
+        property: opacity
+        range: [595, 600]
+        from: 1
+        to: 0
+        easing: ease-in

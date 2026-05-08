@@ -1,0 +1,374 @@
+version: "1.0"
+name: The Realization
+description: "Sequence -> hold. Two separate domain boxes appear (habit tracking + content intelligence), pause apart, then a connection line draws between them with 'Same problem' text. Both boxes merge toward center into one larger box with a unified label. Final text lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Left box — Habit Tracking
+  - id: left-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D1B2A" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 260, y: 340 }
+    bounds: { width: 340, height: 160 }
+    opacity: 0
+
+  - id: left-title
+    visual:
+      type: text
+      content: "Habit tracking"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 300, y: 375 }
+    bounds: { width: 260, height: 36 }
+    opacity: 0
+
+  - id: left-subtitle
+    visual:
+      type: text
+      content: "workouts, routines, patterns"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 300, y: 420 }
+    bounds: { width: 260, height: 24 }
+    opacity: 0
+
+  # Right box — Content Intelligence
+  - id: right-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A0D2E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 1320, y: 340 }
+    bounds: { width: 340, height: 160 }
+    opacity: 0
+
+  - id: right-title
+    visual:
+      type: text
+      content: "Content intelligence"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1350, y: 375 }
+    bounds: { width: 280, height: 36 }
+    opacity: 0
+
+  - id: right-subtitle
+    visual:
+      type: text
+      content: "trends, publishing, optimization"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1340, y: 420 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # Connection line between boxes (thin horizontal rect)
+  - id: connection-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 600, y: 418 }
+    bounds: { width: 0, height: 3 }
+    opacity: 0
+
+  # "Same problem." center text
+  - id: same-problem
+    visual:
+      type: text
+      content: "Same problem."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 760, y: 370 }
+    bounds: { width: 400, height: 44 }
+    opacity: 0
+
+  # Merged box — larger, centered
+  - id: merged-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#111122" }
+      stroke: { color: "#F5F0EB", width: 2 }
+    frame: { x: 510, y: 310 }
+    bounds: { width: 900, height: 200 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Merged label
+  - id: merged-label
+    visual:
+      type: text
+      content: "Personal optimization through pattern recognition"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 390 }
+    bounds: { width: 800, height: 40 }
+    opacity: 0
+
+  # Final question text
+  - id: final-text
+    visual:
+      type: text
+      content: "Why separate them? Why not one companion that sees everything?"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#888888"
+        textAlign: center
+    frame: { x: 360, y: 620 }
+    bounds: { width: 1200, height: 44 }
+    opacity: 0
+
+states:
+  main:
+    duration: 720
+    deltas:
+      # --- Left box appears (frames 0-40) ---
+      - layer: left-box
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: left-box
+        property: scale.x
+        range: [0, 30]
+        from: 0.85
+        to: 1
+        easing: ease-out
+      - layer: left-box
+        property: scale.y
+        range: [0, 30]
+        from: 0.85
+        to: 1
+        easing: ease-out
+      - layer: left-title
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: left-subtitle
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Right box appears (frames 30-70) ---
+      - layer: right-box
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: right-box
+        property: scale.x
+        range: [30, 60]
+        from: 0.85
+        to: 1
+        easing: ease-out
+      - layer: right-box
+        property: scale.y
+        range: [30, 60]
+        from: 0.85
+        to: 1
+        easing: ease-out
+      - layer: right-title
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: right-subtitle
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Pause: boxes sit apart (frames 75-150) ---
+
+      # --- Connection line draws between them (frames 150-210) ---
+      - layer: connection-line
+        property: opacity
+        range: [150, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: connection-line
+        property: bounds.width
+        range: [150, 210]
+        from: 0
+        to: 720
+        easing: ease-in-out
+
+      # --- "Same problem." text appears (frames 190-230) ---
+      - layer: same-problem
+        property: opacity
+        range: [200, 235]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: same-problem
+        property: frame.y
+        range: [200, 235]
+        from: 385
+        to: 370
+        easing: ease-out
+
+      # --- Pause on "Same problem." (frames 235-320) ---
+
+      # --- Both boxes fade out and move toward center (frames 320-400) ---
+      # Left box moves right and fades
+      - layer: left-box
+        property: frame.x
+        range: [320, 400]
+        from: 260
+        to: 510
+        easing: ease-in-out
+      - layer: left-box
+        property: opacity
+        range: [360, 400]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: left-title
+        property: opacity
+        range: [320, 370]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: left-subtitle
+        property: opacity
+        range: [320, 370]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Right box moves left and fades
+      - layer: right-box
+        property: frame.x
+        range: [320, 400]
+        from: 1320
+        to: 1060
+        easing: ease-in-out
+      - layer: right-box
+        property: opacity
+        range: [360, 400]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: right-title
+        property: opacity
+        range: [320, 370]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: right-subtitle
+        property: opacity
+        range: [320, 370]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Connection line and "Same problem" fade
+      - layer: connection-line
+        property: opacity
+        range: [340, 380]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: same-problem
+        property: opacity
+        range: [340, 380]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # --- Merged box appears (frames 400-460) ---
+      - layer: merged-box
+        property: opacity
+        range: [400, 440]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: merged-box
+        property: scale.x
+        range: [400, 450]
+        from: 0.9
+        to: 1
+        easing: ease-out
+      - layer: merged-box
+        property: scale.y
+        range: [400, 450]
+        from: 0.9
+        to: 1
+        easing: ease-out
+      - layer: merged-box
+        property: shadow.blur
+        range: [430, 480]
+        from: 0
+        to: 20
+        easing: ease-in-out
+
+      # Merged label fades in
+      - layer: merged-label
+        property: opacity
+        range: [440, 480]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: merged-label
+        property: frame.y
+        range: [440, 480]
+        from: 405
+        to: 390
+        easing: ease-out
+
+      # --- Final question text (frames 540-590) ---
+      - layer: final-text
+        property: opacity
+        range: [540, 590]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: final-text
+        property: frame.y
+        range: [540, 590]
+        from: 640
+        to: 620
+        easing: ease-out
+
+      # --- Holds through frame 720 ---

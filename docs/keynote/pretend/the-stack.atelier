@@ -1,0 +1,349 @@
+version: "1.0"
+name: The Stack
+description: "Sequence -> hold. Four layers stack bottom to top with stagger: Paradigm (blue), Atelier (teal), Pretend (amber), then Arcade exits right (green). Tagline lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "The Stack"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # --- Bottom layer: Paradigm (blue) ---
+  - id: paradigm-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A2744" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 360, y: 620 }
+    bounds: { width: 700, height: 90 }
+    opacity: 0
+
+  - id: paradigm-name
+    visual:
+      type: text
+      content: "Paradigm"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 400, y: 638 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: paradigm-desc
+    visual:
+      type: text
+      content: "Context & structure"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 672 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # --- Middle layer: Atelier (teal) ---
+  - id: atelier-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D2B2B" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 360, y: 510 }
+    bounds: { width: 700, height: 90 }
+    opacity: 0
+
+  - id: atelier-name
+    visual:
+      type: text
+      content: "Atelier"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 400, y: 528 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: atelier-desc
+    visual:
+      type: text
+      content: "Visuals & animation"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 562 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # --- Top layer: Pretend (amber) ---
+  - id: pretend-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#2E2410" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 360, y: 400 }
+    bounds: { width: 700, height: 90 }
+    opacity: 0
+
+  - id: pretend-name
+    visual:
+      type: text
+      content: "Pretend"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 400, y: 418 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: pretend-desc
+    visual:
+      type: text
+      content: "Game logic & rules"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 452 }
+    bounds: { width: 300, height: 24 }
+    opacity: 0
+
+  # --- Arrow + Arcade (exits right, green) ---
+  - id: arrow-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 3 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1080, y: 510 }
+    bounds: { width: 180, height: 6 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: arcade-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D2E1F" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1280, y: 468 }
+    bounds: { width: 320, height: 90 }
+    opacity: 0
+
+  - id: arcade-name
+    visual:
+      type: text
+      content: "Arcade"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 1320, y: 486 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: arcade-desc
+    visual:
+      type: text
+      content: "Play, compete, share"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1320, y: 520 }
+    bounds: { width: 260, height: 24 }
+    opacity: 0
+
+  # --- Tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "Describe a game. Get a game."
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 800 }
+    bounds: { width: 1000, height: 48 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Paradigm (bottom) slides up and fades in ---
+      - layer: paradigm-bar
+        property: opacity
+        range: [40, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: paradigm-bar
+        property: frame.y
+        range: [40, 70]
+        from: 660
+        to: 620
+        easing: ease-out
+      - layer: paradigm-name
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: paradigm-desc
+        property: opacity
+        range: [55, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Atelier (middle) slides up and fades in ---
+      - layer: atelier-bar
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: atelier-bar
+        property: frame.y
+        range: [90, 120]
+        from: 550
+        to: 510
+        easing: ease-out
+      - layer: atelier-name
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: atelier-desc
+        property: opacity
+        range: [105, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Pretend (top) slides up and fades in ---
+      - layer: pretend-bar
+        property: opacity
+        range: [140, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pretend-bar
+        property: frame.y
+        range: [140, 170]
+        from: 440
+        to: 400
+        easing: ease-out
+      - layer: pretend-name
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pretend-desc
+        property: opacity
+        range: [155, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Arrow draws out to the right ---
+      - layer: arrow-line
+        property: opacity
+        range: [220, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-line
+        property: scale.x
+        range: [220, 280]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: arrow-line
+        property: shadow.blur
+        range: [260, 300]
+        from: 0
+        to: 12
+        easing: ease-in-out
+
+      # --- Arcade slides in from right ---
+      - layer: arcade-bar
+        property: opacity
+        range: [280, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arcade-bar
+        property: frame.x
+        range: [280, 320]
+        from: 1360
+        to: 1280
+        easing: ease-out
+      - layer: arcade-name
+        property: opacity
+        range: [290, 315]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arcade-desc
+        property: opacity
+        range: [295, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Tagline ---
+      - layer: tagline
+        property: opacity
+        range: [370, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [370, 410]
+        from: 830
+        to: 800
+        easing: ease-out

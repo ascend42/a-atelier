@@ -1,0 +1,682 @@
+version: "1.0"
+name: "paradigm shift"
+description: "Sequence -> hold. Terminal with typed command, checklist items appearing and completing one by one with green indicators, final success message."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Terminal background
+  - id: terminal-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D0D14" }
+      stroke: { color: "#222233", width: 1 }
+    frame: { x: 360, y: 100 }
+    bounds: { width: 1200, height: 760 }
+    opacity: 0
+
+  # Terminal title bar
+  - id: terminal-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#161622" }
+    frame: { x: 361, y: 101 }
+    bounds: { width: 1198, height: 36 }
+    opacity: 0
+
+  # Terminal dot — red
+  - id: dot-red
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 380, y: 110 }
+    bounds: { width: 14, height: 14 }
+    opacity: 0
+
+  # Terminal dot — amber
+  - id: dot-amber
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 402, y: 110 }
+    bounds: { width: 14, height: 14 }
+    opacity: 0
+
+  # Terminal dot — green
+  - id: dot-green
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 424, y: 110 }
+    bounds: { width: 14, height: 14 }
+    opacity: 0
+
+  # Prompt
+  - id: prompt
+    visual:
+      type: text
+      content: "$ "
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 410, y: 170 }
+    bounds: { width: 40, height: 32 }
+    opacity: 0
+
+  # Command text — "paradigm shift"
+  - id: cmd-p
+    visual:
+      type: text
+      content: "p"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 20, height: 32 }
+    opacity: 0
+
+  - id: cmd-pa
+    visual:
+      type: text
+      content: "pa"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 30, height: 32 }
+    opacity: 0
+
+  - id: cmd-par
+    visual:
+      type: text
+      content: "par"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 44, height: 32 }
+    opacity: 0
+
+  - id: cmd-para
+    visual:
+      type: text
+      content: "para"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 58, height: 32 }
+    opacity: 0
+
+  - id: cmd-parad
+    visual:
+      type: text
+      content: "parad"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 72, height: 32 }
+    opacity: 0
+
+  - id: cmd-paradi
+    visual:
+      type: text
+      content: "paradi"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 82, height: 32 }
+    opacity: 0
+
+  - id: cmd-paradig
+    visual:
+      type: text
+      content: "paradig"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 100, height: 32 }
+    opacity: 0
+
+  - id: cmd-paradigm
+    visual:
+      type: text
+      content: "paradigm"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 120, height: 32 }
+    opacity: 0
+
+  - id: cmd-full
+    visual:
+      type: text
+      content: "paradigm shift"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 450, y: 170 }
+    bounds: { width: 210, height: 32 }
+    opacity: 0
+
+  # Checklist item 1 — indicator (gray -> green)
+  - id: ind-1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 240 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-1
+    visual:
+      type: text
+      content: "Initializing config..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 235 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Checklist item 2
+  - id: ind-2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 280 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-2
+    visual:
+      type: text
+      content: "Scanning symbols..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 275 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Checklist item 3
+  - id: ind-3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 320 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-3
+    visual:
+      type: text
+      content: "Installing hooks..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 315 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Checklist item 4
+  - id: ind-4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 360 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-4
+    visual:
+      type: text
+      content: "Generating CLAUDE.md..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 355 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Checklist item 5
+  - id: ind-5
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 400 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-5
+    visual:
+      type: text
+      content: "Configuring MCP..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 395 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Checklist item 6
+  - id: ind-6
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 420, y: 440 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: check-6
+    visual:
+      type: text
+      content: "Running doctor..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 445, y: 435 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Final output
+  - id: output-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 410, y: 500 }
+    bounds: { width: 300, height: 2 }
+    opacity: 0
+
+  - id: output-text
+    visual:
+      type: text
+      content: "Paradigm ready."
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 420, y: 520 }
+    bounds: { width: 400, height: 34 }
+    opacity: 0
+
+  # Bottom tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "One command. Full setup. Zero configuration."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 360, y: 920 }
+    bounds: { width: 1200, height: 50 }
+    opacity: 0
+
+states:
+  main:
+    duration: 660
+    deltas:
+      # Terminal appears
+      - layer: terminal-bg
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: terminal-bar
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-red
+        property: opacity
+        range: [10, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-amber
+        property: opacity
+        range: [10, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-green
+        property: opacity
+        range: [10, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Prompt appears
+      - layer: prompt
+        property: opacity
+        range: [35, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Type "paradigm shift" letter by letter — each layer replaces previous
+      # p
+      - layer: cmd-p
+        property: opacity
+        range: [55, 58]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-p
+        property: opacity
+        range: [61, 64]
+        from: 1
+        to: 0
+        easing: linear
+      # pa
+      - layer: cmd-pa
+        property: opacity
+        range: [64, 67]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-pa
+        property: opacity
+        range: [70, 73]
+        from: 1
+        to: 0
+        easing: linear
+      # par
+      - layer: cmd-par
+        property: opacity
+        range: [73, 76]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-par
+        property: opacity
+        range: [79, 82]
+        from: 1
+        to: 0
+        easing: linear
+      # para
+      - layer: cmd-para
+        property: opacity
+        range: [82, 85]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-para
+        property: opacity
+        range: [88, 91]
+        from: 1
+        to: 0
+        easing: linear
+      # parad
+      - layer: cmd-parad
+        property: opacity
+        range: [91, 94]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-parad
+        property: opacity
+        range: [97, 100]
+        from: 1
+        to: 0
+        easing: linear
+      # paradi
+      - layer: cmd-paradi
+        property: opacity
+        range: [100, 103]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-paradi
+        property: opacity
+        range: [106, 109]
+        from: 1
+        to: 0
+        easing: linear
+      # paradig
+      - layer: cmd-paradig
+        property: opacity
+        range: [109, 112]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-paradig
+        property: opacity
+        range: [115, 118]
+        from: 1
+        to: 0
+        easing: linear
+      # paradigm
+      - layer: cmd-paradigm
+        property: opacity
+        range: [118, 121]
+        from: 0
+        to: 1
+        easing: linear
+      - layer: cmd-paradigm
+        property: opacity
+        range: [135, 138]
+        from: 1
+        to: 0
+        easing: linear
+      # paradigm shift (full, stays visible)
+      - layer: cmd-full
+        property: opacity
+        range: [138, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # === CHECKLIST ===
+      # Item 1: "Initializing config..." — text fades in, then indicator turns green
+      - layer: check-1
+        property: opacity
+        range: [180, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-1
+        property: opacity
+        range: [180, 195]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-1
+        property: visual.fill.color
+        range: [210, 230]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # Item 2: "Scanning symbols..."
+      - layer: check-2
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-2
+        property: opacity
+        range: [230, 245]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-2
+        property: visual.fill.color
+        range: [260, 280]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # Item 3: "Installing hooks..."
+      - layer: check-3
+        property: opacity
+        range: [280, 300]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-3
+        property: opacity
+        range: [280, 295]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-3
+        property: visual.fill.color
+        range: [310, 330]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # Item 4: "Generating CLAUDE.md..."
+      - layer: check-4
+        property: opacity
+        range: [330, 350]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-4
+        property: opacity
+        range: [330, 345]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-4
+        property: visual.fill.color
+        range: [360, 380]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # Item 5: "Configuring MCP..."
+      - layer: check-5
+        property: opacity
+        range: [380, 400]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-5
+        property: opacity
+        range: [380, 395]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-5
+        property: visual.fill.color
+        range: [410, 430]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # Item 6: "Running doctor..."
+      - layer: check-6
+        property: opacity
+        range: [430, 450]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-6
+        property: opacity
+        range: [430, 445]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ind-6
+        property: visual.fill.color
+        range: [460, 480]
+        from: "#333333"
+        to: "#10B981"
+        easing: ease-out
+
+      # === FINAL OUTPUT ===
+      # Divider line
+      - layer: output-line
+        property: opacity
+        range: [500, 520]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: output-line
+        property: scale.x
+        range: [500, 540]
+        from: 0
+        to: 1
+        easing: ease-in-out
+
+      # "Paradigm ready."
+      - layer: output-text
+        property: opacity
+        range: [530, 560]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Bottom tagline
+      - layer: tagline
+        property: opacity
+        range: [580, 620]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [580, 630]
+        from: 950
+        to: 920
+        easing: ease-out

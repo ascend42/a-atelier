@@ -1,0 +1,510 @@
+version: "1.0"
+name: "The Ripple Save"
+description: "Sequence -> hold. A rename triggers paradigm_ripple, connection lines explode outward from a central node to dependent symbols, revealing the blast radius before shipping."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Rename code rect
+  - id: rename-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#111118" }
+      stroke: { color: "#333344", width: 1 }
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 60 }
+    opacity: 0
+
+  # Rename text
+  - id: rename-text
+    visual:
+      type: text
+      content: "#checkout  -->  #purchase"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 610, y: 72 }
+    bounds: { width: 700, height: 36 }
+    opacity: 0
+
+  # AI calls ripple — tool rect
+  - id: ripple-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#0D0D18" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 610, y: 150 }
+    bounds: { width: 700, height: 50 }
+    opacity: 0
+
+  - id: ripple-text
+    visual:
+      type: text
+      content: "paradigm_ripple({ symbol: \"#checkout\" })"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 640, y: 162 }
+    bounds: { width: 640, height: 26 }
+    opacity: 0
+
+  - id: ripple-label
+    visual:
+      type: text
+      content: "AI Agent calls:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: right
+    frame: { x: 430, y: 165 }
+    bounds: { width: 160, height: 22 }
+    opacity: 0
+
+  # Central node — #checkout
+  - id: center-node
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 2 }
+    frame: { x: 900, y: 430 }
+    bounds: { width: 120, height: 120 }
+    opacity: 0
+    shadow:
+      color: "#F5F0EB"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: center-label
+    visual:
+      type: text
+      content: "#checkout"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 905, y: 478 }
+    bounds: { width: 110, height: 26 }
+    opacity: 0
+
+  # Connection line 1 — to $checkout-flow (top-left)
+  - id: line-1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 680, y: 370 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  # Node 1 — $checkout-flow
+  - id: node1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#0D1A14" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 380, y: 300 }
+    bounds: { width: 280, height: 60 }
+    opacity: 0
+
+  - id: node1-text
+    visual:
+      type: text
+      content: "$checkout-flow"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 400, y: 315 }
+    bounds: { width: 240, height: 28 }
+    opacity: 0
+
+  # Connection line 2 — to ^checkout-authorized (top-right)
+  - id: line-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1020, y: 370 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  # Node 2 — ^checkout-authorized
+  - id: node2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1610" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1260, y: 300 }
+    bounds: { width: 300, height: 60 }
+    opacity: 0
+
+  - id: node2-text
+    visual:
+      type: text
+      content: "^checkout-authorized"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1275, y: 315 }
+    bounds: { width: 270, height: 28 }
+    opacity: 0
+
+  # Connection line 3 — to !checkout-complete (bottom-right)
+  - id: line-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 1020, y: 530 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  # Node 3 — !checkout-complete
+  - id: node3-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A0D0D" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 1260, y: 500 }
+    bounds: { width: 290, height: 60 }
+    opacity: 0
+
+  - id: node3-text
+    visual:
+      type: text
+      content: "!checkout-complete"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1275, y: 515 }
+    bounds: { width: 260, height: 28 }
+    opacity: 0
+
+  # Connection line 4 — to 4 .purpose files (bottom-left)
+  - id: line-4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 680, y: 530 }
+    bounds: { width: 240, height: 2 }
+    opacity: 0
+
+  # Node 4 — 4 .purpose files
+  - id: node4-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#0D0D1A" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 380, y: 500 }
+    bounds: { width: 280, height: 60 }
+    opacity: 0
+
+  - id: node4-text
+    visual:
+      type: text
+      content: "4 .purpose files"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 400, y: 515 }
+    bounds: { width: 240, height: 28 }
+    opacity: 0
+
+  # Summary text
+  - id: summary
+    visual:
+      type: text
+      content: "7 references. 3 flows. 1 gate. All would have broken silently."
+      style:
+        fontFamily: sans-serif
+        fontSize: 34
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 700 }
+    bounds: { width: 1400, height: 44 }
+    opacity: 0
+
+  # Subtitle
+  - id: subtitle
+    visual:
+      type: text
+      content: "Ripple showed the blast radius before the rename shipped."
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#888888"
+        textAlign: center
+    frame: { x: 360, y: 770 }
+    bounds: { width: 1200, height: 34 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Rename rect appears
+      - layer: rename-bg
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rename-text
+        property: opacity
+        range: [5, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # AI calls ripple
+      - layer: ripple-label
+        property: opacity
+        range: [45, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ripple-bg
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ripple-text
+        property: opacity
+        range: [55, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Central node appears with glow
+      - layer: center-node
+        property: opacity
+        range: [100, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: center-node
+        property: scale.x
+        range: [100, 135]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: center-node
+        property: scale.y
+        range: [100, 135]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: center-node
+        property: shadow.blur
+        range: [120, 160]
+        from: 0
+        to: 20
+        easing: ease-in-out
+      - layer: center-label
+        property: opacity
+        range: [115, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection 1 draws outward — line extends, then node fades in
+      - layer: line-1
+        property: opacity
+        range: [155, 165]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: line-1
+        property: scale.x
+        range: [155, 195]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: line-1
+        property: frame.x
+        range: [155, 195]
+        from: 920
+        to: 680
+        easing: ease-in-out
+      - layer: node1-bg
+        property: opacity
+        range: [190, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: node1-bg
+        property: frame.x
+        range: [190, 215]
+        from: 420
+        to: 380
+        easing: ease-out
+      - layer: node1-text
+        property: opacity
+        range: [195, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection 2 draws outward — top-right
+      - layer: line-2
+        property: opacity
+        range: [210, 220]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: line-2
+        property: scale.x
+        range: [210, 250]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: node2-bg
+        property: opacity
+        range: [245, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: node2-bg
+        property: frame.x
+        range: [245, 270]
+        from: 1300
+        to: 1260
+        easing: ease-out
+      - layer: node2-text
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection 3 draws outward — bottom-right
+      - layer: line-3
+        property: opacity
+        range: [265, 275]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: line-3
+        property: scale.x
+        range: [265, 305]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: node3-bg
+        property: opacity
+        range: [300, 325]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: node3-bg
+        property: frame.x
+        range: [300, 325]
+        from: 1300
+        to: 1260
+        easing: ease-out
+      - layer: node3-text
+        property: opacity
+        range: [305, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection 4 draws outward — bottom-left
+      - layer: line-4
+        property: opacity
+        range: [320, 330]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: line-4
+        property: scale.x
+        range: [320, 360]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: line-4
+        property: frame.x
+        range: [320, 360]
+        from: 920
+        to: 680
+        easing: ease-in-out
+      - layer: node4-bg
+        property: opacity
+        range: [355, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: node4-bg
+        property: frame.x
+        range: [355, 380]
+        from: 420
+        to: 380
+        easing: ease-out
+      - layer: node4-text
+        property: opacity
+        range: [360, 385]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Center node glow settles
+      - layer: center-node
+        property: shadow.blur
+        range: [380, 420]
+        from: 20
+        to: 10
+        easing: ease-in-out
+
+      # Summary text appears
+      - layer: summary
+        property: opacity
+        range: [420, 460]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: summary
+        property: frame.y
+        range: [420, 470]
+        from: 730
+        to: 700
+        easing: ease-out
+
+      # Subtitle appears
+      - layer: subtitle
+        property: opacity
+        range: [460, 500]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: subtitle
+        property: frame.y
+        range: [460, 510]
+        from: 800
+        to: 770
+        easing: ease-out

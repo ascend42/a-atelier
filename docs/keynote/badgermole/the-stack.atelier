@@ -1,0 +1,520 @@
+version: "1.0"
+name: The Stack
+description: "Reveal -> hold. Five tech stack items arranged in a row, each fading in left to right."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Stack"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 80 }
+    bounds: { width: 600, height: 64 }
+    opacity: 0
+
+  # --- Item 1: Daemon / Rust ---
+  - id: item1-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 140, y: 340 }
+    bounds: { width: 260, height: 320 }
+    opacity: 0
+
+  - id: item1-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 235, y: 380 }
+    bounds: { width: 70, height: 70 }
+    opacity: 0
+
+  - id: item1-name
+    visual:
+      type: text
+      content: "Daemon"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 170, y: 475 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: item1-tech
+    visual:
+      type: text
+      content: "Rust"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 170, y: 515 }
+    bounds: { width: 200, height: 30 }
+    opacity: 0
+
+  - id: item1-desc
+    visual:
+      type: text
+      content: "Core engine"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 170, y: 550 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  # --- Item 2: CLI / burrow ---
+  - id: item2-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 460, y: 340 }
+    bounds: { width: 260, height: 320 }
+    opacity: 0
+
+  - id: item2-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 550, y: 380 }
+    bounds: { width: 80, height: 60 }
+    opacity: 0
+
+  - id: item2-name
+    visual:
+      type: text
+      content: "CLI"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 490, y: 475 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: item2-tech
+    visual:
+      type: text
+      content: "burrow"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 490, y: 515 }
+    bounds: { width: 200, height: 30 }
+    opacity: 0
+
+  - id: item2-desc
+    visual:
+      type: text
+      content: "Mirrors API"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 490, y: 550 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  # --- Item 3: Desktop / Tauri + React ---
+  - id: item3-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 780, y: 340 }
+    bounds: { width: 260, height: 320 }
+    opacity: 0
+
+  - id: item3-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 870, y: 380 }
+    bounds: { width: 70, height: 60 }
+    opacity: 0
+
+  - id: item3-name
+    visual:
+      type: text
+      content: "Desktop"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 810, y: 475 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: item3-tech
+    visual:
+      type: text
+      content: "Tauri + React"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 810, y: 515 }
+    bounds: { width: 200, height: 30 }
+    opacity: 0
+
+  - id: item3-desc
+    visual:
+      type: text
+      content: "Menu bar + app"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 810, y: 550 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  # --- Item 4: Extension / Manifest V3 ---
+  - id: item4-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 1100, y: 340 }
+    bounds: { width: 260, height: 320 }
+    opacity: 0
+
+  - id: item4-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1195, y: 380 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+
+  - id: item4-name
+    visual:
+      type: text
+      content: "Extension"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1130, y: 475 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: item4-tech
+    visual:
+      type: text
+      content: "Manifest V3"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1130, y: 515 }
+    bounds: { width: 200, height: 30 }
+    opacity: 0
+
+  - id: item4-desc
+    visual:
+      type: text
+      content: "Per-tab control"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1130, y: 550 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  # --- Item 5: Metrics / SQLite ---
+  - id: item5-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1420, y: 340 }
+    bounds: { width: 260, height: 320 }
+    opacity: 0
+
+  - id: item5-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1515, y: 380 }
+    bounds: { width: 70, height: 60 }
+    opacity: 0
+
+  - id: item5-name
+    visual:
+      type: text
+      content: "Metrics"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1450, y: 475 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  - id: item5-tech
+    visual:
+      type: text
+      content: "SQLite"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1450, y: 515 }
+    bounds: { width: 200, height: 30 }
+    opacity: 0
+
+  - id: item5-desc
+    visual:
+      type: text
+      content: "All data local"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1450, y: 550 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+states:
+  main:
+    duration: 300
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Item 1: Daemon (frames 30-70) ---
+      - layer: item1-box
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item1-box
+        property: frame.y
+        range: [30, 60]
+        from: 360
+        to: 340
+        easing: ease-out
+      - layer: item1-icon
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item1-name
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item1-tech
+        property: opacity
+        range: [45, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item1-desc
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Item 2: CLI (frames 70-110) ---
+      - layer: item2-box
+        property: opacity
+        range: [70, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item2-box
+        property: frame.y
+        range: [70, 100]
+        from: 360
+        to: 340
+        easing: ease-out
+      - layer: item2-icon
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item2-name
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item2-tech
+        property: opacity
+        range: [85, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item2-desc
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Item 3: Desktop (frames 110-150) ---
+      - layer: item3-box
+        property: opacity
+        range: [110, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item3-box
+        property: frame.y
+        range: [110, 140]
+        from: 360
+        to: 340
+        easing: ease-out
+      - layer: item3-icon
+        property: opacity
+        range: [115, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item3-name
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item3-tech
+        property: opacity
+        range: [125, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item3-desc
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Item 4: Extension (frames 150-190) ---
+      - layer: item4-box
+        property: opacity
+        range: [150, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item4-box
+        property: frame.y
+        range: [150, 180]
+        from: 360
+        to: 340
+        easing: ease-out
+      - layer: item4-icon
+        property: opacity
+        range: [155, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item4-name
+        property: opacity
+        range: [160, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item4-tech
+        property: opacity
+        range: [165, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item4-desc
+        property: opacity
+        range: [170, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Item 5: Metrics (frames 190-230) ---
+      - layer: item5-box
+        property: opacity
+        range: [190, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item5-box
+        property: frame.y
+        range: [190, 220]
+        from: 360
+        to: 340
+        easing: ease-out
+      - layer: item5-icon
+        property: opacity
+        range: [195, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item5-name
+        property: opacity
+        range: [200, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item5-tech
+        property: opacity
+        range: [205, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: item5-desc
+        property: opacity
+        range: [210, 230]
+        from: 0
+        to: 1
+        easing: ease-out

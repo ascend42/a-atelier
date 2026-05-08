@@ -1,0 +1,437 @@
+version: "1.0"
+name: University
+description: "Reveal -> hold. Course cards appear with progress bars, a certification badge, and tagline. Demonstrates the Paradigm learning platform."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "University"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 80 }
+    bounds: { width: 600, height: 64 }
+    opacity: 0
+
+  # Course card 1 — background
+  - id: card1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#141420" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 280, y: 280 }
+    bounds: { width: 520, height: 320 }
+    opacity: 0
+
+  # Course card 1 — icon accent bar
+  - id: card1-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 310, y: 310 }
+    bounds: { width: 6, height: 50 }
+    opacity: 0
+
+  # Course card 1 — title
+  - id: card1-title
+    visual:
+      type: text
+      content: "Paradigm Fundamentals"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 335, y: 310 }
+    bounds: { width: 440, height: 38 }
+    opacity: 0
+
+  # Course card 1 — subtitle
+  - id: card1-sub
+    visual:
+      type: text
+      content: "Symbols, flows, gates, and signals"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 335, y: 355 }
+    bounds: { width: 440, height: 24 }
+    opacity: 0
+
+  # Course card 1 — module list
+  - id: card1-mod1
+    visual:
+      type: text
+      content: "Module 1: The Symbol System"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 335, y: 410 }
+    bounds: { width: 400, height: 22 }
+    opacity: 0
+
+  - id: card1-mod2
+    visual:
+      type: text
+      content: "Module 2: Flows & Gates"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 335, y: 440 }
+    bounds: { width: 400, height: 22 }
+    opacity: 0
+
+  - id: card1-mod3
+    visual:
+      type: text
+      content: "Module 3: Purpose Files"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 335, y: 470 }
+    bounds: { width: 400, height: 22 }
+    opacity: 0
+
+  # Progress bar — track
+  - id: card1-prog-track
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#222233" }
+    frame: { x: 310, y: 530 }
+    bounds: { width: 460, height: 8 }
+    opacity: 0
+
+  # Progress bar — fill (animates width via scale.x)
+  - id: card1-prog-fill
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 310, y: 530 }
+    bounds: { width: 460, height: 8 }
+    opacity: 0
+
+  # Progress percentage
+  - id: card1-percent
+    visual:
+      type: text
+      content: "64%"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#3B82F6"
+        textAlign: right
+    frame: { x: 680, y: 545 }
+    bounds: { width: 90, height: 22 }
+    opacity: 0
+
+  # Course card 2 — background
+  - id: card2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#141420" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 1120, y: 280 }
+    bounds: { width: 520, height: 320 }
+    opacity: 0
+
+  # Course card 2 — accent bar
+  - id: card2-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1150, y: 310 }
+    bounds: { width: 6, height: 50 }
+    opacity: 0
+
+  # Course card 2 — title
+  - id: card2-title
+    visual:
+      type: text
+      content: "PLSAT Certification"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1175, y: 310 }
+    bounds: { width: 440, height: 38 }
+    opacity: 0
+
+  # Course card 2 — subtitle
+  - id: card2-sub
+    visual:
+      type: text
+      content: "Paradigm Language Structured Assessment"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1175, y: 355 }
+    bounds: { width: 440, height: 24 }
+    opacity: 0
+
+  # Badge — ellipse with accent border
+  - id: badge-ring
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#1A1028" }
+      stroke: { color: "#9B59B6", width: 3 }
+    frame: { x: 1310, y: 420 }
+    bounds: { width: 100, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Badge — inner symbol
+  - id: badge-text
+    visual:
+      type: text
+      content: "P"
+      style:
+        fontFamily: sans-serif
+        fontSize: 42
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1325, y: 438 }
+    bounds: { width: 70, height: 52 }
+    opacity: 0
+
+  # Badge label
+  - id: badge-label
+    visual:
+      type: text
+      content: "Certified"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1310, y: 530 }
+    bounds: { width: 100, height: 22 }
+    opacity: 0
+
+  # Tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "Interactive courses. Real certification."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 410, y: 720 }
+    bounds: { width: 1100, height: 50 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: title
+        property: frame.y
+        range: [0, 35]
+        from: 100
+        to: 80
+        easing: ease-out
+
+      # Card 1 appears — slides in from left
+      - layer: card1-bg
+        property: opacity
+        range: [30, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-bg
+        property: frame.x
+        range: [30, 65]
+        from: 200
+        to: 280
+        easing: ease-out
+      - layer: card1-accent
+        property: opacity
+        range: [40, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-title
+        property: opacity
+        range: [45, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-sub
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Module list staggers in
+      - layer: card1-mod1
+        property: opacity
+        range: [70, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-mod2
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-mod3
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Progress bar track appears
+      - layer: card1-prog-track
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Progress bar fill — starts empty, fills to 64%
+      - layer: card1-prog-fill
+        property: opacity
+        range: [100, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-prog-fill
+        property: scale.x
+        range: [110, 180]
+        from: 0
+        to: 0.64
+        easing: ease-in-out
+
+      # Percentage text
+      - layer: card1-percent
+        property: opacity
+        range: [150, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Card 2 appears — slides in from right
+      - layer: card2-bg
+        property: opacity
+        range: [140, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-bg
+        property: frame.x
+        range: [140, 175]
+        from: 1200
+        to: 1120
+        easing: ease-out
+      - layer: card2-accent
+        property: opacity
+        range: [150, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-title
+        property: opacity
+        range: [155, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-sub
+        property: opacity
+        range: [160, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Badge appears with scale-up and glow
+      - layer: badge-ring
+        property: opacity
+        range: [190, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: badge-ring
+        property: scale.x
+        range: [190, 230]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: badge-ring
+        property: scale.y
+        range: [190, 230]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: badge-ring
+        property: shadow.blur
+        range: [220, 280]
+        from: 0
+        to: 20
+        easing: ease-in-out
+      - layer: badge-text
+        property: opacity
+        range: [210, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: badge-label
+        property: opacity
+        range: [230, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Tagline fades in
+      - layer: tagline
+        property: opacity
+        range: [300, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [300, 350]
+        from: 750
+        to: 720
+        easing: ease-out

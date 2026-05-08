@@ -1,0 +1,290 @@
+version: "1.0"
+name: What Is Conversion Tracking?
+description: "Sequence → hold. Animated step-by-step: ad click → user action → signal fires back → ad platform learns."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Step 1: Ad icon
+  - id: ad-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 160, y: 420 }
+    bounds: { width: 160, height: 160 }
+    opacity: 0
+
+  - id: ad-label
+    visual:
+      type: text
+      content: "Ad Platform"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 160, y: 600 }
+    bounds: { width: 160, height: 30 }
+    opacity: 0
+
+  # Step 2: User dot traveling
+  - id: user-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 320, y: 480 }
+    bounds: { width: 20, height: 20 }
+    opacity: 0
+
+  # Step 3: Website
+  - id: website
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 680, y: 420 }
+    bounds: { width: 160, height: 160 }
+    opacity: 0
+
+  - id: website-label
+    visual:
+      type: text
+      content: "Website"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 680, y: 600 }
+    bounds: { width: 160, height: 30 }
+    opacity: 0
+
+  # Step 4: Checkmark (user converts)
+  - id: checkmark
+    visual:
+      type: text
+      content: "Converts"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 700, y: 390 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Step 5: Data packet going back
+  - id: data-packet
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 740, y: 500 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 10
+      offsetX: 0
+      offsetY: 0
+
+  # Step 6: "Ad platform learns" text
+  - id: learns-label
+    visual:
+      type: text
+      content: "Now I know what works"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 120, y: 380 }
+    bounds: { width: 240, height: 28 }
+    opacity: 0
+
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "How Conversion Tracking Works"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 100 }
+    bounds: { width: 1000, height: 60 }
+    opacity: 0
+
+  # Step labels
+  - id: step1-label
+    visual:
+      type: text
+      content: "1. User clicks ad"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 160, y: 650 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  - id: step2-label
+    visual:
+      type: text
+      content: "2. Takes action"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 680, y: 650 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+  - id: step3-label
+    visual:
+      type: text
+      content: "3. Signal fires back"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 400, y: 720 }
+    bounds: { width: 200, height: 24 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Step 1: Ad platform appears
+      - layer: ad-icon
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ad-label
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: step1-label
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # User dot appears and travels to website
+      - layer: user-dot
+        property: opacity
+        range: [60, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: user-dot
+        property: frame.x
+        range: [70, 130]
+        from: 320
+        to: 700
+        easing: ease-in-out
+
+      # Step 2: Website appears
+      - layer: website
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: website-label
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: step2-label
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Checkmark appears
+      - layer: checkmark
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # User dot fades
+      - layer: user-dot
+        property: opacity
+        range: [140, 160]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Step 3: Data packet travels back
+      - layer: data-packet
+        property: opacity
+        range: [180, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: data-packet
+        property: frame.x
+        range: [190, 270]
+        from: 740
+        to: 220
+        easing: ease-in-out
+      - layer: step3-label
+        property: opacity
+        range: [200, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Ad platform glows
+      - layer: ad-icon
+        property: visual.stroke.color
+        range: [270, 300]
+        from: "#3B82F6"
+        to: "#F59E0B"
+        easing: ease-out
+
+      # "Now I know" label
+      - layer: learns-label
+        property: opacity
+        range: [290, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Data packet fades
+      - layer: data-packet
+        property: opacity
+        range: [280, 300]
+        from: 1
+        to: 0
+        easing: ease-in

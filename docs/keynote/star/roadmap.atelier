@@ -1,0 +1,405 @@
+version: "1.0"
+name: The Roadmap
+description: "Reveal staggered. Four roadmap tiers drop in top to bottom with ~40 frame stagger. v1 is solid green (Complete), v1.5 is amber bordered (In Progress) with shadow pulse, v2 is dimmed with light stroke, v3 is dimmer still. Final text lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Tier 1: v1 — Personal Luma (Complete) ---
+  - id: tier1-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#0D2E1A" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 260, y: 140 }
+    bounds: { width: 1400, height: 130 }
+    opacity: 0
+
+  - id: tier1-version
+    visual:
+      type: text
+      content: "v1 — Personal Luma"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 310, y: 165 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: tier1-desc
+    visual:
+      type: text
+      content: "Your AI workspace. One machine."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 210 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  - id: tier1-status
+    visual:
+      type: text
+      content: "Complete"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: right
+    frame: { x: 1300, y: 185 }
+    bounds: { width: 300, height: 28 }
+    opacity: 0
+
+  # --- Tier 2: v1.5 — The Hive (In Progress) ---
+  - id: tier2-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1508" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 260, y: 320 }
+    bounds: { width: 1400, height: 130 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: tier2-version
+    visual:
+      type: text
+      content: "v1.5 — The Hive"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 310, y: 345 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: tier2-desc
+    visual:
+      type: text
+      content: "Your machines. LAN-networked compute."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 390 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  - id: tier2-status
+    visual:
+      type: text
+      content: "In Progress"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F59E0B"
+        textAlign: right
+    frame: { x: 1300, y: 365 }
+    bounds: { width: 300, height: 28 }
+    opacity: 0
+
+  # --- Tier 3: v2 — The Constellation (dimmed) ---
+  - id: tier3-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#0F0F18" }
+      stroke: { color: "#555555", width: 1 }
+    frame: { x: 260, y: 500 }
+    bounds: { width: 1400, height: 130 }
+    opacity: 0
+
+  - id: tier3-version
+    visual:
+      type: text
+      content: "v2 — The Constellation"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 525 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: tier3-desc
+    visual:
+      type: text
+      content: "Other people's Lumas. Shared knowledge."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 570 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # --- Tier 4: v3 — The Network (dimmer) ---
+  - id: tier4-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#0A0A12" }
+      stroke: { color: "#444444", width: 1 }
+    frame: { x: 260, y: 680 }
+    bounds: { width: 1400, height: 130 }
+    opacity: 0
+
+  - id: tier4-version
+    visual:
+      type: text
+      content: "v3 — The Network"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 705 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: tier4-desc
+    visual:
+      type: text
+      content: "Global skill marketplace."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 750 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # --- Final text ---
+  - id: final-text
+    visual:
+      type: text
+      content: "From your desk to the world."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 900 }
+    bounds: { width: 900, height: 52 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 660
+    deltas:
+      # --- Tier 1 drops in (frames 0-40) — full opacity ---
+      - layer: tier1-box
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier1-box
+        property: frame.y
+        range: [0, 30]
+        from: 110
+        to: 140
+        easing: ease-out
+      - layer: tier1-version
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier1-desc
+        property: opacity
+        range: [15, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier1-status
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Tier 2 drops in (~40 frame stagger, frames 40-80) ---
+      - layer: tier2-box
+        property: opacity
+        range: [40, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier2-box
+        property: frame.y
+        range: [40, 70]
+        from: 290
+        to: 320
+        easing: ease-out
+      - layer: tier2-version
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier2-desc
+        property: opacity
+        range: [55, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tier2-status
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Tier 2 shadow.blur pulse (subtle amber glow breathing)
+      - layer: tier2-box
+        property: shadow.blur
+        range: [80, 140]
+        from: 0
+        to: 18
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [140, 200]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [200, 260]
+        from: 6
+        to: 18
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [260, 320]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [320, 380]
+        from: 6
+        to: 18
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [380, 440]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [440, 500]
+        from: 6
+        to: 18
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [500, 560]
+        from: 18
+        to: 6
+        easing: ease-in-out
+      - layer: tier2-box
+        property: shadow.blur
+        range: [560, 620]
+        from: 6
+        to: 12
+        easing: ease-in-out
+
+      # --- Tier 3 drops in (~40 frame stagger, frames 80-120) — dimmed at 0.5 ---
+      - layer: tier3-box
+        property: opacity
+        range: [80, 110]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: tier3-box
+        property: frame.y
+        range: [80, 110]
+        from: 470
+        to: 500
+        easing: ease-out
+      - layer: tier3-version
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: tier3-desc
+        property: opacity
+        range: [95, 120]
+        from: 0
+        to: 0.5
+        easing: ease-out
+
+      # --- Tier 4 drops in (~40 frame stagger, frames 120-160) — dimmer at 0.35 ---
+      - layer: tier4-box
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 0.35
+        easing: ease-out
+      - layer: tier4-box
+        property: frame.y
+        range: [120, 150]
+        from: 650
+        to: 680
+        easing: ease-out
+      - layer: tier4-version
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 0.35
+        easing: ease-out
+      - layer: tier4-desc
+        property: opacity
+        range: [135, 160]
+        from: 0
+        to: 0.35
+        easing: ease-out
+
+      # --- Final text appears (frames 300-360) ---
+      - layer: final-text
+        property: opacity
+        range: [300, 350]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: final-text
+        property: frame.y
+        range: [300, 355]
+        from: 920
+        to: 900
+        easing: ease-out
+      - layer: final-text
+        property: shadow.blur
+        range: [330, 390]
+        from: 0
+        to: 20
+        easing: ease-in-out
+
+      # --- Holds through frame 660 ---

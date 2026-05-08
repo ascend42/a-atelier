@@ -1,0 +1,544 @@
+version: "1.0"
+name: The Stack
+description: "Reveal -> hold. Vertical stack layers fade in from bottom to top with ~20 frame stagger, then status text appears."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Stack"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 40 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # Layer 1 (bottom) — PostgreSQL + Drizzle
+  - id: layer1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 560, y: 820 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer1-text
+    visual:
+      type: text
+      content: "PostgreSQL + Drizzle"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 710, y: 838 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer1-label
+    visual:
+      type: text
+      content: "data layer"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 844 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 2 — Redis
+  - id: layer2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 560, y: 730 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer2-text
+    visual:
+      type: text
+      content: "Redis"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 710, y: 748 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer2-label
+    visual:
+      type: text
+      content: "cache / pubsub"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 754 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 3 — tRPC + Hono
+  - id: layer3-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 1 }
+    frame: { x: 560, y: 640 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer3-text
+    visual:
+      type: text
+      content: "tRPC + Hono"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 710, y: 658 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer3-label
+    visual:
+      type: text
+      content: "API"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 664 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 4 — Argon2 + Sessions + 2FA
+  - id: layer4-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 1 }
+    frame: { x: 560, y: 550 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer4-text
+    visual:
+      type: text
+      content: "Argon2 + Sessions + 2FA"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 710, y: 568 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer4-label
+    visual:
+      type: text
+      content: "auth"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 574 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 5 — WebSocket
+  - id: layer5-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 560, y: 460 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer5-text
+    visual:
+      type: text
+      content: "WebSocket"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 710, y: 478 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer5-label
+    visual:
+      type: text
+      content: "real-time"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 484 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 6 — Bun
+  - id: layer6-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 1 }
+    frame: { x: 560, y: 370 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer6-text
+    visual:
+      type: text
+      content: "Bun"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 710, y: 388 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer6-label
+    visual:
+      type: text
+      content: "runtime"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 394 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Layer 7 (top) — Electron
+  - id: layer7-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 10 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 560, y: 280 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  - id: layer7-text
+    visual:
+      type: text
+      content: "Electron"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 710, y: 298 }
+    bounds: { width: 500, height: 32 }
+    opacity: 0
+
+  - id: layer7-label
+    visual:
+      type: text
+      content: "desktop"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1120, y: 304 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Beta status badge
+  - id: beta-badge
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 870, y: 940 }
+    bounds: { width: 180, height: 36 }
+    opacity: 0
+
+  - id: beta-text
+    visual:
+      type: text
+      content: "Beta"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 880, y: 944 }
+    bounds: { width: 160, height: 28 }
+    opacity: 0
+
+  - id: status-text
+    visual:
+      type: text
+      content: "Full-featured and running."
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 710, y: 990 }
+    bounds: { width: 500, height: 30 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 1 — PostgreSQL + Drizzle (bottom, first to appear)
+      - layer: layer1-bg
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer1-bg
+        property: frame.y
+        range: [40, 65]
+        from: 840
+        to: 820
+        easing: ease-out
+      - layer: layer1-text
+        property: opacity
+        range: [45, 68]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer1-label
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 2 — Redis (~20 frame stagger)
+      - layer: layer2-bg
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer2-bg
+        property: frame.y
+        range: [60, 85]
+        from: 750
+        to: 730
+        easing: ease-out
+      - layer: layer2-text
+        property: opacity
+        range: [65, 88]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer2-label
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 3 — tRPC + Hono
+      - layer: layer3-bg
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer3-bg
+        property: frame.y
+        range: [80, 105]
+        from: 660
+        to: 640
+        easing: ease-out
+      - layer: layer3-text
+        property: opacity
+        range: [85, 108]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer3-label
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 4 — Argon2 + Sessions + 2FA
+      - layer: layer4-bg
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer4-bg
+        property: frame.y
+        range: [100, 125]
+        from: 570
+        to: 550
+        easing: ease-out
+      - layer: layer4-text
+        property: opacity
+        range: [105, 128]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer4-label
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 5 — WebSocket
+      - layer: layer5-bg
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer5-bg
+        property: frame.y
+        range: [120, 145]
+        from: 480
+        to: 460
+        easing: ease-out
+      - layer: layer5-text
+        property: opacity
+        range: [125, 148]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer5-label
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 6 — Bun
+      - layer: layer6-bg
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer6-bg
+        property: frame.y
+        range: [140, 165]
+        from: 390
+        to: 370
+        easing: ease-out
+      - layer: layer6-text
+        property: opacity
+        range: [145, 168]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer6-label
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Layer 7 — Electron (top, last to appear)
+      - layer: layer7-bg
+        property: opacity
+        range: [160, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer7-bg
+        property: frame.y
+        range: [160, 185]
+        from: 300
+        to: 280
+        easing: ease-out
+      - layer: layer7-text
+        property: opacity
+        range: [165, 188]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: layer7-label
+        property: opacity
+        range: [170, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Beta badge and status text
+      - layer: beta-badge
+        property: opacity
+        range: [220, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: beta-badge
+        property: scale.x
+        range: [220, 250]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: beta-badge
+        property: scale.y
+        range: [220, 250]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: beta-text
+        property: opacity
+        range: [225, 255]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: status-text
+        property: opacity
+        range: [250, 280]
+        from: 0
+        to: 1
+        easing: ease-out

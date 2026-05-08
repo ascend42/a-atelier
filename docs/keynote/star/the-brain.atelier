@@ -1,0 +1,380 @@
+version: "1.0"
+name: The Brain
+description: "Sequence -> hold. Three horizontal layers stack bottom to top with staggered timing: Memory (Paradigm), Instinct (Local Llama), Reasoning (Claude API). Arrow shapes animate between layers showing data flow. Final tagline lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Bottom layer: Memory (Paradigm) ---
+  - id: memory-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D2B2A" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 360, y: 680 }
+    bounds: { width: 1200, height: 120 }
+    opacity: 0
+
+  - id: memory-title
+    visual:
+      type: text
+      content: "Memory"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 400, y: 710 }
+    bounds: { width: 200, height: 40 }
+    opacity: 0
+
+  - id: memory-desc
+    visual:
+      type: text
+      content: "Paradigm — Persistent knowledge graph. Never forgets."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 750 }
+    bounds: { width: 700, height: 28 }
+    opacity: 0
+
+  # --- Middle layer: Instinct (Local Llama) ---
+  - id: instinct-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D2E1A" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 360, y: 460 }
+    bounds: { width: 1200, height: 120 }
+    opacity: 0
+
+  - id: instinct-title
+    visual:
+      type: text
+      content: "Instinct"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 400, y: 490 }
+    bounds: { width: 200, height: 40 }
+    opacity: 0
+
+  - id: instinct-desc
+    visual:
+      type: text
+      content: "Local Llama — Fast pattern recognition. Free. 90% of tasks."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 530 }
+    bounds: { width: 700, height: 28 }
+    opacity: 0
+
+  # --- Top layer: Reasoning (Claude API) ---
+  - id: reasoning-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D1B3E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 360, y: 240 }
+    bounds: { width: 1200, height: 120 }
+    opacity: 0
+
+  - id: reasoning-title
+    visual:
+      type: text
+      content: "Reasoning"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 400, y: 270 }
+    bounds: { width: 220, height: 40 }
+    opacity: 0
+
+  - id: reasoning-desc
+    visual:
+      type: text
+      content: "Claude API — Strategic decisions. 10% of tasks."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 400, y: 310 }
+    bounds: { width: 700, height: 28 }
+    opacity: 0
+
+  # --- Arrow: Instinct flags up to Reasoning (right side) ---
+  - id: arrow-up-instinct
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1350, y: 360 }
+    bounds: { width: 6, height: 0 }
+    opacity: 0
+
+  - id: arrow-up-label
+    visual:
+      type: text
+      content: "flags complexity"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 1370, y: 410 }
+    bounds: { width: 160, height: 20 }
+    opacity: 0
+
+  # --- Arrow: Reasoning stores down to Memory (center-right) ---
+  - id: arrow-down-reasoning
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1250, y: 360 }
+    bounds: { width: 6, height: 0 }
+    opacity: 0
+
+  - id: arrow-down-label
+    visual:
+      type: text
+      content: "stores decisions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 1270, y: 540 }
+    bounds: { width: 160, height: 20 }
+    opacity: 0
+
+  # --- Arrow: Memory informs up to Instinct (left side) ---
+  - id: arrow-up-memory
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1150, y: 580 }
+    bounds: { width: 6, height: 0 }
+    opacity: 0
+
+  - id: arrow-up-memory-label
+    visual:
+      type: text
+      content: "informs patterns"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 1170, y: 620 }
+    bounds: { width: 160, height: 20 }
+    opacity: 0
+
+  # --- Tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "Not a chatbot. A brain."
+      style:
+        fontFamily: sans-serif
+        fontSize: 44
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 900 }
+    bounds: { width: 800, height: 56 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 660
+    deltas:
+      # --- Memory layer appears first (frames 0-40) ---
+      - layer: memory-box
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: memory-box
+        property: frame.y
+        range: [0, 30]
+        from: 710
+        to: 680
+        easing: ease-out
+      - layer: memory-title
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: memory-desc
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Instinct layer appears (~40 frame stagger, frames 40-80) ---
+      - layer: instinct-box
+        property: opacity
+        range: [40, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: instinct-box
+        property: frame.y
+        range: [40, 70]
+        from: 490
+        to: 460
+        easing: ease-out
+      - layer: instinct-title
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: instinct-desc
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Reasoning layer appears (~40 frame stagger, frames 80-120) ---
+      - layer: reasoning-box
+        property: opacity
+        range: [80, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: reasoning-box
+        property: frame.y
+        range: [80, 110]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: reasoning-title
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: reasoning-desc
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Pause (frames 125-200) ---
+
+      # --- Arrow: Instinct flags up to Reasoning (frames 200-260) ---
+      - layer: arrow-up-instinct
+        property: opacity
+        range: [200, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-up-instinct
+        property: bounds.height
+        range: [200, 260]
+        from: 0
+        to: 100
+        easing: ease-in-out
+      - layer: arrow-up-instinct
+        property: rotation
+        range: [200, 200]
+        from: 0
+        to: 0
+        easing: linear
+      - layer: arrow-up-label
+        property: opacity
+        range: [240, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Arrow: Reasoning stores down to Memory (frames 280-340) ---
+      - layer: arrow-down-reasoning
+        property: opacity
+        range: [280, 295]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-down-reasoning
+        property: bounds.height
+        range: [280, 340]
+        from: 0
+        to: 320
+        easing: ease-in-out
+      - layer: arrow-down-label
+        property: opacity
+        range: [320, 350]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Arrow: Memory informs up to Instinct (frames 360-420) ---
+      - layer: arrow-up-memory
+        property: opacity
+        range: [360, 375]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-up-memory
+        property: bounds.height
+        range: [360, 420]
+        from: 0
+        to: 100
+        easing: ease-in-out
+      - layer: arrow-up-memory-label
+        property: opacity
+        range: [400, 430]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Tagline appears with glow (frames 500-560) ---
+      - layer: tagline
+        property: opacity
+        range: [500, 540]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [500, 545]
+        from: 920
+        to: 900
+        easing: ease-out
+      - layer: tagline
+        property: shadow.blur
+        range: [520, 580]
+        from: 0
+        to: 25
+        easing: ease-in-out
+
+      # --- Holds through frame 660 ---

@@ -1,0 +1,721 @@
+version: "1.0"
+name: How Deal Oracle Works
+description: "Sequence -> hold. JS SDK, Ingestion API, and Attribution Engine boxes fade in left to right, CNAME shield appears, bottom stat holds."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "How Deal Oracle Works"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # ── Box 1: JS SDK (left) ──
+
+  - id: sdk-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 120, y: 240 }
+    bounds: { width: 420, height: 280 }
+    opacity: 0
+
+  - id: sdk-title
+    visual:
+      type: text
+      content: "JS SDK"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 210, y: 280 }
+    bounds: { width: 240, height: 40 }
+    opacity: 0
+
+  - id: sdk-line1
+    visual:
+      type: text
+      content: "Captures clicks"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 210, y: 350 }
+    bounds: { width: 240, height: 28 }
+    opacity: 0
+
+  - id: sdk-line2
+    visual:
+      type: text
+      content: "Captures cookies"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 210, y: 390 }
+    bounds: { width: 240, height: 28 }
+    opacity: 0
+
+  - id: sdk-line3
+    visual:
+      type: text
+      content: "Captures page views"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 195, y: 430 }
+    bounds: { width: 270, height: 28 }
+    opacity: 0
+
+  # Arrow: SDK -> Ingestion
+  - id: arrow-sdk-ingest
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 560, y: 378 }
+    bounds: { width: 140, height: 3 }
+    opacity: 0
+
+  - id: arrow-sdk-ingest-head
+    visual:
+      type: text
+      content: ">"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#888888"
+        textAlign: center
+    frame: { x: 690, y: 365 }
+    bounds: { width: 30, height: 30 }
+    opacity: 0
+
+  # ── Box 2: Ingestion API (center) ──
+
+  - id: ingest-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 730, y: 240 }
+    bounds: { width: 420, height: 280 }
+    opacity: 0
+
+  - id: ingest-title
+    visual:
+      type: text
+      content: "Ingestion API"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 830, y: 280 }
+    bounds: { width: 220, height: 40 }
+    opacity: 0
+
+  - id: ingest-desc
+    visual:
+      type: text
+      content: "Receives client + server events"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 780, y: 360 }
+    bounds: { width: 320, height: 28 }
+    opacity: 0
+
+  - id: ingest-desc2
+    visual:
+      type: text
+      content: "Deduplicates, validates, enriches"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 790, y: 400 }
+    bounds: { width: 300, height: 26 }
+    opacity: 0
+
+  # Arrow: Ingestion -> Attribution
+  - id: arrow-ingest-attr
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 1170, y: 378 }
+    bounds: { width: 140, height: 3 }
+    opacity: 0
+
+  - id: arrow-ingest-attr-head
+    visual:
+      type: text
+      content: ">"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1300, y: 365 }
+    bounds: { width: 30, height: 30 }
+    opacity: 0
+
+  # ── Box 3: Attribution Engine (right) ──
+
+  - id: attr-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1340, y: 240 }
+    bounds: { width: 440, height: 280 }
+    opacity: 0
+
+  - id: attr-title
+    visual:
+      type: text
+      content: "Attribution Engine"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1400, y: 280 }
+    bounds: { width: 320, height: 40 }
+    opacity: 0
+
+  # Fan-out platform icons (small rounded rects)
+  - id: icon-meta
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 1390, y: 360 }
+    bounds: { width: 90, height: 50 }
+    opacity: 0
+
+  - id: icon-meta-label
+    visual:
+      type: text
+      content: "Meta"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 1400, y: 373 }
+    bounds: { width: 70, height: 24 }
+    opacity: 0
+
+  - id: icon-google
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1510, y: 360 }
+    bounds: { width: 90, height: 50 }
+    opacity: 0
+
+  - id: icon-google-label
+    visual:
+      type: text
+      content: "Google"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1518, y: 373 }
+    bounds: { width: 74, height: 24 }
+    opacity: 0
+
+  - id: icon-tiktok
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 1630, y: 360 }
+    bounds: { width: 90, height: 50 }
+    opacity: 0
+
+  - id: icon-tiktok-label
+    visual:
+      type: text
+      content: "TikTok"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1640, y: 373 }
+    bounds: { width: 70, height: 24 }
+    opacity: 0
+
+  # Fan-out description
+  - id: attr-desc
+    visual:
+      type: text
+      content: "Matches + sends to ad platforms"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1410, y: 430 }
+    bounds: { width: 300, height: 26 }
+    opacity: 0
+
+  # ── CNAME Shield ──
+
+  - id: cname-shield
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 290, y: 560 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 20
+      offsetX: 0
+      offsetY: 0
+
+  - id: cname-shield-icon
+    visual:
+      type: text
+      content: "CNAME"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 295, y: 578 }
+    bounds: { width: 50, height: 20 }
+    opacity: 0
+
+  - id: cname-label
+    visual:
+      type: text
+      content: "First-party domain = invisible to ad blockers"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 370, y: 575 }
+    bounds: { width: 480, height: 30 }
+    opacity: 0
+
+  # Connection line from shield to SDK box
+  - id: cname-connector
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 320, y: 525 }
+    bounds: { width: 2, height: 35 }
+    opacity: 0
+
+  # ── Bottom stat line ──
+
+  - id: stat-divider
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 360, y: 720 }
+    bounds: { width: 1200, height: 1 }
+    opacity: 0
+
+  - id: stat-client
+    visual:
+      type: text
+      content: "Client-only tracking:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 400, y: 780 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: stat-client-value
+    visual:
+      type: text
+      content: "~30% loss"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 400, y: 830 }
+    bounds: { width: 340, height: 44 }
+    opacity: 0
+
+  - id: stat-vs
+    visual:
+      type: text
+      content: "vs"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#888888"
+        textAlign: center
+    frame: { x: 910, y: 810 }
+    bounds: { width: 100, height: 30 }
+    opacity: 0
+
+  - id: stat-oracle
+    visual:
+      type: text
+      content: "Deal Oracle:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1100, y: 780 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: stat-oracle-value
+    visual:
+      type: text
+      content: "<1% loss"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1100, y: 830 }
+    bounds: { width: 340, height: 44 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 15
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ── Box 1: JS SDK fades in from left ──
+      - layer: sdk-box
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdk-box
+        property: frame.x
+        range: [30, 60]
+        from: 60
+        to: 120
+        easing: ease-out
+      - layer: sdk-title
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdk-line1
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdk-line2
+        property: opacity
+        range: [65, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdk-line3
+        property: opacity
+        range: [75, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Arrow SDK -> Ingestion
+      - layer: arrow-sdk-ingest
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-sdk-ingest-head
+        property: opacity
+        range: [95, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ── Box 2: Ingestion API fades in from center ──
+      - layer: ingest-box
+        property: opacity
+        range: [105, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ingest-box
+        property: frame.y
+        range: [105, 135]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: ingest-title
+        property: opacity
+        range: [115, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ingest-desc
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ingest-desc2
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Arrow Ingestion -> Attribution
+      - layer: arrow-ingest-attr
+        property: opacity
+        range: [160, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-ingest-attr-head
+        property: opacity
+        range: [165, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ── Box 3: Attribution Engine fades in from right ──
+      - layer: attr-box
+        property: opacity
+        range: [175, 205]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: attr-box
+        property: frame.x
+        range: [175, 205]
+        from: 1400
+        to: 1340
+        easing: ease-out
+      - layer: attr-title
+        property: opacity
+        range: [185, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Platform icons fan out with stagger
+      - layer: icon-meta
+        property: opacity
+        range: [210, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-meta-label
+        property: opacity
+        range: [215, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-meta
+        property: frame.y
+        range: [210, 230]
+        from: 340
+        to: 360
+        easing: ease-out
+
+      - layer: icon-google
+        property: opacity
+        range: [220, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-google-label
+        property: opacity
+        range: [225, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-google
+        property: frame.y
+        range: [220, 240]
+        from: 340
+        to: 360
+        easing: ease-out
+
+      - layer: icon-tiktok
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-tiktok-label
+        property: opacity
+        range: [235, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: icon-tiktok
+        property: frame.y
+        range: [230, 250]
+        from: 340
+        to: 360
+        easing: ease-out
+
+      - layer: attr-desc
+        property: opacity
+        range: [245, 265]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ── CNAME Shield appears ──
+      - layer: cname-connector
+        property: opacity
+        range: [280, 300]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: cname-shield
+        property: opacity
+        range: [285, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: cname-shield
+        property: scale.x
+        range: [285, 310]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: cname-shield
+        property: scale.y
+        range: [285, 310]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: cname-shield-icon
+        property: opacity
+        range: [295, 315]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: cname-label
+        property: opacity
+        range: [310, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # ── Bottom stat line ──
+      - layer: stat-divider
+        property: opacity
+        range: [360, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Client-only stat
+      - layer: stat-client
+        property: opacity
+        range: [380, 405]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat-client-value
+        property: opacity
+        range: [390, 415]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat-client-value
+        property: frame.y
+        range: [390, 415]
+        from: 850
+        to: 830
+        easing: ease-out
+
+      # "vs"
+      - layer: stat-vs
+        property: opacity
+        range: [410, 430]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Deal Oracle stat
+      - layer: stat-oracle
+        property: opacity
+        range: [420, 445]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat-oracle-value
+        property: opacity
+        range: [430, 455]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat-oracle-value
+        property: frame.y
+        range: [430, 455]
+        from: 850
+        to: 830
+        easing: ease-out
+      - layer: stat-oracle-value
+        property: shadow.blur
+        range: [445, 475]
+        from: 15
+        to: 25
+        easing: ease-in-out

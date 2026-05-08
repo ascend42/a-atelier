@@ -1,0 +1,570 @@
+version: "1.0"
+name: Cross-Domain Intelligence
+description: "Sequence -> hold. Five domain icons appear in a row. Athlete pulses and glows, an arrow draws to an energy indicator that fills, then continues to Creator with engagement metric growing. A suggestion card drops in below. Final text lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Domain icons row ---
+  # Athlete (green)
+  - id: domain-athlete
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D2E1A" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 210, y: 200 }
+    bounds: { width: 160, height: 80 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: domain-athlete-label
+    visual:
+      type: text
+      content: "Athlete"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 230, y: 225 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # Creator (purple)
+  - id: domain-creator
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A0D2E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 560, y: 200 }
+    bounds: { width: 160, height: 80 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: domain-creator-label
+    visual:
+      type: text
+      content: "Creator"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 580, y: 225 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # Builder (blue)
+  - id: domain-builder
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D1B3E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 910, y: 200 }
+    bounds: { width: 160, height: 80 }
+    opacity: 0
+
+  - id: domain-builder-label
+    visual:
+      type: text
+      content: "Builder"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 930, y: 225 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # Artist (amber)
+  - id: domain-artist
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#2E1F0D" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1260, y: 200 }
+    bounds: { width: 160, height: 80 }
+    opacity: 0
+
+  - id: domain-artist-label
+    visual:
+      type: text
+      content: "Artist"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1280, y: 225 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # Learner (teal)
+  - id: domain-learner
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D2B2A" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 1560, y: 200 }
+    bounds: { width: 160, height: 80 }
+    opacity: 0
+
+  - id: domain-learner-label
+    visual:
+      type: text
+      content: "Learner"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1580, y: 225 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # --- Connection event text: "Great climbing session" ---
+  - id: event-text
+    visual:
+      type: text
+      content: "Great climbing session"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 200, y: 310 }
+    bounds: { width: 180, height: 24 }
+    opacity: 0
+
+  # --- Arrow from Athlete to energy indicator (thin rect) ---
+  - id: arrow-athlete-energy
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 370, y: 360 }
+    bounds: { width: 0, height: 3 }
+    opacity: 0
+
+  # --- Energy indicator (rect that grows in height) ---
+  - id: energy-bar-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 430, y: 340 }
+    bounds: { width: 40, height: 80 }
+    opacity: 0
+
+  - id: energy-bar-fill
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 434, y: 416 }
+    bounds: { width: 32, height: 0 }
+    opacity: 0
+
+  # --- Arrow from energy to Creator ---
+  - id: arrow-energy-creator
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 475, y: 378 }
+    bounds: { width: 0, height: 3 }
+    opacity: 0
+
+  # --- "Better content ideas" text ---
+  - id: content-text
+    visual:
+      type: text
+      content: "Better content ideas"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 550, y: 310 }
+    bounds: { width: 180, height: 24 }
+    opacity: 0
+
+  # --- Engagement metric (rect that grows) ---
+  - id: engagement-bar-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 740, y: 340 }
+    bounds: { width: 40, height: 80 }
+    opacity: 0
+
+  - id: engagement-bar-fill
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 744, y: 416 }
+    bounds: { width: 32, height: 0 }
+    opacity: 0
+
+  # --- Suggestion card ---
+  - id: suggestion-card
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#111122" }
+      stroke: { color: "#F5F0EB", width: 2 }
+    frame: { x: 460, y: 540 }
+    bounds: { width: 1000, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: suggestion-text
+    visual:
+      type: text
+      content: "Schedule creative work after climbing sessions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 572 }
+    bounds: { width: 900, height: 36 }
+    opacity: 0
+
+  # --- Final text ---
+  - id: final-text
+    visual:
+      type: text
+      content: "Connections no single app could find."
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#888888"
+        textAlign: center
+    frame: { x: 460, y: 720 }
+    bounds: { width: 1000, height: 48 }
+    opacity: 0
+
+states:
+  main:
+    duration: 780
+    deltas:
+      # --- All domain icons appear with stagger (frames 0-80) ---
+      # Athlete
+      - layer: domain-athlete
+        property: opacity
+        range: [0, 25]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-athlete-label
+        property: opacity
+        range: [5, 28]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-athlete
+        property: frame.y
+        range: [0, 25]
+        from: 220
+        to: 200
+        easing: ease-out
+      # Creator
+      - layer: domain-creator
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-creator-label
+        property: opacity
+        range: [15, 38]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-creator
+        property: frame.y
+        range: [10, 35]
+        from: 220
+        to: 200
+        easing: ease-out
+      # Builder
+      - layer: domain-builder
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-builder-label
+        property: opacity
+        range: [25, 48]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-builder
+        property: frame.y
+        range: [20, 45]
+        from: 220
+        to: 200
+        easing: ease-out
+      # Artist
+      - layer: domain-artist
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-artist-label
+        property: opacity
+        range: [35, 58]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-artist
+        property: frame.y
+        range: [30, 55]
+        from: 220
+        to: 200
+        easing: ease-out
+      # Learner
+      - layer: domain-learner
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-learner-label
+        property: opacity
+        range: [45, 68]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: domain-learner
+        property: frame.y
+        range: [40, 65]
+        from: 220
+        to: 200
+        easing: ease-out
+
+      # --- Athlete pulses/glows (frames 100-160) ---
+      - layer: domain-athlete
+        property: shadow.blur
+        range: [100, 130]
+        from: 0
+        to: 25
+        easing: ease-out
+      - layer: domain-athlete
+        property: scale.x
+        range: [100, 130]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: domain-athlete
+        property: scale.y
+        range: [100, 130]
+        from: 1
+        to: 1.08
+        easing: ease-out
+
+      # "Great climbing session" text
+      - layer: event-text
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: event-text
+        property: frame.y
+        range: [120, 150]
+        from: 320
+        to: 310
+        easing: ease-out
+
+      # --- Arrow draws from Athlete area toward energy bar (frames 160-210) ---
+      - layer: arrow-athlete-energy
+        property: opacity
+        range: [160, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-athlete-energy
+        property: bounds.width
+        range: [160, 210]
+        from: 0
+        to: 60
+        easing: ease-in-out
+
+      # Energy bar background appears
+      - layer: energy-bar-bg
+        property: opacity
+        range: [190, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Energy bar fills green (frames 210-270)
+      - layer: energy-bar-fill
+        property: opacity
+        range: [210, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: energy-bar-fill
+        property: bounds.height
+        range: [210, 270]
+        from: 0
+        to: 72
+        easing: ease-out
+      - layer: energy-bar-fill
+        property: frame.y
+        range: [210, 270]
+        from: 416
+        to: 344
+        easing: ease-out
+
+      # --- Arrow continues to Creator (frames 280-330) ---
+      - layer: arrow-energy-creator
+        property: opacity
+        range: [280, 290]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow-energy-creator
+        property: bounds.width
+        range: [280, 330]
+        from: 0
+        to: 80
+        easing: ease-in-out
+
+      # Creator glows
+      - layer: domain-creator
+        property: shadow.blur
+        range: [310, 340]
+        from: 0
+        to: 25
+        easing: ease-out
+      - layer: domain-creator
+        property: scale.x
+        range: [310, 340]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: domain-creator
+        property: scale.y
+        range: [310, 340]
+        from: 1
+        to: 1.08
+        easing: ease-out
+
+      # "Better content ideas" text
+      - layer: content-text
+        property: opacity
+        range: [330, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: content-text
+        property: frame.y
+        range: [330, 360]
+        from: 320
+        to: 310
+        easing: ease-out
+
+      # Engagement bar appears and fills
+      - layer: engagement-bar-bg
+        property: opacity
+        range: [360, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: engagement-bar-fill
+        property: opacity
+        range: [380, 390]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: engagement-bar-fill
+        property: bounds.height
+        range: [380, 440]
+        from: 0
+        to: 72
+        easing: ease-out
+      - layer: engagement-bar-fill
+        property: frame.y
+        range: [380, 440]
+        from: 416
+        to: 344
+        easing: ease-out
+
+      # --- Suggestion card drops in (frames 480-540) ---
+      - layer: suggestion-card
+        property: opacity
+        range: [480, 520]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: suggestion-card
+        property: frame.y
+        range: [480, 530]
+        from: 510
+        to: 540
+        easing: ease-out
+      - layer: suggestion-card
+        property: shadow.blur
+        range: [510, 550]
+        from: 0
+        to: 15
+        easing: ease-in-out
+      - layer: suggestion-text
+        property: opacity
+        range: [500, 540]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: suggestion-text
+        property: frame.y
+        range: [500, 540]
+        from: 542
+        to: 572
+        easing: ease-out
+
+      # --- Final text (frames 600-650) ---
+      - layer: final-text
+        property: opacity
+        range: [600, 650]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: final-text
+        property: frame.y
+        range: [600, 650]
+        from: 740
+        to: 720
+        easing: ease-out
+
+      # --- Holds through frame 780 ---

@@ -1,0 +1,844 @@
+version: "1.0"
+name: The Offline Problem
+description: "Sequence -> loop. Shows normal online tracking, then offline failure, then Deal Oracle bridge succeeding. Top path keeps failing, bottom path keeps succeeding."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Offline Problem"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # ── Online flow (top row, y~280) ──
+
+  # User box
+  - id: user-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 160, y: 250 }
+    bounds: { width: 160, height: 120 }
+    opacity: 0
+
+  - id: user-label
+    visual:
+      type: text
+      content: "User"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 180, y: 290 }
+    bounds: { width: 120, height: 30 }
+    opacity: 0
+
+  # Arrow 1: User -> Website
+  - id: arrow1-line
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 340, y: 305 }
+    bounds: { width: 160, height: 3 }
+    opacity: 0
+
+  - id: arrow1-label
+    visual:
+      type: text
+      content: "clicks ad"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 360, y: 275 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Website box
+  - id: website-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 520, y: 250 }
+    bounds: { width: 160, height: 120 }
+    opacity: 0
+
+  - id: website-label
+    visual:
+      type: text
+      content: "Website"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 540, y: 290 }
+    bounds: { width: 120, height: 30 }
+    opacity: 0
+
+  # Arrow 2: Website -> converts
+  - id: arrow2-line
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 700, y: 305 }
+    bounds: { width: 160, height: 3 }
+    opacity: 0
+
+  - id: arrow2-label
+    visual:
+      type: text
+      content: "converts"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 720, y: 275 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Signal dot (online)
+  - id: signal-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 870, y: 298 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 10
+      offsetX: 0
+      offsetY: 0
+
+  # Arrow 3: Signal back to ad platform
+  - id: arrow3-line
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 1060, y: 305 }
+    bounds: { width: 160, height: 3 }
+    opacity: 0
+
+  - id: arrow3-label
+    visual:
+      type: text
+      content: "signals back"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1060, y: 275 }
+    bounds: { width: 160, height: 24 }
+    opacity: 0
+
+  # Ad Platform box
+  - id: adplatform-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1240, y: 250 }
+    bounds: { width: 200, height: 120 }
+    opacity: 0
+
+  - id: adplatform-label
+    visual:
+      type: text
+      content: "Ad Platform"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1260, y: 290 }
+    bounds: { width: 160, height: 30 }
+    opacity: 0
+
+  # Online success checkmark
+  - id: online-check
+    visual:
+      type: text
+      content: "OK"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1290, y: 382 }
+    bounds: { width: 100, height: 28 }
+    opacity: 0
+
+  # ── Offline scenario section ──
+
+  # Divider
+  - id: divider
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 160, y: 440 }
+    bounds: { width: 1300, height: 1 }
+    opacity: 0
+
+  - id: offline-title
+    visual:
+      type: text
+      content: "But what happens when the user goes offline?"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 460, y: 470 }
+    bounds: { width: 1000, height: 44 }
+    opacity: 0
+
+  # Offline scenario labels
+  - id: offline-scenario
+    visual:
+      type: text
+      content: "Phone call  /  Store visit  /  Signs contract weeks later"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 510, y: 530 }
+    bounds: { width: 900, height: 28 }
+    opacity: 0
+
+  # ── Broken path (top of loop area) ──
+
+  # Connection line that breaks
+  - id: broken-line-left
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 380, y: 640 }
+    bounds: { width: 300, height: 3 }
+    opacity: 0
+
+  - id: broken-line-right
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 780, y: 640 }
+    bounds: { width: 300, height: 3 }
+    opacity: 0
+
+  # Red X in the gap
+  - id: red-x
+    visual:
+      type: text
+      content: "X"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 690, y: 618 }
+    bounds: { width: 80, height: 44 }
+    opacity: 0
+    shadow:
+      color: "#EF4444"
+      blur: 15
+      offsetX: 0
+      offsetY: 0
+
+  - id: broken-label
+    visual:
+      type: text
+      content: "Ad platform never finds out"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 530, y: 670 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # "Website" label for broken path
+  - id: broken-website
+    visual:
+      type: text
+      content: "Website"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 260, y: 628 }
+    bounds: { width: 100, height: 24 }
+    opacity: 0
+
+  # "Ad Platform" label for broken path
+  - id: broken-adplat
+    visual:
+      type: text
+      content: "Ad Platform"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1100, y: 628 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Fail indicator - pulses in loop
+  - id: fail-indicator
+    visual:
+      type: text
+      content: "LOST"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1100, y: 660 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # ── Deal Oracle bridge (bottom of loop area) ──
+
+  - id: oracle-title
+    visual:
+      type: text
+      content: "Deal Oracle"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 600, y: 750 }
+    bounds: { width: 260, height: 36 }
+    opacity: 0
+
+  # Server-side bridge line
+  - id: bridge-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 380, y: 810 }
+    bounds: { width: 700, height: 4 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 12
+      offsetX: 0
+      offsetY: 0
+
+  # Bridge left endpoint
+  - id: bridge-left-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 368, y: 802 }
+    bounds: { width: 20, height: 20 }
+    opacity: 0
+
+  # Bridge right endpoint
+  - id: bridge-right-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1072, y: 802 }
+    bounds: { width: 20, height: 20 }
+    opacity: 0
+
+  - id: bridge-label
+    visual:
+      type: text
+      content: "Server-side events routed back"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 520, y: 835 }
+    bounds: { width: 420, height: 24 }
+    opacity: 0
+
+  # "Offline Events" label on left
+  - id: bridge-offline-label
+    visual:
+      type: text
+      content: "Offline Events"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 240, y: 800 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  # "Ad Platform" label on right for bridge
+  - id: bridge-adplat
+    visual:
+      type: text
+      content: "Ad Platform"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1100, y: 800 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # Success indicator - pulses in loop
+  - id: success-indicator
+    visual:
+      type: text
+      content: "MATCHED"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1090, y: 832 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  # Traveling data dot on bridge
+  - id: bridge-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 380, y: 804 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 15
+      offsetX: 0
+      offsetY: 0
+
+  # Failure dot on broken path
+  - id: fail-dot
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 380, y: 633 }
+    bounds: { width: 14, height: 14 }
+    opacity: 0
+    shadow:
+      color: "#EF4444"
+      blur: 10
+      offsetX: 0
+      offsetY: 0
+
+states:
+  # Phase 1: Show the normal online flow working
+  online-flow:
+    duration: 300
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # User box appears
+      - layer: user-box
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: user-label
+        property: opacity
+        range: [35, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Arrow 1 draws in
+      - layer: arrow1-line
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow1-label
+        property: opacity
+        range: [60, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Website appears
+      - layer: website-box
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: website-label
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Arrow 2 draws in
+      - layer: arrow2-line
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow2-label
+        property: opacity
+        range: [105, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Signal dot appears and travels
+      - layer: signal-dot
+        property: opacity
+        range: [120, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: signal-dot
+        property: frame.x
+        range: [130, 190]
+        from: 870
+        to: 1260
+        easing: ease-in-out
+
+      # Arrow 3 and Ad Platform appear
+      - layer: arrow3-line
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow3-label
+        property: opacity
+        range: [145, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: adplatform-box
+        property: opacity
+        range: [160, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: adplatform-label
+        property: opacity
+        range: [165, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Signal arrives, dot fades
+      - layer: signal-dot
+        property: opacity
+        range: [190, 210]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Success check appears
+      - layer: online-check
+        property: opacity
+        range: [210, 235]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: adplatform-box
+        property: visual.stroke.color
+        range: [210, 240]
+        from: "#F59E0B"
+        to: "#10B981"
+        easing: ease-out
+
+      # Hold for a beat, then fade the online flow
+      - layer: adplatform-box
+        property: visual.stroke.color
+        range: [260, 290]
+        from: "#10B981"
+        to: "#F59E0B"
+        easing: ease-in
+
+  # Phase 2: Show the offline problem
+  offline-break:
+    duration: 300
+    deltas:
+      # Divider appears
+      - layer: divider
+        property: opacity
+        range: [0, 20]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Offline title
+      - layer: offline-title
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: offline-title
+        property: frame.y
+        range: [20, 50]
+        from: 490
+        to: 470
+        easing: ease-out
+
+      # Offline scenarios
+      - layer: offline-scenario
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Broken path appears
+      - layer: broken-website
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: broken-line-left
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: broken-line-right
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: broken-adplat
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Red X slams in
+      - layer: red-x
+        property: opacity
+        range: [130, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: red-x
+        property: scale.x
+        range: [130, 150]
+        from: 2
+        to: 1
+        easing: ease-out
+      - layer: red-x
+        property: scale.y
+        range: [130, 150]
+        from: 2
+        to: 1
+        easing: ease-out
+
+      # "Ad platform never finds out"
+      - layer: broken-label
+        property: opacity
+        range: [155, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Hold the problem statement
+      # Then Deal Oracle bridge lights up
+
+      # Oracle title
+      - layer: oracle-title
+        property: opacity
+        range: [200, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: oracle-title
+        property: frame.y
+        range: [200, 230]
+        from: 770
+        to: 750
+        easing: ease-out
+
+      # Bridge line lights up
+      - layer: bridge-line
+        property: opacity
+        range: [230, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-left-dot
+        property: opacity
+        range: [235, 255]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-right-dot
+        property: opacity
+        range: [240, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-label
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-offline-label
+        property: opacity
+        range: [250, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-adplat
+        property: opacity
+        range: [250, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+  # Phase 3: Loop — broken path fails, Deal Oracle succeeds
+  loop-comparison:
+    duration: 180
+    deltas:
+      # ── Broken path: dot travels and stops at X ──
+      - layer: fail-dot
+        property: opacity
+        range: [0, 10]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: fail-dot
+        property: frame.x
+        range: [10, 70]
+        from: 380
+        to: 680
+        easing: ease-in-out
+      # Dot stops and fades at X
+      - layer: fail-dot
+        property: opacity
+        range: [70, 90]
+        from: 1
+        to: 0
+        easing: ease-in
+      # Red X pulses
+      - layer: red-x
+        property: shadow.blur
+        range: [70, 90]
+        from: 15
+        to: 30
+        easing: ease-out
+      - layer: red-x
+        property: shadow.blur
+        range: [90, 110]
+        from: 30
+        to: 15
+        easing: ease-in
+      # LOST indicator
+      - layer: fail-indicator
+        property: opacity
+        range: [75, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: fail-indicator
+        property: opacity
+        range: [130, 150]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # ── Deal Oracle path: dot travels all the way through ──
+      - layer: bridge-dot
+        property: opacity
+        range: [10, 20]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bridge-dot
+        property: frame.x
+        range: [20, 120]
+        from: 380
+        to: 1060
+        easing: ease-in-out
+      # Dot arrives and fades
+      - layer: bridge-dot
+        property: opacity
+        range: [120, 140]
+        from: 1
+        to: 0
+        easing: ease-in
+      # Bridge glows on success
+      - layer: bridge-line
+        property: shadow.blur
+        range: [110, 130]
+        from: 12
+        to: 25
+        easing: ease-out
+      - layer: bridge-line
+        property: shadow.blur
+        range: [130, 160]
+        from: 25
+        to: 12
+        easing: ease-in
+      # MATCHED indicator
+      - layer: success-indicator
+        property: opacity
+        range: [115, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: success-indicator
+        property: opacity
+        range: [150, 170]
+        from: 1
+        to: 0
+        easing: ease-in

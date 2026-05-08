@@ -1,0 +1,433 @@
+version: "1.0"
+name: What No One Else Does
+description: "Reveal staggered. Five unique feature callouts slide in from left one at a time, followed by closing statement."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "What No One Else Does"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 60 }
+    bounds: { width: 900, height: 64 }
+    opacity: 0
+
+  # --- Feature 1: Domain-level split tunneling ---
+  - id: feat1-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 280, y: 210 }
+    bounds: { width: 6, height: 70 }
+    opacity: 0
+
+  - id: feat1-title
+    visual:
+      type: text
+      content: "Domain-level split tunneling"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 215 }
+    bounds: { width: 700, height: 38 }
+    opacity: 0
+
+  - id: feat1-sub
+    visual:
+      type: text
+      content: "Per-site, not per-app"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 253 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Feature 2: Per-tab browser routing ---
+  - id: feat2-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 280, y: 330 }
+    bounds: { width: 6, height: 70 }
+    opacity: 0
+
+  - id: feat2-title
+    visual:
+      type: text
+      content: "Per-tab browser routing"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 335 }
+    bounds: { width: 700, height: 38 }
+    opacity: 0
+
+  - id: feat2-sub
+    visual:
+      type: text
+      content: "Two tabs, two routes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 373 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Feature 3: Local API + CLI ---
+  - id: feat3-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 280, y: 450 }
+    bounds: { width: 6, height: 70 }
+    opacity: 0
+
+  - id: feat3-title
+    visual:
+      type: text
+      content: "Local API + CLI"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 455 }
+    bounds: { width: 700, height: 38 }
+    opacity: 0
+
+  - id: feat3-sub
+    visual:
+      type: text
+      content: "Full programmatic control"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 493 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Feature 4: Self-hosted exit ---
+  - id: feat4-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 280, y: 570 }
+    bounds: { width: 6, height: 70 }
+    opacity: 0
+
+  - id: feat4-title
+    visual:
+      type: text
+      content: "Self-hosted exit"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 575 }
+    bounds: { width: 700, height: 38 }
+    opacity: 0
+
+  - id: feat4-sub
+    visual:
+      type: text
+      content: "Bring your own VPS"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 613 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # --- Feature 5: Personal traffic analytics ---
+  - id: feat5-accent
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 280, y: 690 }
+    bounds: { width: 6, height: 70 }
+    opacity: 0
+
+  - id: feat5-title
+    visual:
+      type: text
+      content: "Personal traffic analytics"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 310, y: 695 }
+    bounds: { width: 700, height: 38 }
+    opacity: 0
+
+  - id: feat5-sub
+    visual:
+      type: text
+      content: "See everything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 310, y: 733 }
+    bounds: { width: 400, height: 28 }
+    opacity: 0
+
+  # Closing statement
+  - id: closing
+    visual:
+      type: text
+      content: "No competitor offers any of these. At any price."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 410, y: 870 }
+    bounds: { width: 1100, height: 40 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Feature 1 (frames 40-80) ---
+      - layer: feat1-accent
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat1-accent
+        property: frame.x
+        range: [40, 65]
+        from: 230
+        to: 280
+        easing: ease-out
+      - layer: feat1-title
+        property: opacity
+        range: [45, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat1-title
+        property: frame.x
+        range: [45, 70]
+        from: 260
+        to: 310
+        easing: ease-out
+      - layer: feat1-sub
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat1-sub
+        property: frame.x
+        range: [50, 75]
+        from: 260
+        to: 310
+        easing: ease-out
+
+      # --- Feature 2 (frames 90-130) ---
+      - layer: feat2-accent
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat2-accent
+        property: frame.x
+        range: [90, 115]
+        from: 230
+        to: 280
+        easing: ease-out
+      - layer: feat2-title
+        property: opacity
+        range: [95, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat2-title
+        property: frame.x
+        range: [95, 120]
+        from: 260
+        to: 310
+        easing: ease-out
+      - layer: feat2-sub
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat2-sub
+        property: frame.x
+        range: [100, 125]
+        from: 260
+        to: 310
+        easing: ease-out
+
+      # --- Feature 3 (frames 140-180) ---
+      - layer: feat3-accent
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat3-accent
+        property: frame.x
+        range: [140, 165]
+        from: 230
+        to: 280
+        easing: ease-out
+      - layer: feat3-title
+        property: opacity
+        range: [145, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat3-title
+        property: frame.x
+        range: [145, 170]
+        from: 260
+        to: 310
+        easing: ease-out
+      - layer: feat3-sub
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat3-sub
+        property: frame.x
+        range: [150, 175]
+        from: 260
+        to: 310
+        easing: ease-out
+
+      # --- Feature 4 (frames 190-230) ---
+      - layer: feat4-accent
+        property: opacity
+        range: [190, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat4-accent
+        property: frame.x
+        range: [190, 215]
+        from: 230
+        to: 280
+        easing: ease-out
+      - layer: feat4-title
+        property: opacity
+        range: [195, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat4-title
+        property: frame.x
+        range: [195, 220]
+        from: 260
+        to: 310
+        easing: ease-out
+      - layer: feat4-sub
+        property: opacity
+        range: [200, 225]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat4-sub
+        property: frame.x
+        range: [200, 225]
+        from: 260
+        to: 310
+        easing: ease-out
+
+      # --- Feature 5 (frames 240-280) ---
+      - layer: feat5-accent
+        property: opacity
+        range: [240, 265]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat5-accent
+        property: frame.x
+        range: [240, 265]
+        from: 230
+        to: 280
+        easing: ease-out
+      - layer: feat5-title
+        property: opacity
+        range: [245, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat5-title
+        property: frame.x
+        range: [245, 270]
+        from: 260
+        to: 310
+        easing: ease-out
+      - layer: feat5-sub
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: feat5-sub
+        property: frame.x
+        range: [250, 275]
+        from: 260
+        to: 310
+        easing: ease-out
+
+      # Closing statement
+      - layer: closing
+        property: opacity
+        range: [320, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: closing
+        property: frame.y
+        range: [320, 360]
+        from: 890
+        to: 870
+        easing: ease-out

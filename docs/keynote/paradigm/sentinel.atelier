@@ -1,0 +1,555 @@
+version: "1.0"
+name: "Sentinel — Observability"
+description: "Loop. Dark panel with scrolling event log lines, symbol tags, color flashes for warnings/errors, and a pattern callout that pulses. Demonstrates symbol-correlated observability."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Dark panel background
+  - id: panel-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#111118" }
+      stroke: { color: "#222233", width: 1 }
+    frame: { x: 160, y: 60 }
+    bounds: { width: 1100, height: 780 }
+    opacity: 0
+
+  # Panel header
+  - id: panel-header
+    visual:
+      type: text
+      content: "Event Stream"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#555555"
+        textAlign: left
+    frame: { x: 190, y: 80 }
+    bounds: { width: 300, height: 28 }
+    opacity: 0
+
+  # Log entry 1
+  - id: log-1
+    visual:
+      type: text
+      content: "12:04:01  INFO   #checkout  Order created"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 130 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 2
+  - id: log-2
+    visual:
+      type: text
+      content: "12:04:03  GATE   ^authenticated  Token verified"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 170 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 3 — amber warning
+  - id: log-3
+    visual:
+      type: text
+      content: "12:04:05  WARN   ^authenticated  Token near expiry"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 210 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 4
+  - id: log-4
+    visual:
+      type: text
+      content: "12:04:07  INFO   !payment-success  Charge confirmed"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 250 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 5 — red error
+  - id: log-5
+    visual:
+      type: text
+      content: "12:04:09  ERROR  !payment-failed  Charge declined"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 290 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 6
+  - id: log-6
+    visual:
+      type: text
+      content: "12:04:11  GATE   ^authenticated  Token refresh failed"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 330 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 7 — red error
+  - id: log-7
+    visual:
+      type: text
+      content: "12:04:13  ERROR  ^authenticated  Auth failure (3rd in 10m)"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 370 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Log entry 8
+  - id: log-8
+    visual:
+      type: text
+      content: "12:04:15  INFO   #checkout  Cart abandoned"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: left
+    frame: { x: 190, y: 410 }
+    bounds: { width: 1000, height: 26 }
+    opacity: 0
+
+  # Pattern callout background
+  - id: callout-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1520" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1320, y: 200 }
+    bounds: { width: 520, height: 120 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Pattern callout label
+  - id: callout-label
+    visual:
+      type: text
+      content: "Pattern Detected"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 1345, y: 215 }
+    bounds: { width: 200, height: 22 }
+    opacity: 0
+
+  # Pattern callout text
+  - id: callout-text
+    visual:
+      type: text
+      content: "3 failures in ^authenticated in 10 min"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1345, y: 250 }
+    bounds: { width: 470, height: 30 }
+    opacity: 0
+
+  # Pattern callout recommendation
+  - id: callout-rec
+    visual:
+      type: text
+      content: "Recommend: rotate secrets, check upstream"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1345, y: 288 }
+    bounds: { width: 470, height: 22 }
+    opacity: 0
+
+  # Bottom tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "Symbol-correlated observability."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 920 }
+    bounds: { width: 1000, height: 50 }
+    opacity: 0
+
+states:
+  # Loop state — log scrolls, colors flash, callout pulses
+  loop:
+    duration: 480
+    deltas:
+      # Panel fades in
+      - layer: panel-bg
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: panel-header
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Log entry 1 — fades in, scrolls upward
+      - layer: log-1
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-1
+        property: frame.y
+        range: [20, 480]
+        from: 130
+        to: -20
+        easing: linear
+
+      # Log entry 2 — fades in, scrolls upward
+      - layer: log-2
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-2
+        property: frame.y
+        range: [50, 480]
+        from: 170
+        to: -10
+        easing: linear
+
+      # Log entry 3 — amber flash then scrolls
+      - layer: log-3
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-3
+        property: frame.y
+        range: [80, 480]
+        from: 210
+        to: 10
+        easing: linear
+      # Flash amber
+      - layer: log-3
+        property: visual.style.color
+        range: [80, 110]
+        from: "#888888"
+        to: "#F59E0B"
+        easing: ease-out
+      - layer: log-3
+        property: visual.style.color
+        range: [130, 170]
+        from: "#F59E0B"
+        to: "#888888"
+        easing: ease-in
+
+      # Log entry 4 — fades in, scrolls upward
+      - layer: log-4
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-4
+        property: frame.y
+        range: [110, 480]
+        from: 250
+        to: 30
+        easing: linear
+
+      # Log entry 5 — red flash then scrolls
+      - layer: log-5
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-5
+        property: frame.y
+        range: [140, 480]
+        from: 290
+        to: 50
+        easing: linear
+      # Flash red
+      - layer: log-5
+        property: visual.style.color
+        range: [140, 170]
+        from: "#888888"
+        to: "#EF4444"
+        easing: ease-out
+      - layer: log-5
+        property: visual.style.color
+        range: [190, 230]
+        from: "#EF4444"
+        to: "#888888"
+        easing: ease-in
+
+      # Log entry 6 — amber flash then scrolls
+      - layer: log-6
+        property: opacity
+        range: [170, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-6
+        property: frame.y
+        range: [170, 480]
+        from: 330
+        to: 70
+        easing: linear
+      # Flash amber
+      - layer: log-6
+        property: visual.style.color
+        range: [170, 200]
+        from: "#888888"
+        to: "#F59E0B"
+        easing: ease-out
+      - layer: log-6
+        property: visual.style.color
+        range: [220, 260]
+        from: "#F59E0B"
+        to: "#888888"
+        easing: ease-in
+
+      # Log entry 7 — red flash then scrolls
+      - layer: log-7
+        property: opacity
+        range: [200, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-7
+        property: frame.y
+        range: [200, 480]
+        from: 370
+        to: 90
+        easing: linear
+      # Flash red
+      - layer: log-7
+        property: visual.style.color
+        range: [200, 230]
+        from: "#888888"
+        to: "#EF4444"
+        easing: ease-out
+      - layer: log-7
+        property: visual.style.color
+        range: [250, 290]
+        from: "#EF4444"
+        to: "#888888"
+        easing: ease-in
+
+      # Log entry 8 — fades in, scrolls upward
+      - layer: log-8
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: log-8
+        property: frame.y
+        range: [230, 480]
+        from: 410
+        to: 110
+        easing: linear
+
+      # Pattern callout appears after 3rd auth failure (entry 7)
+      - layer: callout-bg
+        property: opacity
+        range: [220, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: callout-label
+        property: opacity
+        range: [225, 255]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: callout-text
+        property: opacity
+        range: [230, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: callout-rec
+        property: opacity
+        range: [240, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Callout shadow pulses — glow up
+      - layer: callout-bg
+        property: shadow.blur
+        range: [250, 330]
+        from: 0
+        to: 25
+        easing: ease-in-out
+      # Callout shadow pulses — glow down
+      - layer: callout-bg
+        property: shadow.blur
+        range: [330, 410]
+        from: 25
+        to: 5
+        easing: ease-in-out
+      # Callout shadow pulses — glow up again
+      - layer: callout-bg
+        property: shadow.blur
+        range: [410, 470]
+        from: 5
+        to: 20
+        easing: ease-in-out
+
+      # Tagline fades in
+      - layer: tagline
+        property: opacity
+        range: [280, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [280, 330]
+        from: 950
+        to: 920
+        easing: ease-out
+
+      # Fade everything out for loop reset
+      - layer: panel-bg
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: panel-header
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-1
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-2
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-3
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-4
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-5
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-6
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-7
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: log-8
+        property: opacity
+        range: [440, 470]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: callout-bg
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: callout-label
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: callout-text
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: callout-rec
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: tagline
+        property: opacity
+        range: [440, 475]
+        from: 1
+        to: 0
+        easing: ease-in

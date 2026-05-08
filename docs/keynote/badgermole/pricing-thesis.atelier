@@ -1,0 +1,740 @@
+version: "1.0"
+name: The $3/Month Thesis
+description: "Reveal staggered. Competitor pricing rows appear one at a time, Badgermole row glows green at the end."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The $3/Month Thesis"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 64 }
+    opacity: 0
+
+  # Column headers
+  - id: col-provider
+    visual:
+      type: text
+      content: "Provider"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 200, y: 170 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  - id: col-advertised
+    visual:
+      type: text
+      content: "Advertised"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 530, y: 170 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: col-actual
+    visual:
+      type: text
+      content: "Actual /mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 770, y: 170 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: col-lockin
+    visual:
+      type: text
+      content: "Lock-in"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1010, y: 170 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: col-shock
+    visual:
+      type: text
+      content: "Renewal Shock"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1250, y: 170 }
+    bounds: { width: 220, height: 28 }
+    opacity: 0
+
+  # --- Row 1: NordVPN ---
+  - id: row1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#111118" }
+    frame: { x: 180, y: 220 }
+    bounds: { width: 1320, height: 70 }
+    opacity: 0
+
+  - id: row1-name
+    visual:
+      type: text
+      content: "NordVPN"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: left
+    frame: { x: 200, y: 240 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  - id: row1-adv
+    visual:
+      type: text
+      content: "$3.39/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 530, y: 240 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row1-actual
+    visual:
+      type: text
+      content: "$12.99"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 770, y: 240 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row1-lock
+    visual:
+      type: text
+      content: "2 years"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 1010, y: 240 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row1-shock
+    visual:
+      type: text
+      content: "Yes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1250, y: 240 }
+    bounds: { width: 220, height: 28 }
+    opacity: 0
+
+  # --- Row 2: Proton VPN ---
+  - id: row2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#111118" }
+    frame: { x: 180, y: 310 }
+    bounds: { width: 1320, height: 70 }
+    opacity: 0
+
+  - id: row2-name
+    visual:
+      type: text
+      content: "Proton VPN"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: left
+    frame: { x: 200, y: 330 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  - id: row2-adv
+    visual:
+      type: text
+      content: "$2.99/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 530, y: 330 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row2-actual
+    visual:
+      type: text
+      content: "$10.00"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 770, y: 330 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row2-lock
+    visual:
+      type: text
+      content: "2 years"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 1010, y: 330 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row2-shock
+    visual:
+      type: text
+      content: "Yes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1250, y: 330 }
+    bounds: { width: 220, height: 28 }
+    opacity: 0
+
+  # --- Row 3: Surfshark ---
+  - id: row3-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#111118" }
+    frame: { x: 180, y: 400 }
+    bounds: { width: 1320, height: 70 }
+    opacity: 0
+
+  - id: row3-name
+    visual:
+      type: text
+      content: "Surfshark"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: left
+    frame: { x: 200, y: 420 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  - id: row3-adv
+    visual:
+      type: text
+      content: "$1.99/mo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 530, y: 420 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row3-actual
+    visual:
+      type: text
+      content: "$15.45"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 770, y: 420 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row3-lock
+    visual:
+      type: text
+      content: "2 years"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 1010, y: 420 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row3-shock
+    visual:
+      type: text
+      content: "Yes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1250, y: 420 }
+    bounds: { width: 220, height: 28 }
+    opacity: 0
+
+  # --- Row 4: Mullvad ---
+  - id: row4-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#131320" }
+    frame: { x: 180, y: 490 }
+    bounds: { width: 1320, height: 70 }
+    opacity: 0
+
+  - id: row4-name
+    visual:
+      type: text
+      content: "Mullvad"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#999999"
+        textAlign: left
+    frame: { x: 200, y: 510 }
+    bounds: { width: 200, height: 28 }
+    opacity: 0
+
+  - id: row4-adv
+    visual:
+      type: text
+      content: "$5.88"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#999999"
+        textAlign: center
+    frame: { x: 530, y: 510 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row4-actual
+    visual:
+      type: text
+      content: "$5.88"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#999999"
+        textAlign: center
+    frame: { x: 770, y: 510 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row4-lock
+    visual:
+      type: text
+      content: "None"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#999999"
+        textAlign: center
+    frame: { x: 1010, y: 510 }
+    bounds: { width: 180, height: 28 }
+    opacity: 0
+
+  - id: row4-shock
+    visual:
+      type: text
+      content: "No"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#999999"
+        textAlign: center
+    frame: { x: 1250, y: 510 }
+    bounds: { width: 220, height: 28 }
+    opacity: 0
+
+  # --- Row 5: Badgermole ---
+  - id: row5-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#0D1F17" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 180, y: 580 }
+    bounds: { width: 1320, height: 70 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: row5-name
+    visual:
+      type: text
+      content: "Badgermole"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 200, y: 598 }
+    bounds: { width: 200, height: 32 }
+    opacity: 0
+
+  - id: row5-adv
+    visual:
+      type: text
+      content: "$3"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 530, y: 598 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: row5-actual
+    visual:
+      type: text
+      content: "$3"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 770, y: 598 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: row5-lock
+    visual:
+      type: text
+      content: "None"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1010, y: 598 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: row5-shock
+    visual:
+      type: text
+      content: "No"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1250, y: 598 }
+    bounds: { width: 220, height: 32 }
+    opacity: 0
+
+  # Bottom tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "$3 this month. $3 next month. Or don't. That's it."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 360, y: 740 }
+    bounds: { width: 1200, height: 44 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Title
+      - layer: title
+        property: opacity
+        range: [0, 25]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Column headers
+      - layer: col-provider
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: col-advertised
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: col-actual
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: col-lockin
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: col-shock
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Row 1: NordVPN (frames 50-80) ---
+      - layer: row1-bg
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row1-name
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row1-adv
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row1-actual
+        property: opacity
+        range: [60, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row1-lock
+        property: opacity
+        range: [60, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row1-shock
+        property: opacity
+        range: [65, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Row 2: Proton VPN (frames 80-110) ---
+      - layer: row2-bg
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row2-name
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row2-adv
+        property: opacity
+        range: [85, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row2-actual
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row2-lock
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row2-shock
+        property: opacity
+        range: [95, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Row 3: Surfshark (frames 110-140) ---
+      - layer: row3-bg
+        property: opacity
+        range: [110, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row3-name
+        property: opacity
+        range: [110, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row3-adv
+        property: opacity
+        range: [115, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row3-actual
+        property: opacity
+        range: [120, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row3-lock
+        property: opacity
+        range: [120, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row3-shock
+        property: opacity
+        range: [125, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Row 4: Mullvad (frames 140-170) ---
+      - layer: row4-bg
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row4-name
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row4-adv
+        property: opacity
+        range: [145, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row4-actual
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row4-lock
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row4-shock
+        property: opacity
+        range: [155, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Row 5: Badgermole (frames 170-210) ---
+      - layer: row5-bg
+        property: opacity
+        range: [170, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row5-name
+        property: opacity
+        range: [170, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row5-adv
+        property: opacity
+        range: [175, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row5-actual
+        property: opacity
+        range: [180, 205]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row5-lock
+        property: opacity
+        range: [180, 205]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: row5-shock
+        property: opacity
+        range: [185, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Badgermole row glow
+      - layer: row5-bg
+        property: shadow.blur
+        range: [210, 260]
+        from: 0
+        to: 25
+        easing: ease-in-out
+
+      # Tagline
+      - layer: tagline
+        property: opacity
+        range: [280, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [280, 320]
+        from: 760
+        to: 740
+        easing: ease-out

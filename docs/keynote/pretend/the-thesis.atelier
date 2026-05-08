@@ -1,0 +1,747 @@
+version: "1.0"
+name: The Thesis
+description: "Sequence -> hold. Left side shows a code block that glitches and shrinks. Right side reveals clean YAML. Bottom tagline compares Lua (for humans) to Pretend (for AI)."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "The Thesis"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 50 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # --- LEFT SIDE: Code block (how AI writes games today) ---
+
+  - id: code-label
+    visual:
+      type: text
+      content: "How AI writes games today"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 100, y: 140 }
+    bounds: { width: 500, height: 30 }
+    opacity: 0
+
+  - id: code-block-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 1 }
+    frame: { x: 100, y: 185 }
+    bounds: { width: 500, height: 480 }
+    opacity: 0
+
+  - id: code-line-1
+    visual:
+      type: text
+      content: "function updatePlayer(dt)"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 210 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-2
+    visual:
+      type: text
+      content: "  local vel = player.velocity"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 235 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-3
+    visual:
+      type: text
+      content: "  if input:isDown('left') then"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 260 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-4
+    visual:
+      type: text
+      content: "    vel.x = vel.x - ACCEL * dt"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 285 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-5
+    visual:
+      type: text
+      content: "  end"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 310 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-6
+    visual:
+      type: text
+      content: "  player.x = player.x + vel.x * dt"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 335 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-7
+    visual:
+      type: text
+      content: "  player.y = player.y + vel.y * dt"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 360 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-8
+    visual:
+      type: text
+      content: "  checkBounds(player)"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 385 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-9
+    visual:
+      type: text
+      content: "  for i, bullet in ipairs(bullets) do"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 410 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-10
+    visual:
+      type: text
+      content: "    if collides(player, bullet) then"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 435 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-11
+    visual:
+      type: text
+      content: "      player.health = player.health - 1"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 460 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-12
+    visual:
+      type: text
+      content: "      table.remove(bullets, i)"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 485 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  - id: code-line-13
+    visual:
+      type: text
+      content: "end end end"
+      style:
+        fontFamily: monospace
+        fontSize: 15
+        color: "#888888"
+        textAlign: left
+    frame: { x: 130, y: 510 }
+    bounds: { width: 440, height: 20 }
+    opacity: 0
+
+  # --- RIGHT SIDE: YAML block (how AI writes games with Pretend) ---
+
+  - id: yaml-label
+    visual:
+      type: text
+      content: "How AI writes games with Pretend"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1000, y: 140 }
+    bounds: { width: 500, height: 30 }
+    opacity: 0
+
+  - id: yaml-block-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 1 }
+    frame: { x: 1000, y: 185 }
+    bounds: { width: 500, height: 480 }
+    opacity: 0
+
+  - id: yaml-line-1
+    visual:
+      type: text
+      content: "entities:"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 1030, y: 215 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-2
+    visual:
+      type: text
+      content: "  player-ship:"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 245 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-3
+    visual:
+      type: text
+      content: "    move: arrows"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 275 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-4
+    visual:
+      type: text
+      content: "    bounds: contain"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 305 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-5
+    visual:
+      type: text
+      content: ""
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 335 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-6
+    visual:
+      type: text
+      content: "rules:"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 1030, y: 365 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-7
+    visual:
+      type: text
+      content: "  bullet-hits-player:"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 395 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-8
+    visual:
+      type: text
+      content: "    when: collision"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 425 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  - id: yaml-line-9
+    visual:
+      type: text
+      content: "    then: lose-health(1)"
+      style:
+        fontFamily: monospace
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1030, y: 455 }
+    bounds: { width: 440, height: 22 }
+    opacity: 0
+
+  # --- Bottom tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "Lua was for human game developers. Pretend is for AI game developers."
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 780 }
+    bounds: { width: 1400, height: 40 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Code block appears ---
+      - layer: code-label
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-block-bg
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Code lines stagger in
+      - layer: code-line-1
+        property: opacity
+        range: [50, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-2
+        property: opacity
+        range: [55, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-3
+        property: opacity
+        range: [60, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-4
+        property: opacity
+        range: [65, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-5
+        property: opacity
+        range: [70, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-6
+        property: opacity
+        range: [75, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-7
+        property: opacity
+        range: [80, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-8
+        property: opacity
+        range: [85, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-9
+        property: opacity
+        range: [90, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-10
+        property: opacity
+        range: [95, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-11
+        property: opacity
+        range: [100, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-12
+        property: opacity
+        range: [105, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-13
+        property: opacity
+        range: [110, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Code block glitches (rotation wobble + opacity flicker) ---
+      - layer: code-block-bg
+        property: rotation
+        range: [160, 175]
+        from: 0
+        to: 1.5
+        easing: ease-out
+      - layer: code-block-bg
+        property: rotation
+        range: [175, 190]
+        from: 1.5
+        to: -1
+        easing: ease-in-out
+      - layer: code-block-bg
+        property: rotation
+        range: [190, 210]
+        from: -1
+        to: 0
+        easing: ease-out
+
+      # Opacity flicker on code lines
+      - layer: code-line-1
+        property: opacity
+        range: [165, 175]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-1
+        property: opacity
+        range: [175, 185]
+        from: 0.3
+        to: 1
+        easing: ease-out
+      - layer: code-line-5
+        property: opacity
+        range: [170, 180]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: code-line-5
+        property: opacity
+        range: [180, 190]
+        from: 0.2
+        to: 1
+        easing: ease-out
+      - layer: code-line-9
+        property: opacity
+        range: [175, 185]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-9
+        property: opacity
+        range: [185, 195]
+        from: 0.3
+        to: 1
+        easing: ease-out
+      - layer: code-line-12
+        property: opacity
+        range: [168, 178]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: code-line-12
+        property: opacity
+        range: [178, 188]
+        from: 0.2
+        to: 1
+        easing: ease-out
+
+      # --- Code block slides left and shrinks ---
+      - layer: code-block-bg
+        property: frame.x
+        range: [230, 290]
+        from: 100
+        to: 40
+        easing: ease-in-out
+      - layer: code-block-bg
+        property: scale.x
+        range: [230, 290]
+        from: 1
+        to: 0.75
+        easing: ease-in-out
+      - layer: code-block-bg
+        property: scale.y
+        range: [230, 290]
+        from: 1
+        to: 0.75
+        easing: ease-in-out
+      - layer: code-block-bg
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.4
+        easing: ease-in
+
+      # Code lines dim with the block
+      - layer: code-line-1
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-2
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-3
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-4
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-5
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-6
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-7
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-8
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-9
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-10
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-11
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-12
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: code-line-13
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.3
+        easing: ease-in
+
+      # Code label dims
+      - layer: code-label
+        property: opacity
+        range: [260, 300]
+        from: 1
+        to: 0.4
+        easing: ease-in
+
+      # --- YAML block fades in on right ---
+      - layer: yaml-label
+        property: opacity
+        range: [300, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-block-bg
+        property: opacity
+        range: [310, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-block-bg
+        property: frame.x
+        range: [310, 350]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # YAML lines stagger in
+      - layer: yaml-line-1
+        property: opacity
+        range: [340, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-2
+        property: opacity
+        range: [350, 370]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-3
+        property: opacity
+        range: [360, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-4
+        property: opacity
+        range: [370, 390]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-6
+        property: opacity
+        range: [390, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-7
+        property: opacity
+        range: [400, 420]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-8
+        property: opacity
+        range: [410, 430]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: yaml-line-9
+        property: opacity
+        range: [420, 440]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Bottom tagline ---
+      - layer: tagline
+        property: opacity
+        range: [460, 500]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [460, 500]
+        from: 810
+        to: 780
+        easing: ease-out

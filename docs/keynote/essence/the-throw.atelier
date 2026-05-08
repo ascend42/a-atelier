@@ -1,0 +1,498 @@
+version: "1.0"
+name: The Throw
+description: "Sequence -> loop. A card token appears at center, throws up for Resonance with accent glow, resets, then throws down for Pass with dimming. Loops continuously."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Throw"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 710, y: 60 }
+    bounds: { width: 500, height: 60 }
+    opacity: 0
+
+  # Instruction text
+  - id: instruction
+    visual:
+      type: text
+      content: "Not a swipe. A deliberate action."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: center
+    frame: { x: 660, y: 130 }
+    bounds: { width: 600, height: 28 }
+    opacity: 0
+
+  # Center line (visual anchor)
+  - id: center-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 880, y: 300 }
+    bounds: { width: 160, height: 2 }
+    opacity: 0
+
+  # The card/token
+  - id: card
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 860, y: 440 }
+    bounds: { width: 200, height: 140 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: card-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 935, y: 470 }
+    bounds: { width: 50, height: 50 }
+    opacity: 0
+
+  - id: card-name
+    visual:
+      type: text
+      content: "Soulprint"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 900, y: 530 }
+    bounds: { width: 120, height: 22 }
+    opacity: 0
+
+  # Resonance label (appears on throw up)
+  - id: resonance-label
+    visual:
+      type: text
+      content: "Resonance"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 780, y: 260 }
+    bounds: { width: 360, height: 44 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Pass label (appears on throw down)
+  - id: pass-label
+    visual:
+      type: text
+      content: "Pass"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#555555"
+        textAlign: center
+    frame: { x: 830, y: 760 }
+    bounds: { width: 260, height: 44 }
+    opacity: 0
+
+  # Up arrow indicator
+  - id: arrow-up
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 955, y: 340 }
+    bounds: { width: 4, height: 60 }
+    opacity: 0
+
+  # Down arrow indicator
+  - id: arrow-down
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 955, y: 620 }
+    bounds: { width: 4, height: 60 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # Title and instruction fade in
+      - layer: title
+        property: opacity
+        range: [0, 25]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: instruction
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: center-line
+        property: opacity
+        range: [15, 35]
+        from: 0
+        to: 0.4
+        easing: ease-out
+
+      # Arrow indicators fade in
+      - layer: arrow-up
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 0.3
+        easing: ease-out
+      - layer: arrow-down
+        property: opacity
+        range: [20, 40]
+        from: 0
+        to: 0.3
+        easing: ease-out
+
+      # --- Phase 1: Card appears at center (frames 30-60) ---
+      - layer: card
+        property: opacity
+        range: [30, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card
+        property: scale.x
+        range: [30, 50]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: card
+        property: scale.y
+        range: [30, 50]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: card-icon
+        property: opacity
+        range: [35, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-name
+        property: opacity
+        range: [40, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 2: Throw UP for Resonance (frames 70-130) ---
+      # Card moves up with slight rotation
+      - layer: card
+        property: frame.y
+        range: [70, 110]
+        from: 440
+        to: 260
+        easing: ease-in-out
+      - layer: card-icon
+        property: frame.y
+        range: [70, 110]
+        from: 470
+        to: 290
+        easing: ease-in-out
+      - layer: card-name
+        property: frame.y
+        range: [70, 110]
+        from: 530
+        to: 350
+        easing: ease-in-out
+      - layer: card
+        property: rotation
+        range: [70, 110]
+        from: 0
+        to: -8
+        easing: ease-in-out
+
+      # Card glows teal
+      - layer: card
+        property: visual.stroke.color
+        range: [80, 105]
+        from: "#9B59B6"
+        to: "#14B8A6"
+        easing: ease-in-out
+      - layer: card
+        property: shadow.blur
+        range: [80, 110]
+        from: 0
+        to: 30
+        easing: ease-in-out
+      - layer: card
+        property: shadow.color
+        range: [80, 110]
+        from: "#9B59B6"
+        to: "#14B8A6"
+        easing: ease-in-out
+
+      # Resonance label appears with glow
+      - layer: resonance-label
+        property: opacity
+        range: [95, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: resonance-label
+        property: shadow.blur
+        range: [95, 120]
+        from: 0
+        to: 15
+        easing: ease-in-out
+      - layer: resonance-label
+        property: frame.y
+        range: [95, 115]
+        from: 280
+        to: 260
+        easing: ease-out
+
+      # Card and label fade out
+      - layer: card
+        property: opacity
+        range: [125, 145]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: card-icon
+        property: opacity
+        range: [125, 145]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: card-name
+        property: opacity
+        range: [125, 145]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: resonance-label
+        property: opacity
+        range: [130, 150]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # --- Phase 3: Card resets to center (frames 150-170) ---
+      - layer: card
+        property: frame.y
+        range: [150, 155]
+        from: 260
+        to: 440
+        easing: linear
+      - layer: card-icon
+        property: frame.y
+        range: [150, 155]
+        from: 290
+        to: 470
+        easing: linear
+      - layer: card-name
+        property: frame.y
+        range: [150, 155]
+        from: 350
+        to: 530
+        easing: linear
+      - layer: card
+        property: rotation
+        range: [150, 155]
+        from: -8
+        to: 0
+        easing: linear
+      - layer: card
+        property: shadow.blur
+        range: [150, 155]
+        from: 30
+        to: 0
+        easing: linear
+      - layer: card
+        property: visual.stroke.color
+        range: [150, 155]
+        from: "#14B8A6"
+        to: "#9B59B6"
+        easing: linear
+      - layer: card
+        property: shadow.color
+        range: [150, 155]
+        from: "#14B8A6"
+        to: "#9B59B6"
+        easing: linear
+
+      # Card reappears at center
+      - layer: card
+        property: opacity
+        range: [165, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-icon
+        property: opacity
+        range: [170, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-name
+        property: opacity
+        range: [170, 185]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 4: Throw DOWN for Pass (frames 200-260) ---
+      # Card moves down with rotation
+      - layer: card
+        property: frame.y
+        range: [200, 240]
+        from: 440
+        to: 640
+        easing: ease-in-out
+      - layer: card-icon
+        property: frame.y
+        range: [200, 240]
+        from: 470
+        to: 670
+        easing: ease-in-out
+      - layer: card-name
+        property: frame.y
+        range: [200, 240]
+        from: 530
+        to: 730
+        easing: ease-in-out
+      - layer: card
+        property: rotation
+        range: [200, 240]
+        from: 0
+        to: 6
+        easing: ease-in-out
+
+      # Card dims
+      - layer: card
+        property: visual.stroke.color
+        range: [210, 235]
+        from: "#9B59B6"
+        to: "#333333"
+        easing: ease-in
+      - layer: card
+        property: opacity
+        range: [210, 240]
+        from: 1
+        to: 0.5
+        easing: ease-in
+
+      # Pass label appears dimmed
+      - layer: pass-label
+        property: opacity
+        range: [225, 245]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: pass-label
+        property: frame.y
+        range: [225, 245]
+        from: 740
+        to: 760
+        easing: ease-out
+
+      # Card and label fade out
+      - layer: card
+        property: opacity
+        range: [255, 275]
+        from: 0.5
+        to: 0
+        easing: ease-in
+      - layer: card-icon
+        property: opacity
+        range: [255, 275]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: card-name
+        property: opacity
+        range: [255, 275]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pass-label
+        property: opacity
+        range: [260, 280]
+        from: 0.7
+        to: 0
+        easing: ease-in
+
+      # --- Phase 5: Card resets to center for loop (frames 280-320) ---
+      - layer: card
+        property: frame.y
+        range: [280, 285]
+        from: 640
+        to: 440
+        easing: linear
+      - layer: card-icon
+        property: frame.y
+        range: [280, 285]
+        from: 670
+        to: 470
+        easing: linear
+      - layer: card-name
+        property: frame.y
+        range: [280, 285]
+        from: 730
+        to: 530
+        easing: linear
+      - layer: card
+        property: rotation
+        range: [280, 285]
+        from: 6
+        to: 0
+        easing: linear
+      - layer: card
+        property: visual.stroke.color
+        range: [280, 285]
+        from: "#333333"
+        to: "#9B59B6"
+        easing: linear
+
+      # Card reappears ready for next loop
+      - layer: card
+        property: opacity
+        range: [300, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-icon
+        property: opacity
+        range: [305, 320]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-name
+        property: opacity
+        range: [305, 320]
+        from: 0
+        to: 1
+        easing: ease-out

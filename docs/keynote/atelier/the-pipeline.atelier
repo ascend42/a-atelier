@@ -1,0 +1,558 @@
+version: "1.0"
+name: The Pipeline
+description: "Sequence -> hold. Author forks into AI and Human paths, both converge on .atelier file, then fan out to 5 output formats."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Left: Author label ---
+  - id: author-label
+    visual:
+      type: text
+      content: "Author"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 80, y: 470 }
+    bounds: { width: 160, height: 40 }
+    opacity: 0
+
+  # --- Top fork: AI path ---
+  - id: ai-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 260, y: 350 }
+    bounds: { width: 280, height: 3 }
+    opacity: 0
+
+  - id: ai-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 560, y: 300 }
+    bounds: { width: 300, height: 100 }
+    opacity: 0
+
+  - id: ai-label
+    visual:
+      type: text
+      content: "AI"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 620, y: 318 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: ai-subtitle
+    visual:
+      type: text
+      content: "52 MCP tools"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 620, y: 356 }
+    bounds: { width: 180, height: 24 }
+    opacity: 0
+
+  # --- Bottom fork: Human path ---
+  - id: human-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 260, y: 630 }
+    bounds: { width: 280, height: 3 }
+    opacity: 0
+
+  - id: human-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 560, y: 580 }
+    bounds: { width: 300, height: 100 }
+    opacity: 0
+
+  - id: human-label
+    visual:
+      type: text
+      content: "Human"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 620, y: 598 }
+    bounds: { width: 180, height: 32 }
+    opacity: 0
+
+  - id: human-subtitle
+    visual:
+      type: text
+      content: "Browser studio"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 620, y: 636 }
+    bounds: { width: 180, height: 24 }
+    opacity: 0
+
+  # --- Center: .atelier file ---
+  - id: converge-top-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 880, y: 350 }
+    bounds: { width: 100, height: 3 }
+    opacity: 0
+
+  - id: converge-bottom-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 880, y: 630 }
+    bounds: { width: 100, height: 3 }
+    opacity: 0
+
+  - id: atelier-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D3D36" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 1000, y: 420 }
+    bounds: { width: 260, height: 140 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: atelier-label
+    visual:
+      type: text
+      content: ".atelier file"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1030, y: 472 }
+    bounds: { width: 200, height: 36 }
+    opacity: 0
+
+  # --- Right: Output fan ---
+
+  # Output line
+  - id: output-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#888888" }
+    frame: { x: 1280, y: 488 }
+    bounds: { width: 80, height: 3 }
+    opacity: 0
+
+  # Output 1: Canvas 2D
+  - id: out1-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 1 }
+    frame: { x: 1400, y: 240 }
+    bounds: { width: 200, height: 52 }
+    opacity: 0
+
+  - id: out1-label
+    visual:
+      type: text
+      content: "Canvas 2D"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1420, y: 253 }
+    bounds: { width: 160, height: 26 }
+    opacity: 0
+
+  # Output 2: SVG
+  - id: out2-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 1 }
+    frame: { x: 1440, y: 340 }
+    bounds: { width: 200, height: 52 }
+    opacity: 0
+
+  - id: out2-label
+    visual:
+      type: text
+      content: "SVG"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1460, y: 353 }
+    bounds: { width: 160, height: 26 }
+    opacity: 0
+
+  # Output 3: Lottie JSON
+  - id: out3-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 1 }
+    frame: { x: 1460, y: 440 }
+    bounds: { width: 200, height: 52 }
+    opacity: 0
+
+  - id: out3-label
+    visual:
+      type: text
+      content: "Lottie JSON"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1480, y: 453 }
+    bounds: { width: 160, height: 26 }
+    opacity: 0
+
+  # Output 4: MP4 / WebM / GIF
+  - id: out4-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 1 }
+    frame: { x: 1440, y: 540 }
+    bounds: { width: 200, height: 52 }
+    opacity: 0
+
+  - id: out4-label
+    visual:
+      type: text
+      content: "MP4 / WebM / GIF"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1460, y: 553 }
+    bounds: { width: 160, height: 26 }
+    opacity: 0
+
+  # Output 5: React Component
+  - id: out5-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F5F0EB", width: 1 }
+    frame: { x: 1400, y: 640 }
+    bounds: { width: 200, height: 52 }
+    opacity: 0
+
+  - id: out5-label
+    visual:
+      type: text
+      content: "React Component"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1420, y: 653 }
+    bounds: { width: 160, height: 26 }
+    opacity: 0
+
+  # --- Bottom tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "One format. Every output."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 920 }
+    bounds: { width: 900, height: 52 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # --- Phase 1: Author label (frames 0-30) ---
+      - layer: author-label
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 2: Two paths fork (frames 30-120) ---
+
+      # AI path
+      - layer: ai-line
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ai-box
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ai-box
+        property: frame.x
+        range: [50, 80]
+        from: 580
+        to: 560
+        easing: ease-out
+      - layer: ai-label
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ai-subtitle
+        property: opacity
+        range: [65, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Human path
+      - layer: human-line
+        property: opacity
+        range: [45, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: human-box
+        property: opacity
+        range: [65, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: human-box
+        property: frame.x
+        range: [65, 95]
+        from: 580
+        to: 560
+        easing: ease-out
+      - layer: human-label
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: human-subtitle
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 3: Converge on .atelier file (frames 130-210) ---
+
+      # Convergence lines
+      - layer: converge-top-line
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: converge-bottom-line
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Atelier box
+      - layer: atelier-box
+        property: opacity
+        range: [160, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: scale.x
+        range: [160, 210]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: scale.y
+        range: [160, 210]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: shadow.blur
+        range: [180, 230]
+        from: 0
+        to: 25
+        easing: ease-in-out
+      - layer: atelier-label
+        property: opacity
+        range: [180, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 4: Outputs fan out right (frames 250-400) ---
+
+      # Output line
+      - layer: output-line
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Output 1: Canvas 2D
+      - layer: out1-box
+        property: opacity
+        range: [280, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: out1-box
+        property: frame.x
+        range: [280, 310]
+        from: 1420
+        to: 1400
+        easing: ease-out
+      - layer: out1-label
+        property: opacity
+        range: [285, 315]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Output 2: SVG
+      - layer: out2-box
+        property: opacity
+        range: [305, 335]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: out2-box
+        property: frame.x
+        range: [305, 335]
+        from: 1460
+        to: 1440
+        easing: ease-out
+      - layer: out2-label
+        property: opacity
+        range: [310, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Output 3: Lottie JSON
+      - layer: out3-box
+        property: opacity
+        range: [330, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: out3-box
+        property: frame.x
+        range: [330, 360]
+        from: 1480
+        to: 1460
+        easing: ease-out
+      - layer: out3-label
+        property: opacity
+        range: [335, 365]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Output 4: MP4 / WebM / GIF
+      - layer: out4-box
+        property: opacity
+        range: [355, 385]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: out4-box
+        property: frame.x
+        range: [355, 385]
+        from: 1460
+        to: 1440
+        easing: ease-out
+      - layer: out4-label
+        property: opacity
+        range: [360, 390]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Output 5: React Component
+      - layer: out5-box
+        property: opacity
+        range: [380, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: out5-box
+        property: frame.x
+        range: [380, 410]
+        from: 1420
+        to: 1400
+        easing: ease-out
+      - layer: out5-label
+        property: opacity
+        range: [385, 415]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 5: Tagline (frames 440-480) ---
+      - layer: tagline
+        property: opacity
+        range: [440, 480]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [440, 490]
+        from: 940
+        to: 920
+        easing: ease-out

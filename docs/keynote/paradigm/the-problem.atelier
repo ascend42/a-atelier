@@ -1,0 +1,549 @@
+version: "1.0"
+name: The Problem
+description: "Sequence -> hold. Code file with AI cursor scanning through, token counter climbing, red error flash, concluding statement about wasted context."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Code file shape (tall rect, dark fill, border)
+  - id: code-file
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 2 }
+    frame: { x: 260, y: 140 }
+    bounds: { width: 440, height: 680 }
+    opacity: 0
+
+  # Code file header bar
+  - id: code-header
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#252540" }
+    frame: { x: 262, y: 142 }
+    bounds: { width: 436, height: 36 }
+    opacity: 0
+
+  - id: code-header-text
+    visual:
+      type: text
+      content: "src/features/checkout.ts"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 280, y: 148 }
+    bounds: { width: 300, height: 20 }
+    opacity: 0
+
+  # Code lines (simulated with text)
+  - id: code-line-1
+    visual:
+      type: text
+      content: "import { Router } from 'express';"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 200 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-2
+    visual:
+      type: text
+      content: "import { validate } from '../utils';"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 224 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-3
+    visual:
+      type: text
+      content: "import { CartService } from '../services';"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 248 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-4
+    visual:
+      type: text
+      content: "import { PaymentGateway } from '../gateways';"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 272 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-5
+    visual:
+      type: text
+      content: "export const checkoutRouter = Router();"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 312 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-6
+    visual:
+      type: text
+      content: "checkoutRouter.post('/', async (req, res) => {"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 352 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-7
+    visual:
+      type: text
+      content: "  const { items, payment } = req.body;"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 376 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-8
+    visual:
+      type: text
+      content: "  const cart = await CartService.load(...);"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 400 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-9
+    visual:
+      type: text
+      content: "  const result = await PaymentGateway.charge(...);"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 290, y: 424 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-10
+    visual:
+      type: text
+      content: "  // ... 200 more lines of business logic"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: left
+    frame: { x: 290, y: 464 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-11
+    visual:
+      type: text
+      content: "  // ... error handling, validation, logging"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: left
+    frame: { x: 290, y: 488 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  - id: code-line-12
+    visual:
+      type: text
+      content: "  // ... middleware chains, auth checks"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: left
+    frame: { x: 290, y: 512 }
+    bounds: { width: 380, height: 18 }
+    opacity: 0
+
+  # AI cursor (small bright rect)
+  - id: ai-cursor
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 280, y: 200 }
+    bounds: { width: 400, height: 3 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 8
+      offsetX: 0
+      offsetY: 0
+
+  # Token counter label
+  - id: token-label
+    visual:
+      type: text
+      content: "Tokens consumed:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: right
+    frame: { x: 1300, y: 160 }
+    bounds: { width: 250, height: 24 }
+    opacity: 0
+
+  # Token counter values (cross-fading)
+  - id: token-2000
+    visual:
+      type: text
+      content: "2,000"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: right
+    frame: { x: 1300, y: 195 }
+    bounds: { width: 250, height: 60 }
+    opacity: 0
+
+  - id: token-5000
+    visual:
+      type: text
+      content: "5,000"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: right
+    frame: { x: 1300, y: 195 }
+    bounds: { width: 250, height: 60 }
+    opacity: 0
+
+  - id: token-10000
+    visual:
+      type: text
+      content: "10,000"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F59E0B"
+        textAlign: right
+    frame: { x: 1300, y: 195 }
+    bounds: { width: 250, height: 60 }
+    opacity: 0
+
+  - id: token-14000
+    visual:
+      type: text
+      content: "14,000"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#EF4444"
+        textAlign: right
+    frame: { x: 1300, y: 195 }
+    bounds: { width: 250, height: 60 }
+    opacity: 0
+
+  # Red error flash border
+  - id: error-flash
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 4 }
+    frame: { x: 258, y: 138 }
+    bounds: { width: 444, height: 684 }
+    opacity: 0
+
+  # Conclusion text
+  - id: conclusion
+    visual:
+      type: text
+      content: "AI reads everything. Understands nothing."
+      style:
+        fontFamily: sans-serif
+        fontSize: 44
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 880 }
+    bounds: { width: 1400, height: 56 }
+    opacity: 0
+
+  - id: subtitle
+    visual:
+      type: text
+      content: "14,000 tokens per task. Still guessing."
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 460, y: 950 }
+    bounds: { width: 1000, height: 34 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Code file appears
+      - layer: code-file
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-header
+        property: opacity
+        range: [5, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-header-text
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Code lines appear quickly in sequence
+      - layer: code-line-1
+        property: opacity
+        range: [20, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-2
+        property: opacity
+        range: [25, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-3
+        property: opacity
+        range: [30, 45]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-4
+        property: opacity
+        range: [35, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-5
+        property: opacity
+        range: [40, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-6
+        property: opacity
+        range: [45, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-7
+        property: opacity
+        range: [50, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-8
+        property: opacity
+        range: [55, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-9
+        property: opacity
+        range: [60, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-10
+        property: opacity
+        range: [65, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-11
+        property: opacity
+        range: [70, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-line-12
+        property: opacity
+        range: [75, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # AI cursor appears and scans downward
+      - layer: ai-cursor
+        property: opacity
+        range: [60, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ai-cursor
+        property: frame.y
+        range: [70, 280]
+        from: 200
+        to: 520
+        easing: linear
+
+      # Token label appears
+      - layer: token-label
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Token counter: 2,000
+      - layer: token-2000
+        property: opacity
+        range: [80, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      # Cross-fade to 5,000
+      - layer: token-2000
+        property: opacity
+        range: [130, 145]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: token-5000
+        property: opacity
+        range: [135, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      # Cross-fade to 10,000
+      - layer: token-5000
+        property: opacity
+        range: [190, 205]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: token-10000
+        property: opacity
+        range: [195, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      # Cross-fade to 14,000
+      - layer: token-10000
+        property: opacity
+        range: [250, 265]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: token-14000
+        property: opacity
+        range: [255, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Red error flash — border pulses on and off
+      - layer: error-flash
+        property: opacity
+        range: [300, 315]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: error-flash
+        property: opacity
+        range: [315, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: error-flash
+        property: opacity
+        range: [340, 355]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: error-flash
+        property: opacity
+        range: [355, 380]
+        from: 0.7
+        to: 0
+        easing: ease-in
+
+      # AI cursor fades out after error
+      - layer: ai-cursor
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Conclusion text fades in
+      - layer: conclusion
+        property: opacity
+        range: [380, 420]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: conclusion
+        property: frame.y
+        range: [380, 420]
+        from: 910
+        to: 880
+        easing: ease-out
+
+      # Subtitle fades in
+      - layer: subtitle
+        property: opacity
+        range: [410, 450]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: subtitle
+        property: frame.y
+        range: [410, 450]
+        from: 975
+        to: 950
+        easing: ease-out

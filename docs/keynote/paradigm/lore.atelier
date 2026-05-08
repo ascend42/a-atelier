@@ -1,0 +1,637 @@
+version: "1.0"
+name: "Lore \u2014 Project Memory"
+description: "Sequence -> loop. Horizontal timeline with date markers, lore entries drop onto it one at a time with color-coded accents, search query highlights a relevant entry, conclusion text, glow pulses in loop."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Timeline line (horizontal bar across middle)
+  - id: timeline-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 160, y: 498 }
+    bounds: { width: 1600, height: 4 }
+    opacity: 0
+
+  # Date markers along the timeline
+  - id: date-1
+    visual:
+      type: text
+      content: "Jan"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: center
+    frame: { x: 240, y: 515 }
+    bounds: { width: 60, height: 18 }
+    opacity: 0
+
+  - id: date-1-tick
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 268, y: 490 }
+    bounds: { width: 2, height: 20 }
+    opacity: 0
+
+  - id: date-2
+    visual:
+      type: text
+      content: "Mar"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: center
+    frame: { x: 540, y: 515 }
+    bounds: { width: 60, height: 18 }
+    opacity: 0
+
+  - id: date-2-tick
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 568, y: 490 }
+    bounds: { width: 2, height: 20 }
+    opacity: 0
+
+  - id: date-3
+    visual:
+      type: text
+      content: "Jun"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: center
+    frame: { x: 900, y: 515 }
+    bounds: { width: 60, height: 18 }
+    opacity: 0
+
+  - id: date-3-tick
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 928, y: 490 }
+    bounds: { width: 2, height: 20 }
+    opacity: 0
+
+  - id: date-4
+    visual:
+      type: text
+      content: "Sep"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: center
+    frame: { x: 1260, y: 515 }
+    bounds: { width: 60, height: 18 }
+    opacity: 0
+
+  - id: date-4-tick
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 1288, y: 490 }
+    bounds: { width: 2, height: 20 }
+    opacity: 0
+
+  - id: date-5
+    visual:
+      type: text
+      content: "Nov"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#555555"
+        textAlign: center
+    frame: { x: 1560, y: 515 }
+    bounds: { width: 60, height: 18 }
+    opacity: 0
+
+  - id: date-5-tick
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#555555" }
+    frame: { x: 1588, y: 490 }
+    bounds: { width: 2, height: 20 }
+    opacity: 0
+
+  # --- Lore entry 1: Decision (amber) — "Chose JWT over sessions" ---
+  - id: entry-decision-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 190, y: 340 }
+    bounds: { width: 260, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: entry-decision-type
+    visual:
+      type: text
+      content: "Decision"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 210, y: 355 }
+    bounds: { width: 120, height: 18 }
+    opacity: 0
+
+  - id: entry-decision-text
+    visual:
+      type: text
+      content: "Chose JWT over sessions"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 210, y: 380 }
+    bounds: { width: 220, height: 24 }
+    opacity: 0
+
+  # --- Lore entry 2: Session (blue) — "Added auth middleware" ---
+  - id: entry-session-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 520, y: 340 }
+    bounds: { width: 260, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: entry-session-type
+    visual:
+      type: text
+      content: "Session"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 540, y: 355 }
+    bounds: { width: 120, height: 18 }
+    opacity: 0
+
+  - id: entry-session-text
+    visual:
+      type: text
+      content: "Added auth middleware"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 540, y: 380 }
+    bounds: { width: 220, height: 24 }
+    opacity: 0
+
+  # --- Lore entry 3: Milestone (green) — "v1.0 shipped" ---
+  - id: entry-milestone-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 880, y: 340 }
+    bounds: { width: 260, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: entry-milestone-type
+    visual:
+      type: text
+      content: "Milestone"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 900, y: 355 }
+    bounds: { width: 120, height: 18 }
+    opacity: 0
+
+  - id: entry-milestone-text
+    visual:
+      type: text
+      content: "v1.0 shipped"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 900, y: 380 }
+    bounds: { width: 220, height: 24 }
+    opacity: 0
+
+  # --- Lore entry 4: Incident (red) — "Fixed race condition" ---
+  - id: entry-incident-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 1440, y: 340 }
+    bounds: { width: 260, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#EF4444"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: entry-incident-type
+    visual:
+      type: text
+      content: "Incident"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#EF4444"
+        textAlign: left
+    frame: { x: 1460, y: 355 }
+    bounds: { width: 120, height: 18 }
+    opacity: 0
+
+  - id: entry-incident-text
+    visual:
+      type: text
+      content: "Fixed race condition"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1460, y: 380 }
+    bounds: { width: 220, height: 24 }
+    opacity: 0
+
+  # Search query text
+  - id: search-query
+    visual:
+      type: text
+      content: "why did we choose JWT?"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 610 }
+    bounds: { width: 600, height: 34 }
+    opacity: 0
+
+  - id: search-label
+    visual:
+      type: text
+      content: "Search:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: right
+    frame: { x: 560, y: 614 }
+    bounds: { width: 90, height: 24 }
+    opacity: 0
+
+  # Conclusion text
+  - id: conclusion
+    visual:
+      type: text
+      content: "What happened, why, and what was learned. Queryable forever."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 800 }
+    bounds: { width: 1400, height: 40 }
+    opacity: 0
+
+states:
+  main:
+    duration: 600
+    deltas:
+      # Timeline line draws in (opacity + scale)
+      - layer: timeline-line
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: timeline-line
+        property: scale.x
+        range: [0, 40]
+        from: 0
+        to: 1
+        easing: ease-in-out
+
+      # Date markers fade in
+      - layer: date-1
+        property: opacity
+        range: [30, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-1-tick
+        property: opacity
+        range: [30, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-2
+        property: opacity
+        range: [35, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-2-tick
+        property: opacity
+        range: [35, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-3
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-3-tick
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-4
+        property: opacity
+        range: [45, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-4-tick
+        property: opacity
+        range: [45, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-5
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: date-5-tick
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Entry 1: Decision drops onto timeline ---
+      - layer: entry-decision-bg
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-decision-bg
+        property: frame.y
+        range: [80, 105]
+        from: 280
+        to: 340
+        easing: ease-out
+      - layer: entry-decision-type
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-decision-text
+        property: opacity
+        range: [95, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Entry 2: Session drops onto timeline ---
+      - layer: entry-session-bg
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-session-bg
+        property: frame.y
+        range: [130, 155]
+        from: 280
+        to: 340
+        easing: ease-out
+      - layer: entry-session-type
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-session-text
+        property: opacity
+        range: [145, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Entry 3: Milestone drops onto timeline ---
+      - layer: entry-milestone-bg
+        property: opacity
+        range: [180, 205]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-milestone-bg
+        property: frame.y
+        range: [180, 205]
+        from: 280
+        to: 340
+        easing: ease-out
+      - layer: entry-milestone-type
+        property: opacity
+        range: [190, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-milestone-text
+        property: opacity
+        range: [195, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Entry 4: Incident drops onto timeline ---
+      - layer: entry-incident-bg
+        property: opacity
+        range: [230, 255]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-incident-bg
+        property: frame.y
+        range: [230, 255]
+        from: 280
+        to: 340
+        easing: ease-out
+      - layer: entry-incident-type
+        property: opacity
+        range: [240, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: entry-incident-text
+        property: opacity
+        range: [245, 265]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Search query appears
+      - layer: search-label
+        property: opacity
+        range: [300, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: search-query
+        property: opacity
+        range: [310, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: search-query
+        property: frame.y
+        range: [310, 340]
+        from: 630
+        to: 610
+        easing: ease-out
+
+      # Decision entry glows (it is the relevant result)
+      - layer: entry-decision-bg
+        property: shadow.blur
+        range: [350, 390]
+        from: 0
+        to: 30
+        easing: ease-in-out
+
+      # Other entries dim slightly
+      - layer: entry-session-bg
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-session-type
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-session-text
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-milestone-bg
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-milestone-type
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-milestone-text
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-incident-bg
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-incident-type
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: entry-incident-text
+        property: opacity
+        range: [350, 390]
+        from: 1
+        to: 0.4
+        easing: ease-in
+
+      # Conclusion text fades in
+      - layer: conclusion
+        property: opacity
+        range: [420, 460]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: conclusion
+        property: frame.y
+        range: [420, 460]
+        from: 825
+        to: 800
+        easing: ease-out
+
+      # --- Loop: Search glow pulses on decision entry ---
+      # Pulse out
+      - layer: entry-decision-bg
+        property: shadow.blur
+        range: [480, 540]
+        from: 30
+        to: 8
+        easing: ease-in-out
+      # Pulse back in
+      - layer: entry-decision-bg
+        property: shadow.blur
+        range: [540, 600]
+        from: 8
+        to: 30
+        easing: ease-in-out

@@ -1,0 +1,542 @@
+version: "1.0"
+name: The Lexicon
+description: "Reveal staggered. Eight rows fade in one at a time, each showing a generic dating term replaced by its Essence equivalent in accent purple."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Lexicon"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 610, y: 60 }
+    bounds: { width: 700, height: 60 }
+    opacity: 0
+
+  # Divider line
+  - id: divider
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 940, y: 160 }
+    bounds: { width: 2, height: 800 }
+    opacity: 0
+
+  # Column headers
+  - id: header-old
+    visual:
+      type: text
+      content: "They Say"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#555555"
+        textAlign: center
+    frame: { x: 560, y: 150 }
+    bounds: { width: 320, height: 32 }
+    opacity: 0
+
+  - id: header-new
+    visual:
+      type: text
+      content: "We Say"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1020, y: 150 }
+    bounds: { width: 320, height: 32 }
+    opacity: 0
+
+  # Arrow symbol between columns
+  - id: arrow
+    visual:
+      type: text
+      content: "--->"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#444444"
+        textAlign: center
+    frame: { x: 900, y: 153 }
+    bounds: { width: 60, height: 28 }
+    opacity: 0
+
+  # Row 1: Profile -> Soulprint
+  - id: old-1
+    visual:
+      type: text
+      content: "Profile"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 230 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-1
+    visual:
+      type: text
+      content: "Soulprint"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 230 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 2: Swipe -> The Throw
+  - id: old-2
+    visual:
+      type: text
+      content: "Swipe"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 310 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-2
+    visual:
+      type: text
+      content: "The Throw"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 310 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 3: Match -> Resonance
+  - id: old-3
+    visual:
+      type: text
+      content: "Match"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 390 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-3
+    visual:
+      type: text
+      content: "Resonance"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 390 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 4: Chat -> Bridge
+  - id: old-4
+    visual:
+      type: text
+      content: "Chat"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 470 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-4
+    visual:
+      type: text
+      content: "Bridge"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 470 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 5: Discovery -> Globe
+  - id: old-5
+    visual:
+      type: text
+      content: "Discovery"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 550 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-5
+    visual:
+      type: text
+      content: "Globe"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 550 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 6: Verified Badge -> Ignited Rune
+  - id: old-6
+    visual:
+      type: text
+      content: "Verified Badge"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 630 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-6
+    visual:
+      type: text
+      content: "Ignited Rune"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 630 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 7: Like -> Emit
+  - id: old-7
+    visual:
+      type: text
+      content: "Like"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 710 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-7
+    visual:
+      type: text
+      content: "Emit"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 1000, y: 710 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  # Row 8: Block -> Sever
+  - id: old-8
+    visual:
+      type: text
+      content: "Block"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#666666"
+        textAlign: right
+    frame: { x: 560, y: 790 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+  - id: new-8
+    visual:
+      type: text
+      content: "Sever"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#E91E8F"
+        textAlign: left
+    frame: { x: 1000, y: 790 }
+    bounds: { width: 340, height: 36 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: title
+        property: frame.y
+        range: [0, 30]
+        from: 80
+        to: 60
+        easing: ease-out
+
+      # Column headers and divider
+      - layer: divider
+        property: opacity
+        range: [20, 45]
+        from: 0
+        to: 0.5
+        easing: ease-out
+      - layer: header-old
+        property: opacity
+        range: [25, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: header-new
+        property: opacity
+        range: [25, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: arrow
+        property: opacity
+        range: [25, 50]
+        from: 0
+        to: 0.6
+        easing: ease-out
+
+      # Row 1: Profile -> Soulprint (frame 50)
+      - layer: old-1
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-1
+        property: frame.x
+        range: [50, 70]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-1
+        property: opacity
+        range: [55, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-1
+        property: frame.x
+        range: [55, 75]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 2: Swipe -> The Throw (frame 70)
+      - layer: old-2
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-2
+        property: frame.x
+        range: [70, 90]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-2
+        property: opacity
+        range: [75, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-2
+        property: frame.x
+        range: [75, 95]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 3: Match -> Resonance (frame 90)
+      - layer: old-3
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-3
+        property: frame.x
+        range: [90, 110]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-3
+        property: opacity
+        range: [95, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-3
+        property: frame.x
+        range: [95, 115]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 4: Chat -> Bridge (frame 110)
+      - layer: old-4
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-4
+        property: frame.x
+        range: [110, 130]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-4
+        property: opacity
+        range: [115, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-4
+        property: frame.x
+        range: [115, 135]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 5: Discovery -> Globe (frame 130)
+      - layer: old-5
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-5
+        property: frame.x
+        range: [130, 150]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-5
+        property: opacity
+        range: [135, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-5
+        property: frame.x
+        range: [135, 155]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 6: Verified Badge -> Ignited Rune (frame 150)
+      - layer: old-6
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-6
+        property: frame.x
+        range: [150, 170]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-6
+        property: opacity
+        range: [155, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-6
+        property: frame.x
+        range: [155, 175]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 7: Like -> Emit (frame 170)
+      - layer: old-7
+        property: opacity
+        range: [170, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-7
+        property: frame.x
+        range: [170, 190]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-7
+        property: opacity
+        range: [175, 195]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-7
+        property: frame.x
+        range: [175, 195]
+        from: 1040
+        to: 1000
+        easing: ease-out
+
+      # Row 8: Block -> Sever (frame 190)
+      - layer: old-8
+        property: opacity
+        range: [190, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: old-8
+        property: frame.x
+        range: [190, 210]
+        from: 520
+        to: 560
+        easing: ease-out
+      - layer: new-8
+        property: opacity
+        range: [195, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: new-8
+        property: frame.x
+        range: [195, 215]
+        from: 1040
+        to: 1000
+        easing: ease-out

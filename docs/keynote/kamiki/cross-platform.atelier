@@ -1,0 +1,516 @@
+version: "1.0"
+name: Cross-Platform Vision
+description: "Reveal -> hold. Kamiki name at center with platform icons fanning out around it. Working platforms are bright, planned platforms are dimmed."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Center: Kamiki title
+  - id: kamiki-title
+    visual:
+      type: text
+      content: "Kamiki"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 760, y: 300 }
+    bounds: { width: 400, height: 80 }
+    opacity: 0
+
+  - id: kamiki-subtitle
+    visual:
+      type: text
+      content: "Cross-Platform Vision"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 710, y: 380 }
+    bounds: { width: 500, height: 36 }
+    opacity: 0
+
+  # Center hub circle (decorative ring behind title)
+  - id: hub-ring
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#0A0A0F" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 710, y: 260 }
+    bounds: { width: 500, height: 500 }
+    opacity: 0
+
+  # --- macOS (top-left, working) ---
+  - id: macos-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 260, y: 240 }
+    bounds: { width: 200, height: 100 }
+    opacity: 0
+
+  - id: macos-label
+    visual:
+      type: text
+      content: "macOS"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 280, y: 265 }
+    bounds: { width: 160, height: 32 }
+    opacity: 0
+
+  - id: macos-status
+    visual:
+      type: text
+      content: "Working"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 310, y: 305 }
+    bounds: { width: 100, height: 20 }
+    opacity: 0
+
+  # --- Windows (top-right, working) ---
+  - id: windows-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 1460, y: 240 }
+    bounds: { width: 200, height: 100 }
+    opacity: 0
+
+  - id: windows-label
+    visual:
+      type: text
+      content: "Windows"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 1480, y: 265 }
+    bounds: { width: 160, height: 32 }
+    opacity: 0
+
+  - id: windows-status
+    visual:
+      type: text
+      content: "Working"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1510, y: 305 }
+    bounds: { width: 100, height: 20 }
+    opacity: 0
+
+  # --- Linux (left, planned — dimmed with dotted outline) ---
+  - id: linux-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0E0E14" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 180, y: 470 }
+    bounds: { width: 200, height: 100 }
+    opacity: 0
+
+  - id: linux-label
+    visual:
+      type: text
+      content: "Linux"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#333333"
+        textAlign: center
+    frame: { x: 200, y: 495 }
+    bounds: { width: 160, height: 32 }
+    opacity: 0
+
+  - id: linux-status
+    visual:
+      type: text
+      content: "Planned"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 230, y: 535 }
+    bounds: { width: 100, height: 20 }
+    opacity: 0
+
+  # --- Browser viewer (bottom-right, working) ---
+  - id: browser-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1460, y: 470 }
+    bounds: { width: 200, height: 100 }
+    opacity: 0
+
+  - id: browser-label
+    visual:
+      type: text
+      content: "Browser"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1480, y: 495 }
+    bounds: { width: 160, height: 32 }
+    opacity: 0
+
+  - id: browser-status
+    visual:
+      type: text
+      content: "Working"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1510, y: 535 }
+    bounds: { width: 100, height: 20 }
+    opacity: 0
+
+  # --- Mobile viewer (bottom-center, planned — dimmed) ---
+  - id: mobile-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0E0E14" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 860, y: 640 }
+    bounds: { width: 200, height: 100 }
+    opacity: 0
+
+  - id: mobile-label
+    visual:
+      type: text
+      content: "Mobile"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#333333"
+        textAlign: center
+    frame: { x: 880, y: 665 }
+    bounds: { width: 160, height: 32 }
+    opacity: 0
+
+  - id: mobile-status
+    visual:
+      type: text
+      content: "Planned"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 910, y: 705 }
+    bounds: { width: 100, height: 20 }
+    opacity: 0
+
+  # Connector lines from hub to each platform (radial spokes)
+  - id: spoke-macos
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 460, y: 308 }
+    bounds: { width: 260, height: 2 }
+    opacity: 0
+
+  - id: spoke-windows
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1200, y: 308 }
+    bounds: { width: 260, height: 2 }
+    opacity: 0
+
+  - id: spoke-linux
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 380, y: 478 }
+    bounds: { width: 340, height: 2 }
+    opacity: 0
+
+  - id: spoke-browser
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1200, y: 478 }
+    bounds: { width: 260, height: 2 }
+    opacity: 0
+
+  - id: spoke-mobile
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 1 }
+      fill: { type: solid, color: "#333333" }
+    frame: { x: 958, y: 500 }
+    bounds: { width: 2, height: 140 }
+    opacity: 0
+
+  # Bottom tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "Capture from any desktop. View from anywhere."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 410, y: 860 }
+    bounds: { width: 1100, height: 42 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # Hub ring fades in subtly
+      - layer: hub-ring
+        property: opacity
+        range: [0, 40]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: hub-ring
+        property: scale.x
+        range: [0, 50]
+        from: 0.7
+        to: 1
+        easing: ease-out
+      - layer: hub-ring
+        property: scale.y
+        range: [0, 50]
+        from: 0.7
+        to: 1
+        easing: ease-out
+
+      # Kamiki title appears with scale-up
+      - layer: kamiki-title
+        property: opacity
+        range: [10, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: kamiki-title
+        property: scale.x
+        range: [10, 45]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: kamiki-title
+        property: scale.y
+        range: [10, 45]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: kamiki-subtitle
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # macOS fans out (top-left, working - bright)
+      - layer: spoke-macos
+        property: opacity
+        range: [70, 100]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: macos-box
+        property: opacity
+        range: [80, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: macos-box
+        property: frame.x
+        range: [80, 115]
+        from: 360
+        to: 260
+        easing: ease-out
+      - layer: macos-label
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: macos-status
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Windows fans out (top-right, working - bright)
+      - layer: spoke-windows
+        property: opacity
+        range: [100, 130]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: windows-box
+        property: opacity
+        range: [110, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: windows-box
+        property: frame.x
+        range: [110, 145]
+        from: 1360
+        to: 1460
+        easing: ease-out
+      - layer: windows-label
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: windows-status
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Linux fans out (left, planned - dim)
+      - layer: spoke-linux
+        property: opacity
+        range: [150, 180]
+        from: 0
+        to: 0.3
+        easing: ease-out
+      - layer: linux-box
+        property: opacity
+        range: [160, 190]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: linux-box
+        property: frame.x
+        range: [160, 195]
+        from: 280
+        to: 180
+        easing: ease-out
+      - layer: linux-label
+        property: opacity
+        range: [170, 195]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: linux-status
+        property: opacity
+        range: [180, 200]
+        from: 0
+        to: 0.4
+        easing: ease-out
+
+      # Browser viewer fans out (bottom-right, working - bright)
+      - layer: spoke-browser
+        property: opacity
+        range: [200, 230]
+        from: 0
+        to: 0.8
+        easing: ease-out
+      - layer: browser-box
+        property: opacity
+        range: [210, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-box
+        property: frame.x
+        range: [210, 245]
+        from: 1360
+        to: 1460
+        easing: ease-out
+      - layer: browser-label
+        property: opacity
+        range: [220, 245]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-status
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Mobile viewer fans out (bottom-center, planned - dim)
+      - layer: spoke-mobile
+        property: opacity
+        range: [250, 280]
+        from: 0
+        to: 0.3
+        easing: ease-out
+      - layer: mobile-box
+        property: opacity
+        range: [260, 290]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: mobile-box
+        property: frame.y
+        range: [260, 295]
+        from: 580
+        to: 640
+        easing: ease-out
+      - layer: mobile-label
+        property: opacity
+        range: [270, 295]
+        from: 0
+        to: 0.4
+        easing: ease-out
+      - layer: mobile-status
+        property: opacity
+        range: [280, 300]
+        from: 0
+        to: 0.4
+        easing: ease-out
+
+      # Bottom tagline rises in
+      - layer: tagline
+        property: opacity
+        range: [340, 390]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [340, 400]
+        from: 900
+        to: 860
+        easing: ease-out

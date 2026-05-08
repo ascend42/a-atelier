@@ -1,0 +1,336 @@
+version: "1.0"
+name: Who It's For
+description: "Reveal staggered. Four use case cards fade in with ~30 frame stagger, then proof of concept badge appears at bottom."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "Who It's For"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 60 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # Card 1 — Film & TV
+  - id: card1-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 200, y: 240 }
+    bounds: { width: 340, height: 200 }
+    opacity: 0
+
+  - id: card1-title
+    visual:
+      type: text
+      content: "Film & TV"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 250, y: 290 }
+    bounds: { width: 240, height: 36 }
+    opacity: 0
+
+  - id: card1-desc
+    visual:
+      type: text
+      content: "ADR & dialogue replacement"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 240, y: 340 }
+    bounds: { width: 260, height: 26 }
+    opacity: 0
+
+  # Card 2 — Foley Artists
+  - id: card2-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 620, y: 240 }
+    bounds: { width: 340, height: 200 }
+    opacity: 0
+
+  - id: card2-title
+    visual:
+      type: text
+      content: "Foley Artists"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 670, y: 290 }
+    bounds: { width: 240, height: 36 }
+    opacity: 0
+
+  - id: card2-desc
+    visual:
+      type: text
+      content: "Virtual soundscapes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 660, y: 340 }
+    bounds: { width: 260, height: 26 }
+    opacity: 0
+
+  # Card 3 — Podcasters & Creators
+  - id: card3-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 1040, y: 240 }
+    bounds: { width: 340, height: 200 }
+    opacity: 0
+
+  - id: card3-title
+    visual:
+      type: text
+      content: "Podcasters & Creators"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1070, y: 290 }
+    bounds: { width: 280, height: 36 }
+    opacity: 0
+
+  - id: card3-desc
+    visual:
+      type: text
+      content: "No studio needed"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1080, y: 340 }
+    bounds: { width: 260, height: 26 }
+    opacity: 0
+
+  # Card 4 — Game Audio
+  - id: card4-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 1460, y: 240 }
+    bounds: { width: 340, height: 200 }
+    opacity: 0
+
+  - id: card4-title
+    visual:
+      type: text
+      content: "Game Audio"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1510, y: 290 }
+    bounds: { width: 240, height: 36 }
+    opacity: 0
+
+  - id: card4-desc
+    visual:
+      type: text
+      content: "Spatial audio prototyping"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1500, y: 340 }
+    bounds: { width: 260, height: 26 }
+    opacity: 0
+
+  # Proof of Concept badge
+  - id: poc-badge
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 810, y: 560 }
+    bounds: { width: 300, height: 40 }
+    opacity: 0
+
+  - id: poc-text
+    visual:
+      type: text
+      content: "Proof of Concept"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 820, y: 565 }
+    bounds: { width: 280, height: 30 }
+    opacity: 0
+
+states:
+  main:
+    duration: 300
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Card 1 — Film & TV
+      - layer: card1-bg
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-bg
+        property: frame.y
+        range: [30, 60]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: card1-title
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card1-desc
+        property: opacity
+        range: [45, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Card 2 — Foley Artists (~30 frame stagger)
+      - layer: card2-bg
+        property: opacity
+        range: [60, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-bg
+        property: frame.y
+        range: [60, 90]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: card2-title
+        property: opacity
+        range: [70, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card2-desc
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Card 3 — Podcasters & Creators
+      - layer: card3-bg
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-bg
+        property: frame.y
+        range: [90, 120]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: card3-title
+        property: opacity
+        range: [100, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card3-desc
+        property: opacity
+        range: [105, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Card 4 — Game Audio
+      - layer: card4-bg
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card4-bg
+        property: frame.y
+        range: [120, 150]
+        from: 270
+        to: 240
+        easing: ease-out
+      - layer: card4-title
+        property: opacity
+        range: [130, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card4-desc
+        property: opacity
+        range: [135, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Proof of Concept badge
+      - layer: poc-badge
+        property: opacity
+        range: [190, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: poc-badge
+        property: scale.x
+        range: [190, 220]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: poc-badge
+        property: scale.y
+        range: [190, 220]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: poc-text
+        property: opacity
+        range: [200, 230]
+        from: 0
+        to: 1
+        easing: ease-out

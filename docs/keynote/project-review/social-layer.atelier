@@ -1,0 +1,574 @@
+version: "1.0"
+name: The Social Layer
+description: "Loop. A vertical feed of card shapes scrolls upward continuously. Cards have thumbnail previews and interaction dots that pulse. New cards fade in at bottom as old ones exit top."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "The Social Layer"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 60 }
+    bounds: { width: 800, height: 60 }
+    opacity: 1
+
+  # --- Subtitle ---
+  - id: subtitle
+    visual:
+      type: text
+      content: "See what others are practicing. Get inspired."
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 510, y: 130 }
+    bounds: { width: 900, height: 30 }
+    opacity: 1
+
+  # --- Feed cards (centered vertical column) ---
+
+  # Card 1 (starts near top, will exit)
+  - id: card-1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 660, y: 200 }
+    bounds: { width: 600, height: 130 }
+    opacity: 1
+
+  - id: card-1-thumb
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 680, y: 220 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0.6
+
+  - id: card-1-title
+    visual:
+      type: text
+      content: "Gesture drawing warmup"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 790, y: 230 }
+    bounds: { width: 400, height: 24 }
+    opacity: 1
+
+  - id: card-1-meta
+    visual:
+      type: text
+      content: "by @kai  --  12 min ago"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 790, y: 260 }
+    bounds: { width: 400, height: 20 }
+    opacity: 1
+
+  # Card 2
+  - id: card-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 660, y: 350 }
+    bounds: { width: 600, height: 130 }
+    opacity: 1
+
+  - id: card-2-thumb
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 680, y: 370 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0.6
+
+  - id: card-2-title
+    visual:
+      type: text
+      content: "Figure anatomy study"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 790, y: 380 }
+    bounds: { width: 400, height: 24 }
+    opacity: 1
+
+  - id: card-2-meta
+    visual:
+      type: text
+      content: "by @luna  --  28 min ago"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 790, y: 410 }
+    bounds: { width: 400, height: 20 }
+    opacity: 1
+
+  # Card 3
+  - id: card-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 660, y: 500 }
+    bounds: { width: 600, height: 130 }
+    opacity: 1
+
+  - id: card-3-thumb
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 680, y: 520 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0.6
+
+  - id: card-3-title
+    visual:
+      type: text
+      content: "Perspective boxes drill"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 790, y: 530 }
+    bounds: { width: 400, height: 24 }
+    opacity: 1
+
+  - id: card-3-meta
+    visual:
+      type: text
+      content: "by @river  --  1 hr ago"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 790, y: 560 }
+    bounds: { width: 400, height: 20 }
+    opacity: 1
+
+  # Card 4
+  - id: card-4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 660, y: 650 }
+    bounds: { width: 600, height: 130 }
+    opacity: 1
+
+  - id: card-4-thumb
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 680, y: 670 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0.6
+
+  - id: card-4-title
+    visual:
+      type: text
+      content: "Portrait value study"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 790, y: 680 }
+    bounds: { width: 400, height: 24 }
+    opacity: 1
+
+  - id: card-4-meta
+    visual:
+      type: text
+      content: "by @sage  --  2 hr ago"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 790, y: 710 }
+    bounds: { width: 400, height: 20 }
+    opacity: 1
+
+  # Card 5 (starts below visible area, will scroll in)
+  - id: card-5
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 660, y: 800 }
+    bounds: { width: 600, height: 130 }
+    opacity: 0
+
+  - id: card-5-thumb
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 680, y: 820 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0
+
+  - id: card-5-title
+    visual:
+      type: text
+      content: "Dynamic poses - 30 sec"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 790, y: 830 }
+    bounds: { width: 400, height: 24 }
+    opacity: 0
+
+  - id: card-5-meta
+    visual:
+      type: text
+      content: "by @ash  --  3 hr ago"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 790, y: 860 }
+    bounds: { width: 400, height: 20 }
+    opacity: 0
+
+  # --- Interaction dots (ellipses that pulse near cards) ---
+  - id: dot-1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 1220, y: 255 }
+    bounds: { width: 10, height: 10 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: dot-2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1230, y: 400 }
+    bounds: { width: 10, height: 10 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: dot-3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1210, y: 560 }
+    bounds: { width: 10, height: 10 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 300
+    deltas:
+      # --- All cards scroll upward ---
+      # Card 1 scrolls up and fades out (exits top)
+      - layer: card-1
+        property: frame.y
+        range: [0, 300]
+        from: 200
+        to: 50
+        easing: linear
+      - layer: card-1-thumb
+        property: frame.y
+        range: [0, 300]
+        from: 220
+        to: 70
+        easing: linear
+      - layer: card-1-title
+        property: frame.y
+        range: [0, 300]
+        from: 230
+        to: 80
+        easing: linear
+      - layer: card-1-meta
+        property: frame.y
+        range: [0, 300]
+        from: 260
+        to: 110
+        easing: linear
+      - layer: card-1
+        property: opacity
+        range: [200, 280]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: card-1-thumb
+        property: opacity
+        range: [200, 280]
+        from: 0.6
+        to: 0
+        easing: ease-in
+      - layer: card-1-title
+        property: opacity
+        range: [200, 280]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: card-1-meta
+        property: opacity
+        range: [200, 280]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Card 2 scrolls up
+      - layer: card-2
+        property: frame.y
+        range: [0, 300]
+        from: 350
+        to: 200
+        easing: linear
+      - layer: card-2-thumb
+        property: frame.y
+        range: [0, 300]
+        from: 370
+        to: 220
+        easing: linear
+      - layer: card-2-title
+        property: frame.y
+        range: [0, 300]
+        from: 380
+        to: 230
+        easing: linear
+      - layer: card-2-meta
+        property: frame.y
+        range: [0, 300]
+        from: 410
+        to: 260
+        easing: linear
+
+      # Card 3 scrolls up
+      - layer: card-3
+        property: frame.y
+        range: [0, 300]
+        from: 500
+        to: 350
+        easing: linear
+      - layer: card-3-thumb
+        property: frame.y
+        range: [0, 300]
+        from: 520
+        to: 370
+        easing: linear
+      - layer: card-3-title
+        property: frame.y
+        range: [0, 300]
+        from: 530
+        to: 380
+        easing: linear
+      - layer: card-3-meta
+        property: frame.y
+        range: [0, 300]
+        from: 560
+        to: 410
+        easing: linear
+
+      # Card 4 scrolls up
+      - layer: card-4
+        property: frame.y
+        range: [0, 300]
+        from: 650
+        to: 500
+        easing: linear
+      - layer: card-4-thumb
+        property: frame.y
+        range: [0, 300]
+        from: 670
+        to: 520
+        easing: linear
+      - layer: card-4-title
+        property: frame.y
+        range: [0, 300]
+        from: 680
+        to: 530
+        easing: linear
+      - layer: card-4-meta
+        property: frame.y
+        range: [0, 300]
+        from: 710
+        to: 560
+        easing: linear
+
+      # Card 5 scrolls up and fades in (enters from bottom)
+      - layer: card-5
+        property: frame.y
+        range: [0, 300]
+        from: 800
+        to: 650
+        easing: linear
+      - layer: card-5-thumb
+        property: frame.y
+        range: [0, 300]
+        from: 820
+        to: 670
+        easing: linear
+      - layer: card-5-title
+        property: frame.y
+        range: [0, 300]
+        from: 830
+        to: 680
+        easing: linear
+      - layer: card-5-meta
+        property: frame.y
+        range: [0, 300]
+        from: 860
+        to: 710
+        easing: linear
+      - layer: card-5
+        property: opacity
+        range: [30, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-5-thumb
+        property: opacity
+        range: [40, 100]
+        from: 0
+        to: 0.6
+        easing: ease-out
+      - layer: card-5-title
+        property: opacity
+        range: [50, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: card-5-meta
+        property: opacity
+        range: [50, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Interaction dots pulse ---
+      # Dot 1 pulses
+      - layer: dot-1
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-1
+        property: shadow.blur
+        range: [60, 100]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: dot-1
+        property: shadow.blur
+        range: [100, 140]
+        from: 12
+        to: 0
+        easing: ease-in-out
+      - layer: dot-1
+        property: opacity
+        range: [140, 170]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Dot 2 pulses (staggered)
+      - layer: dot-2
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-2
+        property: shadow.blur
+        range: [120, 160]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: dot-2
+        property: shadow.blur
+        range: [160, 200]
+        from: 12
+        to: 0
+        easing: ease-in-out
+      - layer: dot-2
+        property: opacity
+        range: [200, 230]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Dot 3 pulses (staggered)
+      - layer: dot-3
+        property: opacity
+        range: [180, 200]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dot-3
+        property: shadow.blur
+        range: [200, 240]
+        from: 0
+        to: 12
+        easing: ease-in-out
+      - layer: dot-3
+        property: shadow.blur
+        range: [240, 280]
+        from: 12
+        to: 0
+        easing: ease-in-out
+      - layer: dot-3
+        property: opacity
+        range: [270, 295]
+        from: 1
+        to: 0
+        easing: ease-in

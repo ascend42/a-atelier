@@ -1,0 +1,405 @@
+version: "1.0"
+name: The Principles
+description: "Reveal staggered. Five principles slide in from the left one at a time with accent bullet circles, then hold."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The Principles"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 60 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # Principle 1 — Decentralized Moderation
+  - id: bullet1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 380, y: 220 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  - id: p1-title
+    visual:
+      type: text
+      content: "Decentralized Moderation"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 212 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: p1-desc
+    visual:
+      type: text
+      content: "Communities govern themselves."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 420, y: 255 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Principle 2 — P2P First
+  - id: bullet2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 380, y: 370 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  - id: p2-title
+    visual:
+      type: text
+      content: "P2P First"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 362 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: p2-desc
+    visual:
+      type: text
+      content: "Voice, video, files — direct between users."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 420, y: 405 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Principle 3 — Privacy by Design
+  - id: bullet3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 380, y: 520 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  - id: p3-title
+    visual:
+      type: text
+      content: "Privacy by Design"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 512 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: p3-desc
+    visual:
+      type: text
+      content: "E2E encrypted. Minimal data collection."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 420, y: 555 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Principle 4 — No Dark Patterns
+  - id: bullet4
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 380, y: 670 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  - id: p4-title
+    visual:
+      type: text
+      content: "No Dark Patterns"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 662 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: p4-desc
+    visual:
+      type: text
+      content: "Transparent, ethical monetization."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 420, y: 705 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+  # Principle 5 — User Sovereignty
+  - id: bullet5
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#3B82F6" }
+    frame: { x: 380, y: 820 }
+    bounds: { width: 16, height: 16 }
+    opacity: 0
+
+  - id: p5-title
+    visual:
+      type: text
+      content: "User Sovereignty"
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 812 }
+    bounds: { width: 500, height: 38 }
+    opacity: 0
+
+  - id: p5-desc
+    visual:
+      type: text
+      content: "Full data export. Real account deletion."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#888888"
+        textAlign: left
+    frame: { x: 420, y: 855 }
+    bounds: { width: 500, height: 28 }
+    opacity: 0
+
+states:
+  main:
+    duration: 300
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Principle 1 slides in from left
+      - layer: bullet1
+        property: opacity
+        range: [30, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bullet1
+        property: frame.x
+        range: [30, 55]
+        from: 320
+        to: 380
+        easing: ease-out
+      - layer: p1-title
+        property: opacity
+        range: [35, 58]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p1-title
+        property: frame.x
+        range: [35, 58]
+        from: 360
+        to: 420
+        easing: ease-out
+      - layer: p1-desc
+        property: opacity
+        range: [40, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p1-desc
+        property: frame.x
+        range: [40, 60]
+        from: 360
+        to: 420
+        easing: ease-out
+
+      # Principle 2 slides in (~30 frame stagger)
+      - layer: bullet2
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bullet2
+        property: frame.x
+        range: [60, 85]
+        from: 320
+        to: 380
+        easing: ease-out
+      - layer: p2-title
+        property: opacity
+        range: [65, 88]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p2-title
+        property: frame.x
+        range: [65, 88]
+        from: 360
+        to: 420
+        easing: ease-out
+      - layer: p2-desc
+        property: opacity
+        range: [70, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p2-desc
+        property: frame.x
+        range: [70, 90]
+        from: 360
+        to: 420
+        easing: ease-out
+
+      # Principle 3 slides in
+      - layer: bullet3
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bullet3
+        property: frame.x
+        range: [90, 115]
+        from: 320
+        to: 380
+        easing: ease-out
+      - layer: p3-title
+        property: opacity
+        range: [95, 118]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p3-title
+        property: frame.x
+        range: [95, 118]
+        from: 360
+        to: 420
+        easing: ease-out
+      - layer: p3-desc
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p3-desc
+        property: frame.x
+        range: [100, 120]
+        from: 360
+        to: 420
+        easing: ease-out
+
+      # Principle 4 slides in
+      - layer: bullet4
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bullet4
+        property: frame.x
+        range: [120, 145]
+        from: 320
+        to: 380
+        easing: ease-out
+      - layer: p4-title
+        property: opacity
+        range: [125, 148]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p4-title
+        property: frame.x
+        range: [125, 148]
+        from: 360
+        to: 420
+        easing: ease-out
+      - layer: p4-desc
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p4-desc
+        property: frame.x
+        range: [130, 150]
+        from: 360
+        to: 420
+        easing: ease-out
+
+      # Principle 5 slides in
+      - layer: bullet5
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bullet5
+        property: frame.x
+        range: [150, 175]
+        from: 320
+        to: 380
+        easing: ease-out
+      - layer: p5-title
+        property: opacity
+        range: [155, 178]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p5-title
+        property: frame.x
+        range: [155, 178]
+        from: 360
+        to: 420
+        easing: ease-out
+      - layer: p5-desc
+        property: opacity
+        range: [160, 180]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p5-desc
+        property: frame.x
+        range: [160, 180]
+        from: 360
+        to: 420
+        easing: ease-out

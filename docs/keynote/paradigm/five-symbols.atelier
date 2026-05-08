@@ -1,0 +1,431 @@
+version: "1.0"
+name: Five Symbols
+description: "Reveal staggered. Five symbol rows slide in from left with ~30 frame stagger, each with accent color, name, and example. Bottom text appears last."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Row 1: # Component (blue) ---
+  - id: sym-hash
+    visual:
+      type: text
+      content: "#"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 300, y: 180 }
+    bounds: { width: 80, height: 76 }
+    opacity: 0
+
+  - id: sym-hash-name
+    visual:
+      type: text
+      content: "Component"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 190 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  - id: sym-hash-example
+    visual:
+      type: text
+      content: "#checkout"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: left
+    frame: { x: 420, y: 232 }
+    bounds: { width: 280, height: 28 }
+    opacity: 0
+
+  # --- Row 2: $ Flow (green) ---
+  - id: sym-dollar
+    visual:
+      type: text
+      content: "$"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 300, y: 320 }
+    bounds: { width: 80, height: 76 }
+    opacity: 0
+
+  - id: sym-dollar-name
+    visual:
+      type: text
+      content: "Flow"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 330 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  - id: sym-dollar-example
+    visual:
+      type: text
+      content: "$checkout-flow"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 420, y: 372 }
+    bounds: { width: 280, height: 28 }
+    opacity: 0
+
+  # --- Row 3: ^ Gate (amber) ---
+  - id: sym-caret
+    visual:
+      type: text
+      content: "^"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 300, y: 460 }
+    bounds: { width: 80, height: 76 }
+    opacity: 0
+
+  - id: sym-caret-name
+    visual:
+      type: text
+      content: "Gate"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 470 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  - id: sym-caret-example
+    visual:
+      type: text
+      content: "^authenticated"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 420, y: 512 }
+    bounds: { width: 280, height: 28 }
+    opacity: 0
+
+  # --- Row 4: ! Signal (red) ---
+  - id: sym-bang
+    visual:
+      type: text
+      content: "!"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 300, y: 600 }
+    bounds: { width: 80, height: 76 }
+    opacity: 0
+
+  - id: sym-bang-name
+    visual:
+      type: text
+      content: "Signal"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 610 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  - id: sym-bang-example
+    visual:
+      type: text
+      content: "!login-failed"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: left
+    frame: { x: 420, y: 652 }
+    bounds: { width: 280, height: 28 }
+    opacity: 0
+
+  # --- Row 5: ~ Aspect (purple) ---
+  - id: sym-tilde
+    visual:
+      type: text
+      content: "~"
+      style:
+        fontFamily: sans-serif
+        fontSize: 64
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 300, y: 740 }
+    bounds: { width: 80, height: 76 }
+    opacity: 0
+
+  - id: sym-tilde-name
+    visual:
+      type: text
+      content: "Aspect"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 420, y: 750 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  - id: sym-tilde-example
+    visual:
+      type: text
+      content: "~audit-required"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#9B59B6"
+        textAlign: left
+    frame: { x: 420, y: 792 }
+    bounds: { width: 280, height: 28 }
+    opacity: 0
+
+  # Bottom text
+  - id: bottom-text
+    visual:
+      type: text
+      content: "Five symbols. Works in code, commits, docs, AI prompts, and visual tools."
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#888888"
+        textAlign: center
+    frame: { x: 260, y: 940 }
+    bounds: { width: 1400, height: 34 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # --- Row 1: # Component slides in ---
+      - layer: sym-hash
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-hash
+        property: frame.x
+        range: [0, 30]
+        from: 160
+        to: 300
+        easing: ease-out
+      - layer: sym-hash-name
+        property: opacity
+        range: [5, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-hash-name
+        property: frame.x
+        range: [5, 35]
+        from: 280
+        to: 420
+        easing: ease-out
+      - layer: sym-hash-example
+        property: opacity
+        range: [10, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-hash-example
+        property: frame.x
+        range: [10, 40]
+        from: 280
+        to: 420
+        easing: ease-out
+
+      # --- Row 2: $ Flow slides in (stagger +30) ---
+      - layer: sym-dollar
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-dollar
+        property: frame.x
+        range: [30, 60]
+        from: 160
+        to: 300
+        easing: ease-out
+      - layer: sym-dollar-name
+        property: opacity
+        range: [35, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-dollar-name
+        property: frame.x
+        range: [35, 65]
+        from: 280
+        to: 420
+        easing: ease-out
+      - layer: sym-dollar-example
+        property: opacity
+        range: [40, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-dollar-example
+        property: frame.x
+        range: [40, 70]
+        from: 280
+        to: 420
+        easing: ease-out
+
+      # --- Row 3: ^ Gate slides in (stagger +60) ---
+      - layer: sym-caret
+        property: opacity
+        range: [60, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-caret
+        property: frame.x
+        range: [60, 90]
+        from: 160
+        to: 300
+        easing: ease-out
+      - layer: sym-caret-name
+        property: opacity
+        range: [65, 95]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-caret-name
+        property: frame.x
+        range: [65, 95]
+        from: 280
+        to: 420
+        easing: ease-out
+      - layer: sym-caret-example
+        property: opacity
+        range: [70, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-caret-example
+        property: frame.x
+        range: [70, 100]
+        from: 280
+        to: 420
+        easing: ease-out
+
+      # --- Row 4: ! Signal slides in (stagger +90) ---
+      - layer: sym-bang
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-bang
+        property: frame.x
+        range: [90, 120]
+        from: 160
+        to: 300
+        easing: ease-out
+      - layer: sym-bang-name
+        property: opacity
+        range: [95, 125]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-bang-name
+        property: frame.x
+        range: [95, 125]
+        from: 280
+        to: 420
+        easing: ease-out
+      - layer: sym-bang-example
+        property: opacity
+        range: [100, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-bang-example
+        property: frame.x
+        range: [100, 130]
+        from: 280
+        to: 420
+        easing: ease-out
+
+      # --- Row 5: ~ Aspect slides in (stagger +120) ---
+      - layer: sym-tilde
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-tilde
+        property: frame.x
+        range: [120, 150]
+        from: 160
+        to: 300
+        easing: ease-out
+      - layer: sym-tilde-name
+        property: opacity
+        range: [125, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-tilde-name
+        property: frame.x
+        range: [125, 155]
+        from: 280
+        to: 420
+        easing: ease-out
+      - layer: sym-tilde-example
+        property: opacity
+        range: [130, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sym-tilde-example
+        property: frame.x
+        range: [130, 160]
+        from: 280
+        to: 420
+        easing: ease-out
+
+      # Bottom text fades in after all rows
+      - layer: bottom-text
+        property: opacity
+        range: [200, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: bottom-text
+        property: frame.y
+        range: [200, 240]
+        from: 960
+        to: 940
+        easing: ease-out

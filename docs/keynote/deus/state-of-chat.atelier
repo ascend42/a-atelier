@@ -1,0 +1,367 @@
+version: "1.0"
+name: The State of Chat
+description: "Sequence -> hold. Chat bubble appears center, four pain points animate in around it, dissolve, then Deus tagline lands with accent glow."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Central chat bubble
+  - id: chat-bubble
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 24 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 830, y: 380 }
+    bounds: { width: 260, height: 180 }
+    opacity: 0
+
+  - id: chat-dots
+    visual:
+      type: text
+      content: "..."
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 880, y: 430 }
+    bounds: { width: 160, height: 60 }
+    opacity: 0
+
+  # Pain point 1 — top-left: Unencrypted by default
+  - id: pain1-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 480, y: 260 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+
+  - id: pain1-text
+    visual:
+      type: text
+      content: "Unencrypted by default"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 380, y: 310 }
+    bounds: { width: 240, height: 30 }
+    opacity: 0
+
+  # Pain point 2 — top-right: One company decides what's allowed
+  - id: pain2-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 1400, y: 260 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+
+  - id: pain2-text
+    visual:
+      type: text
+      content: "One company decides what's allowed"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1260, y: 310 }
+    bounds: { width: 320, height: 30 }
+    opacity: 0
+
+  # Pain point 3 — bottom-left: Upsells everywhere
+  - id: pain3-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 480, y: 640 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+
+  - id: pain3-text
+    visual:
+      type: text
+      content: "Upsells everywhere"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 390, y: 690 }
+    bounds: { width: 220, height: 30 }
+    opacity: 0
+
+  # Pain point 4 — bottom-right: You can't take your data with you
+  - id: pain4-icon
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 1400, y: 640 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+
+  - id: pain4-text
+    visual:
+      type: text
+      content: "You can't take your data with you"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 1260, y: 690 }
+    bounds: { width: 320, height: 30 }
+    opacity: 0
+
+  # "Sound familiar?" text
+  - id: sound-familiar
+    visual:
+      type: text
+      content: "Sound familiar?"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#888888"
+        textAlign: center
+    frame: { x: 710, y: 820 }
+    bounds: { width: 500, height: 50 }
+    opacity: 0
+
+  # Deus tagline
+  - id: deus-tagline
+    visual:
+      type: text
+      content: "Chat that respects you."
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 460, y: 470 }
+    bounds: { width: 1000, height: 70 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Chat bubble fades in and scales up
+      - layer: chat-bubble
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: chat-bubble
+        property: scale.x
+        range: [0, 30]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: chat-bubble
+        property: scale.y
+        range: [0, 30]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: chat-dots
+        property: opacity
+        range: [15, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Pain point 1 — top-left
+      - layer: pain1-icon
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pain1-icon
+        property: frame.y
+        range: [50, 75]
+        from: 280
+        to: 260
+        easing: ease-out
+      - layer: pain1-text
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Pain point 2 — top-right
+      - layer: pain2-icon
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pain2-icon
+        property: frame.y
+        range: [80, 105]
+        from: 280
+        to: 260
+        easing: ease-out
+      - layer: pain2-text
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Pain point 3 — bottom-left
+      - layer: pain3-icon
+        property: opacity
+        range: [110, 135]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pain3-icon
+        property: frame.y
+        range: [110, 135]
+        from: 660
+        to: 640
+        easing: ease-out
+      - layer: pain3-text
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Pain point 4 — bottom-right
+      - layer: pain4-icon
+        property: opacity
+        range: [140, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: pain4-icon
+        property: frame.y
+        range: [140, 165]
+        from: 660
+        to: 640
+        easing: ease-out
+      - layer: pain4-text
+        property: opacity
+        range: [170, 195]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "Sound familiar?" appears
+      - layer: sound-familiar
+        property: opacity
+        range: [210, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Pause — then dissolve everything
+      # Chat bubble dissolves
+      - layer: chat-bubble
+        property: opacity
+        range: [310, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: chat-dots
+        property: opacity
+        range: [310, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Pain points dissolve
+      - layer: pain1-icon
+        property: opacity
+        range: [310, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain1-text
+        property: opacity
+        range: [310, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain2-icon
+        property: opacity
+        range: [315, 345]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain2-text
+        property: opacity
+        range: [315, 345]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain3-icon
+        property: opacity
+        range: [320, 350]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain3-text
+        property: opacity
+        range: [320, 350]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain4-icon
+        property: opacity
+        range: [325, 355]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: pain4-text
+        property: opacity
+        range: [325, 355]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: sound-familiar
+        property: opacity
+        range: [310, 340]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Deus tagline appears with glow
+      - layer: deus-tagline
+        property: opacity
+        range: [380, 420]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: deus-tagline
+        property: frame.y
+        range: [380, 430]
+        from: 500
+        to: 470
+        easing: ease-out
+      - layer: deus-tagline
+        property: shadow.blur
+        range: [400, 460]
+        from: 0
+        to: 30
+        easing: ease-in-out

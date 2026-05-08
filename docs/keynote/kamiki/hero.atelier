@@ -1,0 +1,267 @@
+version: "1.0"
+name: What Is Kamiki?
+description: "Reveal -> hold. Two screen shapes on opposite sides connected by a glowing line, center tagline lands, alpha badge fades in."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Left screen — Garden (Your Machine)
+  - id: garden-screen
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 200, y: 360 }
+    bounds: { width: 280, height: 200 }
+    opacity: 0
+
+  - id: garden-label
+    visual:
+      type: text
+      content: "Your Machine"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 220, y: 420 }
+    bounds: { width: 240, height: 32 }
+    opacity: 0
+
+  - id: garden-sublabel
+    visual:
+      type: text
+      content: "Garden"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 220, y: 460 }
+    bounds: { width: 240, height: 24 }
+    opacity: 0
+
+  # Right screen — Niwashi (Any Browser)
+  - id: niwashi-screen
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1440, y: 360 }
+    bounds: { width: 280, height: 200 }
+    opacity: 0
+
+  - id: niwashi-label
+    visual:
+      type: text
+      content: "Any Browser"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1460, y: 420 }
+    bounds: { width: 240, height: 32 }
+    opacity: 0
+
+  - id: niwashi-sublabel
+    visual:
+      type: text
+      content: "Niwashi"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1460, y: 460 }
+    bounds: { width: 240, height: 24 }
+    opacity: 0
+
+  # Connection line between screens (horizontal bar with glow)
+  - id: connection-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 480, y: 456 }
+    bounds: { width: 0, height: 4 }
+    opacity: 0
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Center tagline
+  - id: tagline
+    visual:
+      type: text
+      content: "Remote desktop. Peer-to-peer. No subscription."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 360, y: 640 }
+    bounds: { width: 1200, height: 50 }
+    opacity: 0
+
+  # Alpha badge
+  - id: alpha-badge-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 895, y: 710 }
+    bounds: { width: 130, height: 36 }
+    opacity: 0
+
+  - id: alpha-badge-text
+    visual:
+      type: text
+      content: "Alpha"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 900, y: 714 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Garden screen slides in from left and fades in
+      - layer: garden-screen
+        property: opacity
+        range: [0, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: garden-screen
+        property: frame.x
+        range: [0, 40]
+        from: 100
+        to: 200
+        easing: ease-out
+      - layer: garden-label
+        property: opacity
+        range: [10, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: garden-sublabel
+        property: opacity
+        range: [20, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Niwashi screen slides in from right and fades in
+      - layer: niwashi-screen
+        property: opacity
+        range: [20, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: niwashi-screen
+        property: frame.x
+        range: [20, 60]
+        from: 1540
+        to: 1440
+        easing: ease-out
+      - layer: niwashi-label
+        property: opacity
+        range: [30, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: niwashi-sublabel
+        property: opacity
+        range: [40, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Connection line draws across (width grows via scale.x, positioned to stretch between screens)
+      - layer: connection-line
+        property: opacity
+        range: [80, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: connection-line
+        property: scale.x
+        range: [90, 160]
+        from: 0
+        to: 1
+        easing: ease-in-out
+
+      # Connection line glow intensifies
+      - layer: connection-line
+        property: shadow.blur
+        range: [120, 180]
+        from: 0
+        to: 20
+        easing: ease-in-out
+      - layer: connection-line
+        property: shadow.color
+        range: [120, 180]
+        from: "#3B82F6"
+        to: "#10B981"
+        easing: ease-in-out
+
+      # Resize connection line to full width between screens
+      - layer: connection-line
+        property: frame.x
+        range: [90, 160]
+        from: 960
+        to: 480
+        easing: ease-in-out
+
+      # Center tagline lands from below
+      - layer: tagline
+        property: opacity
+        range: [200, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [200, 260]
+        from: 680
+        to: 640
+        easing: ease-out
+
+      # Alpha badge fades in
+      - layer: alpha-badge-bg
+        property: opacity
+        range: [300, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: alpha-badge-bg
+        property: scale.x
+        range: [300, 340]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: alpha-badge-bg
+        property: scale.y
+        range: [300, 340]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: alpha-badge-text
+        property: opacity
+        range: [310, 350]
+        from: 0
+        to: 1
+        easing: ease-out

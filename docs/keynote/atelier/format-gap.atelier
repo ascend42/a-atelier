@@ -1,0 +1,413 @@
+version: "1.0"
+name: The Format Gap
+description: "Sequence -> hold. Three existing format boxes appear, spread apart to reveal a gap, gap text appears, then Atelier fills the gap with teal glow."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Existing format boxes ---
+
+  # Lottie box
+  - id: lottie-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 460, y: 320 }
+    bounds: { width: 280, height: 140 }
+    opacity: 0
+
+  - id: lottie-label
+    visual:
+      type: text
+      content: "Lottie"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 510, y: 350 }
+    bounds: { width: 180, height: 36 }
+    opacity: 0
+
+  - id: lottie-subtitle
+    visual:
+      type: text
+      content: "After Effects export. Proprietary pipeline."
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#555555"
+        textAlign: center
+    frame: { x: 470, y: 400 }
+    bounds: { width: 260, height: 24 }
+    opacity: 0
+
+  # Rive box
+  - id: rive-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 820, y: 320 }
+    bounds: { width: 280, height: 140 }
+    opacity: 0
+
+  - id: rive-label
+    visual:
+      type: text
+      content: "Rive"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 870, y: 350 }
+    bounds: { width: 180, height: 36 }
+    opacity: 0
+
+  - id: rive-subtitle
+    visual:
+      type: text
+      content: "Binary. Closed format."
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#555555"
+        textAlign: center
+    frame: { x: 830, y: 400 }
+    bounds: { width: 260, height: 24 }
+    opacity: 0
+
+  # CSS / GSAP box
+  - id: css-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 2 }
+    frame: { x: 1180, y: 320 }
+    bounds: { width: 280, height: 140 }
+    opacity: 0
+
+  - id: css-label
+    visual:
+      type: text
+      content: "CSS / GSAP"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1230, y: 350 }
+    bounds: { width: 180, height: 36 }
+    opacity: 0
+
+  - id: css-subtitle
+    visual:
+      type: text
+      content: "Code only. No structure."
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#555555"
+        textAlign: center
+    frame: { x: 1190, y: 400 }
+    bounds: { width: 260, height: 24 }
+    opacity: 0
+
+  # --- Gap text ---
+  - id: gap-text
+    visual:
+      type: text
+      content: "No open, AI-readable animation format exists."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#888888"
+        textAlign: center
+    frame: { x: 510, y: 400 }
+    bounds: { width: 900, height: 44 }
+    opacity: 0
+
+  # --- Atelier fills the gap ---
+  - id: atelier-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D3D36" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 710, y: 340 }
+    bounds: { width: 500, height: 160 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: atelier-label
+    visual:
+      type: text
+      content: "Until now."
+      style:
+        fontFamily: sans-serif
+        fontSize: 44
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 780, y: 390 }
+    bounds: { width: 360, height: 56 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # --- Phase 1: Three boxes appear (frames 0-90) ---
+
+      # Lottie box fades in
+      - layer: lottie-box
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lottie-label
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: lottie-subtitle
+        property: opacity
+        range: [15, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Rive box fades in
+      - layer: rive-box
+        property: opacity
+        range: [25, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rive-label
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rive-subtitle
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # CSS / GSAP box fades in
+      - layer: css-box
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: css-label
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: css-subtitle
+        property: opacity
+        range: [65, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 2: Boxes spread apart, leaving gap (frames 120-200) ---
+
+      # Lottie slides left
+      - layer: lottie-box
+        property: frame.x
+        range: [120, 180]
+        from: 460
+        to: 100
+        easing: ease-in-out
+      - layer: lottie-label
+        property: frame.x
+        range: [120, 180]
+        from: 510
+        to: 150
+        easing: ease-in-out
+      - layer: lottie-subtitle
+        property: frame.x
+        range: [120, 180]
+        from: 470
+        to: 110
+        easing: ease-in-out
+
+      # Rive slides up and fades
+      - layer: rive-box
+        property: frame.y
+        range: [120, 180]
+        from: 320
+        to: 160
+        easing: ease-in-out
+      - layer: rive-box
+        property: opacity
+        range: [140, 190]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: rive-label
+        property: frame.y
+        range: [120, 180]
+        from: 350
+        to: 190
+        easing: ease-in-out
+      - layer: rive-label
+        property: opacity
+        range: [140, 190]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: rive-subtitle
+        property: frame.y
+        range: [120, 180]
+        from: 400
+        to: 240
+        easing: ease-in-out
+      - layer: rive-subtitle
+        property: opacity
+        range: [140, 190]
+        from: 1
+        to: 0.3
+        easing: ease-in
+
+      # CSS slides right
+      - layer: css-box
+        property: frame.x
+        range: [120, 180]
+        from: 1180
+        to: 1540
+        easing: ease-in-out
+      - layer: css-label
+        property: frame.x
+        range: [120, 180]
+        from: 1230
+        to: 1590
+        easing: ease-in-out
+      - layer: css-subtitle
+        property: frame.x
+        range: [120, 180]
+        from: 1190
+        to: 1550
+        easing: ease-in-out
+
+      # --- Phase 3: Gap text appears (frames 200-250) ---
+      - layer: gap-text
+        property: opacity
+        range: [200, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: gap-text
+        property: frame.y
+        range: [200, 240]
+        from: 420
+        to: 400
+        easing: ease-out
+
+      # --- Phase 4: Gap text fades, Atelier fills gap (frames 300-420) ---
+
+      # Gap text fades out
+      - layer: gap-text
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Remaining format boxes fade out fully
+      - layer: lottie-box
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: lottie-label
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: lottie-subtitle
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: css-box
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: css-label
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+      - layer: css-subtitle
+        property: opacity
+        range: [300, 330]
+        from: 1
+        to: 0.15
+        easing: ease-in
+
+      # Atelier box appears with glow
+      - layer: atelier-box
+        property: opacity
+        range: [340, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: scale.x
+        range: [340, 390]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: scale.y
+        range: [340, 390]
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: atelier-box
+        property: shadow.blur
+        range: [360, 420]
+        from: 0
+        to: 30
+        easing: ease-in-out
+
+      # "Until now." text
+      - layer: atelier-label
+        property: opacity
+        range: [370, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: atelier-label
+        property: frame.y
+        range: [370, 420]
+        from: 410
+        to: 390
+        easing: ease-out

@@ -1,0 +1,407 @@
+version: "1.0"
+name: "The Gate Save"
+description: "Sequence -> hold. A route appears, AI agent calls paradigm, missing gate warning surfaces, portal.yaml gets updated, and a red flash shows what could have gone wrong."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Route code rect
+  - id: route-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#111118" }
+      stroke: { color: "#333344", width: 1 }
+    frame: { x: 460, y: 120 }
+    bounds: { width: 1000, height: 60 }
+    opacity: 0
+
+  # Route text
+  - id: route-text
+    visual:
+      type: text
+      content: "POST /api/projects/:id/delete"
+      style:
+        fontFamily: sans-serif
+        fontSize: 26
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 510, y: 132 }
+    bounds: { width: 900, height: 36 }
+    opacity: 0
+
+  # Tool call rect
+  - id: tool-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#0D0D18" }
+      stroke: { color: "#3B82F6", width: 1 }
+    frame: { x: 560, y: 220 }
+    bounds: { width: 800, height: 50 }
+    opacity: 0
+
+  # Tool call text
+  - id: tool-text
+    visual:
+      type: text
+      content: "paradigm_gates_for_route({ route: \"/api/projects/:id/delete\" })"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 580, y: 231 }
+    bounds: { width: 760, height: 26 }
+    opacity: 0
+
+  # AI agent label
+  - id: agent-label
+    visual:
+      type: text
+      content: "AI Agent calls:"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: right
+    frame: { x: 380, y: 234 }
+    bounds: { width: 160, height: 22 }
+    opacity: 0
+
+  # Warning response rect — amber border
+  - id: warn-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1610" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 460, y: 320 }
+    bounds: { width: 1000, height: 120 }
+    opacity: 0
+    shadow:
+      color: "#F59E0B"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Warning icon indicator
+  - id: warn-icon
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 490, y: 350 }
+    bounds: { width: 24, height: 24 }
+    opacity: 0
+
+  # Warning title
+  - id: warn-title
+    visual:
+      type: text
+      content: "Missing gate: ^project-admin required"
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 530, y: 345 }
+    bounds: { width: 800, height: 32 }
+    opacity: 0
+
+  # Warning detail
+  - id: warn-detail
+    visual:
+      type: text
+      content: "DELETE on owned resource requires ownership or admin gate"
+      style:
+        fontFamily: sans-serif
+        fontSize: 17
+        color: "#888888"
+        textAlign: left
+    frame: { x: 530, y: 385 }
+    bounds: { width: 800, height: 24 }
+    opacity: 0
+
+  # Portal.yaml update rect — green
+  - id: portal-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#0D1A14" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 460, y: 490 }
+    bounds: { width: 1000, height: 140 }
+    opacity: 0
+
+  # Portal.yaml label
+  - id: portal-label
+    visual:
+      type: text
+      content: "portal.yaml updated"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 490, y: 505 }
+    bounds: { width: 300, height: 22 }
+    opacity: 0
+
+  # Portal.yaml content line 1
+  - id: portal-line1
+    visual:
+      type: text
+      content: "\"POST /api/projects/:id/delete\":"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 520, y: 540 }
+    bounds: { width: 700, height: 28 }
+    opacity: 0
+
+  # Portal.yaml content line 2
+  - id: portal-line2
+    visual:
+      type: text
+      content: "  [^authenticated, ^project-admin]"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: left
+    frame: { x: 520, y: 572 }
+    bounds: { width: 700, height: 28 }
+    opacity: 0
+
+  # Green check indicator
+  - id: portal-check
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1400, y: 540 }
+    bounds: { width: 28, height: 28 }
+    opacity: 0
+
+  # Red flash panel — left side
+  - id: red-panel
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A0D0D" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 460, y: 680 }
+    bounds: { width: 1000, height: 80 }
+    opacity: 0
+    shadow:
+      color: "#EF4444"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # Red flash text
+  - id: red-text
+    visual:
+      type: text
+      content: "Without this: Any user could delete any project"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 510, y: 700 }
+    bounds: { width: 900, height: 30 }
+    opacity: 0
+
+  # Conclusion text
+  - id: conclusion
+    visual:
+      type: text
+      content: "The agent caught a missing authorization gate. Before it shipped."
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 880 }
+    bounds: { width: 1400, height: 46 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Route appears
+      - layer: route-bg
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: route-text
+        property: opacity
+        range: [5, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: route-text
+        property: frame.y
+        range: [5, 35]
+        from: 142
+        to: 132
+        easing: ease-out
+
+      # AI agent calls paradigm
+      - layer: agent-label
+        property: opacity
+        range: [50, 75]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tool-bg
+        property: opacity
+        range: [55, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tool-text
+        property: opacity
+        range: [60, 85]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Warning response appears
+      - layer: warn-bg
+        property: opacity
+        range: [110, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: warn-bg
+        property: frame.y
+        range: [110, 140]
+        from: 340
+        to: 320
+        easing: ease-out
+      - layer: warn-bg
+        property: shadow.blur
+        range: [130, 170]
+        from: 0
+        to: 15
+        easing: ease-in-out
+      - layer: warn-icon
+        property: opacity
+        range: [120, 145]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: warn-title
+        property: opacity
+        range: [125, 155]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: warn-detail
+        property: opacity
+        range: [135, 165]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Portal.yaml update — green confirmation
+      - layer: portal-bg
+        property: opacity
+        range: [200, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-bg
+        property: frame.y
+        range: [200, 230]
+        from: 510
+        to: 490
+        easing: ease-out
+      - layer: portal-label
+        property: opacity
+        range: [210, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-line1
+        property: opacity
+        range: [225, 255]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-line2
+        property: opacity
+        range: [240, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-check
+        property: opacity
+        range: [260, 285]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-check
+        property: scale.x
+        range: [260, 290]
+        from: 0.5
+        to: 1
+        easing: ease-out
+      - layer: portal-check
+        property: scale.y
+        range: [260, 290]
+        from: 0.5
+        to: 1
+        easing: ease-out
+
+      # Red flash panel — what could have gone wrong
+      - layer: red-panel
+        property: opacity
+        range: [320, 345]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: red-panel
+        property: shadow.blur
+        range: [320, 360]
+        from: 0
+        to: 20
+        easing: ease-in-out
+      # Red flash dims after pulse
+      - layer: red-panel
+        property: shadow.blur
+        range: [360, 400]
+        from: 20
+        to: 5
+        easing: ease-in-out
+      - layer: red-text
+        property: opacity
+        range: [330, 355]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Conclusion text
+      - layer: conclusion
+        property: opacity
+        range: [430, 470]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: conclusion
+        property: frame.y
+        range: [430, 480]
+        from: 910
+        to: 880
+        easing: ease-out

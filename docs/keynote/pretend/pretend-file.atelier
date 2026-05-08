@@ -1,0 +1,422 @@
+version: "1.0"
+name: A .pretend File
+description: "Reveal -> hold. A dark code block appears and YAML content reveals line by line. The atelier:// reference glows with accent color. Bottom tagline lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "A .pretend File"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 50 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # --- Code block background ---
+  - id: code-bg
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 1 }
+    frame: { x: 510, y: 140 }
+    bounds: { width: 600, height: 560 }
+    opacity: 0
+
+  # File tab indicator
+  - id: file-tab
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#2E2410" }
+    frame: { x: 520, y: 148 }
+    bounds: { width: 160, height: 28 }
+    opacity: 0
+
+  - id: file-tab-text
+    visual:
+      type: text
+      content: "game.pretend"
+      style:
+        fontFamily: monospace
+        fontSize: 13
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 524, y: 152 }
+    bounds: { width: 152, height: 20 }
+    opacity: 0
+
+  # --- YAML lines (reveal one by one) ---
+  - id: line-1
+    visual:
+      type: text
+      content: "pretend: 1.0"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F59E0B"
+        textAlign: left
+    frame: { x: 550, y: 200 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-2
+    visual:
+      type: text
+      content: "name: Space Invaders"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 230 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-3
+    visual:
+      type: text
+      content: "entities:"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 550, y: 280 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-4
+    visual:
+      type: text
+      content: "  player-ship:"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 310 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-5
+    visual:
+      type: text
+      content: "    visual: atelier://player"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 340 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-6
+    visual:
+      type: text
+      content: "rules:"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 550, y: 390 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-7
+    visual:
+      type: text
+      content: "  bullet-hits-alien:"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 420 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-8
+    visual:
+      type: text
+      content: "    when: collision"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 450 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-9
+    visual:
+      type: text
+      content: "    then: add-score(100)"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 480 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-10
+    visual:
+      type: text
+      content: "state:"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#14B8A6"
+        textAlign: left
+    frame: { x: 550, y: 530 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-11
+    visual:
+      type: text
+      content: "  score: 0"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 560 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  - id: line-12
+    visual:
+      type: text
+      content: "  lives: 3"
+      style:
+        fontFamily: monospace
+        fontSize: 17
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 550, y: 590 }
+    bounds: { width: 520, height: 24 }
+    opacity: 0
+
+  # --- Glow highlight for "atelier://player" ---
+  - id: atelier-ref-glow
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 4 }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 680, y: 337 }
+    bounds: { width: 225, height: 28 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  # --- Bottom tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "The entire game. Readable by AI. Readable by you."
+      style:
+        fontFamily: sans-serif
+        fontSize: 30
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 410, y: 780 }
+    bounds: { width: 1100, height: 42 }
+    opacity: 0
+
+states:
+  main:
+    duration: 540
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Code block background appears
+      - layer: code-bg
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: code-bg
+        property: frame.y
+        range: [20, 50]
+        from: 160
+        to: 140
+        easing: ease-out
+
+      # File tab
+      - layer: file-tab
+        property: opacity
+        range: [30, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: file-tab-text
+        property: opacity
+        range: [35, 55]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Lines reveal one by one with stagger ---
+      # "pretend: 1.0"
+      - layer: line-1
+        property: opacity
+        range: [60, 80]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "name: Space Invaders"
+      - layer: line-2
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "entities:"
+      - layer: line-3
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "  player-ship:"
+      - layer: line-4
+        property: opacity
+        range: [130, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "    visual: atelier://player"
+      - layer: line-5
+        property: opacity
+        range: [150, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "rules:"
+      - layer: line-6
+        property: opacity
+        range: [190, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "  bullet-hits-alien:"
+      - layer: line-7
+        property: opacity
+        range: [210, 230]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "    when: collision"
+      - layer: line-8
+        property: opacity
+        range: [230, 250]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "    then: add-score(100)"
+      - layer: line-9
+        property: opacity
+        range: [250, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "state:"
+      - layer: line-10
+        property: opacity
+        range: [290, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "  score: 0"
+      - layer: line-11
+        property: opacity
+        range: [310, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # "  lives: 3"
+      - layer: line-12
+        property: opacity
+        range: [330, 350]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- "atelier://" reference glows ---
+      - layer: atelier-ref-glow
+        property: opacity
+        range: [370, 390]
+        from: 0
+        to: 0.15
+        easing: ease-out
+      - layer: atelier-ref-glow
+        property: shadow.blur
+        range: [390, 430]
+        from: 0
+        to: 20
+        easing: ease-in-out
+      - layer: atelier-ref-glow
+        property: shadow.blur
+        range: [430, 470]
+        from: 20
+        to: 8
+        easing: ease-in-out
+
+      # The line text shifts to accent color
+      - layer: line-5
+        property: visual.style.color
+        range: [370, 400]
+        from: "#F5F0EB"
+        to: "#14B8A6"
+        easing: ease-out
+
+      # --- Bottom tagline ---
+      - layer: tagline
+        property: opacity
+        range: [470, 510]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [470, 510]
+        from: 810
+        to: 780
+        easing: ease-out

@@ -1,0 +1,206 @@
+version: "1.0"
+name: Core Philosophy
+description: "Reveal -> hold. Large title fades in, then three pillars appear with descriptions beneath each. Clean text hierarchy, no shapes."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Main title
+  - id: title
+    visual:
+      type: text
+      content: "Structure for AI-Native Development"
+      style:
+        fontFamily: sans-serif
+        fontSize: 56
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 260, y: 280 }
+    bounds: { width: 1400, height: 70 }
+    opacity: 0
+
+  # Pillar 1: Purpose
+  - id: purpose-word
+    visual:
+      type: text
+      content: "Purpose."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 160, y: 500 }
+    bounds: { width: 400, height: 50 }
+    opacity: 0
+
+  - id: purpose-desc
+    visual:
+      type: text
+      content: "Define what things are"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 185, y: 560 }
+    bounds: { width: 350, height: 30 }
+    opacity: 0
+
+  # Pillar 2: Portal
+  - id: portal-word
+    visual:
+      type: text
+      content: "Portal."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 760, y: 500 }
+    bounds: { width: 400, height: 50 }
+    opacity: 0
+
+  - id: portal-desc
+    visual:
+      type: text
+      content: "Define who can access what"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 785, y: 560 }
+    bounds: { width: 350, height: 30 }
+    opacity: 0
+
+  # Pillar 3: Premise
+  - id: premise-word
+    visual:
+      type: text
+      content: "Premise."
+      style:
+        fontFamily: sans-serif
+        fontSize: 40
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1360, y: 500 }
+    bounds: { width: 400, height: 50 }
+    opacity: 0
+
+  - id: premise-desc
+    visual:
+      type: text
+      content: "Query everything"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1385, y: 560 }
+    bounds: { width: 350, height: 30 }
+    opacity: 0
+
+states:
+  main:
+    duration: 300
+    deltas:
+      # Title fades in and rises slightly
+      - layer: title
+        property: opacity
+        range: [0, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: title
+        property: frame.y
+        range: [0, 40]
+        from: 310
+        to: 280
+        easing: ease-out
+
+      # Purpose word fades in
+      - layer: purpose-word
+        property: opacity
+        range: [60, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: purpose-word
+        property: frame.y
+        range: [60, 100]
+        from: 520
+        to: 500
+        easing: ease-out
+
+      # Portal word fades in (staggered)
+      - layer: portal-word
+        property: opacity
+        range: [80, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-word
+        property: frame.y
+        range: [80, 120]
+        from: 520
+        to: 500
+        easing: ease-out
+
+      # Premise word fades in (staggered)
+      - layer: premise-word
+        property: opacity
+        range: [100, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: premise-word
+        property: frame.y
+        range: [100, 140]
+        from: 520
+        to: 500
+        easing: ease-out
+
+      # Purpose description fades in
+      - layer: purpose-desc
+        property: opacity
+        range: [130, 170]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: purpose-desc
+        property: frame.y
+        range: [130, 170]
+        from: 575
+        to: 560
+        easing: ease-out
+
+      # Portal description fades in
+      - layer: portal-desc
+        property: opacity
+        range: [150, 190]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: portal-desc
+        property: frame.y
+        range: [150, 190]
+        from: 575
+        to: 560
+        easing: ease-out
+
+      # Premise description fades in
+      - layer: premise-desc
+        property: opacity
+        range: [170, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: premise-desc
+        property: frame.y
+        range: [170, 210]
+        from: 575
+        to: 560
+        easing: ease-out

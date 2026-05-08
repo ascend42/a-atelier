@@ -1,0 +1,422 @@
+version: "1.0"
+name: The Platform
+description: "Sequence -> hold. Four device rects animate in left to right with stagger: iPad (Create), Apple Watch (Control), Browser (View), Android (View). Tagline lands."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Title ---
+  - id: title
+    visual:
+      type: text
+      content: "The Platform"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 80 }
+    bounds: { width: 800, height: 70 }
+    opacity: 0
+
+  # --- iPad (largest) ---
+  - id: ipad-device
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 20 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 3 }
+    frame: { x: 120, y: 260 }
+    bounds: { width: 320, height: 420 }
+    opacity: 0
+
+  - id: ipad-screen
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#0D1B2A" }
+    frame: { x: 140, y: 290 }
+    bounds: { width: 280, height: 340 }
+    opacity: 0
+
+  - id: ipad-label
+    visual:
+      type: text
+      content: "Create"
+      style:
+        fontFamily: sans-serif
+        fontSize: 36
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 170, y: 430 }
+    bounds: { width: 220, height: 44 }
+    opacity: 0
+
+  - id: ipad-device-name
+    visual:
+      type: text
+      content: "iPad"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 220, y: 700 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # --- Apple Watch (smallest) ---
+  - id: watch-device
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 24 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#14B8A6", width: 2 }
+    frame: { x: 540, y: 380 }
+    bounds: { width: 140, height: 170 }
+    opacity: 0
+
+  - id: watch-screen
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D1B2A" }
+    frame: { x: 554, y: 400 }
+    bounds: { width: 112, height: 120 }
+    opacity: 0
+
+  - id: watch-label
+    visual:
+      type: text
+      content: "Control"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 553, y: 440 }
+    bounds: { width: 114, height: 30 }
+    opacity: 0
+
+  - id: watch-device-name
+    visual:
+      type: text
+      content: "Apple Watch"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 540, y: 570 }
+    bounds: { width: 140, height: 24 }
+    opacity: 0
+
+  # --- Browser (medium) ---
+  - id: browser-device
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 780, y: 300 }
+    bounds: { width: 280, height: 340 }
+    opacity: 0
+
+  # Browser top bar
+  - id: browser-bar
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#252540" }
+    frame: { x: 780, y: 300 }
+    bounds: { width: 280, height: 36 }
+    opacity: 0
+
+  # Browser dots (tab bar indicator)
+  - id: browser-dot-1
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#EF4444" }
+    frame: { x: 794, y: 312 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: browser-dot-2
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 812, y: 312 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: browser-dot-3
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 830, y: 312 }
+    bounds: { width: 12, height: 12 }
+    opacity: 0
+
+  - id: browser-label
+    visual:
+      type: text
+      content: "View"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 830, y: 450 }
+    bounds: { width: 180, height: 40 }
+    opacity: 0
+
+  - id: browser-device-name
+    visual:
+      type: text
+      content: "Browser"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 855, y: 660 }
+    bounds: { width: 130, height: 24 }
+    opacity: 0
+
+  # --- Android (medium) ---
+  - id: android-device
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1160, y: 300 }
+    bounds: { width: 220, height: 380 }
+    opacity: 0
+
+  - id: android-screen
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 6 }
+      fill: { type: solid, color: "#0D1B2A" }
+    frame: { x: 1174, y: 326 }
+    bounds: { width: 192, height: 320 }
+    opacity: 0
+
+  - id: android-label
+    visual:
+      type: text
+      content: "View"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1190, y: 460 }
+    bounds: { width: 160, height: 40 }
+    opacity: 0
+
+  - id: android-device-name
+    visual:
+      type: text
+      content: "Android"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1210, y: 700 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  # --- Tagline ---
+  - id: tagline
+    visual:
+      type: text
+      content: "Create on iOS. Control from your wrist. View anywhere."
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 310, y: 800 }
+    bounds: { width: 1300, height: 44 }
+    opacity: 0
+
+states:
+  main:
+    duration: 420
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- iPad appears (first, boldest) ---
+      - layer: ipad-device
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ipad-device
+        property: frame.y
+        range: [30, 60]
+        from: 300
+        to: 260
+        easing: ease-out
+      - layer: ipad-screen
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ipad-label
+        property: opacity
+        range: [45, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: ipad-device-name
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Apple Watch appears (~30 frame stagger) ---
+      - layer: watch-device
+        property: opacity
+        range: [60, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: watch-device
+        property: frame.y
+        range: [60, 90]
+        from: 420
+        to: 380
+        easing: ease-out
+      - layer: watch-screen
+        property: opacity
+        range: [65, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: watch-label
+        property: opacity
+        range: [75, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: watch-device-name
+        property: opacity
+        range: [80, 100]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Browser appears (~30 frame stagger) ---
+      - layer: browser-device
+        property: opacity
+        range: [90, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-device
+        property: frame.y
+        range: [90, 120]
+        from: 340
+        to: 300
+        easing: ease-out
+      - layer: browser-bar
+        property: opacity
+        range: [95, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-dot-1
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-dot-2
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-dot-3
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-label
+        property: opacity
+        range: [105, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: browser-device-name
+        property: opacity
+        range: [110, 130]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Android appears (~30 frame stagger) ---
+      - layer: android-device
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: android-device
+        property: frame.y
+        range: [120, 150]
+        from: 340
+        to: 300
+        easing: ease-out
+      - layer: android-screen
+        property: opacity
+        range: [125, 150]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: android-label
+        property: opacity
+        range: [135, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: android-device-name
+        property: opacity
+        range: [140, 160]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Tagline ---
+      - layer: tagline
+        property: opacity
+        range: [220, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: tagline
+        property: frame.y
+        range: [220, 260]
+        from: 830
+        to: 800
+        easing: ease-out

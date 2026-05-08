@@ -1,0 +1,334 @@
+version: "1.0"
+name: The Numbers
+description: Reveal -> hold. Five large stat numbers appear one at a time, each
+  scaling up when it lands. Arranged in a row across the canvas, evenly spaced.
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+layers:
+  - id: stat1-number
+    visual:
+      type: text
+      content: "52"
+      style:
+        fontFamily: sans-serif
+        fontSize: 96
+        textAlign: center
+        color: "#14B8A6"
+    frame:
+      x: 80
+      y: 380
+    bounds:
+      width: 280
+      height: 110
+    opacity: 0
+  - id: stat1-label
+    visual:
+      type: text
+      content: MCP tools
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        textAlign: center
+        color: "#888888"
+    frame:
+      x: 80
+      y: 500
+    bounds:
+      width: 280
+      height: 32
+    opacity: 0
+  - id: stat2-number
+    visual:
+      type: text
+      content: "11"
+      style:
+        fontFamily: sans-serif
+        fontSize: 106
+        textAlign: center
+        color: "#3B82F6"
+    frame:
+      x: 440
+      y: 380
+    bounds:
+      width: 280
+      height: 110
+    opacity: 0
+  - id: stat2-label
+    visual:
+      type: text
+      content: npm packages
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        textAlign: center
+        color: "#888888"
+    frame:
+      x: 440
+      y: 500
+    bounds:
+      width: 280
+      height: 32
+    opacity: 0
+  - id: stat3-number
+    visual:
+      type: text
+      content: "27"
+      style:
+        fontFamily: sans-serif
+        fontSize: 96
+        textAlign: center
+        color: "#10B981"
+    frame:
+      x: 800
+      y: 380
+    bounds:
+      width: 280
+      height: 110
+    opacity: 0
+  - id: stat3-label
+    visual:
+      type: text
+      content: Animatable properties
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        textAlign: center
+        color: "#888888"
+    frame:
+      x: 800
+      y: 500
+    bounds:
+      width: 280
+      height: 32
+    opacity: 0
+  - id: stat4-number
+    visual:
+      type: text
+      content: "9"
+      style:
+        fontFamily: sans-serif
+        fontSize: 96
+        textAlign: center
+        color: "#14B8A6"
+    frame:
+      x: 1160
+      y: 380
+    bounds:
+      width: 280
+      height: 110
+    opacity: 0
+  - id: stat4-label
+    visual:
+      type: text
+      content: CLI commands
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        textAlign: center
+        color: "#888888"
+    frame:
+      x: 1160
+      y: 500
+    bounds:
+      width: 280
+      height: 32
+    opacity: 0
+  - id: stat5-number
+    visual:
+      type: text
+      content: v0.26
+      style:
+        fontFamily: sans-serif
+        fontSize: 96
+        textAlign: center
+        color: "#3B82F6"
+    frame:
+      x: 1520
+      y: 380
+    bounds:
+      width: 320
+      height: 110
+    opacity: 0
+  - id: stat5-label
+    visual:
+      type: text
+      content: Current version
+      style:
+        fontFamily: sans-serif
+        fontSize: 24
+        textAlign: center
+        color: "#888888"
+    frame:
+      x: 1540
+      y: 500
+    bounds:
+      width: 280
+      height: 32
+    opacity: 0
+states:
+  main:
+    duration: 420
+    deltas:
+      - layer: stat1-number
+        property: opacity
+        range:
+          - 0
+          - 30
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat1-number
+        property: scale.x
+        range:
+          - 0
+          - 35
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat1-number
+        property: scale.y
+        range:
+          - 0
+          - 35
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat1-label
+        property: opacity
+        range:
+          - 15
+          - 40
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat2-number
+        property: opacity
+        range:
+          - 50
+          - 80
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat2-number
+        property: scale.x
+        range:
+          - 50
+          - 85
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat2-number
+        property: scale.y
+        range:
+          - 50
+          - 85
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat2-label
+        property: opacity
+        range:
+          - 65
+          - 90
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat3-number
+        property: opacity
+        range:
+          - 100
+          - 130
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat3-number
+        property: scale.x
+        range:
+          - 100
+          - 135
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat3-number
+        property: scale.y
+        range:
+          - 100
+          - 135
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat3-label
+        property: opacity
+        range:
+          - 115
+          - 140
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat4-number
+        property: opacity
+        range:
+          - 150
+          - 180
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat4-number
+        property: scale.x
+        range:
+          - 150
+          - 185
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat4-number
+        property: scale.y
+        range:
+          - 150
+          - 185
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat4-label
+        property: opacity
+        range:
+          - 165
+          - 190
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat5-number
+        property: opacity
+        range:
+          - 200
+          - 230
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: stat5-number
+        property: scale.x
+        range:
+          - 200
+          - 235
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat5-number
+        property: scale.y
+        range:
+          - 200
+          - 235
+        from: 0.8
+        to: 1
+        easing: ease-out
+      - layer: stat5-label
+        property: opacity
+        range:
+          - 215
+          - 240
+        from: 0
+        to: 1
+        easing: ease-out

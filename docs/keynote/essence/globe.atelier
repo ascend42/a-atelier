@@ -1,0 +1,497 @@
+version: "1.0"
+name: The Globe
+description: "Loop. Stylized world map with pulsing heat zones in teal and purple, representing proximity-based discovery. No infinite scroll, no algorithm."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Abstract world outline (large rounded rect as stylized map)
+  - id: world-outline
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 40 }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#1A1A2E", width: 2 }
+    frame: { x: 360, y: 200 }
+    bounds: { width: 1200, height: 600 }
+    opacity: 0.6
+
+  # Grid lines for map texture (horizontal)
+  - id: grid-h1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 380, y: 370 }
+    bounds: { width: 1160, height: 1 }
+    opacity: 0.3
+
+  - id: grid-h2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 380, y: 500 }
+    bounds: { width: 1160, height: 1 }
+    opacity: 0.3
+
+  - id: grid-h3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 380, y: 630 }
+    bounds: { width: 1160, height: 1 }
+    opacity: 0.3
+
+  # Grid lines (vertical)
+  - id: grid-v1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 660, y: 220 }
+    bounds: { width: 1, height: 560 }
+    opacity: 0.3
+
+  - id: grid-v2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 960, y: 220 }
+    bounds: { width: 1, height: 560 }
+    opacity: 0.3
+
+  - id: grid-v3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 0 }
+      fill: { type: solid, color: "#1A1A2E" }
+    frame: { x: 1260, y: 220 }
+    bounds: { width: 1, height: 560 }
+    opacity: 0.3
+
+  # --- Heat zone circles (pulsing glowing ellipses) ---
+
+  # Zone A: top-left cluster (teal)
+  - id: zone-a
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 520, y: 310 }
+    bounds: { width: 80, height: 80 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 20
+      offsetX: 0
+      offsetY: 0
+
+  # Zone B: center-right (purple)
+  - id: zone-b
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1100, y: 380 }
+    bounds: { width: 100, height: 100 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 20
+      offsetX: 0
+      offsetY: 0
+
+  # Zone C: bottom-center (teal, smaller)
+  - id: zone-c
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 860, y: 580 }
+    bounds: { width: 60, height: 60 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 15
+      offsetX: 0
+      offsetY: 0
+
+  # Zone D: upper-right (magenta)
+  - id: zone-d
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 1300, y: 280 }
+    bounds: { width: 70, height: 70 }
+    opacity: 0
+    shadow:
+      color: "#E91E8F"
+      blur: 18
+      offsetX: 0
+      offsetY: 0
+
+  # Zone E: left-center (purple, large)
+  - id: zone-e
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 480, y: 480 }
+    bounds: { width: 90, height: 90 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 22
+      offsetX: 0
+      offsetY: 0
+
+  # Zone F: far right (teal, small)
+  - id: zone-f
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1380, y: 520 }
+    bounds: { width: 50, height: 50 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 12
+      offsetX: 0
+      offsetY: 0
+
+  # Zone G: center-left (magenta, medium)
+  - id: zone-g
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 720, y: 420 }
+    bounds: { width: 65, height: 65 }
+    opacity: 0
+    shadow:
+      color: "#E91E8F"
+      blur: 16
+      offsetX: 0
+      offsetY: 0
+
+  # Title text
+  - id: title
+    visual:
+      type: text
+      content: "The Globe"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 660, y: 860 }
+    bounds: { width: 600, height: 60 }
+    opacity: 0
+
+  # Subtitle text
+  - id: subtitle
+    visual:
+      type: text
+      content: "No infinite scroll. No algorithm. Discover by proximity and presence."
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#888888"
+        textAlign: center
+    frame: { x: 460, y: 930 }
+    bounds: { width: 1000, height: 30 }
+    opacity: 0
+
+states:
+  main:
+    duration: 360
+    deltas:
+      # World outline fades in
+      - layer: world-outline
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 0.6
+        easing: ease-out
+
+      # Title and subtitle
+      - layer: title
+        property: opacity
+        range: [10, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: subtitle
+        property: opacity
+        range: [20, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Zone A: pulse in, glow, pulse out (stagger start: 30) ---
+      - layer: zone-a
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 0.7
+        easing: ease-in-out
+      - layer: zone-a
+        property: shadow.blur
+        range: [30, 80]
+        from: 8
+        to: 40
+        easing: ease-in-out
+      - layer: zone-a
+        property: shadow.blur
+        range: [80, 140]
+        from: 40
+        to: 8
+        easing: ease-in-out
+      - layer: zone-a
+        property: opacity
+        range: [140, 200]
+        from: 0.7
+        to: 0.15
+        easing: ease-in
+      - layer: zone-a
+        property: opacity
+        range: [260, 310]
+        from: 0.15
+        to: 0.6
+        easing: ease-in-out
+      - layer: zone-a
+        property: shadow.blur
+        range: [260, 330]
+        from: 8
+        to: 35
+        easing: ease-in-out
+      - layer: zone-a
+        property: shadow.blur
+        range: [330, 360]
+        from: 35
+        to: 10
+        easing: ease-in-out
+
+      # --- Zone B: pulse in (stagger start: 60) ---
+      - layer: zone-b
+        property: opacity
+        range: [60, 90]
+        from: 0
+        to: 0.8
+        easing: ease-in-out
+      - layer: zone-b
+        property: shadow.blur
+        range: [60, 120]
+        from: 8
+        to: 45
+        easing: ease-in-out
+      - layer: zone-b
+        property: shadow.blur
+        range: [120, 180]
+        from: 45
+        to: 8
+        easing: ease-in-out
+      - layer: zone-b
+        property: opacity
+        range: [180, 240]
+        from: 0.8
+        to: 0.2
+        easing: ease-in
+      - layer: zone-b
+        property: opacity
+        range: [280, 340]
+        from: 0.2
+        to: 0.7
+        easing: ease-in-out
+      - layer: zone-b
+        property: shadow.blur
+        range: [280, 340]
+        from: 8
+        to: 40
+        easing: ease-in-out
+
+      # --- Zone C: pulse in (stagger start: 90) ---
+      - layer: zone-c
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 0.6
+        easing: ease-in-out
+      - layer: zone-c
+        property: shadow.blur
+        range: [90, 140]
+        from: 5
+        to: 30
+        easing: ease-in-out
+      - layer: zone-c
+        property: shadow.blur
+        range: [140, 200]
+        from: 30
+        to: 5
+        easing: ease-in-out
+      - layer: zone-c
+        property: opacity
+        range: [200, 260]
+        from: 0.6
+        to: 0.1
+        easing: ease-in
+      - layer: zone-c
+        property: opacity
+        range: [300, 340]
+        from: 0.1
+        to: 0.5
+        easing: ease-in-out
+      - layer: zone-c
+        property: shadow.blur
+        range: [300, 350]
+        from: 5
+        to: 28
+        easing: ease-in-out
+
+      # --- Zone D: pulse in (stagger start: 50) ---
+      - layer: zone-d
+        property: opacity
+        range: [50, 80]
+        from: 0
+        to: 0.65
+        easing: ease-in-out
+      - layer: zone-d
+        property: shadow.blur
+        range: [50, 110]
+        from: 6
+        to: 35
+        easing: ease-in-out
+      - layer: zone-d
+        property: shadow.blur
+        range: [110, 170]
+        from: 35
+        to: 6
+        easing: ease-in-out
+      - layer: zone-d
+        property: opacity
+        range: [170, 220]
+        from: 0.65
+        to: 0.1
+        easing: ease-in
+      - layer: zone-d
+        property: opacity
+        range: [270, 320]
+        from: 0.1
+        to: 0.55
+        easing: ease-in-out
+      - layer: zone-d
+        property: shadow.blur
+        range: [270, 330]
+        from: 6
+        to: 32
+        easing: ease-in-out
+
+      # --- Zone E: pulse in (stagger start: 120) ---
+      - layer: zone-e
+        property: opacity
+        range: [120, 150]
+        from: 0
+        to: 0.7
+        easing: ease-in-out
+      - layer: zone-e
+        property: shadow.blur
+        range: [120, 180]
+        from: 8
+        to: 42
+        easing: ease-in-out
+      - layer: zone-e
+        property: shadow.blur
+        range: [180, 240]
+        from: 42
+        to: 8
+        easing: ease-in-out
+      - layer: zone-e
+        property: opacity
+        range: [240, 300]
+        from: 0.7
+        to: 0.15
+        easing: ease-in
+      - layer: zone-e
+        property: opacity
+        range: [320, 360]
+        from: 0.15
+        to: 0.6
+        easing: ease-in-out
+
+      # --- Zone F: pulse in (stagger start: 150) ---
+      - layer: zone-f
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 0.55
+        easing: ease-in-out
+      - layer: zone-f
+        property: shadow.blur
+        range: [150, 200]
+        from: 4
+        to: 25
+        easing: ease-in-out
+      - layer: zone-f
+        property: shadow.blur
+        range: [200, 260]
+        from: 25
+        to: 4
+        easing: ease-in-out
+      - layer: zone-f
+        property: opacity
+        range: [260, 310]
+        from: 0.55
+        to: 0.1
+        easing: ease-in
+      - layer: zone-f
+        property: opacity
+        range: [340, 360]
+        from: 0.1
+        to: 0.45
+        easing: ease-in-out
+
+      # --- Zone G: pulse in (stagger start: 80) ---
+      - layer: zone-g
+        property: opacity
+        range: [80, 105]
+        from: 0
+        to: 0.6
+        easing: ease-in-out
+      - layer: zone-g
+        property: shadow.blur
+        range: [80, 130]
+        from: 5
+        to: 32
+        easing: ease-in-out
+      - layer: zone-g
+        property: shadow.blur
+        range: [130, 190]
+        from: 32
+        to: 5
+        easing: ease-in-out
+      - layer: zone-g
+        property: opacity
+        range: [190, 250]
+        from: 0.6
+        to: 0.1
+        easing: ease-in
+      - layer: zone-g
+        property: opacity
+        range: [290, 340]
+        from: 0.1
+        to: 0.55
+        easing: ease-in-out
+      - layer: zone-g
+        property: shadow.blur
+        range: [290, 340]
+        from: 5
+        to: 30
+        easing: ease-in-out

@@ -1,0 +1,558 @@
+version: "1.0"
+name: The Problem with Dating Apps
+description: "Sequence -> hold. Generic profile cards stack and gray out while a Soulprint card with Witness-verified Runes appears, contrasting self-reported vs peer-verified identity."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # --- Left side: Generic dating profile cards ---
+
+  # Background stacked cards (slightly offset behind main card)
+  - id: stack-card-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#333333", width: 1 }
+    frame: { x: 228, y: 248 }
+    bounds: { width: 320, height: 420 }
+    opacity: 0
+
+  - id: stack-card-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#444444", width: 1 }
+    frame: { x: 218, y: 258 }
+    bounds: { width: 320, height: 420 }
+    opacity: 0
+
+  # Main profile card
+  - id: profile-card
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 12 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#555555", width: 2 }
+    frame: { x: 208, y: 268 }
+    bounds: { width: 320, height: 420 }
+    opacity: 0
+
+  # Photo placeholder (gray rect inside card)
+  - id: photo-placeholder
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 8 }
+      fill: { type: solid, color: "#2A2A3E" }
+    frame: { x: 228, y: 288 }
+    bounds: { width: 280, height: 180 }
+    opacity: 0
+
+  - id: photo-label
+    visual:
+      type: text
+      content: "Photo"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#555555"
+        textAlign: center
+    frame: { x: 308, y: 365 }
+    bounds: { width: 120, height: 28 }
+    opacity: 0
+
+  # Name and age
+  - id: profile-name
+    visual:
+      type: text
+      content: "Alex, 28"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 228, y: 488 }
+    bounds: { width: 280, height: 36 }
+    opacity: 0
+
+  # Self-reported tags
+  - id: profile-tags
+    visual:
+      type: text
+      content: "adventurous, funny, loves dogs"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: left
+    frame: { x: 228, y: 530 }
+    bounds: { width: 280, height: 22 }
+    opacity: 0
+
+  # Critique text below the cards
+  - id: critique-text
+    visual:
+      type: text
+      content: "Self-reported. Unverified. Everyone says this."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#E91E8F"
+        textAlign: center
+    frame: { x: 128, y: 720 }
+    bounds: { width: 480, height: 28 }
+    opacity: 0
+
+  # --- Right side: Soulprint card ---
+
+  - id: soulprint-card
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0A0A1A" }
+      stroke: { color: "#9B59B6", width: 3 }
+    frame: { x: 1180, y: 220 }
+    bounds: { width: 360, height: 520 }
+    opacity: 0
+
+  - id: soulprint-title
+    visual:
+      type: text
+      content: "Soulprint"
+      style:
+        fontFamily: sans-serif
+        fontSize: 32
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1220, y: 250 }
+    bounds: { width: 280, height: 40 }
+    opacity: 0
+
+  # Rune icons (ellipses representing Witness badges)
+  - id: rune-kind
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#14B8A6" }
+    frame: { x: 1240, y: 340 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+    shadow:
+      color: "#14B8A6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-kind-label
+    visual:
+      type: text
+      content: "Kind"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1290, y: 346 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  - id: witness-kind
+    visual:
+      type: text
+      content: "3 Witnesses"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1290, y: 370 }
+    bounds: { width: 120, height: 20 }
+    opacity: 0
+
+  - id: rune-reliable
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#9B59B6" }
+    frame: { x: 1240, y: 420 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-reliable-label
+    visual:
+      type: text
+      content: "Reliable"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1290, y: 426 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  - id: witness-reliable
+    visual:
+      type: text
+      content: "5 Witnesses"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1290, y: 450 }
+    bounds: { width: 120, height: 20 }
+    opacity: 0
+
+  - id: rune-creative
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#E91E8F" }
+    frame: { x: 1240, y: 500 }
+    bounds: { width: 36, height: 36 }
+    opacity: 0
+    shadow:
+      color: "#E91E8F"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: rune-creative-label
+    visual:
+      type: text
+      content: "Creative"
+      style:
+        fontFamily: sans-serif
+        fontSize: 18
+        color: "#F5F0EB"
+        textAlign: left
+    frame: { x: 1290, y: 506 }
+    bounds: { width: 120, height: 24 }
+    opacity: 0
+
+  - id: witness-creative
+    visual:
+      type: text
+      content: "2 Witnesses"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: left
+    frame: { x: 1290, y: 530 }
+    bounds: { width: 120, height: 20 }
+    opacity: 0
+
+  # Verified text below Soulprint card
+  - id: verified-text
+    visual:
+      type: text
+      content: "Peer-verified. Confirmed by people who actually know you."
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#14B8A6"
+        textAlign: center
+    frame: { x: 1080, y: 770 }
+    bounds: { width: 560, height: 28 }
+    opacity: 0
+
+states:
+  main:
+    duration: 480
+    deltas:
+      # --- Phase 1: Profile card appears (frames 0-80) ---
+      - layer: profile-card
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: profile-card
+        property: frame.y
+        range: [0, 30]
+        from: 300
+        to: 268
+        easing: ease-out
+      - layer: photo-placeholder
+        property: opacity
+        range: [10, 35]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: photo-label
+        property: opacity
+        range: [15, 40]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: profile-name
+        property: opacity
+        range: [25, 50]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: profile-tags
+        property: opacity
+        range: [35, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Critique text fades in
+      - layer: critique-text
+        property: opacity
+        range: [60, 90]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # --- Phase 2: Stacked cards appear behind (frames 80-140) ---
+      - layer: stack-card-2
+        property: opacity
+        range: [90, 110]
+        from: 0
+        to: 0.7
+        easing: ease-out
+      - layer: stack-card-3
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 0.5
+        easing: ease-out
+
+      # --- Phase 3: Stack grays out and shifts left (frames 140-200) ---
+      - layer: profile-card
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: photo-placeholder
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: photo-label
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.2
+        easing: ease-in
+      - layer: profile-name
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: profile-tags
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: stack-card-2
+        property: opacity
+        range: [150, 200]
+        from: 0.7
+        to: 0.15
+        easing: ease-in
+      - layer: stack-card-3
+        property: opacity
+        range: [150, 200]
+        from: 0.5
+        to: 0.1
+        easing: ease-in
+      - layer: critique-text
+        property: opacity
+        range: [150, 200]
+        from: 1
+        to: 0.4
+        easing: ease-in
+
+      # Shift everything left
+      - layer: profile-card
+        property: frame.x
+        range: [150, 210]
+        from: 208
+        to: 120
+        easing: ease-in-out
+      - layer: photo-placeholder
+        property: frame.x
+        range: [150, 210]
+        from: 228
+        to: 140
+        easing: ease-in-out
+      - layer: photo-label
+        property: frame.x
+        range: [150, 210]
+        from: 308
+        to: 220
+        easing: ease-in-out
+      - layer: profile-name
+        property: frame.x
+        range: [150, 210]
+        from: 228
+        to: 140
+        easing: ease-in-out
+      - layer: profile-tags
+        property: frame.x
+        range: [150, 210]
+        from: 228
+        to: 140
+        easing: ease-in-out
+      - layer: stack-card-2
+        property: frame.x
+        range: [150, 210]
+        from: 218
+        to: 130
+        easing: ease-in-out
+      - layer: stack-card-3
+        property: frame.x
+        range: [150, 210]
+        from: 228
+        to: 140
+        easing: ease-in-out
+      - layer: critique-text
+        property: frame.x
+        range: [150, 210]
+        from: 128
+        to: 40
+        easing: ease-in-out
+
+      # --- Phase 4: Soulprint card appears on right (frames 210-300) ---
+      - layer: soulprint-card
+        property: opacity
+        range: [220, 260]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: soulprint-card
+        property: frame.x
+        range: [220, 260]
+        from: 1280
+        to: 1180
+        easing: ease-out
+      - layer: soulprint-title
+        property: opacity
+        range: [240, 270]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Rune 1: Kind - fade in and glow
+      - layer: rune-kind
+        property: opacity
+        range: [280, 300]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-kind-label
+        property: opacity
+        range: [285, 305]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-kind
+        property: opacity
+        range: [290, 310]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-kind
+        property: shadow.blur
+        range: [290, 320]
+        from: 0
+        to: 20
+        easing: ease-in-out
+
+      # Rune 2: Reliable - fade in and glow
+      - layer: rune-reliable
+        property: opacity
+        range: [310, 330]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-reliable-label
+        property: opacity
+        range: [315, 335]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-reliable
+        property: opacity
+        range: [320, 340]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-reliable
+        property: shadow.blur
+        range: [320, 350]
+        from: 0
+        to: 20
+        easing: ease-in-out
+
+      # Rune 3: Creative - fade in and glow
+      - layer: rune-creative
+        property: opacity
+        range: [340, 360]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-creative-label
+        property: opacity
+        range: [345, 365]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: witness-creative
+        property: opacity
+        range: [350, 370]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: rune-creative
+        property: shadow.blur
+        range: [350, 380]
+        from: 0
+        to: 20
+        easing: ease-in-out
+
+      # Soulprint card border pulses
+      - layer: soulprint-card
+        property: visual.stroke.color
+        range: [360, 400]
+        from: "#9B59B6"
+        to: "#14B8A6"
+        easing: ease-in-out
+      - layer: soulprint-card
+        property: visual.stroke.color
+        range: [400, 440]
+        from: "#14B8A6"
+        to: "#9B59B6"
+        easing: ease-in-out
+
+      # Verified text fades in
+      - layer: verified-text
+        property: opacity
+        range: [400, 440]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: verified-text
+        property: frame.y
+        range: [400, 440]
+        from: 800
+        to: 770
+        easing: ease-out

@@ -1,0 +1,634 @@
+version: "1.0"
+name: The 5 Modes
+description: "Sequence -> loop. Central user node with 5 routing modes arranged in a circle, each highlighting in turn."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "The 5 Modes"
+      style:
+        fontFamily: sans-serif
+        fontSize: 52
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 610, y: 60 }
+    bounds: { width: 700, height: 64 }
+
+  # Central user node
+  - id: user-node
+    visual:
+      type: shape
+      shape: { type: ellipse }
+      fill: { type: solid, color: "#F5F0EB" }
+    frame: { x: 910, y: 490 }
+    bounds: { width: 100, height: 100 }
+    shadow:
+      color: "#F5F0EB"
+      blur: 15
+      offsetX: 0
+      offsetY: 0
+
+  - id: user-label
+    visual:
+      type: text
+      content: "You"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#0A0A0F"
+        textAlign: center
+    frame: { x: 930, y: 530 }
+    bounds: { width: 60, height: 28 }
+
+  # Mode 1: Standard (top center) — green
+  - id: mode-standard
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#0D3D2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 870, y: 210 }
+    bounds: { width: 180, height: 80 }
+    opacity: 0.4
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: mode-standard-label
+    visual:
+      type: text
+      content: "Standard"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 885, y: 225 }
+    bounds: { width: 150, height: 28 }
+    opacity: 0.4
+
+  - id: mode-standard-desc
+    visual:
+      type: text
+      content: "WireGuard shield"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 885, y: 255 }
+    bounds: { width: 150, height: 20 }
+    opacity: 0.4
+
+  # Mode 2: Tor (top right) — purple
+  - id: mode-tor
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#2E1A3E" }
+      stroke: { color: "#9B59B6", width: 2 }
+    frame: { x: 1220, y: 380 }
+    bounds: { width: 180, height: 80 }
+    opacity: 0.4
+    shadow:
+      color: "#9B59B6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: mode-tor-label
+    visual:
+      type: text
+      content: "Tor"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#9B59B6"
+        textAlign: center
+    frame: { x: 1235, y: 395 }
+    bounds: { width: 150, height: 28 }
+    opacity: 0.4
+
+  - id: mode-tor-desc
+    visual:
+      type: text
+      content: "Onion routing"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1235, y: 425 }
+    bounds: { width: 150, height: 20 }
+    opacity: 0.4
+
+  # Mode 3: Paranoid (bottom right) — red
+  - id: mode-paranoid
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#3E1A1A" }
+      stroke: { color: "#EF4444", width: 2 }
+    frame: { x: 1120, y: 650 }
+    bounds: { width: 180, height: 80 }
+    opacity: 0.4
+    shadow:
+      color: "#EF4444"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: mode-paranoid-label
+    visual:
+      type: text
+      content: "Paranoid"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#EF4444"
+        textAlign: center
+    frame: { x: 1135, y: 665 }
+    bounds: { width: 150, height: 28 }
+    opacity: 0.4
+
+  - id: mode-paranoid-desc
+    visual:
+      type: text
+      content: "Double lock"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1135, y: 695 }
+    bounds: { width: 150, height: 20 }
+    opacity: 0.4
+
+  # Mode 4: Direct (bottom left) — gray
+  - id: mode-direct
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A1A1A" }
+      stroke: { color: "#666666", width: 2 }
+    frame: { x: 620, y: 650 }
+    bounds: { width: 180, height: 80 }
+    opacity: 0.4
+    shadow:
+      color: "#666666"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: mode-direct-label
+    visual:
+      type: text
+      content: "Direct"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#666666"
+        textAlign: center
+    frame: { x: 635, y: 665 }
+    bounds: { width: 150, height: 28 }
+    opacity: 0.4
+
+  - id: mode-direct-desc
+    visual:
+      type: text
+      content: "No tunnel"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 635, y: 695 }
+    bounds: { width: 150, height: 20 }
+    opacity: 0.4
+
+  # Mode 5: Regional (top left) — blue
+  - id: mode-regional
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 16 }
+      fill: { type: solid, color: "#1A2A3E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 520, y: 380 }
+    bounds: { width: 180, height: 80 }
+    opacity: 0.4
+    shadow:
+      color: "#3B82F6"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: mode-regional-label
+    visual:
+      type: text
+      content: "Regional"
+      style:
+        fontFamily: sans-serif
+        fontSize: 22
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 535, y: 395 }
+    bounds: { width: 150, height: 28 }
+    opacity: 0.4
+
+  - id: mode-regional-desc
+    visual:
+      type: text
+      content: "Globe pin exit"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#888888"
+        textAlign: center
+    frame: { x: 535, y: 425 }
+    bounds: { width: 150, height: 20 }
+    opacity: 0.4
+
+states:
+  cycle:
+    duration: 600
+    deltas:
+      # --- Standard highlights (frames 0-119) ---
+      # Glow in
+      - layer: mode-standard
+        property: opacity
+        range: [0, 30]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-standard-label
+        property: opacity
+        range: [0, 30]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-standard-desc
+        property: opacity
+        range: [0, 30]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-standard
+        property: shadow.blur
+        range: [0, 30]
+        from: 0
+        to: 30
+        easing: ease-out
+      - layer: mode-standard
+        property: scale.x
+        range: [0, 30]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-standard
+        property: scale.y
+        range: [0, 30]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      # Glow out
+      - layer: mode-standard
+        property: opacity
+        range: [90, 119]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-standard-label
+        property: opacity
+        range: [90, 119]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-standard-desc
+        property: opacity
+        range: [90, 119]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-standard
+        property: shadow.blur
+        range: [90, 119]
+        from: 30
+        to: 0
+        easing: ease-in
+      - layer: mode-standard
+        property: scale.x
+        range: [90, 119]
+        from: 1.08
+        to: 1
+        easing: ease-in
+      - layer: mode-standard
+        property: scale.y
+        range: [90, 119]
+        from: 1.08
+        to: 1
+        easing: ease-in
+
+      # --- Tor highlights (frames 120-239) ---
+      - layer: mode-tor
+        property: opacity
+        range: [120, 150]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-tor-label
+        property: opacity
+        range: [120, 150]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-tor-desc
+        property: opacity
+        range: [120, 150]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-tor
+        property: shadow.blur
+        range: [120, 150]
+        from: 0
+        to: 30
+        easing: ease-out
+      - layer: mode-tor
+        property: scale.x
+        range: [120, 150]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-tor
+        property: scale.y
+        range: [120, 150]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-tor
+        property: opacity
+        range: [210, 239]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-tor-label
+        property: opacity
+        range: [210, 239]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-tor-desc
+        property: opacity
+        range: [210, 239]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-tor
+        property: shadow.blur
+        range: [210, 239]
+        from: 30
+        to: 0
+        easing: ease-in
+      - layer: mode-tor
+        property: scale.x
+        range: [210, 239]
+        from: 1.08
+        to: 1
+        easing: ease-in
+      - layer: mode-tor
+        property: scale.y
+        range: [210, 239]
+        from: 1.08
+        to: 1
+        easing: ease-in
+
+      # --- Paranoid highlights (frames 240-359) ---
+      - layer: mode-paranoid
+        property: opacity
+        range: [240, 270]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-paranoid-label
+        property: opacity
+        range: [240, 270]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-paranoid-desc
+        property: opacity
+        range: [240, 270]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-paranoid
+        property: shadow.blur
+        range: [240, 270]
+        from: 0
+        to: 30
+        easing: ease-out
+      - layer: mode-paranoid
+        property: scale.x
+        range: [240, 270]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-paranoid
+        property: scale.y
+        range: [240, 270]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-paranoid
+        property: opacity
+        range: [330, 359]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-paranoid-label
+        property: opacity
+        range: [330, 359]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-paranoid-desc
+        property: opacity
+        range: [330, 359]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-paranoid
+        property: shadow.blur
+        range: [330, 359]
+        from: 30
+        to: 0
+        easing: ease-in
+      - layer: mode-paranoid
+        property: scale.x
+        range: [330, 359]
+        from: 1.08
+        to: 1
+        easing: ease-in
+      - layer: mode-paranoid
+        property: scale.y
+        range: [330, 359]
+        from: 1.08
+        to: 1
+        easing: ease-in
+
+      # --- Direct highlights (frames 360-479) ---
+      - layer: mode-direct
+        property: opacity
+        range: [360, 390]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-direct-label
+        property: opacity
+        range: [360, 390]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-direct-desc
+        property: opacity
+        range: [360, 390]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-direct
+        property: shadow.blur
+        range: [360, 390]
+        from: 0
+        to: 30
+        easing: ease-out
+      - layer: mode-direct
+        property: scale.x
+        range: [360, 390]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-direct
+        property: scale.y
+        range: [360, 390]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-direct
+        property: opacity
+        range: [450, 479]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-direct-label
+        property: opacity
+        range: [450, 479]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-direct-desc
+        property: opacity
+        range: [450, 479]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-direct
+        property: shadow.blur
+        range: [450, 479]
+        from: 30
+        to: 0
+        easing: ease-in
+      - layer: mode-direct
+        property: scale.x
+        range: [450, 479]
+        from: 1.08
+        to: 1
+        easing: ease-in
+      - layer: mode-direct
+        property: scale.y
+        range: [450, 479]
+        from: 1.08
+        to: 1
+        easing: ease-in
+
+      # --- Regional highlights (frames 480-599) ---
+      - layer: mode-regional
+        property: opacity
+        range: [480, 510]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-regional-label
+        property: opacity
+        range: [480, 510]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-regional-desc
+        property: opacity
+        range: [480, 510]
+        from: 0.4
+        to: 1
+        easing: ease-out
+      - layer: mode-regional
+        property: shadow.blur
+        range: [480, 510]
+        from: 0
+        to: 30
+        easing: ease-out
+      - layer: mode-regional
+        property: scale.x
+        range: [480, 510]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-regional
+        property: scale.y
+        range: [480, 510]
+        from: 1
+        to: 1.08
+        easing: ease-out
+      - layer: mode-regional
+        property: opacity
+        range: [570, 599]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-regional-label
+        property: opacity
+        range: [570, 599]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-regional-desc
+        property: opacity
+        range: [570, 599]
+        from: 1
+        to: 0.4
+        easing: ease-in
+      - layer: mode-regional
+        property: shadow.blur
+        range: [570, 599]
+        from: 30
+        to: 0
+        easing: ease-in
+      - layer: mode-regional
+        property: scale.x
+        range: [570, 599]
+        from: 1.08
+        to: 1
+        easing: ease-in
+      - layer: mode-regional
+        property: scale.y
+        range: [570, 599]
+        from: 1.08
+        to: 1
+        easing: ease-in

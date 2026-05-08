@@ -1,0 +1,634 @@
+version: "1.0"
+name: How It Works
+description: "Sequence -> hold. Garden, Signaling, and Niwashi appear in sequence with dotted connections, then dotted lines fade and a bold direct P2P line draws as the signaling server dims."
+canvas:
+  width: 1920
+  height: 1080
+  fps: 60
+  background: "#0A0A0F"
+
+layers:
+  # Title
+  - id: title
+    visual:
+      type: text
+      content: "How It Works"
+      style:
+        fontFamily: sans-serif
+        fontSize: 48
+        color: "#F5F0EB"
+        textAlign: center
+    frame: { x: 560, y: 80 }
+    bounds: { width: 800, height: 60 }
+    opacity: 0
+
+  # Garden Agent box (left)
+  - id: garden-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#3B82F6", width: 2 }
+    frame: { x: 120, y: 360 }
+    bounds: { width: 340, height: 180 }
+    opacity: 0
+
+  - id: garden-title
+    visual:
+      type: text
+      content: "Garden Agent"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#3B82F6"
+        textAlign: center
+    frame: { x: 140, y: 390 }
+    bounds: { width: 300, height: 34 }
+    opacity: 0
+
+  - id: garden-desc
+    visual:
+      type: text
+      content: "Captures your screen in real-time (VP8)"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 140, y: 440 }
+    bounds: { width: 300, height: 48 }
+    opacity: 0
+
+  # Signaling Server box (center)
+  - id: signal-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#F59E0B", width: 2 }
+    frame: { x: 740, y: 360 }
+    bounds: { width: 340, height: 180 }
+    opacity: 0
+
+  - id: signal-title
+    visual:
+      type: text
+      content: "Signaling Server"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 760, y: 390 }
+    bounds: { width: 300, height: 34 }
+    opacity: 0
+
+  - id: signal-desc
+    visual:
+      type: text
+      content: "Brokers the handshake"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 760, y: 440 }
+    bounds: { width: 300, height: 48 }
+    opacity: 0
+
+  # Dotted line: Garden -> Signaling (represented as a series of small rects)
+  - id: dotted-line-left-1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 480, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-left-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 530, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-left-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 580, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-left-4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 630, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-left-5
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 680, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: sdp-label
+    visual:
+      type: text
+      content: "SDP exchange"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 530, y: 420 }
+    bounds: { width: 160, height: 20 }
+    opacity: 0
+
+  # Niwashi Browser box (right)
+  - id: niwashi-box
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 14 }
+      fill: { type: solid, color: "#1A1A2E" }
+      stroke: { color: "#10B981", width: 2 }
+    frame: { x: 1460, y: 360 }
+    bounds: { width: 340, height: 180 }
+    opacity: 0
+
+  - id: niwashi-title
+    visual:
+      type: text
+      content: "Niwashi Browser"
+      style:
+        fontFamily: sans-serif
+        fontSize: 28
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 1480, y: 390 }
+    bounds: { width: 300, height: 34 }
+    opacity: 0
+
+  - id: niwashi-desc
+    visual:
+      type: text
+      content: "Views the stream"
+      style:
+        fontFamily: sans-serif
+        fontSize: 16
+        color: "#888888"
+        textAlign: center
+    frame: { x: 1480, y: 440 }
+    bounds: { width: 300, height: 48 }
+    opacity: 0
+
+  # Dotted line: Signaling -> Niwashi
+  - id: dotted-line-right-1
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1100, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-right-2
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1150, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-right-3
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1200, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-right-4
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1250, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: dotted-line-right-5
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#F59E0B" }
+    frame: { x: 1300, y: 448 }
+    bounds: { width: 30, height: 3 }
+    opacity: 0
+
+  - id: sdp-label-right
+    visual:
+      type: text
+      content: "SDP exchange"
+      style:
+        fontFamily: sans-serif
+        fontSize: 14
+        color: "#F59E0B"
+        textAlign: center
+    frame: { x: 1150, y: 420 }
+    bounds: { width: 160, height: 20 }
+    opacity: 0
+
+  # Bold direct P2P line (Garden -> Niwashi, bypasses signaling)
+  - id: p2p-line
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 3 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 460, y: 580 }
+    bounds: { width: 1000, height: 6 }
+    opacity: 0
+    shadow:
+      color: "#10B981"
+      blur: 0
+      offsetX: 0
+      offsetY: 0
+
+  - id: p2p-label
+    visual:
+      type: text
+      content: "WebRTC -- direct P2P connection"
+      style:
+        fontFamily: sans-serif
+        fontSize: 20
+        color: "#10B981"
+        textAlign: center
+    frame: { x: 660, y: 600 }
+    bounds: { width: 600, height: 28 }
+    opacity: 0
+
+  # Left elbow connector (Garden down to P2P line)
+  - id: elbow-left-vert
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 290, y: 540 }
+    bounds: { width: 4, height: 46 }
+    opacity: 0
+
+  - id: elbow-left-horiz
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 290, y: 580 }
+    bounds: { width: 174, height: 6 }
+    opacity: 0
+
+  # Right elbow connector (Niwashi down to P2P line)
+  - id: elbow-right-vert
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1630, y: 540 }
+    bounds: { width: 4, height: 46 }
+    opacity: 0
+
+  - id: elbow-right-horiz
+    visual:
+      type: shape
+      shape: { type: rect, cornerRadius: 2 }
+      fill: { type: solid, color: "#10B981" }
+    frame: { x: 1460, y: 580 }
+    bounds: { width: 174, height: 6 }
+    opacity: 0
+
+states:
+  main:
+    duration: 600
+    deltas:
+      # Title fades in
+      - layer: title
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Step 1: Garden Agent appears
+      - layer: garden-box
+        property: opacity
+        range: [30, 60]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: garden-box
+        property: frame.y
+        range: [30, 60]
+        from: 400
+        to: 360
+        easing: ease-out
+      - layer: garden-title
+        property: opacity
+        range: [40, 65]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: garden-desc
+        property: opacity
+        range: [50, 70]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Step 2: Signaling Server appears
+      - layer: signal-box
+        property: opacity
+        range: [80, 110]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: signal-box
+        property: frame.y
+        range: [80, 110]
+        from: 400
+        to: 360
+        easing: ease-out
+      - layer: signal-title
+        property: opacity
+        range: [90, 115]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: signal-desc
+        property: opacity
+        range: [100, 120]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Dotted line: Garden -> Signaling (each dash appears in sequence)
+      - layer: dotted-line-left-1
+        property: opacity
+        range: [130, 140]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-left-2
+        property: opacity
+        range: [136, 146]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-left-3
+        property: opacity
+        range: [142, 152]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-left-4
+        property: opacity
+        range: [148, 158]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-left-5
+        property: opacity
+        range: [154, 164]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdp-label
+        property: opacity
+        range: [150, 175]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Step 3: Niwashi Browser appears
+      - layer: niwashi-box
+        property: opacity
+        range: [180, 210]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: niwashi-box
+        property: frame.y
+        range: [180, 210]
+        from: 400
+        to: 360
+        easing: ease-out
+      - layer: niwashi-title
+        property: opacity
+        range: [190, 215]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: niwashi-desc
+        property: opacity
+        range: [200, 220]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Dotted line: Signaling -> Niwashi (each dash appears in sequence)
+      - layer: dotted-line-right-1
+        property: opacity
+        range: [230, 240]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-right-2
+        property: opacity
+        range: [236, 246]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-right-3
+        property: opacity
+        range: [242, 252]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-right-4
+        property: opacity
+        range: [248, 258]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: dotted-line-right-5
+        property: opacity
+        range: [254, 264]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: sdp-label-right
+        property: opacity
+        range: [250, 275]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # KEY MOMENT: Dotted lines fade out
+      - layer: dotted-line-left-1
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-left-2
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-left-3
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-left-4
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-left-5
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: sdp-label
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-right-1
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-right-2
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-right-3
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-right-4
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: dotted-line-right-5
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+      - layer: sdp-label-right
+        property: opacity
+        range: [320, 360]
+        from: 1
+        to: 0
+        easing: ease-in
+
+      # Bold direct P2P line draws in with glow
+      - layer: p2p-line
+        property: opacity
+        range: [370, 380]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: p2p-line
+        property: scale.x
+        range: [370, 430]
+        from: 0
+        to: 1
+        easing: ease-in-out
+      - layer: p2p-line
+        property: shadow.blur
+        range: [390, 440]
+        from: 0
+        to: 18
+        easing: ease-in-out
+
+      # Left elbow connector appears
+      - layer: elbow-left-vert
+        property: opacity
+        range: [370, 400]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: elbow-left-horiz
+        property: opacity
+        range: [380, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Right elbow connector appears
+      - layer: elbow-right-vert
+        property: opacity
+        range: [370, 400]
+        from: 0
+        to: 1
+        easing: ease-out
+      - layer: elbow-right-horiz
+        property: opacity
+        range: [380, 410]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # P2P label fades in
+      - layer: p2p-label
+        property: opacity
+        range: [430, 470]
+        from: 0
+        to: 1
+        easing: ease-out
+
+      # Signaling server dims
+      - layer: signal-box
+        property: opacity
+        range: [440, 500]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: signal-title
+        property: opacity
+        range: [440, 500]
+        from: 1
+        to: 0.3
+        easing: ease-in
+      - layer: signal-desc
+        property: opacity
+        range: [440, 500]
+        from: 1
+        to: 0.3
+        easing: ease-in
