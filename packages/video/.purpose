@@ -1,0 +1,24 @@
+version: 1.0.0
+name: "@atelier/video"
+description: Video frame providers and encoding pipeline — preview (HTMLVideoElement) and export (WebCodecs/Mediabunny) backends for VideoFrameProvider, plus FFmpeg WASM encoding
+context:
+  - This package implements the VideoFrameProvider type defined in @a-company/atelier-canvas
+  - Two rendering modes: preview (ElementVideoProvider, fast) and export (WebCodecsVideoProvider, frame-accurate)
+  - ElementVideoProvider is fully implemented; WebCodecsVideoProvider awaits Mediabunny demux integration (T-002b)
+  - FfmpegEncoder skeleton defines the stable interface; full implementation in T-003
+  - Browser-only package — includes DOM lib in tsconfig unlike canvas which avoids it
+  - All providers follow the null-means-not-ready pattern: caller retries next render tick
+
+components:
+  '#element-provider':
+    description: HTMLVideoElement-backed VideoFrameProvider for preview mode — seeks via currentTime, one element per src, notifies caller on seek complete via onFrame callback
+    file: src/providers/element-provider.ts
+    tags: [video, preview, provider]
+  '#webcodecs-provider':
+    description: WebCodecs VideoDecoder-backed provider for frame-accurate export rendering — Chrome/Chromium only; Mediabunny demux integration pending (T-002b)
+    file: src/providers/webcodecs-provider.ts
+    tags: [video, export, provider, webcodecs]
+  '#ffmpeg-encoder':
+    description: FFmpeg WASM encoding pipeline skeleton — stable interface for MP4/WebM export from canvas frame sequence; full implementation in T-003
+    file: src/encoding/ffmpeg-encoder.ts
+    tags: [video, encoding, ffmpeg, export]
