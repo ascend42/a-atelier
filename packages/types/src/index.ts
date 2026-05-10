@@ -77,3 +77,13 @@ export type { AssetType, Asset } from "./asset.js";
 
 // document.ts
 export type { Canvas, AtelierDocument } from "./document.js";
+
+// video-project.ts
+export type {
+  CutEntry,
+  VideoCutList,
+  TranscriptWord,
+  TranscriptSegment,
+  VideoTranscript,
+  VideoProjectManifest,
+} from "./video-project.js";

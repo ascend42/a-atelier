@@ -39,3 +39,7 @@ components:
   cli-variables:
     description: Variables command — lists all variables in a document with usage info
     file: src/commands/variables.ts
+  '#video-project':
+    description: VideoProject filesystem utilities — createVideoProject, loadVideoProject, readCutList/writeCutList, readTranscript/writeTranscript, readComposition/writeComposition — scaffold and manage the source.mp4/project.atelier/transcript.json/cuts.json/export/ folder convention
+    file: src/lib/video-project.ts
+    tags: [video, ugc, editing, filesystem]

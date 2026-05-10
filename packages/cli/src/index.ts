@@ -23,3 +23,17 @@ export type {
   RenderResult,
   ProgressInfo,
 } from "./commands/render-pipeline.js";
+
+// VideoProject — local-first video project folder structure
+export {
+  createVideoProject,
+  loadVideoProject,
+  readCutList,
+  writeCutList,
+  readTranscript,
+  writeTranscript,
+  readComposition,
+  writeComposition,
+  VIDEO_PROJECT_VERSION,
+} from "./lib/video-project.js";
+export type { VideoProject } from "./lib/video-project.js";

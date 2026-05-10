@@ -6,6 +6,16 @@ import type { AtelierDocument } from "@a-company/atelier-types";
 import { serializeAtelier } from "@a-company/atelier-schema";
 import { validateFile } from "./commands/validate.js";
 import { lintFile } from "./commands/lint.js";
+import {
+  createVideoProject,
+  loadVideoProject,
+  readCutList,
+  writeCutList,
+  readTranscript,
+  writeTranscript,
+  readComposition,
+  writeComposition,
+} from "./lib/video-project.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
@@ -502,5 +512,130 @@ describe("lintFile", () => {
     expect(result.valid).toBe(false);
     expect(result.gates[0].gate).toBe("^valid-document");
     expect(result.gates[0].errors[0]).toContain("Cannot read file");
+  });
+});
+
+// ─── VideoProject Tests ───────────────────────────────────────
+
+describe("VideoProject", () => {
+  let fakeSrc: string;
+
+  beforeAll(() => {
+    // Write a tiny placeholder that can be "copied" as the source video
+    fakeSrc = join(tmpDir, "sample.mp4");
+    writeFileSync(fakeSrc, "FAKE_VIDEO_BYTES", "utf-8");
+  });
+
+  it("createVideoProject scaffolds folder structure", async () => {
+    const projectDir = join(tmpDir, "vp-create");
+    const project = await createVideoProject(fakeSrc, projectDir);
+
+    expect(project.dir).toBe(projectDir);
+    expect(project.manifest.version).toBe("1.0");
+    expect(project.manifest.composition).toBe("project.atelier");
+    expect(project.manifest.cuts).toBe("cuts.json");
+    expect(project.manifest.transcript).toBe("transcript.json");
+    expect(project.manifest.exportDir).toBe("export/");
+
+    // source file is copied
+    const { existsSync: exists } = await import("node:fs");
+    expect(exists(project.sourcePath)).toBe(true);
+    expect(exists(project.compositionPath)).toBe(true);
+    expect(exists(project.cutsPath)).toBe(true);
+    expect(exists(project.exportDir)).toBe(true);
+  });
+
+  it("createVideoProject is idempotent — second call does not overwrite", async () => {
+    const projectDir = join(tmpDir, "vp-idem");
+    const p1 = await createVideoProject(fakeSrc, projectDir);
+
+    // Write a custom composition to verify it isn't overwritten
+    writeComposition(p1, { ...readComposition(p1), name: "custom-name" });
+    const p2 = await createVideoProject(fakeSrc, projectDir);
+    const doc = readComposition(p2);
+    expect(doc.name).toBe("custom-name");
+  });
+
+  it("readComposition returns draft AtelierDocument", async () => {
+    const projectDir = join(tmpDir, "vp-read-comp");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    const doc = readComposition(project);
+    expect(doc.version).toBe("1.0");
+    expect(doc.name).toBe("sample");
+    expect(doc.layers[0].visual.type).toBe("video");
+  });
+
+  it("writeComposition and readComposition roundtrip", async () => {
+    const projectDir = join(tmpDir, "vp-comp-rt");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    const doc = readComposition(project);
+    doc.name = "roundtrip-test";
+    writeComposition(project, doc);
+    expect(readComposition(project).name).toBe("roundtrip-test");
+  });
+
+  it("readCutList returns empty cuts for fresh project", async () => {
+    const projectDir = join(tmpDir, "vp-cuts-empty");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    const cuts = readCutList(project);
+    expect(cuts.cuts).toHaveLength(0);
+    expect(cuts.source).toBe("source.mp4");
+  });
+
+  it("writeCutList and readCutList roundtrip", async () => {
+    const projectDir = join(tmpDir, "vp-cuts-rt");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    writeCutList(project, {
+      source: "source.mp4",
+      cuts: [
+        { start: 0, end: 5.5, label: "take 1" },
+        { start: 10, end: 20 },
+      ],
+    });
+    const cuts = readCutList(project);
+    expect(cuts.cuts).toHaveLength(2);
+    expect(cuts.cuts[0].label).toBe("take 1");
+    expect(cuts.cuts[1].end).toBe(20);
+  });
+
+  it("readTranscript returns null before transcription runs", async () => {
+    const projectDir = join(tmpDir, "vp-transcript-null");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    expect(readTranscript(project)).toBeNull();
+  });
+
+  it("writeTranscript and readTranscript roundtrip", async () => {
+    const projectDir = join(tmpDir, "vp-transcript-rt");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    writeTranscript(project, {
+      language: "en",
+      segments: [
+        {
+          text: "Hello world",
+          start: 0,
+          end: 2.3,
+          words: [
+            { word: "Hello", start: 0, end: 0.8, confidence: 0.99 },
+            { word: "world", start: 1.0, end: 2.3 },
+          ],
+        },
+      ],
+    });
+    const t = readTranscript(project);
+    expect(t).not.toBeNull();
+    expect(t!.language).toBe("en");
+    expect(t!.segments[0].words).toHaveLength(2);
+    expect(t!.segments[0].words[0].confidence).toBe(0.99);
+  });
+
+  it("loadVideoProject resolves paths for existing folder", async () => {
+    const projectDir = join(tmpDir, "vp-load");
+    await createVideoProject(fakeSrc, projectDir);
+    const loaded = loadVideoProject(projectDir);
+    expect(loaded.dir).toBe(projectDir);
+    expect(loaded.sourcePath).toContain("source.mp4");
+    expect(loaded.compositionPath).toContain("project.atelier");
+    expect(loaded.cutsPath).toContain("cuts.json");
+    expect(loaded.exportDir).toContain("export");
   });
 });

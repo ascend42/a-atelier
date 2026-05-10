@@ -68,3 +68,7 @@ components:
     description: PresetDelta, Preset — reusable animation delta templates
     file: src/preset.ts
     tags: [types, presets]
+  '#video-project-types':
+    description: VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing
+    file: src/video-project.ts
+    tags: [types, video, ugc, editing]

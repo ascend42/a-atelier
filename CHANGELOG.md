@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.30.0] — 2026-05-10
+
+### Added
+- **VideoProject folder structure** (T-004) — local-first video project convention for UGC editing
+  - New types in `@a-company/atelier-types`: `CutEntry`, `VideoCutList`, `TranscriptWord`, `TranscriptSegment`, `VideoTranscript`, `VideoProjectManifest`
+  - New `VideoProject` filesystem utilities in `@a-company/atelier` CLI: `createVideoProject`, `loadVideoProject`, `readCutList/writeCutList`, `readTranscript/writeTranscript`, `readComposition/writeComposition`
+  - Project folder layout: `source.<ext>` / `project.atelier` / `transcript.json` / `cuts.json` / `export/`
+  - `createVideoProject` is idempotent — safe to re-run on an existing folder without overwriting
+  - Draft composition scaffolded with a single video layer pointing to `source.<ext>` (canvas dimensions and `videoMeta` filled by `atelier edit` at ingest time, T-005)
+
 ## [0.29.0] — 2026-05-07
 
 ### Added
