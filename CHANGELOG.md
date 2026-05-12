@@ -14,6 +14,12 @@ Format: [major.minor.fix] — based on milestone progression.
   - `createVideoProject` is idempotent — safe to re-run on an existing folder without overwriting
   - Draft composition scaffolded with a single video layer pointing to `source.<ext>` (canvas dimensions and `videoMeta` filled by `atelier edit` at ingest time, T-005)
 
+### Fixed
+- **Workspace-wide audit pass** — restored strict typecheck across all packages and full `pnpm -r test` green
+  - `packages/canvas`: fixed 3× TS6133 unused-variable errors in test file (replaced meaningless `expect(true).toBe(true)` with a real assertion against `drawCalls`; underscored two unused mock params)
+  - `packages/video`: added 8 smoke tests covering `FfmpegEncoder` option defaults, pre-T-003 throw behavior, `WebCodecsVideoProvider.isSupported()`, and dispose safety — `vitest run` no longer exits 1 on the package
+  - Dogfooded `atelier lint` against valid and invalid fixtures — confirms correct PASS/FAIL output and exit codes after the 0.29.0 launch
+
 ## [0.29.0] — 2026-05-07
 
 ### Added

@@ -1,0 +1,49 @@
+id: L-2026-05-12-ascend-161227-001
+type: milestone
+timestamp: '2026-05-12T16:12:27.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: T-004 VideoProject scaffold shipped + codebase audit pass
+summary: 'Landed T-004 — the VideoProject folder convention (source.<ext>/project.atelier/transcript.json/cuts.json/export/) — as the foundational scaffolding for the UGC workflow. New pure-interface types in @a-company/atelier-types (CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest) and Node.js filesystem utilities in the CLI package (createVideoProject, loadVideoProject, readCutList/writeCutList, readTranscript/writeTranscript, readComposition/writeComposition). createVideoProject is idempotent — safe to re-run on an existing folder without overwriting. Draft composition scaffolds a single VideoVisual clip; atelier edit (T-005) will fill in videoMeta and real canvas dimensions after ffprobe. Followed up with a workspace-wide audit and fix pass: restored strict typecheck on packages/canvas (3× TS6133 unused-var errors), added 8 smoke tests to packages/video so vitest no longer exits 1 on the package, dogfooded atelier lint against valid and invalid fixtures (correct exit 0/1 behavior), and confirmed no production TODO/FIXME drift. Versions bumped — types 0.26.0→0.27.0, CLI 0.29.0→0.30.0.'
+symbols_touched:
+  - '#cli-lint'
+  - '#canvas'
+  - '#video-renderer'
+  - '#layer-types'
+  - '#asset-types'
+symbols_created:
+  - '#video-project'
+  - '#video-project-types'
+files_created:
+  - packages/types/src/video-project.ts
+  - packages/cli/src/lib/video-project.ts
+  - packages/video/src/index.test.ts
+decisions:
+  - id: TD-video-project-split
+    decision: VideoProject types live in @a-company/atelier-types (zero-runtime); filesystem utilities live in the CLI package (Node.js fs scope)
+    rationale: 'Honors the existing architectural split — types package has no runtime, video package is browser-only (DOM lib), CLI is the Node-side surface. Cross-package import works since CLI already devDepends on atelier-types.'
+  - id: TD-idempotent-scaffold
+    decision: createVideoProject does not overwrite existing files in the target folder
+    rationale: 'Re-running atelier edit on an existing project should never destroy in-progress work. existsSync guards on source copy, composition, cuts.json mean a second invocation is a no-op for any file already present.'
+  - id: TD-draft-composition-defers-metadata
+    decision: createVideoProject writes a draft composition with placeholder 1920x1080 canvas and no videoMeta — atelier edit (T-005) fills in real values after probing the source
+    rationale: 'createVideoProject is filesystem-only by design — no ffprobe dependency at this layer. T-005 owns the metadata probe and updates the composition + asset.videoMeta before opening in studio.'
+learnings:
+  - 'CLI tsc --noEmit covers test files too — strict noUnusedLocals will catch dead-code drift in tests, not just src. Worth keeping; caught a real meaningless assertion (expect(true).toBe(true)) in canvas/index.test.ts.'
+  - 'pnpm -r reports "Scope: 14 of 15 workspace projects" — the 15th is the repo root (no test script, which is correct). Not a missing test target.'
+  - 'CLI declares @a-company/atelier-studio: ">=0.25.1" as a registry-version runtime dependency, not workspace:*. This is a deliberate publishing strategy — at npm install time, users pull the published studio rather than relying on bundled code. Worth knowing during coordinated version bumps; not a bug.'
+  - 'A package with skeleton-only providers (no tests) makes pnpm -r test exit non-zero across the workspace. Always add at least a smoke test alongside a skeleton — verifies imports, option defaults, and pre-implementation throw behavior.'
+tags:
+  - video
+  - ugc
+  - phase-2
+  - audit
+  - infrastructure
+  - t-004
+confidence: 0.95
+git_context:
+  ref: eba2c1c13295385566e520fe330d5195c051feb1
+  branch: main
+  dirty: false
