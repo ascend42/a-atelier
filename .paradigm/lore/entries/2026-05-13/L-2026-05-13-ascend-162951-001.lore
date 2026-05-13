@@ -1,0 +1,56 @@
+id: L-2026-05-13-ascend-162951-001
+type: milestone
+timestamp: '2026-05-13T16:29:51.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: 'Studio Recipe Phase 1 shipped — value-play scaffolded, both pipelines recipe-aware'
+summary: 'Implemented Studio Recipe Phase 1 end-to-end the same day the spec was written. Two commits, no new npm dependencies, 18 new tests added (115/115 in CLI, 578/578 across the workspace — every package green). Studio Recipe is now a first-class concept in Atelier: the StudioRecipe interface ships in @a-company/atelier-types alongside SilencePolicy/CaptionStyle/CaptionGrouping; StudioRecipeSchema + validateRecipe ship in @a-company/atelier-schema (reserved-field warnings included so Phase 1 authors aren''t blindsided when Phase 3 ships); the recipe.ts lib in CLI provides loadRecipe / scaffoldRecipeYaml / three applyRecipeTo* translation functions / renderRecipeWithDefaults / recipeToYaml. Four new CLI verbs: atelier recipe new / validate / show, and atelier apply-recipe <project> <recipe> as the convenience chain. The --recipe flag was threaded into atelier trim, atelier transcribe, and atelier captions regenerate; TrimOptions gained matchTolerance and TranscribeOptions gained captionOptions to carry recipe values through to the underlying pipelines. CLI options always win over recipe per the spec §4.1 precedence decision. Partial recipes are valid — any omitted field falls back to its code default. Reserved Phase 3 fields (overlay_rules, caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse as opaque so Phase 1 recipes remain forward-compatible. End-to-end dogfood pass: scaffold a recipe, validate it, see PASS with zero warnings, demonstrating the path works on a clean machine.'
+symbols_touched:
+  - '#video-project-types'
+  - '#cli-trim'
+  - '#cli-transcribe'
+  - '#cli-captions'
+  - '#caption-builder'
+  - '#cut-model'
+symbols_created:
+  - '#studio-recipe'
+  - '#cli-recipe'
+  - '#cli-apply-recipe'
+  - '#recipe-lib'
+files_created:
+  - packages/types/src/recipe.ts
+  - packages/schema/src/recipe.ts
+  - packages/cli/src/lib/recipe.ts
+  - packages/cli/src/commands/recipe.ts
+  - packages/cli/src/commands/apply-recipe.ts
+commit_chain:
+  - 7765c8b  # spec — studio-recipe.md
+  - f185d68  # types + schema + lib (foundation + core)
+  - e8d278f  # CLI verbs + --recipe flag everywhere + docs + versions (surface)
+learnings:
+  - 'The three-layer ship-pattern (foundation → core → surface) compressed to two commits here because the foundation (types + schema) and core (translation lib) were tightly coupled by the option-threading changes in TrimOptions/TranscribeOptions. Either could ship as the next feature''s prerequisite, but together they form an indivisible "make the pipelines recipe-aware" change.'
+  - 'CLI-wins precedence (§4.1) is implemented as "fill in from recipe ONLY where CLI didn''t specify" — `cliOptions.padPre ?? policy.default_padding_pre`. This means a user can scratch-build a recipe from their own --pad-pre experiments and have it survive future invocations.'
+  - 'Reserved-field warnings are load-time, not validate-only. Every loadRecipe call returns warnings; CLI verbs surface them. Authors see them even if they never run `recipe validate` explicitly. This is the right default — silent reserved fields would create surprise when Phase 3 ships.'
+  - 'scaffoldRecipeYaml emits a heavily-commented YAML with inline field explanations. The starter doc IS the docs for someone editing their first recipe. Discoverability over file cleanliness — chose intentionally per spec §10 open question.'
+  - 'Path resolution chain (project-local → ~/.atelier/recipes/ → literal path) is symmetric with how shell PATH resolution works. Users with a personal library can `--recipe my-style` from any project without paths. Project-specific overrides win because they live in source control alongside the project.'
+  - 'Translation functions (applyRecipeTo*) live in lib/recipe.ts, NOT duplicated per command. This is the spec §13 "centralize all recipe→options logic" risk mitigation. Future commands that gain --recipe just import the relevant transform; no chance of drift.'
+  - 'The captionOptions threading via TranscribeOptions.captionOptions: BuildCaptionsOptions is the integration point between the recipe layer and the runtime caption builder. Importantly, captionOptions is optional — when present (from a recipe) it merges with the builder''s DEFAULT_STYLE inside buildCaptionLayers; when absent (no recipe) the builder uses its own defaults. Clean.'
+  - 'Phase 3 deferral is preserved at the type level (unknown) AND the schema level (z.unknown()). When Phase 3 ships, we tighten both in lockstep, and any Phase 1 recipe that happened to declare a reserved field becomes meaningful. validateRecipe will lose its warning for that field on that recipe version bump. This is the right migration path.'
+  - 'Zero new dependencies across all three video Phase 2 features (T-007b, T-006, Studio Recipe). This is the dividend of the subprocess-only / Zod / yaml discipline established at the start. Each pure-function lib was unit-testable in isolation without mocking.'
+tags:
+  - studio-recipe
+  - phase-2
+  - value-play
+  - recipe
+  - cli
+  - implementation
+  - no-new-deps
+  - layer-tagging
+  - same-day-spec-to-ship
+confidence: 0.96
+git_context:
+  ref: e8d278f9621a0c8485149f59e80a6dddc62cc946
+  branch: main
+  dirty: false
