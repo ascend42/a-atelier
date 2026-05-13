@@ -38,7 +38,18 @@ import {
   applySplit,
 } from "./lib/transcript-model.js";
 import { buildCaptionLayers, rewriteCaptionLayers } from "./lib/caption-builder.js";
-import type { VideoTranscript } from "@a-company/atelier-types";
+import {
+  loadRecipe,
+  resolveRecipePath,
+  scaffoldRecipeYaml,
+  applyRecipeToTrimOptions,
+  applyRecipeToTranscribeOptions,
+  applyRecipeToCaptionOptions,
+  renderRecipeWithDefaults,
+  recipeToYaml,
+  RECIPE_VERSION,
+} from "./lib/recipe.js";
+import type { VideoTranscript, StudioRecipe } from "@a-company/atelier-types";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
@@ -1542,5 +1553,209 @@ describe("rewriteCaptionLayers", () => {
     const onceCount = once.states.default.deltas.length;
     const twice = rewriteCaptionLayers(once, buildTestTranscript());
     expect(twice.states.default.deltas.length).toBe(onceCount);
+  });
+});
+
+// ─── Studio Recipe ───────────────────────────────────────────
+
+describe("scaffoldRecipeYaml", () => {
+  it("produces a valid YAML that loadRecipe accepts", async () => {
+    const yaml = scaffoldRecipeYaml("my-style");
+    const yamlPath = join(tmpDir, "scaffold-test.recipe.yaml");
+    writeFileSync(yamlPath, yaml, "utf-8");
+    const loaded = loadRecipe(yamlPath);
+    expect(loaded.recipe.version).toBe(RECIPE_VERSION);
+    expect(loaded.recipe.name).toBe("my-style");
+    expect(loaded.recipe.silence_policy?.default_padding_pre).toBe(0.08);
+    expect(loaded.recipe.caption_style?.font_family).toBe("Inter");
+    expect(loaded.warnings).toHaveLength(0);
+  });
+});
+
+describe("loadRecipe", () => {
+  it("loads a partial recipe (missing fields are OK)", () => {
+    const path = join(tmpDir, "partial.recipe.yaml");
+    writeFileSync(
+      path,
+      `version: "1.0"\nname: "partial"\nsilence_policy:\n  default_padding_pre: 0.05\n`,
+      "utf-8",
+    );
+    const loaded = loadRecipe(path);
+    expect(loaded.recipe.name).toBe("partial");
+    expect(loaded.recipe.silence_policy?.default_padding_pre).toBe(0.05);
+    expect(loaded.recipe.caption_style).toBeUndefined();
+  });
+
+  it("warns when reserved Phase 3 fields are present", () => {
+    const path = join(tmpDir, "phase3.recipe.yaml");
+    writeFileSync(
+      path,
+      `version: "1.0"\nname: "phase3-preview"\npalette: { primary: "#FF0000" }\n`,
+      "utf-8",
+    );
+    const loaded = loadRecipe(path);
+    expect(loaded.warnings.length).toBeGreaterThan(0);
+    expect(loaded.warnings[0]).toMatch(/palette/);
+  });
+
+  it("throws on schema-invalid recipe (wrong types)", () => {
+    const path = join(tmpDir, "bad-types.recipe.yaml");
+    writeFileSync(
+      path,
+      `version: "1.0"\nname: "bad"\nsilence_policy:\n  default_padding_pre: "fast"\n`,
+      "utf-8",
+    );
+    expect(() => loadRecipe(path)).toThrow(/Invalid recipe/);
+  });
+
+  it("accepts JSON files", () => {
+    const path = join(tmpDir, "json-recipe.recipe.json");
+    writeFileSync(
+      path,
+      JSON.stringify({ version: "1.0", name: "json-style", caption_style: { font_size: 100 } }),
+      "utf-8",
+    );
+    const loaded = loadRecipe(path);
+    expect(loaded.recipe.name).toBe("json-style");
+    expect(loaded.recipe.caption_style?.font_size).toBe(100);
+  });
+
+  it("throws with helpful message when recipe name not found", () => {
+    expect(() => loadRecipe("nonexistent-recipe-xyz")).toThrow(/not found/);
+  });
+});
+
+describe("resolveRecipePath", () => {
+  it("treats absolute paths as literal", () => {
+    const p = join(tmpDir, "absolute.recipe.yaml");
+    writeFileSync(p, `version: "1.0"\nname: "t"`, "utf-8");
+    expect(resolveRecipePath(p)).toBe(p);
+  });
+
+  it("resolves project-local recipes before user library", async () => {
+    const { mkdirSync } = await import("node:fs");
+    const projectDir = join(tmpDir, "rp-project");
+    mkdirSync(join(projectDir, ".atelier", "recipes"), { recursive: true });
+    const projectRecipe = join(projectDir, ".atelier", "recipes", "test-recipe.recipe.yaml");
+    writeFileSync(projectRecipe, `version: "1.0"\nname: "project"`, "utf-8");
+    const resolved = resolveRecipePath("test-recipe", projectDir);
+    expect(resolved).toBe(projectRecipe);
+  });
+});
+
+describe("applyRecipeToTrimOptions", () => {
+  const recipe: StudioRecipe = {
+    version: "1.0",
+    name: "test",
+    silence_policy: {
+      noise: "-25dB",
+      min_silence: 0.5,
+      default_padding_pre: 0.1,
+      default_padding_post: 0.15,
+      match_tolerance: 0.7,
+    },
+  };
+
+  it("merges recipe silence_policy into TrimOptions", () => {
+    const merged = applyRecipeToTrimOptions(recipe, {});
+    expect(merged.noise).toBe("-25dB");
+    expect(merged.minSilence).toBe(0.5);
+    expect(merged.padPre).toBe(0.1);
+    expect(merged.padPost).toBe(0.15);
+    expect(merged.matchTolerance).toBe(0.7);
+  });
+
+  it("CLI options take precedence over recipe", () => {
+    const merged = applyRecipeToTrimOptions(recipe, { padPre: 0.2, noise: "-40dB" });
+    expect(merged.padPre).toBe(0.2);
+    expect(merged.noise).toBe("-40dB");
+    // Recipe still fills the un-overridden fields
+    expect(merged.padPost).toBe(0.15);
+  });
+
+  it("returns CLI options untouched when no recipe", () => {
+    const merged = applyRecipeToTrimOptions(undefined, { padPre: 0.3 });
+    expect(merged.padPre).toBe(0.3);
+    expect(merged.noise).toBeUndefined();
+  });
+});
+
+describe("applyRecipeToCaptionOptions", () => {
+  it("translates snake_case recipe fields to camelCase BuildCaptionsOptions", () => {
+    const opts = applyRecipeToCaptionOptions({
+      version: "1.0",
+      name: "t",
+      caption_style: { font_family: "Inter", font_size: 100, y_ratio: 0.5 },
+      caption_grouping: { max_words: 7, pause_gap: 0.6 },
+    });
+    expect(opts.style?.fontFamily).toBe("Inter");
+    expect(opts.style?.fontSize).toBe(100);
+    expect(opts.style?.yRatio).toBe(0.5);
+    expect(opts.maxWords).toBe(7);
+    expect(opts.pauseGap).toBe(0.6);
+  });
+
+  it("returns empty options when no recipe", () => {
+    expect(applyRecipeToCaptionOptions(undefined)).toEqual({});
+  });
+
+  it("omits style object entirely when caption_style absent", () => {
+    const opts = applyRecipeToCaptionOptions({
+      version: "1.0",
+      name: "t",
+      caption_grouping: { max_words: 3 },
+    });
+    expect(opts.style).toBeUndefined();
+    expect(opts.maxWords).toBe(3);
+  });
+});
+
+describe("applyRecipeToTranscribeOptions", () => {
+  it("attaches captionOptions to TranscribeOptions when recipe present", () => {
+    const merged = applyRecipeToTranscribeOptions(
+      {
+        version: "1.0",
+        name: "t",
+        caption_style: { color: "#FFD700" },
+      },
+      { model: "base.en" },
+    );
+    expect(merged.model).toBe("base.en");
+    expect(merged.captionOptions?.style?.color).toBe("#FFD700");
+  });
+
+  it("passes through unchanged when no recipe", () => {
+    expect(applyRecipeToTranscribeOptions(undefined, { reset: true })).toEqual({ reset: true });
+  });
+});
+
+describe("renderRecipeWithDefaults", () => {
+  it("fills in every Phase 1 code default for fields the recipe omits", () => {
+    const filled = renderRecipeWithDefaults({
+      version: "1.0",
+      name: "minimal",
+      silence_policy: { default_padding_pre: 0.05 },
+    });
+    expect(filled.silence_policy?.default_padding_pre).toBe(0.05);
+    expect(filled.silence_policy?.default_padding_post).toBe(0.12);
+    expect(filled.silence_policy?.noise).toBe("-30dB");
+    expect(filled.caption_style?.font_family).toBe("Inter");
+    expect(filled.caption_grouping?.max_words).toBe(5);
+  });
+});
+
+describe("recipeToYaml", () => {
+  it("round-trips a recipe through YAML", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "rt",
+      silence_policy: { default_padding_pre: 0.05 },
+    };
+    const yaml = recipeToYaml(recipe);
+    const path = join(tmpDir, "rt.recipe.yaml");
+    writeFileSync(path, yaml, "utf-8");
+    const loaded = loadRecipe(path);
+    expect(loaded.recipe.name).toBe("rt");
+    expect(loaded.recipe.silence_policy?.default_padding_pre).toBe(0.05);
   });
 });

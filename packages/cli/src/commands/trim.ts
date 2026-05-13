@@ -33,6 +33,8 @@ export interface TrimOptions {
   padPre?: number;
   /** Default trailing padding for new cuts, in seconds */
   padPost?: number;
+  /** Re-detect match tolerance for preserving user padding, in seconds */
+  matchTolerance?: number;
   /** Global tighten across all cuts, in milliseconds (positive number) */
   tightenMs?: number;
   /** Global loosen across all cuts, in milliseconds (positive number) */
@@ -89,7 +91,7 @@ export async function trimProject(
   // Re-run preservation — keep user padding on matching raw boundaries
   if (!options.reset) {
     const existing = readCutList(project);
-    cuts = mergeWithExisting(cuts, existing.cuts);
+    cuts = mergeWithExisting(cuts, existing.cuts, options.matchTolerance);
   }
 
   // Global tighten/loosen — applied to current padding (preserves overrides)

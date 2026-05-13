@@ -87,3 +87,11 @@ export type {
   VideoTranscript,
   VideoProjectManifest,
 } from "./video-project.js";
+
+// recipe.ts
+export type {
+  StudioRecipe,
+  SilencePolicy,
+  CaptionStyle,
+  CaptionGrouping,
+} from "./recipe.js";

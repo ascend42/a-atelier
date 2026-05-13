@@ -29,8 +29,17 @@ export { TriggerTypeSchema, TriggerSchema, ActionTypeSchema, ActionSchema, Inter
 export { CanvasSchema, AtelierDocumentSchema } from "./document.js";
 
 // Validation functions
-export { validateDocument, validateLayer, validateDelta, validateVideoLayer } from "./validate.js";
+export { validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe } from "./validate.js";
 export type { ValidationResult, ValidationError } from "./validate.js";
+
+// Studio Recipe schema (Phase 1)
+export {
+  StudioRecipeSchema,
+  SilencePolicySchema,
+  CaptionStyleSchema,
+  CaptionGroupingSchema,
+  RESERVED_RECIPE_FIELDS,
+} from "./recipe.js";
 
 // YAML parsing
 export { parseAtelier, serializeAtelier } from "./parse.js";

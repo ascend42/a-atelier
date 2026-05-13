@@ -1,7 +1,8 @@
-import type { AtelierDocument, Layer, Delta, VideoVisual } from "@a-company/atelier-types";
+import type { AtelierDocument, Layer, Delta, VideoVisual, StudioRecipe } from "@a-company/atelier-types";
 import { AtelierDocumentSchema } from "./document.js";
 import { LayerSchema } from "./layer.js";
 import { DeltaSchema } from "./delta.js";
+import { StudioRecipeSchema, RESERVED_RECIPE_FIELDS } from "./recipe.js";
 import type { z } from "zod";
 
 /** Validation result — either success with typed data or failure with readable errors */
@@ -88,4 +89,30 @@ export function validateVideoLayer(
 
   if (errors.length > 0) return { success: false, errors };
   return { success: true, data: visual };
+}
+
+/**
+ * Validate a StudioRecipe against the schema (^valid-recipe gate).
+ * Returns success with the parsed recipe and optional warnings about
+ * reserved-but-unimplemented Phase 3 fields that are present.
+ */
+export function validateRecipe(
+  recipe: unknown,
+): ValidationResult<StudioRecipe> & { warnings?: string[] } {
+  const parsed = StudioRecipeSchema.safeParse(recipe);
+  if (!parsed.success) {
+    return { success: false, errors: formatErrors(parsed.error) };
+  }
+
+  const warnings: string[] = [];
+  const data = parsed.data as StudioRecipe;
+  for (const field of RESERVED_RECIPE_FIELDS) {
+    if (data[field] !== undefined) {
+      warnings.push(
+        `${field} is reserved for Phase 3 and currently has no effect.`,
+      );
+    }
+  }
+
+  return { success: true, data, ...(warnings.length > 0 && { warnings }) };
 }

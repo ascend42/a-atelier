@@ -14,7 +14,7 @@ import {
   type WhisperModel,
 } from "../lib/whisper.js";
 import { mergeTranscriptWithExisting } from "../lib/transcript-model.js";
-import { rewriteCaptionLayers } from "../lib/caption-builder.js";
+import { rewriteCaptionLayers, type BuildCaptionsOptions } from "../lib/caption-builder.js";
 
 export interface TranscribeOptions {
   /** Whisper model selection */
@@ -27,6 +27,8 @@ export interface TranscribeOptions {
   noCaptions?: boolean;
   /** Don't write files; return result */
   dryRun?: boolean;
+  /** Caption style + grouping overrides, typically supplied by a Studio Recipe */
+  captionOptions?: BuildCaptionsOptions;
 }
 
 export interface TranscribeResult {
@@ -98,7 +100,7 @@ export async function transcribeProject(
 
   if (!options.noCaptions) {
     const doc = readComposition(project);
-    const updated = rewriteCaptionLayers(doc, transcript);
+    const updated = rewriteCaptionLayers(doc, transcript, options.captionOptions);
     writeComposition(project, updated);
     result.captionsGenerated = true;
   }
