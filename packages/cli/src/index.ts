@@ -44,3 +44,32 @@ export type { VideoProject } from "./lib/video-project.js";
 // Silence trim — parametric cuts + atelier trim pipeline
 export { trimCommand, trimProject } from "./commands/trim.js";
 export type { TrimOptions, TrimResult } from "./commands/trim.js";
+
+// Transcribe — Whisper + editable transcript + caption layers
+export { transcribeCommand, transcribeProject } from "./commands/transcribe.js";
+export type { TranscribeOptions, TranscribeResult } from "./commands/transcribe.js";
+export { transcriptCommand } from "./commands/transcript.js";
+export { captionsCommand } from "./commands/captions.js";
+export {
+  buildCaptionLayers,
+  rewriteCaptionLayers,
+} from "./lib/caption-builder.js";
+export type { CaptionStyle, BuildCaptionsOptions } from "./lib/caption-builder.js";
+export {
+  flattenWords,
+  groupIntoPhrases,
+  mergeTranscriptWithExisting,
+  applyTextEdit,
+  applyBatchReplace,
+  applyHide,
+  applyAdd,
+  applyMerge,
+  applySplit,
+} from "./lib/transcript-model.js";
+export {
+  probeWhisper,
+  runWhisperCpp,
+  parseWhisperCppJson,
+} from "./lib/whisper.js";
+export type { WhisperBackend, WhisperModel, WhisperOptions } from "./lib/whisper.js";
+export { VIDEO_TRANSCRIPT_VERSION } from "./lib/video-project.js";

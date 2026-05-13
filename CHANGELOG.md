@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.32.0] — 2026-05-13
+
+### Added
+- **`atelier transcribe` — Whisper pipeline with editable transcripts** (T-006)
+  - `TranscriptWord` is now editable: `detected` (immutable Whisper output) + `text` (user-overridable) + `userEdited`/`userAdded`/`hidden` flags + optional `confidence`
+  - `VideoTranscript` bumped to version 1.1 with forward-only migration from 1.0 (flat `word: string` becomes `detected = text = word`)
+  - `whisper.ts` lib: `probeWhisper` (whisper-cpp / openai-api / none), `runWhisperCpp` subprocess, `parseWhisperCppJson` (token-level word timing when available, even-split fallback, filters special tokens) — all via `child_process.spawn`
+  - `transcript-model.ts` lib: pure functions `flattenWords`, `groupIntoPhrases` (3–5 word phrases on punctuation/pause), `mergeTranscriptWithExisting` (preserves user edits on words matching by start time ±0.3s AND detected text; re-inserts userAdded orphans), `applyTextEdit`, `applyBatchReplace`, `applyHide`, `applyAdd`, `applyMerge`, `applySplit`
+  - `caption-builder.ts` lib: `buildCaptionLayers` (transcript → caption-tagged TextVisual + opacity fade deltas), `rewriteCaptionLayers` (drops only caption-tagged layers and their deltas from the default state; preserves silence-trim, overlay, and user-authored layers — the tag-namespace isolation invariant, now proven across both pipelines)
+  - CLI commands:
+    - `atelier transcribe <project>` — full pipeline with `--model`, `--language`, `--reset`, `--no-captions`, `--dry-run`, `--json`
+    - `atelier transcript fix` — single-word or batch `--replace` editing
+    - `atelier transcript add` / `delete` / `merge` / `split` — non-destructive edit operations, all set the appropriate flag
+    - `atelier transcript list` — print indexed word list for reference
+    - `atelier captions regenerate` — re-derive caption layers without re-running Whisper (recipe-swap path)
+  - 33 new tests covering Whisper parser edge cases, all 8 transcript transforms, phrase grouping, mergeTranscriptWithExisting preservation invariants, caption layer generation, and the rewrite-preserves-overlays invariant
+  - **One optional system binary** — whisper.cpp via subprocess (MIT, install via `brew install whisper-cpp`); no required npm dependencies
+
 ## [0.31.0] — 2026-05-13
 
 ### Added
