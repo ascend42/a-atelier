@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import React from "react";
 import { render, cleanup } from "@testing-library/react";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { Animation } from "./Animation.js";

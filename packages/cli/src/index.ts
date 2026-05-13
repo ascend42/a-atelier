@@ -34,6 +34,13 @@ export {
   writeTranscript,
   readComposition,
   writeComposition,
+  rewriteCutLayers,
+  effectiveSpan,
   VIDEO_PROJECT_VERSION,
+  VIDEO_CUTLIST_VERSION,
 } from "./lib/video-project.js";
 export type { VideoProject } from "./lib/video-project.js";
+
+// Silence trim — parametric cuts + atelier trim pipeline
+export { trimCommand, trimProject } from "./commands/trim.js";
+export type { TrimOptions, TrimResult } from "./commands/trim.js";

@@ -40,6 +40,18 @@ components:
     description: Variables command — lists all variables in a document with usage info
     file: src/commands/variables.ts
   '#video-project':
-    description: VideoProject filesystem utilities — createVideoProject, loadVideoProject, readCutList/writeCutList, readTranscript/writeTranscript, readComposition/writeComposition — scaffold and manage the source.mp4/project.atelier/transcript.json/cuts.json/export/ folder convention
+    description: VideoProject filesystem utilities — createVideoProject, loadVideoProject, readCutList/writeCutList (1.0→1.1 migration), readTranscript/writeTranscript, readComposition/writeComposition, rewriteCutLayers, effectiveSpan — scaffold and manage the source.mp4/project.atelier/transcript.json/cuts.json/export/ folder; layer-tag isolation (silence-trim, caption, overlay) preserves user-authored layers across pipeline re-runs
     file: src/lib/video-project.ts
     tags: [video, ugc, editing, filesystem]
+  '#cli-trim':
+    description: 'atelier trim — silence detection + parametric cuts pipeline. Runs ffmpeg silencedetect, inverts to speech intervals, builds CutEntry[] with default padding, preserves user paddingPre/paddingPost on re-run via raw-boundary matching (0.5s tolerance), supports --tighten/--loosen global ms adjustments, --cut single-cut overrides, --reset, --dry-run, --json. Rewrites silence-trim tagged VideoVisual layers in project.atelier; never touches user-authored or other-tagged layers.'
+    file: src/commands/trim.ts
+    tags: [video, ugc, trim, silence, ffmpeg, cli]
+  '#silence-detect':
+    description: ffmpeg silencedetect subprocess + ffprobe duration helpers. probeSilencedetect (filter availability check), probeDuration (ffprobe), runSilenceDetect (silencedetect to null muxer), parseSilenceDetectStderr (pairs silence_start/silence_end lines, tolerates ffmpeg chatter, clamps negative starts). All via node:child_process.spawn; no new npm dependencies.
+    file: src/lib/silence-detect.ts
+    tags: [video, ffmpeg, silence, subprocess]
+  '#cut-model':
+    description: Pure functions over CutEntry[] — invertToSpeechIntervals, buildInitialCuts (default 80ms pre / 120ms post padding), resolveOverlaps (split at silence midpoint), clampBoundaries ([0, duration]), mergeWithExisting (preserves user padding on matching raw boundary within tolerance), applyGlobalPadding (tighten/loosen with floor at 0). All unit-tested in isolation.
+    file: src/lib/cut-model.ts
+    tags: [video, cuts, parametric, pure]

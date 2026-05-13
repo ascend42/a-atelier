@@ -87,7 +87,7 @@ function highlightLine(line: string): string {
   // Key: value pairs
   const kvMatch = line.match(/^(\s*)(- )?([^:]+?)(:)(.*)/);
   if (kvMatch) {
-    const [, indent, dash, key, colon, rest] = kvMatch;
+    const [, indent, dash, key, , rest] = kvMatch;
     let result = esc(indent);
     if (dash) result += `<span class="atel-yaml-dash">- </span>`;
     result += `<span class="atel-yaml-key">${esc(key)}</span>`;

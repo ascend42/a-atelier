@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.31.0] — 2026-05-13
+
+### Added
+- **`atelier trim` — silence-trim pipeline with parametric cuts** (T-007b)
+  - `CutEntry` is now parametric: `rawStart`/`rawEnd` (immutable detected boundaries) + `paddingPre`/`paddingPost` (user-tunable seconds)
+  - `effectiveSpan(cut, duration)` helper computes the clamped in/out span
+  - `cuts.json` bumped to version 1.1 with forward-only migration from 1.0 (flat `{start, end}` becomes `{rawStart, rawEnd, paddingPre: 0, paddingPost: 0}` on read)
+  - `rewriteCutLayers` rewrites only layers tagged `silence-trim`; user-authored or differently-tagged layers (captions, overlays) are preserved untouched — the **layer-tag isolation invariant**
+  - `silence-detect.ts` lib: `probeSilencedetect`, `probeDuration` (via ffprobe), `runSilenceDetect`, `parseSilenceDetectStderr` — all via `child_process.spawn`, no new dependencies
+  - `cut-model.ts` lib: pure functions for `invertToSpeechIntervals`, `buildInitialCuts`, `resolveOverlaps` (split at silence midpoint), `clampBoundaries`, `mergeWithExisting` (preserves user padding on raw-boundary match within 0.5s tolerance), `applyGlobalPadding` (floors at 0)
+  - CLI: `atelier trim <project>` with `--noise`, `--min-silence`, `--pad-pre`, `--pad-post`, `--tighten <ms>`, `--loosen <ms>`, `--cut <idx>`, `--reset`, `--dry-run`, `--json`
+  - Startup probe via `ffmpeg -filters` fails loud if silencedetect is missing from a custom build
+  - 26 new tests covering the silencedetect parser, all five pure cut-model transforms, the migration path, and the rewrite-preserves-overlays invariant
+  - **Zero new npm dependencies** — ffmpeg silencedetect via subprocess (same pattern as `render-pipeline.ts`)
+
 ## [0.30.0] — 2026-05-10
 
 ### Added
