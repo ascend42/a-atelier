@@ -25,6 +25,20 @@ import {
   mergeWithExisting,
   applyGlobalPadding,
 } from "./lib/cut-model.js";
+import { parseWhisperCppJson } from "./lib/whisper.js";
+import {
+  flattenWords,
+  groupIntoPhrases,
+  mergeTranscriptWithExisting,
+  applyTextEdit,
+  applyBatchReplace,
+  applyHide,
+  applyAdd,
+  applyMerge,
+  applySplit,
+} from "./lib/transcript-model.js";
+import { buildCaptionLayers, rewriteCaptionLayers } from "./lib/caption-builder.js";
+import type { VideoTranscript } from "@a-company/atelier-types";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
@@ -1024,5 +1038,509 @@ describe("applyGlobalPadding", () => {
     applyGlobalPadding(cuts, 0.05);
     expect(cuts[0].paddingPre).toBeCloseTo(0.15);
     expect(cuts[0].paddingPost).toBeCloseTo(0.25);
+  });
+});
+
+// ─── whisper.cpp parser ───────────────────────────────────────
+
+describe("parseWhisperCppJson", () => {
+  it("parses segment-level transcript with even-split word timing", () => {
+    const json = JSON.stringify({
+      result: { language: "en" },
+      transcription: [
+        {
+          offsets: { from: 0, to: 2000 },
+          text: " Hello world",
+        },
+      ],
+    });
+    const t = parseWhisperCppJson(json);
+    expect(t.version).toBe("1.1");
+    expect(t.language).toBe("en");
+    expect(t.segments).toHaveLength(1);
+    expect(t.segments[0].text).toBe("Hello world");
+    expect(t.segments[0].words).toHaveLength(2);
+    expect(t.segments[0].words[0].detected).toBe("Hello");
+    expect(t.segments[0].words[0].start).toBe(0);
+    expect(t.segments[0].words[1].start).toBeCloseTo(1.0);
+  });
+
+  it("uses token-level offsets when available", () => {
+    const json = JSON.stringify({
+      result: { language: "en" },
+      transcription: [
+        {
+          offsets: { from: 0, to: 3000 },
+          text: " I went home",
+          tokens: [
+            { text: " I", offsets: { from: 0, to: 200 }, p: 0.99 },
+            { text: " went", offsets: { from: 300, to: 800 }, p: 0.95 },
+            { text: " home", offsets: { from: 900, to: 1500 } },
+          ],
+        },
+      ],
+    });
+    const t = parseWhisperCppJson(json);
+    expect(t.segments[0].words).toHaveLength(3);
+    expect(t.segments[0].words[0].start).toBe(0);
+    expect(t.segments[0].words[0].end).toBeCloseTo(0.2);
+    expect(t.segments[0].words[0].confidence).toBe(0.99);
+    expect(t.segments[0].words[1].detected).toBe("went");
+  });
+
+  it("filters out empty and special tokens from token list", () => {
+    const json = JSON.stringify({
+      transcription: [
+        {
+          offsets: { from: 0, to: 1000 },
+          text: " hi",
+          tokens: [
+            { text: "[_BEG_]", offsets: { from: 0, to: 0 } },
+            { text: " hi", offsets: { from: 100, to: 500 } },
+            { text: "  ", offsets: { from: 500, to: 600 } },
+          ],
+        },
+      ],
+    });
+    const t = parseWhisperCppJson(json);
+    expect(t.segments[0].words).toHaveLength(1);
+    expect(t.segments[0].words[0].detected).toBe("hi");
+  });
+
+  it("returns empty segments for empty transcription", () => {
+    const t = parseWhisperCppJson(JSON.stringify({ transcription: [] }));
+    expect(t.segments).toEqual([]);
+  });
+});
+
+// ─── transcript-model ─────────────────────────────────────────
+
+function buildTestTranscript(): VideoTranscript {
+  return {
+    version: "1.1",
+    language: "en",
+    segments: [
+      {
+        text: "I went to the store",
+        start: 0,
+        end: 2,
+        words: [
+          { detected: "I", text: "I", start: 0, end: 0.2 },
+          { detected: "went", text: "went", start: 0.3, end: 0.6 },
+          { detected: "to", text: "to", start: 0.7, end: 0.85 },
+          { detected: "the", text: "the", start: 0.9, end: 1.05 },
+          { detected: "store.", text: "store.", start: 1.1, end: 1.6 },
+        ],
+      },
+      {
+        text: "Then I came back home",
+        start: 2.2,
+        end: 4,
+        words: [
+          { detected: "Then", text: "Then", start: 2.2, end: 2.5 },
+          { detected: "I", text: "I", start: 2.6, end: 2.7 },
+          { detected: "came", text: "came", start: 2.8, end: 3.1 },
+          { detected: "back", text: "back", start: 3.2, end: 3.5 },
+          { detected: "home.", text: "home.", start: 3.6, end: 4 },
+        ],
+      },
+    ],
+  };
+}
+
+describe("flattenWords", () => {
+  it("flattens segments into a single ordered word array", () => {
+    const flat = flattenWords(buildTestTranscript());
+    expect(flat).toHaveLength(10);
+    expect(flat[0].text).toBe("I");
+    expect(flat[9].text).toBe("home.");
+  });
+});
+
+describe("groupIntoPhrases", () => {
+  it("breaks on end-of-sentence punctuation", () => {
+    const phrases = groupIntoPhrases(buildTestTranscript());
+    // "I went to the store." and "Then I came back home." → 2 phrases
+    expect(phrases).toHaveLength(2);
+    expect(phrases[0].text).toBe("I went to the store.");
+    expect(phrases[1].text).toBe("Then I came back home.");
+  });
+
+  it("breaks at maxWords when no punctuation hit", () => {
+    const t: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "one two three four five six",
+          start: 0,
+          end: 1.8,
+          words: ["one", "two", "three", "four", "five", "six"].map((w, i) => ({
+            detected: w, text: w, start: i * 0.3, end: i * 0.3 + 0.25,
+          })),
+        },
+      ],
+    };
+    const phrases = groupIntoPhrases(t, { maxWords: 3, pauseGap: 0.5 });
+    expect(phrases).toHaveLength(2);
+    expect(phrases[0].words).toHaveLength(3);
+    expect(phrases[1].words).toHaveLength(3);
+  });
+
+  it("breaks on pause gap exceeding threshold", () => {
+    const t: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "hello world",
+          start: 0,
+          end: 5,
+          words: [
+            { detected: "hello", text: "hello", start: 0, end: 0.5 },
+            { detected: "world", text: "world", start: 2.0, end: 2.5 },  // big gap
+          ],
+        },
+      ],
+    };
+    const phrases = groupIntoPhrases(t, { maxWords: 10, pauseGap: 0.4 });
+    expect(phrases).toHaveLength(2);
+  });
+
+  it("skips hidden words", () => {
+    const t: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "um hello world",
+          start: 0,
+          end: 3,
+          words: [
+            { detected: "um", text: "um", start: 0, end: 0.3, hidden: true },
+            { detected: "hello", text: "hello", start: 0.4, end: 0.8 },
+            { detected: "world", text: "world", start: 0.9, end: 1.4 },
+          ],
+        },
+      ],
+    };
+    const phrases = groupIntoPhrases(t, { maxWords: 5 });
+    expect(phrases[0].text).toBe("hello world");
+  });
+});
+
+describe("mergeTranscriptWithExisting", () => {
+  it("preserves user-edited text when raw boundary matches", () => {
+    const existing: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "I went to the door",
+          start: 0,
+          end: 2,
+          words: [
+            { detected: "I", text: "I", start: 0, end: 0.2 },
+            { detected: "went", text: "went", start: 0.3, end: 0.6 },
+            { detected: "door", text: "store", start: 1.1, end: 1.6, userEdited: true },
+          ],
+        },
+      ],
+    };
+    const fresh: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "I went to the door",
+          start: 0,
+          end: 2,
+          words: [
+            { detected: "I", text: "I", start: 0.05, end: 0.25 },     // slight timing shift
+            { detected: "went", text: "went", start: 0.35, end: 0.65 },
+            { detected: "door", text: "door", start: 1.12, end: 1.62 }, // matches existing
+          ],
+        },
+      ],
+    };
+    const merged = mergeTranscriptWithExisting(fresh, existing);
+    const flat = flattenWords(merged);
+    expect(flat[2].text).toBe("store");
+    expect(flat[2].userEdited).toBe(true);
+    expect(flat[2].start).toBe(1.12); // raw updated to fresh timing
+  });
+
+  it("preserves hidden flag on matching word", () => {
+    const existing: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "um hello",
+          start: 0,
+          end: 1,
+          words: [
+            { detected: "um", text: "um", start: 0, end: 0.3, hidden: true },
+            { detected: "hello", text: "hello", start: 0.4, end: 0.9 },
+          ],
+        },
+      ],
+    };
+    const fresh: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "um hello",
+          start: 0,
+          end: 1,
+          words: [
+            { detected: "um", text: "um", start: 0, end: 0.3 },
+            { detected: "hello", text: "hello", start: 0.4, end: 0.9 },
+          ],
+        },
+      ],
+    };
+    const merged = mergeTranscriptWithExisting(fresh, existing);
+    expect(merged.segments[0].words[0].hidden).toBe(true);
+  });
+
+  it("re-inserts user-added orphan words", () => {
+    const existing: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "I went home",
+          start: 0,
+          end: 2,
+          words: [
+            { detected: "I", text: "I", start: 0, end: 0.2 },
+            { detected: "really", text: "really", start: 0.3, end: 0.6, userAdded: true },
+            { detected: "went", text: "went", start: 0.7, end: 1.0 },
+            { detected: "home", text: "home", start: 1.1, end: 1.5 },
+          ],
+        },
+      ],
+    };
+    const fresh: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "I went home",
+          start: 0,
+          end: 2,
+          words: [
+            { detected: "I", text: "I", start: 0, end: 0.2 },
+            { detected: "went", text: "went", start: 0.7, end: 1.0 },
+            { detected: "home", text: "home", start: 1.1, end: 1.5 },
+          ],
+        },
+      ],
+    };
+    const merged = mergeTranscriptWithExisting(fresh, existing);
+    const flat = flattenWords(merged);
+    const reallyWord = flat.find((w) => w.text === "really");
+    expect(reallyWord).toBeDefined();
+    expect(reallyWord!.userAdded).toBe(true);
+  });
+
+  it("does not preserve override when detected text changes", () => {
+    const existing: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "door",
+          start: 1.0,
+          end: 1.5,
+          words: [{ detected: "door", text: "store", start: 1.1, end: 1.5, userEdited: true }],
+        },
+      ],
+    };
+    const fresh: VideoTranscript = {
+      version: "1.1",
+      segments: [
+        {
+          text: "door",
+          start: 1.0,
+          end: 1.5,
+          words: [{ detected: "floor", text: "floor", start: 1.1, end: 1.5 }],
+        },
+      ],
+    };
+    const merged = mergeTranscriptWithExisting(fresh, existing);
+    expect(merged.segments[0].words[0].text).toBe("floor");
+    expect(merged.segments[0].words[0].userEdited).toBeUndefined();
+  });
+});
+
+describe("applyTextEdit", () => {
+  it("updates text and sets userEdited", () => {
+    const t = applyTextEdit(buildTestTranscript(), 0, "Eye");
+    expect(t.segments[0].words[0].text).toBe("Eye");
+    expect(t.segments[0].words[0].detected).toBe("I");
+    expect(t.segments[0].words[0].userEdited).toBe(true);
+  });
+
+  it("throws on out-of-range index", () => {
+    expect(() => applyTextEdit(buildTestTranscript(), 999, "x")).toThrow("out of range");
+  });
+});
+
+describe("applyBatchReplace", () => {
+  it("replaces all occurrences of a detected word, marks each userEdited", () => {
+    const t = applyBatchReplace(buildTestTranscript(), "I", "Eye");
+    // Two "I" words across segments
+    expect(t.segments[0].words[0].text).toBe("Eye");
+    expect(t.segments[1].words[1].text).toBe("Eye");
+    expect(t.segments[0].words[0].userEdited).toBe(true);
+  });
+});
+
+describe("applyHide", () => {
+  it("sets hidden=true on the target word", () => {
+    const t = applyHide(buildTestTranscript(), 0);
+    expect(t.segments[0].words[0].hidden).toBe(true);
+  });
+});
+
+describe("applyAdd", () => {
+  it("inserts a new word after the anchor, marks userAdded", () => {
+    const t = applyAdd(buildTestTranscript(), 1, "really", 0.2);
+    expect(t.segments[0].words[2].text).toBe("really");
+    expect(t.segments[0].words[2].userAdded).toBe(true);
+    expect(t.segments[0].words[2].start).toBeCloseTo(0.6);
+    expect(t.segments[0].words[2].end).toBeCloseTo(0.8);
+  });
+
+  it("inserts at end of correct segment when index is last in that segment", () => {
+    const t = applyAdd(buildTestTranscript(), 4, "indeed");
+    // Word 4 is "store." in segment 0. Insert goes into segment 0 as last word
+    expect(t.segments[0].words[5].text).toBe("indeed");
+    expect(t.segments[1].words).toHaveLength(5); // unchanged
+  });
+});
+
+describe("applyMerge", () => {
+  it("merges adjacent words into one", () => {
+    const t = applyMerge(buildTestTranscript(), 0); // "I" + "went" → "Iwent"
+    expect(t.segments[0].words).toHaveLength(4);
+    expect(t.segments[0].words[0].detected).toBe("Iwent");
+    expect(t.segments[0].words[0].start).toBe(0);
+    expect(t.segments[0].words[0].end).toBe(0.6);
+    expect(t.segments[0].words[0].userEdited).toBe(true);
+  });
+
+  it("does not cross segment boundaries", () => {
+    // Word 4 is last of seg 0; word 5 is first of seg 1 — merge attempt is a no-op
+    const t = applyMerge(buildTestTranscript(), 4);
+    expect(t.segments[0].words).toHaveLength(5);
+    expect(t.segments[1].words).toHaveLength(5);
+  });
+});
+
+describe("applySplit", () => {
+  it("splits one word into two with prorated timing", () => {
+    const t = applySplit(buildTestTranscript(), 0, 0.5, "I", "I");
+    // "I" word 0 has start=0, end=0.2 → split at 0.1
+    expect(t.segments[0].words).toHaveLength(6);
+    expect(t.segments[0].words[0].end).toBe(0.1);
+    expect(t.segments[0].words[1].start).toBe(0.1);
+    expect(t.segments[0].words[1].end).toBe(0.2);
+  });
+
+  it("throws on fraction outside (0,1)", () => {
+    expect(() => applySplit(buildTestTranscript(), 0, 0)).toThrow();
+    expect(() => applySplit(buildTestTranscript(), 0, 1)).toThrow();
+  });
+
+  it("defaults to character-midpoint text split", () => {
+    const t = applySplit(buildTestTranscript(), 1, 0.5);  // "went" → "we" + "nt"
+    expect(t.segments[0].words[1].text).toBe("we");
+    expect(t.segments[0].words[2].text).toBe("nt");
+  });
+});
+
+// ─── caption-builder ─────────────────────────────────────────
+
+describe("buildCaptionLayers", () => {
+  it("produces one caption layer per phrase with correct tags", () => {
+    const t = buildTestTranscript();
+    const canvas = { width: 1920, height: 1080, fps: 30 };
+    const { layers, deltas } = buildCaptionLayers(t, canvas);
+
+    expect(layers).toHaveLength(2);
+    expect(layers[0].id).toBe("caption-0");
+    expect(layers[0].tags).toEqual(["caption"]);
+    expect((layers[0].visual as { type: string }).type).toBe("text");
+    expect((layers[0].visual as { content: string }).content).toBe("I went to the store.");
+    // Each phrase contributes a fade-in + fade-out delta
+    expect(deltas).toHaveLength(4);
+    expect(deltas.every((d) => d.property === "opacity")).toBe(true);
+  });
+
+  it("positions captions at canvas.height * yRatio", () => {
+    const t = buildTestTranscript();
+    const canvas = { width: 1920, height: 1080, fps: 30 };
+    const { layers } = buildCaptionLayers(t, canvas, { style: { yRatio: 0.5 } });
+    expect(layers[0].frame.y).toBe(540);
+  });
+
+  it("applies custom style overrides", () => {
+    const t = buildTestTranscript();
+    const canvas = { width: 1920, height: 1080, fps: 30 };
+    const { layers } = buildCaptionLayers(t, canvas, {
+      style: { color: "#FFD700", fontSize: 100 },
+    });
+    const style = (layers[0].visual as { style: { color: string; fontSize: number } }).style;
+    expect(style.color).toBe("#FFD700");
+    expect(style.fontSize).toBe(100);
+  });
+});
+
+describe("rewriteCaptionLayers", () => {
+  let capFakeSrc: string;
+  beforeAll(() => {
+    capFakeSrc = join(tmpDir, "caption-sample.mp4");
+    writeFileSync(capFakeSrc, "FAKE_VIDEO_BYTES", "utf-8");
+  });
+
+  it("preserves non-caption layers and other-tagged pipeline layers", async () => {
+    const projectDir = join(tmpDir, "vp-captions-rewrite");
+    const project = await createVideoProject(capFakeSrc, projectDir);
+    const doc = readComposition(project);
+
+    // Add a silence-trim layer + a user-authored overlay
+    doc.layers.push({
+      id: "clip-trim-0",
+      tags: ["silence-trim"],
+      visual: { type: "video", assetId: "src", src: "source.mp4", startFrame: 0, sourceOffset: 0, sourceEnd: 5, objectFit: "contain" },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 1920, height: 1080 },
+    });
+    doc.layers.push({
+      id: "user-overlay",
+      visual: { type: "text", content: "intro", style: { fontFamily: "Inter", fontSize: 60, color: "#FFF" } },
+      frame: { x: 100, y: 100 },
+      bounds: { width: 400, height: 80 },
+    });
+
+    const updated = rewriteCaptionLayers(doc, buildTestTranscript());
+    expect(updated.layers.find((l) => l.id === "clip-trim-0")).toBeDefined();
+    expect(updated.layers.find((l) => l.id === "user-overlay")).toBeDefined();
+    expect(updated.layers.filter((l) => (l.tags ?? []).includes("caption"))).toHaveLength(2);
+  });
+
+  it("writes caption deltas into the default state", async () => {
+    const projectDir = join(tmpDir, "vp-captions-deltas");
+    const project = await createVideoProject(capFakeSrc, projectDir);
+    const doc = readComposition(project);
+    const updated = rewriteCaptionLayers(doc, buildTestTranscript());
+    expect(updated.states.default.deltas.length).toBeGreaterThan(0);
+    expect(
+      updated.states.default.deltas.every((d) => d.property === "opacity"),
+    ).toBe(true);
+  });
+
+  it("replaces existing caption deltas, not appends", async () => {
+    const projectDir = join(tmpDir, "vp-captions-replace");
+    const project = await createVideoProject(capFakeSrc, projectDir);
+    const doc = readComposition(project);
+    const once = rewriteCaptionLayers(doc, buildTestTranscript());
+    const onceCount = once.states.default.deltas.length;
+    const twice = rewriteCaptionLayers(once, buildTestTranscript());
+    expect(twice.states.default.deltas.length).toBe(onceCount);
   });
 });
