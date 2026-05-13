@@ -1,0 +1,57 @@
+id: L-2026-05-13-ascend-075017-001
+type: milestone
+timestamp: '2026-05-13T07:50:17.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: 'T-006 shipped — atelier transcribe + transcript edit family + captions regenerate'
+summary: 'Implemented T-006 (Whisper transcribe + editable captions) end-to-end same day as T-007b. Three commits, no new npm dependencies, 32 new tests added (97/97 in CLI, 560/560 across the workspace — all green). The pipeline: probeWhisper (whisper-cpp / openai-api / none) → runWhisperCpp via child_process.spawn → parseWhisperCppJson (token-level timing when available, even-split fallback) → mergeTranscriptWithExisting (preserves userEdited/userAdded/hidden flags on words matching by start time ±0.3s AND unchanged detected text, re-inserts userAdded orphans by timing) → writeTranscript 1.1 → rewriteCaptionLayers (drops only caption-tagged layers + their deltas from the default state, preserves everything else). Six CLI commands total: atelier transcribe, atelier transcript fix/add/delete/merge/split/list, atelier captions regenerate. All edit commands set the appropriate flag (userEdited/userAdded/hidden) and trigger caption regeneration unless --no-regenerate. The layer-tag isolation invariant now proven across BOTH pipelines (silence-trim and caption) by test — re-running either never destroys the other''s output or any user-authored layers. The detected-vs-user-edited convention is now firmly established as Atelier''s architecture for any AI-generated content that the user will need to tweak.'
+symbols_touched:
+  - '#video-project'
+  - '#video-project-types'
+  - '#cli-trim'
+  - '#cut-model'
+symbols_created:
+  - '#cli-transcribe'
+  - '#cli-transcript'
+  - '#cli-captions'
+  - '#whisper'
+  - '#transcript-model'
+  - '#caption-builder'
+files_created:
+  - packages/cli/src/lib/whisper.ts
+  - packages/cli/src/lib/transcript-model.ts
+  - packages/cli/src/lib/caption-builder.ts
+  - packages/cli/src/commands/transcribe.ts
+  - packages/cli/src/commands/transcript.ts
+  - packages/cli/src/commands/captions.ts
+commit_chain:
+  - 11e5026  # editable TranscriptWord + 1.0→1.1 migration (foundation)
+  - 50525a8  # whisper + transcript-model + caption-builder pure libs (core)
+  - a87919f  # transcribe + transcript + captions commands + docs + versions (surface)
+learnings:
+  - 'The three-layer build pattern (foundation → core → surface) used for T-007b worked equally well for T-006. Same three commits, same independence — no commit needed amending. Codify this as the team''s ship-pattern for medium-sized features.'
+  - 'mergeTranscriptWithExisting''s match rule (start_time within 0.3s AND detected text unchanged) is correct. If detected text changes, we drop the user override — otherwise a re-transcribe could silently mis-attribute a fix from one word to a different one Whisper now hears in that slot. Test "does not preserve override when detected text changes" guards this.'
+  - 'userAdded orphan preservation requires a separate pass — these words have no matching fresh detection by definition. Insert by timing into whichever segment contains that timestamp. Tested.'
+  - 'rewriteCaptionLayers writes caption deltas into the default state if it exists, else the first state. Caption regeneration is idempotent — running it twice replaces, never appends. This invariant tested twice (once each in T-007b for cuts and T-006 for captions).'
+  - 'whisper.cpp emits special tokens like [_BEG_] in the token list that must be filtered out before treating them as words. Parser does this; tested explicitly.'
+  - 'parseWhisperCppJson falls back to even-split word timing when only segment-level offsets are present (i.e., when --output-json is used instead of --output-json-full). For T-006 v1 this is acceptable — token-level offsets give precise word timing, even-split gives a usable approximation when not.'
+  - 'The CLI surface deliberately keeps `transcript` as a subcommand family (fix/add/delete/merge/split/list) rather than flat commands. This mirrors `git`-style ergonomics and leaves room for future verbs without polluting the top-level namespace.'
+  - 'Studio package accumulating pre-existing typecheck errors (Shape narrowing in property-panel, six unused-var/imports in controls and test). All confirmed unrelated to T-006 by inspection — only types/cli touched. Should be its own audit pass. The fact that pnpm -r test still passes 560/560 means runtime behavior is unaffected; this is type-level drift that wants cleanup, not bugs.'
+tags:
+  - captions
+  - whisper
+  - transcribe
+  - cli-transcribe
+  - layer-tagging
+  - ugc
+  - phase-2
+  - t-006
+  - implementation
+  - no-new-deps
+confidence: 0.95
+git_context:
+  ref: a87919fe9cdb14fa38d645a480797f185461f400
+  branch: main
+  dirty: false
