@@ -1,4 +1,4 @@
-import type { AtelierDocument, Layer, AnimatableProperty } from "@a-company/atelier-types";
+import type { AtelierDocument, Layer } from "@a-company/atelier-types";
 import { NumberInput } from "../controls/number-input.js";
 import { ColorPicker } from "../controls/color-picker.js";
 import { SelectInput } from "../controls/select-input.js";
@@ -13,7 +13,6 @@ export interface PropertyPanelOptions {
 export class PropertyPanel {
   readonly el: HTMLElement;
   private scroll: HTMLElement;
-  private deltaPanel: DeltaPanel | null = null;
   private doc: AtelierDocument | null = null;
   private stateName = "";
   private layerId: string | null = null;
@@ -55,7 +54,6 @@ export class PropertyPanel {
 
   private render(): void {
     this.scroll.innerHTML = "";
-    this.deltaPanel = null;
 
     if (!this.doc || !this.layerId) {
       const empty = document.createElement("div");
@@ -152,7 +150,7 @@ export class PropertyPanel {
     // Deltas
     const state = this.doc.states[this.stateName];
     if (state) {
-      this.deltaPanel = new DeltaPanel(this.scroll, {
+      new DeltaPanel(this.scroll, {
         doc: this.doc,
         state,
         stateName: this.stateName,
@@ -256,8 +254,9 @@ export class PropertyPanel {
 
       // Path point editing
       if (visual.shape.type === "path") {
+        const pathShape = visual.shape;  // narrow before crossing into callback
         this.addSection("Path Points", () => {
-          const points = visual.shape.points;
+          const points = pathShape.points;
           for (let i = 0; i < points.length; i++) {
             const row = this.makeRow();
             const label = document.createElement("span");
@@ -295,12 +294,10 @@ export class PropertyPanel {
           closedLabel.textContent = "Closed";
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.checked = visual.shape.closed ?? false;
+          checkbox.checked = pathShape.closed ?? false;
           checkbox.addEventListener("change", () => {
-            if (visual.shape.type === "path") {
-              visual.shape.closed = checkbox.checked;
-              this.opts.onPropertyChange();
-            }
+            pathShape.closed = checkbox.checked;
+            this.opts.onPropertyChange();
           });
           closedRow.appendChild(closedLabel);
           closedRow.appendChild(checkbox);

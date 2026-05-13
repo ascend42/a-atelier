@@ -251,7 +251,8 @@ describe("SelectInput", () => {
 function makeTestDoc(): AtelierDocument {
   return {
     version: "1.0",
-    canvas: { width: 400, height: 300 },
+    name: "test-doc",
+    canvas: { width: 400, height: 300, fps: 30 },
     layers: [
       {
         id: "rect-1",
@@ -262,7 +263,7 @@ function makeTestDoc(): AtelierDocument {
       },
       {
         id: "text-1",
-        visual: { type: "text", content: "Hello", style: { fontSize: 24, color: "#ffffff" } },
+        visual: { type: "text", content: "Hello", style: { fontFamily: "Inter", fontSize: 24, color: "#ffffff" } },
         frame: { x: 50, y: 50 },
         bounds: { width: 200, height: 40 },
         opacity: 1,
@@ -274,7 +275,7 @@ function makeTestDoc(): AtelierDocument {
         deltas: [],
       },
     },
-  } as AtelierDocument;
+  };
 }
 
 describe("LayerPanel", async () => {

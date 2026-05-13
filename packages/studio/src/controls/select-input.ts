@@ -9,7 +9,7 @@ export class SelectInput {
   readonly el: HTMLElement;
   private select: HTMLSelectElement;
 
-  constructor(parent: HTMLElement, private opts: SelectInputOptions) {
+  constructor(parent: HTMLElement, opts: SelectInputOptions) {
     this.el = document.createElement("div");
     this.el.className = "atel-select-input";
 

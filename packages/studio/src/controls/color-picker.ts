@@ -9,7 +9,7 @@ export class ColorPicker {
   private input: HTMLInputElement;
   private hex: HTMLSpanElement;
 
-  constructor(parent: HTMLElement, private opts: ColorPickerOptions) {
+  constructor(parent: HTMLElement, opts: ColorPickerOptions) {
     this.el = document.createElement("div");
     this.el.className = "atel-color-picker";
 

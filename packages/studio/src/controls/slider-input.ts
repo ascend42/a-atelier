@@ -12,7 +12,7 @@ export class SliderInput {
   private input: HTMLInputElement;
   private display: HTMLSpanElement;
 
-  constructor(parent: HTMLElement, private opts: SliderInputOptions) {
+  constructor(parent: HTMLElement, opts: SliderInputOptions) {
     this.el = document.createElement("div");
     this.el.className = "atel-slider-input";
 

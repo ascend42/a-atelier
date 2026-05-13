@@ -12,7 +12,7 @@ export class NumberInput {
   readonly el: HTMLElement;
   private input: HTMLInputElement;
 
-  constructor(parent: HTMLElement, private opts: NumberInputOptions) {
+  constructor(parent: HTMLElement, opts: NumberInputOptions) {
     this.el = document.createElement("div");
     this.el.className = "atel-number-input";
 
