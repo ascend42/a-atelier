@@ -16,6 +16,15 @@ import {
   readComposition,
   writeComposition,
 } from "./lib/video-project.js";
+import { parseSilenceDetectStderr } from "./lib/silence-detect.js";
+import {
+  invertToSpeechIntervals,
+  buildInitialCuts,
+  resolveOverlaps,
+  clampBoundaries,
+  mergeWithExisting,
+  applyGlobalPadding,
+} from "./lib/cut-model.js";
 import { getInfo } from "./commands/info.js";
 import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
@@ -746,5 +755,212 @@ describe("VideoProject", () => {
     expect(loaded.compositionPath).toContain("project.atelier");
     expect(loaded.cutsPath).toContain("cuts.json");
     expect(loaded.exportDir).toContain("export");
+  });
+});
+
+// ─── silence-detect parser ────────────────────────────────────
+
+describe("parseSilenceDetectStderr", () => {
+  it("parses paired silence_start / silence_end lines", () => {
+    const stderr = [
+      "[silencedetect @ 0x7fc] silence_start: 1.234",
+      "[silencedetect @ 0x7fc] silence_end: 5.678 | silence_duration: 4.444",
+      "[silencedetect @ 0x7fc] silence_start: 12.0",
+      "[silencedetect @ 0x7fc] silence_end: 14.5 | silence_duration: 2.5",
+    ].join("\n");
+    const intervals = parseSilenceDetectStderr(stderr);
+    expect(intervals).toEqual([
+      { start: 1.234, end: 5.678 },
+      { start: 12.0, end: 14.5 },
+    ]);
+  });
+
+  it("tolerates interleaved ffmpeg chatter", () => {
+    const stderr = [
+      "ffmpeg version 6.0",
+      "Stream #0:0: Audio: aac, 48000 Hz",
+      "[silencedetect @ 0x] silence_start: 0.5",
+      "Press [q] to stop",
+      "[silencedetect @ 0x] silence_end: 1.0 | silence_duration: 0.5",
+    ].join("\n");
+    expect(parseSilenceDetectStderr(stderr)).toEqual([{ start: 0.5, end: 1.0 }]);
+  });
+
+  it("clamps negative silence_start to 0", () => {
+    const stderr = [
+      "[silencedetect @ 0x] silence_start: -0.123",
+      "[silencedetect @ 0x] silence_end: 2.0 | silence_duration: 2.123",
+    ].join("\n");
+    expect(parseSilenceDetectStderr(stderr)).toEqual([{ start: 0, end: 2.0 }]);
+  });
+
+  it("returns empty for stderr with no silence lines", () => {
+    expect(parseSilenceDetectStderr("ffmpeg version 6.0\nno silence here")).toEqual([]);
+  });
+
+  it("drops unpaired silence_start with no following end", () => {
+    const stderr = "[silencedetect @ 0x] silence_start: 5.0";
+    expect(parseSilenceDetectStderr(stderr)).toEqual([]);
+  });
+});
+
+// ─── cut-model ────────────────────────────────────────────────
+
+describe("invertToSpeechIntervals", () => {
+  it("inverts silences to speech with leading and trailing silence absent", () => {
+    expect(
+      invertToSpeechIntervals(
+        [{ start: 2, end: 3 }, { start: 5, end: 6 }],
+        10,
+      ),
+    ).toEqual([
+      { start: 0, end: 2 },
+      { start: 3, end: 5 },
+      { start: 6, end: 10 },
+    ]);
+  });
+
+  it("drops leading speech when source starts in silence", () => {
+    expect(
+      invertToSpeechIntervals([{ start: 0, end: 1 }, { start: 4, end: 5 }], 10),
+    ).toEqual([
+      { start: 1, end: 4 },
+      { start: 5, end: 10 },
+    ]);
+  });
+
+  it("drops trailing speech when source ends in silence", () => {
+    expect(
+      invertToSpeechIntervals([{ start: 2, end: 3 }, { start: 8, end: 10 }], 10),
+    ).toEqual([
+      { start: 0, end: 2 },
+      { start: 3, end: 8 },
+    ]);
+  });
+
+  it("returns whole duration as one speech interval when no silence detected", () => {
+    expect(invertToSpeechIntervals([], 7.5)).toEqual([{ start: 0, end: 7.5 }]);
+  });
+
+  it("returns empty array for zero-duration source", () => {
+    expect(invertToSpeechIntervals([], 0)).toEqual([]);
+  });
+});
+
+describe("buildInitialCuts", () => {
+  it("applies default padding to each speech interval", () => {
+    const cuts = buildInitialCuts([
+      { start: 1, end: 4 },
+      { start: 6, end: 9 },
+    ]);
+    expect(cuts).toHaveLength(2);
+    expect(cuts[0]).toMatchObject({ rawStart: 1, rawEnd: 4, paddingPre: 0.08, paddingPost: 0.12 });
+    expect(cuts[1]).toMatchObject({ rawStart: 6, rawEnd: 9, paddingPre: 0.08, paddingPost: 0.12 });
+  });
+
+  it("accepts custom padding overrides", () => {
+    const cuts = buildInitialCuts([{ start: 0, end: 2 }], 0.2, 0.3);
+    expect(cuts[0].paddingPre).toBe(0.2);
+    expect(cuts[0].paddingPost).toBe(0.3);
+  });
+});
+
+describe("resolveOverlaps", () => {
+  it("splits overlapping padding at silence midpoint", () => {
+    const cuts = [
+      { rawStart: 1, rawEnd: 3, paddingPre: 0.5, paddingPost: 0.5 },
+      { rawStart: 3.4, rawEnd: 6, paddingPre: 0.5, paddingPost: 0.5 },
+    ];
+    // Gap is [3, 3.4], silence midpoint = 3.2
+    // a.paddingPost should clamp to 0.2, b.paddingPre should clamp to 0.2
+    resolveOverlaps(cuts);
+    expect(cuts[0].paddingPost).toBeCloseTo(0.2);
+    expect(cuts[1].paddingPre).toBeCloseTo(0.2);
+  });
+
+  it("leaves non-overlapping cuts untouched", () => {
+    const cuts = [
+      { rawStart: 1, rawEnd: 3, paddingPre: 0.1, paddingPost: 0.1 },
+      { rawStart: 5, rawEnd: 7, paddingPre: 0.1, paddingPost: 0.1 },
+    ];
+    resolveOverlaps(cuts);
+    expect(cuts[0].paddingPost).toBe(0.1);
+    expect(cuts[1].paddingPre).toBe(0.1);
+  });
+});
+
+describe("clampBoundaries", () => {
+  it("clamps first cut's paddingPre so start >= 0", () => {
+    const cuts = [{ rawStart: 0.05, rawEnd: 2, paddingPre: 0.5, paddingPost: 0.1 }];
+    clampBoundaries(cuts, 10);
+    expect(cuts[0].paddingPre).toBe(0.05);
+  });
+
+  it("clamps last cut's paddingPost so end <= duration", () => {
+    const cuts = [{ rawStart: 8, rawEnd: 9.9, paddingPre: 0.1, paddingPost: 0.5 }];
+    clampBoundaries(cuts, 10);
+    expect(cuts[0].paddingPost).toBeCloseTo(0.1);
+  });
+
+  it("no-op on empty array", () => {
+    const cuts: never[] = [];
+    expect(() => clampBoundaries(cuts, 10)).not.toThrow();
+  });
+});
+
+describe("mergeWithExisting", () => {
+  it("preserves user padding on cuts whose raw boundary matches within tolerance", () => {
+    const existing = [
+      { rawStart: 1.0, rawEnd: 4.0, paddingPre: 0.3, paddingPost: 0.4, label: "intro" },
+      { rawStart: 6.0, rawEnd: 9.0, paddingPre: 0.5, paddingPost: 0.5 },
+    ];
+    const fresh = [
+      { rawStart: 1.2, rawEnd: 4.1, paddingPre: 0.08, paddingPost: 0.12 }, // matches existing[0]
+      { rawStart: 6.0, rawEnd: 9.0, paddingPre: 0.08, paddingPost: 0.12 }, // matches existing[1]
+    ];
+    const merged = mergeWithExisting(fresh, existing);
+    expect(merged[0].paddingPre).toBe(0.3);
+    expect(merged[0].paddingPost).toBe(0.4);
+    expect(merged[0].label).toBe("intro");
+    expect(merged[0].rawStart).toBe(1.2); // raw updated to fresh
+    expect(merged[1].paddingPre).toBe(0.5);
+  });
+
+  it("uses fresh defaults when no existing cut matches", () => {
+    const merged = mergeWithExisting(
+      [{ rawStart: 10, rawEnd: 12, paddingPre: 0.08, paddingPost: 0.12 }],
+      [{ rawStart: 1, rawEnd: 4, paddingPre: 0.3, paddingPost: 0.4 }],
+    );
+    expect(merged[0].paddingPre).toBe(0.08);
+  });
+
+  it("respects custom tolerance", () => {
+    const existing = [{ rawStart: 1.0, rawEnd: 4.0, paddingPre: 0.3, paddingPost: 0.4 }];
+    const fresh = [{ rawStart: 2.0, rawEnd: 5.0, paddingPre: 0.08, paddingPost: 0.12 }];
+    // With tolerance 0.5: doesn't match (1.0 vs 2.0 diff = 1.0)
+    expect(mergeWithExisting(fresh, existing, 0.5)[0].paddingPre).toBe(0.08);
+    // With tolerance 1.5: matches
+    expect(mergeWithExisting(fresh, existing, 1.5)[0].paddingPre).toBe(0.3);
+  });
+});
+
+describe("applyGlobalPadding", () => {
+  it("tightens all cuts equally; floors at 0", () => {
+    const cuts = [
+      { rawStart: 1, rawEnd: 2, paddingPre: 0.1, paddingPost: 0.2 },
+      { rawStart: 3, rawEnd: 4, paddingPre: 0.05, paddingPost: 0.05 },
+    ];
+    applyGlobalPadding(cuts, -0.08);
+    expect(cuts[0].paddingPre).toBeCloseTo(0.02);
+    expect(cuts[0].paddingPost).toBeCloseTo(0.12);
+    expect(cuts[1].paddingPre).toBe(0); // floored
+    expect(cuts[1].paddingPost).toBe(0);
+  });
+
+  it("loosens all cuts equally", () => {
+    const cuts = [{ rawStart: 1, rawEnd: 2, paddingPre: 0.1, paddingPost: 0.2 }];
+    applyGlobalPadding(cuts, 0.05);
+    expect(cuts[0].paddingPre).toBeCloseTo(0.15);
+    expect(cuts[0].paddingPost).toBeCloseTo(0.25);
   });
 });
