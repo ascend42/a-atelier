@@ -6,6 +6,7 @@ import {
   writeComposition,
 } from "../lib/video-project.js";
 import { rewriteCaptionLayers } from "../lib/caption-builder.js";
+import { loadRecipe, applyRecipeToCaptionOptions } from "../lib/recipe.js";
 
 /** Register `atelier captions regenerate <project>` */
 export function captionsCommand(program: Command): void {
@@ -17,7 +18,8 @@ export function captionsCommand(program: Command): void {
       "Re-derive caption-tagged TextVisual layers from the current transcript.json. " +
       "Used when caption styling changes without re-running Whisper.",
     )
-    .action(async (projectDir: string) => {
+    .option("--recipe <name>", "Apply a Studio Recipe's caption_style + caption_grouping")
+    .action(async (projectDir: string, opts: { recipe?: string }) => {
       try {
         const project = loadVideoProject(projectDir);
         const transcript = readTranscript(project);
@@ -26,8 +28,11 @@ export function captionsCommand(program: Command): void {
             `No transcript.json in ${projectDir}. Run \`atelier transcribe ${projectDir}\` first.`,
           );
         }
+        const captionOptions = opts.recipe
+          ? applyRecipeToCaptionOptions(loadRecipe(opts.recipe, projectDir).recipe)
+          : {};
         const doc = readComposition(project);
-        const updated = rewriteCaptionLayers(doc, transcript);
+        const updated = rewriteCaptionLayers(doc, transcript, captionOptions);
         writeComposition(project, updated);
         const captionLayers = updated.layers.filter((l) =>
           (l.tags ?? []).includes("caption"),

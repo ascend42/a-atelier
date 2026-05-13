@@ -23,6 +23,7 @@ import {
   DEFAULT_PADDING_PRE,
   DEFAULT_PADDING_POST,
 } from "../lib/cut-model.js";
+import { loadRecipe, applyRecipeToTrimOptions } from "../lib/recipe.js";
 
 export interface TrimOptions {
   /** silencedetect noise threshold, e.g. "-30dB" */
@@ -191,6 +192,7 @@ export function trimCommand(program: Command): void {
       (v) => parseInt(v, 10),
     )
     .option("--reset", "Discard existing padding; re-detect from scratch")
+    .option("--recipe <name>", "Apply a Studio Recipe's silence_policy as the baseline")
     .option("--dry-run", "Print computed cuts; don't write files")
     .option("--json", "Output result as JSON for piping")
     .action(async (
@@ -204,12 +206,13 @@ export function trimCommand(program: Command): void {
         loosen?: number;
         cut?: number;
         reset?: boolean;
+        recipe?: string;
         dryRun?: boolean;
         json?: boolean;
       },
     ) => {
       try {
-        const result = await trimProject(project, {
+        let trimOpts: TrimOptions = {
           noise: opts.noise,
           minSilence: opts.minSilence,
           padPre: opts.padPre,
@@ -219,7 +222,12 @@ export function trimCommand(program: Command): void {
           cutIndex: opts.cut,
           reset: opts.reset,
           dryRun: opts.dryRun,
-        });
+        };
+        if (opts.recipe) {
+          const { recipe } = loadRecipe(opts.recipe, project);
+          trimOpts = applyRecipeToTrimOptions(recipe, trimOpts);
+        }
+        const result = await trimProject(project, trimOpts);
 
         if (opts.json) {
           console.log(JSON.stringify(result, null, 2));

@@ -73,3 +73,19 @@ export {
 } from "./lib/whisper.js";
 export type { WhisperBackend, WhisperModel, WhisperOptions } from "./lib/whisper.js";
 export { VIDEO_TRANSCRIPT_VERSION } from "./lib/video-project.js";
+
+// Studio Recipe — Phase 1
+export { recipeCommand } from "./commands/recipe.js";
+export { applyRecipeCommand } from "./commands/apply-recipe.js";
+export {
+  loadRecipe,
+  resolveRecipePath,
+  scaffoldRecipeYaml,
+  applyRecipeToTrimOptions,
+  applyRecipeToTranscribeOptions,
+  applyRecipeToCaptionOptions,
+  renderRecipeWithDefaults,
+  recipeToYaml,
+  RECIPE_VERSION,
+} from "./lib/recipe.js";
+export type { LoadedRecipe } from "./lib/recipe.js";

@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.33.0] — 2026-05-13
+
+### Added
+- **Studio Recipe Phase 1** — the value-play feature: bundle silence policy + caption style + phrase grouping as a reusable, shareable, partial-friendly YAML/JSON preset
+  - New types in `@a-company/atelier-types`: `StudioRecipe`, `SilencePolicy`, `CaptionStyle`, `CaptionGrouping`, plus six reserved-as-`unknown` fields for Phase 3 forward-compat (`overlay_rules`, `caption_highlight`, `transition_kit`, `palette`, `audio_policy`, `aspect_targets`)
+  - New schemas in `@a-company/atelier-schema`: `StudioRecipeSchema` (strict), plus `validateRecipe()` that returns `{ success, data, warnings }` — warnings surface reserved-field usage so Phase 1 authors aren't blindsided when Phase 3 ships
+  - New `recipe.ts` lib in CLI: `loadRecipe` (resolves project-local → `~/.atelier/recipes/` → literal path, sniffs YAML vs JSON), `scaffoldRecipeYaml` (commented starter generator), `applyRecipeToTrimOptions` / `applyRecipeToTranscribeOptions` / `applyRecipeToCaptionOptions` (translation with CLI-wins precedence per spec §4.1), `renderRecipeWithDefaults`, `recipeToYaml`
+  - **CLI commands**:
+    - `atelier recipe new <name>` — scaffold a commented starter recipe with every Phase 1 default present
+    - `atelier recipe validate <path>` — `^valid-recipe` gate with reserved-field warnings
+    - `atelier recipe show <path> [--with-defaults]` — display recipe; `--with-defaults` overlays code defaults on omitted fields
+    - `atelier apply-recipe <project> <recipe>` — convenience verb chaining `trim` + `transcribe` with the same recipe; supports `--reset`, `--no-trim`, `--no-transcribe`
+  - **`--recipe <name>` flag added** to `atelier trim`, `atelier transcribe`, and `atelier captions regenerate` — recipe sets baseline; CLI flags still override per-invocation
+  - `TrimOptions` extended with `matchTolerance`; `TranscribeOptions` extended with `captionOptions`; both threaded through to underlying pipelines (`mergeWithExisting`, `rewriteCaptionLayers`)
+  - 18 new tests covering scaffold→load roundtrip, partial recipes accepted, reserved-field warnings, schema rejection, JSON input, path resolution chain, all three translation functions (CLI-wins, no-recipe passthrough), `renderRecipeWithDefaults`, and YAML round-trip
+  - **Zero new npm dependencies** — `yaml` and `zod` already in CLI deps; YAML parser is safe-by-default
+  - End-to-end dogfooded: `recipe new` → `recipe validate` → `apply-recipe` pipeline works against the scaffolded starter
+
 ## [0.32.0] — 2026-05-13
 
 ### Added

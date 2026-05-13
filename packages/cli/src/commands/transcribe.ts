@@ -15,6 +15,7 @@ import {
 } from "../lib/whisper.js";
 import { mergeTranscriptWithExisting } from "../lib/transcript-model.js";
 import { rewriteCaptionLayers, type BuildCaptionsOptions } from "../lib/caption-builder.js";
+import { loadRecipe, applyRecipeToTranscribeOptions } from "../lib/recipe.js";
 
 export interface TranscribeOptions {
   /** Whisper model selection */
@@ -137,6 +138,7 @@ export function transcribeCommand(program: Command): void {
     .option("--language <code>", "BCP-47 language hint (omit for autodetect)")
     .option("--reset", "Discard existing user edits; full fresh transcript")
     .option("--no-captions", "Write transcript.json only; skip caption layer generation")
+    .option("--recipe <name>", "Apply a Studio Recipe's caption_style + caption_grouping")
     .option("--dry-run", "Print transcript; don't write files")
     .option("--json", "Output result as JSON for piping")
     .action(async (
@@ -146,18 +148,24 @@ export function transcribeCommand(program: Command): void {
         language?: string;
         reset?: boolean;
         captions: boolean;
+        recipe?: string;
         dryRun?: boolean;
         json?: boolean;
       },
     ) => {
       try {
-        const result = await transcribeProject(project, {
+        let transcribeOpts: TranscribeOptions = {
           model: opts.model,
           language: opts.language,
           reset: opts.reset,
           noCaptions: !opts.captions,
           dryRun: opts.dryRun,
-        });
+        };
+        if (opts.recipe) {
+          const { recipe } = loadRecipe(opts.recipe, project);
+          transcribeOpts = applyRecipeToTranscribeOptions(recipe, transcribeOpts);
+        }
+        const result = await transcribeProject(project, transcribeOpts);
         if (opts.json) {
           console.log(JSON.stringify(result, null, 2));
         } else {

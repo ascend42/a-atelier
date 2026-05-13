@@ -79,3 +79,15 @@ components:
     description: 'Builds caption-tagged TextVisual layers + opacity fade-in/out deltas from a VideoTranscript. buildCaptionLayers (transcript → Layer[] + Delta[]), rewriteCaptionLayers (drops only caption-tagged layers and their deltas from the default state; preserves silence-trim, overlay, and user-authored layers — the tag-namespace isolation invariant). Caption style overridable.'
     file: src/lib/caption-builder.ts
     tags: [video, captions, layers]
+  '#cli-recipe':
+    description: 'atelier recipe new/validate/show — Studio Recipe management. recipe new scaffolds a commented starter YAML with every Phase 1 default present; recipe validate runs the ^valid-recipe gate and warns on reserved Phase 3 fields; recipe show prints a recipe with optional --with-defaults overlay.'
+    file: src/commands/recipe.ts
+    tags: [video, ugc, recipe, cli, studio-recipe]
+  '#cli-apply-recipe':
+    description: 'atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.'
+    file: src/commands/apply-recipe.ts
+    tags: [video, ugc, recipe, cli, studio-recipe]
+  '#recipe-lib':
+    description: 'Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.'
+    file: src/lib/recipe.ts
+    tags: [video, recipe, studio-recipe, pure]
