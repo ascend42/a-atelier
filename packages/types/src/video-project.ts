@@ -37,15 +37,30 @@ export interface VideoCutList {
   cuts: CutEntry[];
 }
 
-/** Single transcribed word with timestamps */
+/**
+ * Single transcribed word with timestamps — editable model (v1.1).
+ *
+ * Stores both what Whisper detected (immutable post-detection) and what
+ * gets rendered (user-overridable). userEdited / userAdded / hidden flags
+ * survive re-transcribe runs — matching by timing + detected text.
+ */
 export interface TranscriptWord {
-  word: string;
-  /** Start time in seconds */
+  /** What Whisper heard (immutable post-detection) */
+  detected: string;
+  /** What gets rendered (defaults to detected; user can override) */
+  text: string;
+  /** Start time in seconds (audio-anchored — never moves on text edits) */
   start: number;
   /** End time in seconds */
   end: number;
-  /** Whisper confidence score 0–1 */
+  /** Whisper confidence score 0–1 — UI can flag low-conf words */
   confidence?: number;
+  /** True if user has overridden text — preserved through re-transcribe */
+  userEdited?: boolean;
+  /** True if user inserted this word (Whisper missed it) — preserved through re-transcribe */
+  userAdded?: boolean;
+  /** True to exclude from caption render but keep in transcript */
+  hidden?: boolean;
 }
 
 /** A contiguous speech segment (sentence or phrase block) */
@@ -58,8 +73,16 @@ export interface TranscriptSegment {
   words: TranscriptWord[];
 }
 
-/** Full transcript for a VideoProject source file */
+/**
+ * Full transcript for a VideoProject source file.
+ *
+ * Format version 1.1 stores editable words (detected + text + flags).
+ * Loaders migrate 1.0 transcripts (flat `word: string`) on read; writers
+ * always emit 1.1.
+ */
 export interface VideoTranscript {
+  /** Transcript format version — current is "1.1" */
+  version: string;
   /** BCP-47 language code detected by Whisper */
   language?: string;
   segments: TranscriptSegment[];

@@ -10,6 +10,7 @@ import type {
 
 export const VIDEO_PROJECT_VERSION = "1.0";
 export const VIDEO_CUTLIST_VERSION = "1.1";
+export const VIDEO_TRANSCRIPT_VERSION = "1.1";
 
 /**
  * Compute the effective in/out span for a cut, clamped to source bounds.
@@ -236,15 +237,58 @@ export function writeCutList(project: VideoProject, cuts: VideoCutList): void {
   writeFileSync(project.cutsPath, JSON.stringify(payload, null, 2), "utf-8");
 }
 
-/** Read and parse transcript.json from a VideoProject */
+/**
+ * Read and parse transcript.json from a VideoProject.
+ *
+ * Migrates legacy 1.0 transcripts (TranscriptWord had flat `word: string`)
+ * to 1.1 (`detected` + `text` + flags) on the fly. Writers always emit 1.1.
+ */
 export function readTranscript(project: VideoProject): VideoTranscript | null {
   if (!existsSync(project.transcriptPath)) return null;
-  return JSON.parse(readFileSync(project.transcriptPath, "utf-8")) as VideoTranscript;
+  const raw = JSON.parse(readFileSync(project.transcriptPath, "utf-8")) as {
+    version?: string;
+    language?: string;
+    segments: Array<{
+      text: string;
+      start: number;
+      end: number;
+      words: Array<
+        // 1.1 shape
+        | { detected: string; text: string; start: number; end: number; confidence?: number; userEdited?: boolean; userAdded?: boolean; hidden?: boolean }
+        // 1.0 legacy shape
+        | { word: string; start: number; end: number; confidence?: number }
+      >;
+    }>;
+  };
+
+  const segments = raw.segments.map((seg) => ({
+    text: seg.text,
+    start: seg.start,
+    end: seg.end,
+    words: seg.words.map((w) => {
+      if ("detected" in w) return w;
+      // 1.0 migration — `word` becomes both detected and text
+      return {
+        detected: w.word,
+        text: w.word,
+        start: w.start,
+        end: w.end,
+        ...(w.confidence !== undefined && { confidence: w.confidence }),
+      };
+    }),
+  }));
+
+  return {
+    version: VIDEO_TRANSCRIPT_VERSION,
+    ...(raw.language !== undefined && { language: raw.language }),
+    segments,
+  };
 }
 
-/** Write transcript.json to a VideoProject */
+/** Write transcript.json to a VideoProject (always at the current transcript version) */
 export function writeTranscript(project: VideoProject, transcript: VideoTranscript): void {
-  writeFileSync(project.transcriptPath, JSON.stringify(transcript, null, 2), "utf-8");
+  const payload: VideoTranscript = { ...transcript, version: VIDEO_TRANSCRIPT_VERSION };
+  writeFileSync(project.transcriptPath, JSON.stringify(payload, null, 2), "utf-8");
 }
 
 /** Read and parse project.atelier from a VideoProject */

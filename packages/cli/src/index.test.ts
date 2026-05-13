@@ -722,10 +722,11 @@ describe("VideoProject", () => {
     expect(readTranscript(project)).toBeNull();
   });
 
-  it("writeTranscript and readTranscript roundtrip", async () => {
+  it("writeTranscript and readTranscript roundtrip (editable 1.1)", async () => {
     const projectDir = join(tmpDir, "vp-transcript-rt");
     const project = await createVideoProject(fakeSrc, projectDir);
     writeTranscript(project, {
+      version: "1.1",
       language: "en",
       segments: [
         {
@@ -733,17 +734,78 @@ describe("VideoProject", () => {
           start: 0,
           end: 2.3,
           words: [
-            { word: "Hello", start: 0, end: 0.8, confidence: 0.99 },
-            { word: "world", start: 1.0, end: 2.3 },
+            { detected: "Hello", text: "Hello", start: 0, end: 0.8, confidence: 0.99 },
+            { detected: "world", text: "world", start: 1.0, end: 2.3 },
           ],
         },
       ],
     });
     const t = readTranscript(project);
     expect(t).not.toBeNull();
+    expect(t!.version).toBe("1.1");
     expect(t!.language).toBe("en");
     expect(t!.segments[0].words).toHaveLength(2);
     expect(t!.segments[0].words[0].confidence).toBe(0.99);
+    expect(t!.segments[0].words[0].detected).toBe("Hello");
+    expect(t!.segments[0].words[0].text).toBe("Hello");
+  });
+
+  it("readTranscript preserves user-edited flags through roundtrip", async () => {
+    const projectDir = join(tmpDir, "vp-transcript-edits");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    writeTranscript(project, {
+      version: "1.1",
+      segments: [
+        {
+          text: "I went to the store",
+          start: 0,
+          end: 3,
+          words: [
+            { detected: "I", text: "I", start: 0, end: 0.2 },
+            { detected: "went", text: "went", start: 0.3, end: 0.6 },
+            { detected: "to", text: "to", start: 0.7, end: 0.85 },
+            { detected: "the", text: "the", start: 0.9, end: 1.05 },
+            { detected: "door", text: "store", start: 1.1, end: 1.5, userEdited: true, confidence: 0.62 },
+          ],
+        },
+      ],
+    });
+    const t = readTranscript(project)!;
+    const lastWord = t.segments[0].words[4];
+    expect(lastWord.detected).toBe("door");
+    expect(lastWord.text).toBe("store");
+    expect(lastWord.userEdited).toBe(true);
+  });
+
+  it("readTranscript migrates legacy 1.0 transcript (flat word: string) to 1.1", async () => {
+    const projectDir = join(tmpDir, "vp-transcript-migrate");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    const { writeFileSync: wfs } = await import("node:fs");
+    wfs(
+      project.transcriptPath,
+      JSON.stringify({
+        language: "en",
+        segments: [
+          {
+            text: "Hello world",
+            start: 0,
+            end: 2.3,
+            words: [
+              { word: "Hello", start: 0, end: 0.8, confidence: 0.99 },
+              { word: "world", start: 1.0, end: 2.3 },
+            ],
+          },
+        ],
+      }),
+      "utf-8",
+    );
+    const t = readTranscript(project)!;
+    expect(t.version).toBe("1.1");
+    expect(t.segments[0].words[0].detected).toBe("Hello");
+    expect(t.segments[0].words[0].text).toBe("Hello");
+    expect(t.segments[0].words[0].confidence).toBe(0.99);
+    expect(t.segments[0].words[0].userEdited).toBeUndefined();
+    expect(t.segments[0].words[1].detected).toBe("world");
   });
 
   it("loadVideoProject resolves paths for existing folder", async () => {
