@@ -1,0 +1,37 @@
+id: L-2026-05-13-ascend-082942-001
+type: maintenance
+timestamp: '2026-05-13T08:29:42.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: 'Studio package typecheck cleanup — 10 pre-existing errors → 0'
+summary: 'Cleared accumulated pre-existing typecheck drift in @a-company/atelier-studio that surfaced during the T-007b and T-006 audit passes. Workspace went from 13/14 typechecks green to 14/14. Five categories of fix: four control files dropped unused `private opts` field qualifiers (parameter property created class state that was never read); two unused type imports removed (StepEasing, AnimatableProperty); one dead `deltaPanel` field removed (write-only — DOM cleanup happens via scroll.innerHTML); two real Shape narrowing errors fixed in property-panel.ts by capturing PathShape const before crossing into callback boundaries (TS doesn''t preserve discriminant narrowing across function calls when the source could be mutated); one test fixture (makeTestDoc) had been masking missing required AtelierDocument fields (name, canvas.fps, TextStyle.fontFamily) via `as AtelierDocument` cast — dropped the cast and added the fields properly so future omissions fail loudly. All 28 studio tests pass; full workspace 560/560 green.'
+symbols_touched:
+  - '#studio'
+files_modified:
+  - packages/studio/src/controls/color-picker.ts
+  - packages/studio/src/controls/number-input.ts
+  - packages/studio/src/controls/select-input.ts
+  - packages/studio/src/controls/slider-input.ts
+  - packages/studio/src/controls/easing-curve-editor.ts
+  - packages/studio/src/panels/property-panel.ts
+  - packages/studio/src/index.test.ts
+commit:
+  - a77bbbf  # chore(#studio): clear pre-existing typecheck drift — 10 errors → 0
+learnings:
+  - 'Parameter properties (constructor(private foo)) silently create class fields that trip TS6138 if they are only used as the local constructor parameter via closure capture. When opts is referenced in event handlers attached during construction, the handlers capture the local param, not this.opts — so the field is dead state. Dropping `private` is the right fix.'
+  - 'TS does not preserve discriminant narrowing across function-call boundaries because the source object could be mutated before the callback runs. When narrowing a discriminated-union property in an if-block that then schedules a callback (this.addSection(label, () => {...})), capture the narrowed value as a const before the call: `if (x.type === "path") { const pathShape = x; this.addSection(..., () => pathShape.points ); }`.'
+  - 'Casts like `as AtelierDocument` in test fixtures suppress legitimate missing-field errors. Future schema additions will pass tests silently while shipping broken code. Always prefer proper object literals over casts — let the compiler enforce the shape.'
+  - 'Write-only class state (private field assigned but never read) is dead code. If "cleanup intent" was the rationale, verify the dispose path actually exists before keeping the field. If not, drop it — the instantiation side-effect (DOM append) still runs.'
+tags:
+  - studio
+  - typecheck
+  - cleanup
+  - audit
+  - maintenance
+confidence: 0.98
+git_context:
+  ref: a77bbbf4a5cfa74c44a5f5fbcfdc7455f298c49f
+  branch: main
+  dirty: false
