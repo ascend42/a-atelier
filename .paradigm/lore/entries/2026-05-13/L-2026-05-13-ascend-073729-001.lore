@@ -1,0 +1,50 @@
+id: L-2026-05-13-ascend-073729-001
+type: milestone
+timestamp: '2026-05-13T07:37:29.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: 'T-007b shipped — atelier trim with parametric cuts and layer-tag isolation'
+summary: 'Implemented T-007b end-to-end from spec to working CLI in one focused session. Four commits, no scope creep, no new npm dependencies, 26 new tests added (65/65 in CLI, 528/528 workspace). The pipeline: probe ffmpeg silencedetect filter → ffprobe source duration → run silencedetect → invert silence to speech intervals → buildInitialCuts with default 80ms/120ms padding → mergeWithExisting (preserves user padding on raw-boundary match within 0.5s tolerance, the load-bearing UX invariant) → apply --tighten/--loosen/--cut overrides → resolveOverlaps at silence midpoint → clampBoundaries to [0, duration] → write cuts.json 1.1 → rewriteCutLayers (drop only silence-trim-tagged layers, append fresh clip-trim-N VideoVisual layers with floor/ceil frame rounding). The layer-tag isolation invariant is now proven by test: user-authored layers and other-tagged pipeline outputs (caption, overlay) survive every trim re-run untouched. atelier trim --help dogfooded post-build. Two small pre-existing audit cleanups fixed along the way (unused React import, unused yaml-panel destructure). One pre-existing Shape-narrowing typecheck error in studio/property-panel.ts flagged but not addressed — out of T-007b scope, queued for separate audit.'
+symbols_touched:
+  - '#video-project'
+  - '#video-project-types'
+  - '#layer-types'
+symbols_created:
+  - '#cli-trim'
+  - '#silence-detect'
+  - '#cut-model'
+files_created:
+  - packages/cli/src/lib/silence-detect.ts
+  - packages/cli/src/lib/cut-model.ts
+  - packages/cli/src/commands/trim.ts
+commit_chain:
+  - 64cb3e0  # parametric CutEntry + rewriteCutLayers + 1.0→1.1 migration (foundation)
+  - c3271af  # silence-detect subprocess + cut-model pure functions (core)
+  - d2cf1e5  # atelier trim orchestrator + CLI wiring + .purpose + versions (surface)
+learnings:
+  - 'Building in three layers — foundation (types + migration), core (pure functions), surface (orchestrator + CLI) — let every step ship green with its own tests before depending on it. No commit had to be amended; each was independently verifiable.'
+  - 'The advisor''s pre-spec call caught an implicit decision (one VideoVisual per cut vs internal cut-list) and six edge cases that would have shipped silently broken: padding overlap, padding past bounds, sub-frame rounding, re-run preservation behavior, which layers trim touches, recipe-vs-per-cut precedence. Pre-substantive-work advisor calls are now a hard team habit on spec work.'
+  - 'parseSilenceDetectStderr deliberately drops unpaired silence_start lines (no following silence_end). This is the right call — ffmpeg can emit a start without an end if the source is truncated. Tests cover this explicitly.'
+  - 'ffmpeg silencedetect emits silence_start: -0.123 when audio begins below the noise floor. Parser clamps to 0; tested.'
+  - 'mergeWithExisting''s 0.5s tolerance default is a guess that wants empirical validation on real takes. Spec exposes a future --match-tolerance flag if needed.'
+  - 'The rewriteCutLayers test that adds a user-overlay layer (tagged "overlay") and verifies it survives the trim rewrite is the load-bearing test for the entire UGC value proposition. If that invariant breaks, every pipeline destroys user work. Keep it.'
+  - 'Zero new npm dependencies kept the audit trivial: ffmpeg silencedetect via child_process.spawn (same pattern as render-pipeline.ts), same license posture (subprocess, not linked), no CVE surface beyond what we already accept for the render command.'
+  - 'Two pre-existing typecheck errors surfaced during the workspace-wide verification — both unrelated to T-007b. Confirmed via git stash round-trip. Fixed the trivial ones (React unused, colon unused); deferred the real one (Shape narrowing in property-panel) to avoid expanding scope mid-feature.'
+tags:
+  - silence-trim
+  - parametric-cuts
+  - cli-trim
+  - layer-tagging
+  - ugc
+  - phase-2
+  - t-007b
+  - implementation
+  - ffmpeg
+  - no-new-deps
+confidence: 0.96
+git_context:
+  ref: d2cf1e509b508f5582cc9f376c8c0c16c2ef47bb
+  branch: main
+  dirty: false
