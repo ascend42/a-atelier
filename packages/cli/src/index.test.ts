@@ -582,20 +582,129 @@ describe("VideoProject", () => {
     expect(cuts.source).toBe("source.mp4");
   });
 
-  it("writeCutList and readCutList roundtrip", async () => {
+  it("writeCutList and readCutList roundtrip (parametric 1.1)", async () => {
     const projectDir = join(tmpDir, "vp-cuts-rt");
     const project = await createVideoProject(fakeSrc, projectDir);
     writeCutList(project, {
+      version: "1.1",
       source: "source.mp4",
       cuts: [
-        { start: 0, end: 5.5, label: "take 1" },
-        { start: 10, end: 20 },
+        { rawStart: 0, rawEnd: 5.5, paddingPre: 0.08, paddingPost: 0.12, label: "take 1" },
+        { rawStart: 10, rawEnd: 20, paddingPre: 0.05, paddingPost: 0.05 },
       ],
     });
     const cuts = readCutList(project);
+    expect(cuts.version).toBe("1.1");
     expect(cuts.cuts).toHaveLength(2);
     expect(cuts.cuts[0].label).toBe("take 1");
-    expect(cuts.cuts[1].end).toBe(20);
+    expect(cuts.cuts[0].paddingPre).toBe(0.08);
+    expect(cuts.cuts[1].rawEnd).toBe(20);
+  });
+
+  it("readCutList migrates legacy 1.0 cuts (flat start/end) to 1.1", async () => {
+    const projectDir = join(tmpDir, "vp-cuts-migrate");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    // Hand-write a 1.0 cuts.json (no version field, flat start/end)
+    const { writeFileSync: wfs } = await import("node:fs");
+    wfs(
+      project.cutsPath,
+      JSON.stringify({
+        source: "source.mp4",
+        cuts: [
+          { start: 1.2, end: 4.8, label: "legacy" },
+          { start: 7.0, end: 12.5 },
+        ],
+      }),
+      "utf-8",
+    );
+    const cuts = readCutList(project);
+    expect(cuts.version).toBe("1.1");
+    expect(cuts.cuts[0].rawStart).toBe(1.2);
+    expect(cuts.cuts[0].rawEnd).toBe(4.8);
+    expect(cuts.cuts[0].paddingPre).toBe(0);
+    expect(cuts.cuts[0].paddingPost).toBe(0);
+    expect(cuts.cuts[0].label).toBe("legacy");
+    expect(cuts.cuts[1].rawStart).toBe(7.0);
+  });
+
+  it("effectiveSpan clamps to [0, duration] and applies padding", async () => {
+    const { effectiveSpan } = await import("./lib/video-project.js");
+    expect(effectiveSpan(
+      { rawStart: 1.0, rawEnd: 4.0, paddingPre: 0.5, paddingPost: 0.5 },
+      10,
+    )).toEqual({ start: 0.5, end: 4.5 });
+    // padding past 0 clamps
+    expect(effectiveSpan(
+      { rawStart: 0.1, rawEnd: 2.0, paddingPre: 0.5, paddingPost: 0.5 },
+      10,
+    )).toEqual({ start: 0, end: 2.5 });
+    // padding past duration clamps
+    expect(effectiveSpan(
+      { rawStart: 8.0, rawEnd: 9.9, paddingPre: 0.1, paddingPost: 0.5 },
+      10,
+    )).toEqual({ start: 7.9, end: 10 });
+  });
+
+  it("rewriteCutLayers preserves non-silence-trim layers", async () => {
+    const { rewriteCutLayers, readComposition, writeComposition } = await import(
+      "./lib/video-project.js"
+    );
+    const projectDir = join(tmpDir, "vp-rewrite");
+    const project = await createVideoProject(fakeSrc, projectDir);
+    const doc = readComposition(project);
+    // Add a user overlay layer (not tagged silence-trim)
+    doc.layers.push({
+      id: "user-overlay",
+      tags: ["overlay"],
+      visual: { type: "text", content: "hello", style: { fontFamily: "Inter", fontSize: 60, color: "#FFF" } },
+      frame: { x: 100, y: 100 },
+      bounds: { width: 400, height: 80 },
+    });
+    writeComposition(project, doc);
+
+    const updated = rewriteCutLayers(
+      readComposition(project),
+      [
+        { rawStart: 0, rawEnd: 2, paddingPre: 0, paddingPost: 0 },
+        { rawStart: 3, rawEnd: 5, paddingPre: 0, paddingPost: 0 },
+      ],
+      "source.mp4",
+      10,
+    );
+
+    // User overlay survived
+    expect(updated.layers.find((l) => l.id === "user-overlay")).toBeDefined();
+    // Two silence-trim layers added
+    const trimLayers = updated.layers.filter((l) => (l.tags ?? []).includes("silence-trim"));
+    expect(trimLayers).toHaveLength(2);
+    expect(trimLayers[0].id).toBe("clip-trim-0");
+    expect(trimLayers[1].id).toBe("clip-trim-1");
+  });
+
+  it("rewriteCutLayers replaces existing silence-trim layers, not appends", async () => {
+    const { rewriteCutLayers, readComposition } = await import("./lib/video-project.js");
+    const projectDir = join(tmpDir, "vp-rewrite-replace");
+    const project = await createVideoProject(fakeSrc, projectDir);
+
+    const doc1 = rewriteCutLayers(
+      readComposition(project),
+      [{ rawStart: 0, rawEnd: 2, paddingPre: 0, paddingPost: 0 }],
+      "source.mp4",
+      10,
+    );
+    expect(doc1.layers.filter((l) => (l.tags ?? []).includes("silence-trim"))).toHaveLength(1);
+
+    const doc2 = rewriteCutLayers(
+      doc1,
+      [
+        { rawStart: 0, rawEnd: 2, paddingPre: 0, paddingPost: 0 },
+        { rawStart: 3, rawEnd: 5, paddingPre: 0, paddingPost: 0 },
+        { rawStart: 6, rawEnd: 8, paddingPre: 0, paddingPost: 0 },
+      ],
+      "source.mp4",
+      10,
+    );
+    expect(doc2.layers.filter((l) => (l.tags ?? []).includes("silence-trim"))).toHaveLength(3);
   });
 
   it("readTranscript returns null before transcription runs", async () => {

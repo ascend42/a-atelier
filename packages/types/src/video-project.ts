@@ -1,15 +1,36 @@
-/** A single silence-removal or editorial cut */
+/**
+ * A single silence-removal or editorial cut — parametric model (v1.1).
+ *
+ * Stores both the immutable detected boundary and the user-tunable padding
+ * around it. Effective start/end is computed from rawStart - paddingPre /
+ * rawEnd + paddingPost (clamped to source bounds). See `effectiveSpan()`.
+ *
+ * Re-running silence detection preserves user paddingPre/paddingPost on
+ * any cut whose raw boundary still matches within the merge tolerance.
+ */
 export interface CutEntry {
-  /** Start of the kept segment, in seconds from source start */
-  start: number;
-  /** End of the kept segment, in seconds from source start */
-  end: number;
-  /** Optional label (e.g. "take 1", "silence removed") */
+  /** Raw speech-start as detected by silencedetect, in seconds (immutable post-detection) */
+  rawStart: number;
+  /** Raw speech-end as detected by silencedetect, in seconds (immutable post-detection) */
+  rawEnd: number;
+  /** User-tunable padding before rawStart, in seconds (default from recipe.silence_policy) */
+  paddingPre: number;
+  /** User-tunable padding after rawEnd, in seconds (default from recipe.silence_policy) */
+  paddingPost: number;
+  /** Optional label (e.g. "take 1", "primary speech") */
   label?: string;
 }
 
-/** Cut list for a VideoProject — defines which segments survive into the composition */
+/**
+ * Cut list for a VideoProject — ordered list of kept speech segments.
+ *
+ * Format version 1.1 stores parametric cuts (rawStart/rawEnd + padding).
+ * Loaders migrate 1.0 files (flat { start, end }) on read; writers always
+ * emit 1.1.
+ */
 export interface VideoCutList {
+  /** Cut list format version — current is "1.1" */
+  version: string;
   /** Relative path to the source video within the project folder */
   source: string;
   /** Ordered array of kept segments */

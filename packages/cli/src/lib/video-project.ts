@@ -1,13 +1,29 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { join, basename, extname, resolve } from "node:path";
-import type { AtelierDocument } from "@a-company/atelier-types";
+import type { AtelierDocument, Layer } from "@a-company/atelier-types";
 import type {
+  CutEntry,
   VideoCutList,
   VideoTranscript,
   VideoProjectManifest,
 } from "@a-company/atelier-types";
 
 export const VIDEO_PROJECT_VERSION = "1.0";
+export const VIDEO_CUTLIST_VERSION = "1.1";
+
+/**
+ * Compute the effective in/out span for a cut, clamped to source bounds.
+ * `start = max(0, rawStart - paddingPre)`, `end = min(duration, rawEnd + paddingPost)`.
+ */
+export function effectiveSpan(
+  cut: CutEntry,
+  duration: number,
+): { start: number; end: number } {
+  return {
+    start: Math.max(0, cut.rawStart - cut.paddingPre),
+    end: Math.min(duration, cut.rawEnd + cut.paddingPost),
+  };
+}
 
 /** Resolved absolute paths for all files in a VideoProject folder */
 export interface VideoProject {
@@ -120,6 +136,7 @@ export async function createVideoProject(
   }
 
   const initialCuts: VideoCutList = {
+    version: VIDEO_CUTLIST_VERSION,
     source: sourceFilename,
     cuts: [],
   };
@@ -178,17 +195,45 @@ export function loadVideoProject(dir: string): VideoProject {
   };
 }
 
-/** Read and parse the cuts.json from a VideoProject */
+/**
+ * Read and parse cuts.json from a VideoProject.
+ *
+ * Migrates legacy 1.0 cuts (flat { start, end }) to 1.1 parametric form
+ * (rawStart/rawEnd + zero padding) on the fly. Writers always emit 1.1.
+ */
 export function readCutList(project: VideoProject): VideoCutList {
   if (!existsSync(project.cutsPath)) {
-    return { source: project.manifest.source, cuts: [] };
+    return { version: VIDEO_CUTLIST_VERSION, source: project.manifest.source, cuts: [] };
   }
-  return JSON.parse(readFileSync(project.cutsPath, "utf-8")) as VideoCutList;
+  const raw = JSON.parse(readFileSync(project.cutsPath, "utf-8")) as {
+    version?: string;
+    source: string;
+    cuts: Array<CutEntry | { start: number; end: number; label?: string }>;
+  };
+
+  const cuts: CutEntry[] = raw.cuts.map((entry) => {
+    if ("rawStart" in entry) return entry;
+    // Legacy 1.0 migration — stored start/end become rawStart/rawEnd with zero padding.
+    return {
+      rawStart: entry.start,
+      rawEnd: entry.end,
+      paddingPre: 0,
+      paddingPost: 0,
+      ...(entry.label !== undefined && { label: entry.label }),
+    };
+  });
+
+  return {
+    version: VIDEO_CUTLIST_VERSION,
+    source: raw.source,
+    cuts,
+  };
 }
 
-/** Write cuts.json to a VideoProject */
+/** Write cuts.json to a VideoProject (always at the current cut list version) */
 export function writeCutList(project: VideoProject, cuts: VideoCutList): void {
-  writeFileSync(project.cutsPath, JSON.stringify(cuts, null, 2), "utf-8");
+  const payload: VideoCutList = { ...cuts, version: VIDEO_CUTLIST_VERSION };
+  writeFileSync(project.cutsPath, JSON.stringify(payload, null, 2), "utf-8");
 }
 
 /** Read and parse transcript.json from a VideoProject */
@@ -210,4 +255,52 @@ export function readComposition(project: VideoProject): AtelierDocument {
 /** Write project.atelier to a VideoProject */
 export function writeComposition(project: VideoProject, doc: AtelierDocument): void {
   writeFileSync(project.compositionPath, JSON.stringify(doc, null, 2), "utf-8");
+}
+
+/**
+ * Rewrite the silence-trim layers in a composition from a current cut list.
+ *
+ * Drops every layer tagged "silence-trim" then appends one VideoVisual layer
+ * per cut, in temporal order, with cumulative startFrame computed from prior
+ * clip durations. All other layers (user-authored, captions, overlays) are
+ * preserved untouched — this is the tag-namespace isolation invariant.
+ */
+export function rewriteCutLayers(
+  doc: AtelierDocument,
+  cuts: CutEntry[],
+  sourceFilename: string,
+  sourceDuration: number,
+  assetId = "src",
+): AtelierDocument {
+  const preserved = doc.layers.filter((l) => !(l.tags ?? []).includes("silence-trim"));
+  const fps = doc.canvas.fps;
+
+  let cumulativeFrame = 0;
+  const trimLayers: Layer[] = cuts.map((cut, idx) => {
+    const span = effectiveSpan(cut, sourceDuration);
+    const sourceOffsetFrames = Math.floor(span.start * fps) / fps;
+    const sourceEndFrames = Math.ceil(span.end * fps) / fps;
+    const durationFrames = Math.max(1, Math.round((sourceEndFrames - sourceOffsetFrames) * fps));
+
+    const layer: Layer = {
+      id: `clip-trim-${idx}`,
+      tags: ["silence-trim"],
+      visual: {
+        type: "video",
+        assetId,
+        src: sourceFilename,
+        startFrame: cumulativeFrame,
+        sourceOffset: sourceOffsetFrames,
+        sourceEnd: sourceEndFrames,
+        playbackRate: 1.0,
+        objectFit: "contain",
+      },
+      frame: { x: 0, y: 0 },
+      bounds: { width: doc.canvas.width, height: doc.canvas.height },
+    };
+    cumulativeFrame += durationFrames;
+    return layer;
+  });
+
+  return { ...doc, layers: [...preserved, ...trimLayers] };
 }
