@@ -1,0 +1,65 @@
+id: L-2026-05-13-ascend-071455-001
+type: milestone
+timestamp: '2026-05-13T07:14:55.000Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-7
+title: 'Studio Recipe + parametric cuts + editable captions — Phase 2 value play formalized'
+summary: 'Multi-turn strategic session crystallized the Atelier "value play" for UGC: ship a system where content style (silence-trim feel, word-by-word caption highlights, overlay rhythm, transitions, palette, fonts) is captured as a reusable, shareable Studio Recipe — extractable from any reference video and re-appliable to fresh footage by the Composer agent (Iris). This converts Atelier from "yet another editor" into "style-as-a-preset" infrastructure. Three new content-generation agents added to the a-paradigm roster on 2026-05-12 (Quill the Showrunner, Lux the Cinematographer, Iris the Composer) form the word→image→composition pipeline that executes this play. Locked two foundational architectural decisions for the implementation phase: (1) the parametric-cut model — every detected boundary is immutable, padding is user-tunable, re-runs preserve overrides; (2) the layer-tagging convention — each pipeline owns its own tag namespace (silence-trim, caption, caption-word, overlay), and re-runs never touch other pipelines'' layers. Same pattern (detected-vs-user-edited, preserve through re-runs) applies to transcript edits — fix a misheard word, re-transcribe, your fix survives. Two specs landed: .paradigm/specs/silence-trim.md (parametric cuts + atelier trim CLI, T-007b) and .paradigm/specs/captions.md (Whisper transcribe + editable transcript + caption layer generation, T-006). Both with zero or one new npm dep, library vetting included, no critical issues found.'
+symbols_touched:
+  - '#video-project'
+  - '#video-project-types'
+  - '#cli-lint'
+  - '#layer-types'
+symbols_created:
+  - '#cli-trim'
+  - '#cli-transcribe'
+  - '#caption-pipeline'
+  - '#studio-recipe'
+files_created:
+  - .paradigm/specs/silence-trim.md
+  - .paradigm/specs/captions.md
+decisions:
+  - id: TD-studio-recipe-as-value-play
+    decision: 'Atelier ships Studio Recipe — a reusable, shareable, JSON/YAML-serializable bundle of silence policy + caption style + overlay rules + palette + transition kit + aspect targets. Recipes can be authored by hand (Phase 1) or extracted from a reference video by AI analysis (Phase 3).'
+    rationale: 'Reframes Atelier from competitive feature parity with CapCut into a category-defining "style-as-a-preset" product. Recipes make creator style reproducible, shareable, and AI-applicable. Every primitive needed already exists in the engine; the new piece is the composable bundle and the recipe-application pipeline.'
+  - id: TD-parametric-cuts
+    decision: 'CutEntry stores rawStart/rawEnd (immutable detected boundaries) plus paddingPre/paddingPost (user-tunable seconds). Effective in/out is computed. cuts.json bumps to version 1.1 with forward-only migration.'
+    rationale: 'The destructive-vs-non-destructive choice is load-bearing for UX. A user must be able to drag a clip edge to expand padding, run "tighten all by 50ms", and re-detect after a re-record — without ever losing their hand-tuned padding values. The parametric model is the only architecture that makes all three operations safe.'
+  - id: TD-detected-vs-user-edited-transcript
+    decision: 'TranscriptWord stores both detected (Whisper''s output, immutable) and text (user-overridable). userEdited / userAdded / hidden flags preserve user changes across re-transcribe runs. transcript.json bumps to version 1.1.'
+    rationale: 'Exact parallel to the parametric cut model — single mental model for the user across silence-trim and transcription. Auto-transcription you can''t cheaply correct is a demo, not a product; the editing flow is the load-bearing UX of T-006.'
+  - id: TD-layer-tag-namespace
+    decision: 'Pipeline-managed layer tags are reserved: silence-trim (atelier trim), caption (atelier transcribe), caption-word (atelier transcribe optional fine-grain), overlay (user or future overlay tool). Each pipeline only ever rewrites layers carrying its own tag. Untagged layers are user-authored and never touched.'
+    rationale: 'Without this isolation, every pipeline re-run risks blowing away every other pipeline''s work plus the user''s manual additions. Tag-scoped writes let trim, transcribe, and overlay pipelines compose freely and re-run independently.'
+  - id: TD-whisper-cpp-primary-onnx-fallback
+    decision: 'atelier transcribe uses whisper.cpp via child_process.spawn as the primary path; falls back to @xenova/transformers (ONNX) when the native binary is absent. OpenAI Whisper API is opt-in only behind --use-api.'
+    rationale: 'whisper.cpp gives 5-15x realtime on Apple Silicon, runs entirely local, no API key, MIT licensed. Subprocess pattern matches existing ffmpeg integration (no linking → no license transit). ONNX fallback removes the binary-install gate. API-by-default would force UGC creators to upload unreleased footage to OpenAI — wrong default.'
+  - id: TD-zero-new-deps-for-trim
+    decision: 'atelier trim (T-007b) ships with zero new npm dependencies. All ffmpeg silencedetect invocation is via node:child_process.spawn.'
+    rationale: 'Reuse of the existing render-pipeline.ts pattern. Minimizes attack surface, license complexity, and audit work. Library vetting section in the spec confirms no CVEs in the silencedetect/null-muxer paths, ffmpeg syntax stable since 4.0.'
+learnings:
+  - 'The "Studio Recipe" concept is bigger than a feature — it''s a product positioning shift. Recipes can be sold, shared, A/B-tested, used to enforce brand consistency across a team''s UGC. The marketplace play (Phase 4) is the long-term unlock.'
+  - 'Parametric cuts and editable transcripts share the same data architecture: detected (immutable) + user (tunable) + flags-that-survive-re-detection. This is now Atelier''s convention for any pipeline that auto-generates content the user will need to tweak.'
+  - 'Whisper word-level timestamps are accurate to 30-80ms on clean UGC speech. Caption highlight animation drift at 30fps is sub-frame — invisible. The captions feature is engineering polish, not a research bet.'
+  - 'Three new agents (Quill, Lux, Iris) form a complete word→image→composition pipeline. Iris specifically (Composer) is the executor for Studio Recipe application — she already has the MCP toolkit; the new piece is the atelier_apply_recipe verb.'
+  - 'Layer tagging convention (silence-trim, caption, caption-word, overlay) is small but load-bearing. Without it, every pipeline destroys every other pipeline''s output on re-run. With it, pipelines compose freely.'
+  - 'Library vetting discipline: both specs add zero or one new dep. ffmpeg silencedetect: stable since 2015, no CVEs in our path, subprocess so license clean. whisper.cpp: MIT, MAU active, Descript/OBS users. @xenova/transformers: Apache-2.0, HF-maintained. OpenAI API: opt-in only (privacy).'
+  - 'Implementation sequencing: ship T-007b (parametric cuts) before T-006 (captions). Both touch composition-rewrite logic and share the layer-tagging convention; locking that convention with cuts first means captions inherits it. Studio Recipe lands in Phase 2 as the third spec after both pipelines work end-to-end.'
+tags:
+  - studio-recipe
+  - parametric-cuts
+  - captions
+  - whisper
+  - ugc
+  - phase-2
+  - value-play
+  - north-star
+  - layer-tagging
+  - agent-pipeline
+confidence: 0.94
+git_context:
+  ref: 4ee0fda810d3311cd3d1e0b3db69f22f8958a3c0
+  branch: main
+  dirty: true
