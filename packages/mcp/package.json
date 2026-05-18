@@ -29,17 +29,19 @@
     "atelier-mcp": "./dist/index.js"
   },
   "dependencies": {
-    "@a-company/atelier-types": "workspace:*",
-    "@a-company/atelier-schema": "workspace:*",
-    "@a-company/atelier-core": "workspace:*",
     "@a-company/atelier-canvas": "workspace:*",
-    "@a-company/atelier-svg": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
     "@a-company/atelier-lottie": "workspace:*",
+    "@a-company/atelier-schema": "workspace:*",
+    "@a-company/atelier-svg": "workspace:*",
+    "@a-company/atelier-types": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.20.1",
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/ws": "^8.18.1",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"

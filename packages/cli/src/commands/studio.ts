@@ -18,6 +18,16 @@ import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
 import type { Command } from "commander";
+import {
+  DocumentStore,
+  WebSocketServerTransport,
+  createServer as createMcpServer,
+  BRIDGE_PROTOCOL_VERSION,
+  isBridgeEnvelope,
+  type BridgeEnvelope,
+} from "@a-company/atelier-mcp";
+import { parseAtelier, serializeAtelier } from "@a-company/atelier-schema";
+import { WebSocketServer, type WebSocket as WsWebSocket } from "ws";
 
 /** Recursively glob for .atelier files under a directory. */
 function findAtelierFiles(dir: string, base: string = dir): string[] {
@@ -51,6 +61,195 @@ function isSafePath(filePath: string): boolean {
   if (!filePath || filePath.includes("..") || filePath.startsWith("/")) return false;
   const resolved = resolve(process.cwd(), filePath);
   return resolved.startsWith(process.cwd());
+}
+
+/**
+ * Shared origin-check used by both REST middleware and WS upgrade handler.
+ * ^localhost-only: WebSocket upgrade requests bypass connect middleware
+ * entirely, so the bridge MUST re-run this check before accepting the
+ * upgrade — otherwise an arbitrary cross-origin browser tab could connect
+ * to /bridge or /mcp and drive the studio.
+ */
+export function isAllowedOrigin(origin: string | undefined, port: number): boolean {
+  if (!origin) return false;
+  return (
+    origin === `http://localhost:${port}` ||
+    origin === `http://127.0.0.1:${port}`
+  );
+}
+
+// ─── Bridge & MCP-over-WS wiring ────────────────────────────────────────────
+//
+// The bridge connects an external MCP client (e.g. Claude Desktop running
+// `atelier-mcp` over WS) to the in-browser AtelierStudio. The full loop:
+//
+//   external LLM tool ──► McpServer (per WS conn) ──► shared DocumentStore
+//                                                            │
+//                                            onChange (source≠"human")
+//                                                            ▼
+//                                       broadcast `llm:mutation` envelope
+//                                                            ▼
+//                                       browser applies via studio.applyMutation
+//
+//   browser human edit ──► fetch /api/file (POST) ──► writeFileSync ──► store.set(source:"human")
+//                                                                              │
+//                                                              onChange (filtered: human)
+//                                                                              ▼
+//                                                               NOT broadcast (skip echo)
+//
+//   browser doc:patch (WS) ──► store.set(source:"human") + writeFileSync       │
+//                                                                              ▼
+//                                                               NOT broadcast (skip echo)
+//
+// Single-doc invariant for v1: the studio session tracks one currentDocId
+// (the most-recently-loaded file path). When a new bridge client connects
+// mid-session it receives `doc:loaded` for whatever's currently active.
+
+/** State held across the studio session — exported so tests can drive it. */
+export interface BridgeSessionState {
+  store: DocumentStore;
+  /** Most-recently-loaded file path; null until first load. */
+  currentDocId: string | null;
+}
+
+/**
+ * Wrap a `ws.WebSocket` (already accepted as a /bridge connection) so it
+ * receives the `hello` + initial `doc:loaded` handshake and joins the
+ * broadcast set.
+ *
+ * Returned `dispose` removes the client from the set and unhooks listeners.
+ */
+export function attachBridgeClient(
+  ws: WsWebSocket,
+  state: BridgeSessionState,
+  clients: Set<WsWebSocket>,
+  loadDocFromDisk: (docId: string) => string | null,
+  /** Persist a human-sourced inbound doc:patch envelope to disk. */
+  persistHumanPatch: (docId: string, doc: import("@a-company/atelier-types").AtelierDocument) => void,
+): () => void {
+  clients.add(ws);
+
+  const clientId = randomBytes(6).toString("hex");
+  const send = (env: BridgeEnvelope): void => {
+    if (ws.readyState !== ws.OPEN) return;
+    ws.send(JSON.stringify(env));
+  };
+
+  send({ type: "hello", clientId, protocolVersion: BRIDGE_PROTOCOL_VERSION });
+
+  if (state.currentDocId) {
+    const existing = state.store.get(state.currentDocId);
+    if (existing) {
+      send({ type: "doc:loaded", documentId: state.currentDocId, doc: existing });
+    } else {
+      // Re-hydrate from disk if the store hasn't seen it yet (e.g. bridge
+      // client connected before the browser loaded any file).
+      const raw = loadDocFromDisk(state.currentDocId);
+      if (raw) {
+        const parsed = parseAtelier(raw);
+        if (parsed.success) {
+          state.store.set(state.currentDocId, parsed.data, "system");
+          send({ type: "doc:loaded", documentId: state.currentDocId, doc: parsed.data });
+        }
+      }
+    }
+  }
+
+  const onMessage = (data: unknown): void => {
+    let text: string;
+    if (typeof data === "string") text = data;
+    else if (data instanceof Buffer) text = data.toString("utf-8");
+    else if (Array.isArray(data)) text = Buffer.concat(data as Buffer[]).toString("utf-8");
+    else text = String(data);
+
+    let env: unknown;
+    try {
+      env = JSON.parse(text);
+    } catch {
+      send({ type: "error", code: "parse_error", message: "invalid JSON" });
+      return;
+    }
+
+    if (!isBridgeEnvelope(env)) {
+      send({ type: "error", code: "invalid_envelope", message: "unknown envelope shape" });
+      return;
+    }
+
+    if (env.type === "doc:patch") {
+      // Browser-originated edit. Persist + mirror into the store with
+      // source:"human" so the onChange filter skips re-broadcasting it
+      // (which would echo back to the same browser that just emitted it).
+      try {
+        state.store.set(env.documentId, env.doc, "human");
+        state.currentDocId = env.documentId;
+        persistHumanPatch(env.documentId, env.doc);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        send({ type: "error", code: "persist_failed", message: msg, opId: env.opId });
+      }
+      return;
+    }
+
+    if (env.type === "doc:load") {
+      const existing = state.store.get(env.documentId);
+      if (existing) {
+        send({ type: "doc:loaded", documentId: env.documentId, doc: existing });
+        return;
+      }
+      const raw = loadDocFromDisk(env.documentId);
+      if (raw) {
+        const parsed = parseAtelier(raw);
+        if (parsed.success) {
+          state.store.set(env.documentId, parsed.data, "system");
+          send({ type: "doc:loaded", documentId: env.documentId, doc: parsed.data });
+          return;
+        }
+      }
+      send({ type: "error", code: "not_found", message: `document ${env.documentId} not found` });
+      return;
+    }
+
+    // hello / doc:loaded / llm:mutation / error are server-→client only.
+    // Ignore silently; a future protocol revision may use them bidirectionally.
+  };
+
+  const onClose = (): void => {
+    clients.delete(ws);
+  };
+
+  ws.on("message", onMessage);
+  ws.on("close", onClose);
+  ws.on("error", onClose);
+
+  return () => {
+    clients.delete(ws);
+    try {
+      ws.close();
+    } catch {
+      // ignore
+    }
+  };
+}
+
+/**
+ * Broadcast a single envelope to all connected bridge clients.
+ * Silently skips clients that are not OPEN — the close handler removes
+ * them on the next tick.
+ */
+export function broadcastToBridge(
+  clients: Set<WsWebSocket>,
+  envelope: BridgeEnvelope,
+): void {
+  const payload = JSON.stringify(envelope);
+  for (const ws of clients) {
+    if (ws.readyState === ws.OPEN) {
+      try {
+        ws.send(payload);
+      } catch {
+        // Drop on send-failure; the close handler cleans up.
+      }
+    }
+  }
 }
 
 function getInlineHTML(): string {
@@ -89,6 +288,12 @@ let studio: AtelierStudio | null = null;
 let currentFile: string | null = null;
 let files: FileEntry[] = [];
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+let bridgeSocket: WebSocket | null = null;
+// One-tick suppression: when the bridge delivers an LLM mutation we apply it
+// via studio.applyMutation (which sets suppressNotify internally) — the
+// resulting onDocumentChange callback won't fire, so we don't echo back.
+// This flag is a backstop in case future studio refactors change that path.
+let suppressOutbound = false;
 
 // ── API helpers ──
 async function fetchFiles(): Promise<FileEntry[]> {
@@ -342,6 +547,35 @@ style.textContent = \`
     color: #A89F95;
     font-size: 18px;
   }
+
+  /* ── Bridge toast (LLM mutation attribution) ── */
+  .atel-toast-host {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .atel-toast {
+    background: #333333;
+    border: 1px solid #C75B39;
+    color: #F5F0EB;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: auto;
+    max-width: 360px;
+  }
+  .atel-toast--visible { opacity: 1; transform: translateY(0); }
+  .atel-toast__hint { color: #A89F95; margin-left: 6px; font-size: 11px; }
 \`;
 document.head.appendChild(style);
 
@@ -523,11 +757,128 @@ async function loadFile(path: string): Promise<void> {
         const yaml = serializeAtelier(doc);
         void performSave(currentFile, yaml);
       }, 800);
+
+      // Bridge: send the human edit so any connected MCP client (or future
+      // bridge listeners) sees the doc as-edited. The server marks this as
+      // source:"human" so the bridge does NOT echo back.
+      if (!suppressOutbound && bridgeSocket && bridgeSocket.readyState === WebSocket.OPEN && currentFile) {
+        try {
+          bridgeSocket.send(JSON.stringify({
+            type: "doc:patch",
+            documentId: currentFile,
+            doc,
+            source: "human",
+          }));
+        } catch {
+          // Bridge transport failure is non-fatal — autosave still covers persistence.
+        }
+      }
     },
   });
   studio.setTheme(theme);
   studio.setFilename(baseName);
   studio.loadDocument(result.data);
+}
+
+// ── Toast (LLM mutation attribution) ──
+const toastHost = document.createElement("div");
+toastHost.className = "atel-toast-host";
+document.body.appendChild(toastHost);
+
+function showToast(message: string, hint?: string): void {
+  const toast = document.createElement("div");
+  toast.className = "atel-toast";
+  toast.textContent = message;
+  if (hint) {
+    const span = document.createElement("span");
+    span.className = "atel-toast__hint";
+    span.textContent = hint;
+    toast.appendChild(span);
+  }
+  toastHost.appendChild(toast);
+  // Trigger transition next frame.
+  requestAnimationFrame(() => { toast.classList.add("atel-toast--visible"); });
+  setTimeout(() => {
+    toast.classList.remove("atel-toast--visible");
+    setTimeout(() => { toast.remove(); }, 250);
+  }, 3200);
+}
+
+// ── Bridge connection (LLM ↔ human live mutation loop) ──
+//
+// Manual test:
+//   1. Run \`atelier studio\` in a directory with a .atelier file.
+//   2. In another terminal, run an MCP client (e.g. Claude Desktop with the
+//      atelier-mcp server configured to connect to ws://127.0.0.1:<port>/mcp).
+//   3. Ask the LLM to add a layer, change a color, etc.
+//   4. Watch the studio canvas update in real time and a toast appear in
+//      the bottom-right reading "agent edited document (<tool>) — Cmd-Z to undo".
+//   5. Hit Cmd-Z; the prior state returns. The history snapshot was made
+//      by studio.applyMutation() (see Builder F's commit 0219d28).
+//
+// Playwright e2e coverage is task #15.3 — deferred per the testing strategy.
+function connectBridge(): void {
+  if (bridgeSocket && bridgeSocket.readyState !== WebSocket.CLOSED) return;
+  const url = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/bridge";
+  try {
+    bridgeSocket = new WebSocket(url);
+  } catch (err) {
+    console.warn("Bridge connect failed:", err);
+    return;
+  }
+
+  bridgeSocket.addEventListener("message", (ev) => {
+    let env: any;
+    try { env = JSON.parse(ev.data); } catch { return; }
+
+    if (env.type === "hello") {
+      // Logged for parity with the server's clientId — useful when debugging.
+      console.debug("[bridge] connected as", env.clientId, "protocol v" + env.protocolVersion);
+      return;
+    }
+
+    if (env.type === "doc:loaded") {
+      // The bridge sent us its current doc on connect. Only apply if we
+      // either have no doc loaded yet OR the bridge's doc id matches what
+      // we're showing — otherwise the user just switched files in the
+      // sidebar and the bridge will catch up via /api/file.
+      if (studio && currentFile === env.documentId) {
+        suppressOutbound = true;
+        try { studio.applyMutation({ type: "doc:replace", doc: env.doc, source: "system" }); }
+        finally { queueMicrotask(() => { suppressOutbound = false; }); }
+      }
+      return;
+    }
+
+    if (env.type === "llm:mutation") {
+      if (studio && currentFile === env.documentId) {
+        suppressOutbound = true;
+        try {
+          studio.applyMutation({ type: "doc:replace", doc: env.doc, source: env.source ?? "llm" });
+        } finally {
+          queueMicrotask(() => { suppressOutbound = false; });
+        }
+        const tool = env.toolName ? "(" + env.toolName + ")" : "(MCP tool)";
+        showToast("agent edited document " + tool, " — Cmd-Z to undo");
+      }
+      return;
+    }
+
+    if (env.type === "error") {
+      console.warn("[bridge] error:", env.code, env.message);
+      return;
+    }
+  });
+
+  bridgeSocket.addEventListener("close", () => {
+    // Auto-reconnect after a short delay so the studio survives transient
+    // dev-server reloads. Bounded retry would be nice in v1.1.
+    setTimeout(connectBridge, 1000);
+  });
+
+  bridgeSocket.addEventListener("error", () => {
+    // close handler will fire next and trigger the reconnect.
+  });
 }
 
 // ── Boot ──
@@ -563,6 +914,7 @@ async function boot(): Promise<void> {
 }
 
 boot();
+connectBridge();
 `;
 }
 
@@ -720,6 +1072,55 @@ export function studioCommand(program: Command): void {
         // and to defeat any future change in Vite defaults.
         const HOSTNAME = "127.0.0.1";
 
+        // Shared session state for the bridge + MCP-over-WS endpoints.
+        // The same DocumentStore is fed by:
+        //   - File reads via /api/file (source:"system" — hydrates the cache)
+        //   - File writes via /api/file POST (source:"human" — no broadcast)
+        //   - Bridge doc:patch (source:"human" — no broadcast; also persists)
+        //   - Per-connection MCP servers over /mcp (source:"llm" by default
+        //     for tools that don't tag — broadcasts to the bridge)
+        const bridgeState: BridgeSessionState = {
+          store: new DocumentStore(),
+          currentDocId: null,
+        };
+        const bridgeClients = new Set<WsWebSocket>();
+
+        const loadDocFromDisk = (docId: string): string | null => {
+          if (!isSafePath(docId)) return null;
+          try {
+            return readFileSync(resolve(cwd, docId), "utf-8");
+          } catch {
+            return null;
+          }
+        };
+
+        const persistHumanPatch = (
+          docId: string,
+          doc: import("@a-company/atelier-types").AtelierDocument,
+        ): void => {
+          if (!isSafePath(docId)) return;
+          writeFileSync(resolve(cwd, docId), serializeAtelier(doc), "utf-8");
+        };
+
+        // Persist LLM/system mutations to disk so the on-disk .atelier file
+        // stays in lock-step with what the browser shows. Without this, a
+        // refresh would lose the LLM's edits.
+        bridgeState.store.onChange((id, doc, source) => {
+          if (source === "human") return; // already persisted by /api/file POST
+          if (doc === null) return;       // deletions don't touch disk in v1
+          try {
+            persistHumanPatch(id, doc);
+          } catch {
+            // Non-fatal: in-memory state is authoritative for the browser session.
+          }
+          broadcastToBridge(bridgeClients, {
+            type: "llm:mutation",
+            documentId: id,
+            doc,
+            source,
+          });
+        });
+
         const server = await vite.createServer({
           root: tmpDir,
           server: {
@@ -785,6 +1186,14 @@ export function studioCommand(program: Command): void {
                     if (req.method === "GET") {
                       try {
                         const content = readFileSync(absPath, "utf-8");
+                        // Mirror into the shared store so MCP clients connecting
+                        // over /mcp see the same active document and the bridge
+                        // can broadcast it to late-joining browser clients.
+                        const parsed = parseAtelier(content);
+                        if (parsed.success) {
+                          bridgeState.store.set(filePath, parsed.data, "system");
+                          bridgeState.currentDocId = filePath;
+                        }
                         res.setHeader("Content-Type", "text/plain");
                         res.end(content);
                       } catch {
@@ -800,6 +1209,14 @@ export function studioCommand(program: Command): void {
                       req.on("end", () => {
                         try {
                           writeFileSync(absPath, body, "utf-8");
+                          // Mirror human writes into the store with source:"human"
+                          // so onChange skips re-broadcasting (the browser already
+                          // has the latest — no echo needed).
+                          const parsed = parseAtelier(body);
+                          if (parsed.success) {
+                            bridgeState.store.set(filePath, parsed.data, "human");
+                            bridgeState.currentDocId = filePath;
+                          }
                           res.end("OK");
                         } catch (e) {
                           const msg = e instanceof Error ? e.message : String(e);
@@ -851,6 +1268,65 @@ export function studioCommand(program: Command): void {
         });
 
         await server.listen();
+
+        // Mount WebSocket bridge + MCP transport on Vite's HTTP server.
+        // ^localhost-only: the connect middleware does NOT run on WS upgrades
+        // (Node fires 'upgrade' before connect), so we re-run the Origin
+        // check here. Without this the bridge would be cross-origin-reachable
+        // from any browser tab.
+        const httpServer = server.httpServer;
+        if (httpServer) {
+          const wssBridge = new WebSocketServer({ noServer: true });
+          const wssMcp = new WebSocketServer({ noServer: true });
+
+          httpServer.on("upgrade", (req, socket, head) => {
+            const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${port}`);
+            if (url.pathname !== "/bridge" && url.pathname !== "/mcp") return;
+
+            // ^localhost-only Origin check for WS upgrades.
+            if (!isAllowedOrigin(req.headers.origin, port)) {
+              socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+              socket.destroy();
+              return;
+            }
+
+            if (url.pathname === "/bridge") {
+              wssBridge.handleUpgrade(req, socket, head, (ws) => {
+                wssBridge.emit("connection", ws, req);
+              });
+              return;
+            }
+
+            // url.pathname === "/mcp"
+            wssMcp.handleUpgrade(req, socket, head, (ws) => {
+              wssMcp.emit("connection", ws, req);
+            });
+          });
+
+          wssBridge.on("connection", (ws) => {
+            attachBridgeClient(
+              ws,
+              bridgeState,
+              bridgeClients,
+              loadDocFromDisk,
+              persistHumanPatch,
+            );
+          });
+
+          wssMcp.on("connection", (ws) => {
+            // Per-connection MCP server, shared store. Each external client
+            // gets its own handler context but writes flow through the same
+            // emitter the bridge subscribes to.
+            const { server: mcpServer } = createMcpServer(bridgeState.store);
+            const transport = new WebSocketServerTransport(ws);
+            mcpServer.connect(transport).catch((err) => {
+              // Connection-time failures: log and close. Per-call failures
+              // surface as JSON-RPC errors via the SDK.
+              console.error("MCP-over-WS connect failed:", err);
+              try { ws.close(); } catch { /* ignore */ }
+            });
+          });
+        }
 
         const resolvedUrl = server.resolvedUrls?.local[0] ?? `http://localhost:${port}`;
         const url = resolvedUrl;

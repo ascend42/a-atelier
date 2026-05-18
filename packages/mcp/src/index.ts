@@ -22,6 +22,22 @@ import { register as registerPerformanceTools } from "./tools/performance.js";
 import { register as registerOverlayTools } from "./tools/overlays.js";
 
 export { DocumentStore } from "./store.js";
+export type { MutationSource, ChangeListener } from "./store.js";
+export {
+  BRIDGE_PROTOCOL_VERSION,
+  isBridgeEnvelope,
+} from "./bridge-protocol.js";
+export type {
+  BridgeEnvelope,
+  HelloEnvelope,
+  DocLoadEnvelope,
+  DocLoadedEnvelope,
+  DocPatchEnvelope,
+  LlmMutationEnvelope,
+  ErrorEnvelope,
+} from "./bridge-protocol.js";
+export { WebSocketServerTransport } from "./transports/ws-transport.js";
+export type { WsLike } from "./transports/ws-transport.js";
 export { register as registerDocumentTools } from "./tools/document.js";
 export { register as registerLayerTools } from "./tools/layers.js";
 export { register as registerShapeTools } from "./tools/shapes.js";
@@ -43,9 +59,16 @@ export { register as registerOverlayTools } from "./tools/overlays.js";
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
  * Returns both the server and the backing store for testing.
+ *
+ * The `store` parameter is optional — pass an existing `DocumentStore` to
+ * share state across multiple MCP server instances. This is how the
+ * `atelier studio` command's per-connection WebSocket MCP servers all
+ * surface their writes through a single `onChange` emitter that the live
+ * bridge subscribes to (task #10).
  */
-export function createServer(): { server: McpServer; store: DocumentStore } {
-  const store = new DocumentStore();
+export function createServer(
+  store: DocumentStore = new DocumentStore(),
+): { server: McpServer; store: DocumentStore } {
 
   const server = new McpServer(
     { name: "atelier", version: "0.1.0" },

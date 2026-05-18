@@ -29,10 +29,12 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
+    "@a-company/atelier-mcp": "workspace:*",
     "@a-company/atelier-studio": ">=0.25.1",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "commander": "^13.0.0",
     "vite": "^6.1.0",
+    "ws": "^8.20.1",
     "yaml": "^2.7.0",
     "zod": "^3.25.0"
   },
@@ -48,13 +50,14 @@
     "access": "public"
   },
   "devDependencies": {
-    "@a-company/atelier-types": "workspace:*",
-    "@a-company/atelier-schema": "workspace:*",
-    "@a-company/atelier-core": "workspace:*",
     "@a-company/atelier-canvas": "workspace:*",
-    "@a-company/atelier-svg": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
     "@a-company/atelier-lottie": "workspace:*",
+    "@a-company/atelier-schema": "workspace:*",
+    "@a-company/atelier-svg": "workspace:*",
+    "@a-company/atelier-types": "workspace:*",
     "@types/node": "^22.0.0",
+    "@types/ws": "^8.18.1",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"

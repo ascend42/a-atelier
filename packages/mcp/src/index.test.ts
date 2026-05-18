@@ -2,6 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer, DocumentStore } from "./index.js";
+import {
+  WebSocketServerTransport,
+  type WsLike,
+} from "./transports/ws-transport.js";
 
 // ─── Helpers ──────────────────────────────────────────────────
 
@@ -2581,5 +2585,148 @@ describe("MCP Tools", () => {
       expect(layer.frame).toEqual({ x: 1080 - 24, y: 24 });
       expect(layer.anchorPoint).toEqual({ x: 1, y: 0 });
     });
+  });
+});
+
+// ─── WebSocketServerTransport ─────────────────────────────────
+//
+// Validates the MCP-over-WS transport's contract with the SDK Transport
+// interface: inbound JSON frames become onmessage callbacks, outbound
+// send() reaches the WebSocket, errors surface via onerror, and
+// malformed payloads do not crash the connection.
+//
+// Uses a hand-rolled fake WebSocket conforming to the WsLike shape so the
+// test runs without binding a real port.
+
+describe("WebSocketServerTransport", () => {
+  class FakeWs implements WsLike {
+    public readyState = 1; // OPEN
+    public sent: string[] = [];
+    private handlers = new Map<string, Array<(arg: unknown) => void>>();
+
+    on(event: "message" | "close" | "error", listener: (...args: any[]) => void): void {
+      const list = this.handlers.get(event) ?? [];
+      list.push(listener as (arg: unknown) => void);
+      this.handlers.set(event, list);
+    }
+
+    send(data: string): void {
+      this.sent.push(data);
+    }
+
+    close(): void {
+      this.readyState = 3; // CLOSED
+      for (const h of this.handlers.get("close") ?? []) h(undefined);
+    }
+
+    /** Test helper: simulate an inbound frame. */
+    deliver(data: string | Buffer): void {
+      for (const h of this.handlers.get("message") ?? []) h(data);
+    }
+
+    /** Test helper: simulate an error. */
+    errorWith(err: Error): void {
+      for (const h of this.handlers.get("error") ?? []) h(err);
+    }
+  }
+
+  it("round-trips JSON-RPC messages: client send → onmessage, transport.send → ws.send", async () => {
+    const ws = new FakeWs();
+    const transport = new WebSocketServerTransport(ws);
+
+    const received: unknown[] = [];
+    transport.onmessage = (m) => { received.push(m); };
+
+    await transport.start();
+
+    const req = { jsonrpc: "2.0" as const, id: 1, method: "ping", params: {} };
+    ws.deliver(JSON.stringify(req));
+    expect(received).toEqual([req]);
+
+    const reply = { jsonrpc: "2.0" as const, id: 1, result: { ok: true } };
+    await transport.send(reply);
+    expect(ws.sent).toEqual([JSON.stringify(reply)]);
+  });
+
+  it("surfaces parse errors via onerror without closing the connection", async () => {
+    const ws = new FakeWs();
+    const transport = new WebSocketServerTransport(ws);
+
+    const errors: Error[] = [];
+    const received: unknown[] = [];
+    transport.onerror = (e) => { errors.push(e); };
+    transport.onmessage = (m) => { received.push(m); };
+
+    await transport.start();
+
+    ws.deliver("not-json");
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toMatch(/failed to parse/i);
+    expect(received).toEqual([]);
+
+    // Subsequent valid frames still flow.
+    const req = { jsonrpc: "2.0" as const, id: 2, method: "ping", params: {} };
+    ws.deliver(JSON.stringify(req));
+    expect(received).toEqual([req]);
+  });
+
+  it("rejects send() after close and fires onclose exactly once", async () => {
+    const ws = new FakeWs();
+    const transport = new WebSocketServerTransport(ws);
+
+    let closeCount = 0;
+    transport.onclose = () => { closeCount += 1; };
+
+    await transport.start();
+    await transport.close();
+    // Underlying ws also fires close → must NOT double-fire onclose.
+    expect(closeCount).toBe(1);
+
+    await expect(
+      transport.send({ jsonrpc: "2.0", id: 3, result: {} } as any),
+    ).rejects.toThrow(/cannot send after close/);
+  });
+
+  it("normalizes Buffer payloads to JSON-parsed messages", async () => {
+    const ws = new FakeWs();
+    const transport = new WebSocketServerTransport(ws);
+
+    const received: unknown[] = [];
+    transport.onmessage = (m) => { received.push(m); };
+
+    await transport.start();
+
+    const req = { jsonrpc: "2.0" as const, id: 4, method: "tools/list" };
+    ws.deliver(Buffer.from(JSON.stringify(req), "utf-8"));
+    expect(received).toEqual([req]);
+  });
+
+  it("drives a full MCP request/response when connected to a server (shared store)", async () => {
+    const ws = new FakeWs();
+    const transport = new WebSocketServerTransport(ws);
+    const { server } = createServer();
+    await server.connect(transport);
+
+    // The SDK's initialize handshake is the simplest end-to-end signal.
+    ws.deliver(JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "initialize",
+      params: {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "ws-transport-test", version: "0.0.1" },
+      },
+    }));
+
+    // Drain microtasks so the SDK can respond.
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(ws.sent.length).toBeGreaterThan(0);
+    const reply = JSON.parse(ws.sent[0]);
+    expect(reply.jsonrpc).toBe("2.0");
+    expect(reply.id).toBe(1);
+    expect(reply.result).toBeDefined();
+    expect(reply.result.protocolVersion).toBeDefined();
   });
 });

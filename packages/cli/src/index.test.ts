@@ -2134,3 +2134,224 @@ describe("atelier export-image", () => {
     expect(existsSync(outPath)).toBe(false);
   });
 });
+
+// ─── Studio bridge wiring ─────────────────────────────────────
+//
+// Unit-tests for the WebSocket bridge helpers exported by the studio
+// command. We exercise the pure logic (attach, broadcast, origin check)
+// against a hand-rolled FakeWs that conforms to the slice of `ws` we use,
+// so the tests don't bind a real port.
+
+import {
+  attachBridgeClient,
+  broadcastToBridge,
+  isAllowedOrigin,
+  type BridgeSessionState,
+} from "./commands/studio.js";
+import { DocumentStore } from "@a-company/atelier-mcp";
+
+class FakeBridgeWs {
+  public readyState = 1; // OPEN
+  public sent: string[] = [];
+  public OPEN = 1;
+  private handlers = new Map<string, Array<(arg: unknown) => void>>();
+
+  on(event: string, listener: (...args: unknown[]) => void): void {
+    const list = this.handlers.get(event) ?? [];
+    list.push(listener as (arg: unknown) => void);
+    this.handlers.set(event, list);
+  }
+
+  send(data: string): void {
+    this.sent.push(data);
+  }
+
+  close(): void {
+    this.readyState = 3;
+    for (const h of this.handlers.get("close") ?? []) h(undefined);
+  }
+
+  deliver(text: string): void {
+    for (const h of this.handlers.get("message") ?? []) h(text);
+  }
+
+  parsed(): unknown[] {
+    return this.sent.map((s) => JSON.parse(s));
+  }
+}
+
+function bridgeDoc(name = "bridge-doc"): AtelierDocument {
+  return {
+    version: "1.0",
+    name,
+    canvas: { width: 100, height: 100, fps: 30 },
+    layers: [],
+    states: { default: { duration: 60, deltas: [] } },
+  };
+}
+
+describe("studio bridge — isAllowedOrigin", () => {
+  it("accepts localhost + 127.0.0.1 on the same port", () => {
+    expect(isAllowedOrigin("http://localhost:4321", 4321)).toBe(true);
+    expect(isAllowedOrigin("http://127.0.0.1:4321", 4321)).toBe(true);
+  });
+
+  it("rejects undefined, mismatched port, or foreign origins", () => {
+    expect(isAllowedOrigin(undefined, 4321)).toBe(false);
+    expect(isAllowedOrigin("http://localhost:9999", 4321)).toBe(false);
+    expect(isAllowedOrigin("http://evil.example", 4321)).toBe(false);
+    expect(isAllowedOrigin("https://localhost:4321", 4321)).toBe(false);
+  });
+});
+
+describe("studio bridge — attachBridgeClient", () => {
+  it("sends hello + doc:loaded on connect, then broadcasts store mutations as llm:mutation", () => {
+    const state: BridgeSessionState = {
+      store: new DocumentStore(),
+      currentDocId: "session.atelier",
+    };
+    state.store.set("session.atelier", bridgeDoc("initial"), "system");
+
+    const clients = new Set<any>();
+    const ws = new FakeBridgeWs();
+    attachBridgeClient(
+      ws as any,
+      state,
+      clients as any,
+      () => null,
+      () => undefined,
+    );
+
+    const sent = ws.parsed() as Array<{ type: string }>;
+    expect(sent.length).toBe(2);
+    expect(sent[0].type).toBe("hello");
+    expect((sent[0] as any).protocolVersion).toBe(1);
+    expect(sent[1].type).toBe("doc:loaded");
+    expect((sent[1] as any).documentId).toBe("session.atelier");
+    expect((sent[1] as any).doc.name).toBe("initial");
+    expect(clients.has(ws as any)).toBe(true);
+
+    // Subscribe + broadcast: simulate an LLM mutation landing in the store.
+    state.store.onChange((id, doc, source) => {
+      if (source === "human" || !doc) return;
+      broadcastToBridge(clients as any, {
+        type: "llm:mutation",
+        documentId: id,
+        doc,
+        source,
+      });
+    });
+
+    state.store.set("session.atelier", bridgeDoc("after-llm"), "llm");
+
+    const all = ws.parsed() as Array<{ type: string; doc?: any; source?: string }>;
+    const mutation = all.find((e) => e.type === "llm:mutation");
+    expect(mutation).toBeDefined();
+    expect(mutation!.doc.name).toBe("after-llm");
+    expect(mutation!.source).toBe("llm");
+  });
+
+  it("skips broadcasting human-sourced changes (no echo back to the browser)", () => {
+    const state: BridgeSessionState = {
+      store: new DocumentStore(),
+      currentDocId: "session.atelier",
+    };
+    state.store.set("session.atelier", bridgeDoc("initial"), "system");
+
+    const clients = new Set<any>();
+    const ws = new FakeBridgeWs();
+    attachBridgeClient(
+      ws as any,
+      state,
+      clients as any,
+      () => null,
+      () => undefined,
+    );
+
+    // Drop the connect frames; we're only measuring the subscription effect.
+    ws.sent = [];
+
+    // Same broadcast wiring the studio command installs.
+    state.store.onChange((id, doc, source) => {
+      if (source === "human" || !doc) return;
+      broadcastToBridge(clients as any, {
+        type: "llm:mutation",
+        documentId: id,
+        doc,
+        source,
+      });
+    });
+
+    state.store.set("session.atelier", bridgeDoc("human-edit"), "human");
+    expect(ws.sent).toEqual([]); // nothing broadcast
+
+    state.store.set("session.atelier", bridgeDoc("llm-edit"), "llm");
+    expect(ws.sent.length).toBe(1); // only LLM passes through
+  });
+
+  it("ack flow: inbound doc:patch persists + writes store with source:human", () => {
+    const state: BridgeSessionState = {
+      store: new DocumentStore(),
+      currentDocId: null,
+    };
+    const clients = new Set<any>();
+    const persisted: Array<{ id: string; doc: AtelierDocument }> = [];
+    const ws = new FakeBridgeWs();
+
+    attachBridgeClient(
+      ws as any,
+      state,
+      clients as any,
+      () => null,
+      (id, doc) => { persisted.push({ id, doc }); },
+    );
+
+    // Wire the broadcast subscription so we can assert no echo.
+    let broadcasts = 0;
+    state.store.onChange((_id, _doc, source) => {
+      if (source !== "human") broadcasts += 1;
+    });
+
+    ws.sent = []; // drop hello/doc:loaded
+    const newDoc = bridgeDoc("from-browser");
+    ws.deliver(JSON.stringify({
+      type: "doc:patch",
+      documentId: "session.atelier",
+      doc: newDoc,
+      source: "human",
+      opId: "op-1",
+    }));
+
+    expect(persisted).toHaveLength(1);
+    expect(persisted[0].id).toBe("session.atelier");
+    expect(persisted[0].doc.name).toBe("from-browser");
+    expect(state.store.get("session.atelier")?.name).toBe("from-browser");
+    expect(state.currentDocId).toBe("session.atelier");
+    expect(broadcasts).toBe(0); // human-source mutation did NOT broadcast
+    expect(ws.sent).toEqual([]); // and no ack-echo back to the originator
+  });
+
+  it("hydrates from disk when bridge client connects before browser loads any file", () => {
+    const state: BridgeSessionState = {
+      store: new DocumentStore(),
+      currentDocId: "lazy.atelier",
+    };
+    const yaml = serializeAtelier(bridgeDoc("from-disk"));
+
+    const ws = new FakeBridgeWs();
+    attachBridgeClient(
+      ws as any,
+      state,
+      new Set() as any,
+      (id) => (id === "lazy.atelier" ? yaml : null),
+      () => undefined,
+    );
+
+    const sent = ws.parsed() as Array<{ type: string; doc?: any }>;
+    const loaded = sent.find((e) => e.type === "doc:loaded");
+    expect(loaded).toBeDefined();
+    expect(loaded!.doc.name).toBe("from-disk");
+    // The store should now be hot for future MCP queries.
+    expect(state.store.get("lazy.atelier")?.name).toBe("from-disk");
+  });
+});
