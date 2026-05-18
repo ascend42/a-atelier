@@ -1,0 +1,66 @@
+id: Q-atel-001-orientation
+title: 'ATEL-001: Hello Atelier — Orientation'
+description: Verify the foundations from ATEL-001 — what Atelier is, how the three commands relate, and the shape of a minimal document.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-001
+difficulty: beginner
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: Which of the following best describes what makes Atelier "AI-native"?
+    choices:
+      A: It uses an LLM at render time to generate frames procedurally
+      B: It ships with a chat interface bolted onto a traditional editor
+      C: Its document format and 52 MCP tools are designed for an agent to author directly, with typed mutations and schema-validated errors
+      D: It runs only when an AI assistant is connected, refusing programmatic CLI use
+    correct: C
+    explanation: Atelier is AI-native because the document format and the MCP tool surface were designed for an agent to author. Mutations go through typed tools (atelier_add_layer, atelier_add_state, etc.) that validate against a Zod schema with readable errors. The engine itself is deterministic — no LLM is involved at render time, and the CLI and Builder API are first-class for programmatic use.
+  - id: q2
+    question: After running `npm i -g @a-company/atelier`, which three commands are on your PATH and what is each one's primary role?
+    choices:
+      A: '`atelier` (CLI), `atelier-mcp` (MCP server for AI agents), `atelier studio` (local browser editor) — all share one engine and document store'
+      B: '`atelier` (only CLI) — the MCP server and studio require separate npm packages'
+      C: '`atelier` (CLI), `atelier-cloud` (sync to SaaS), `atelier-render` (rendering daemon)'
+      D: '`atelier-cli`, `atelier-server`, `atelier-gui` — three independent binaries that do not share state'
+    correct: A
+    explanation: One install provides three executables that share `@atelier/core`. The CLI is for scripts and inspection, the MCP server is what an AI agent connects to, and `atelier studio` boots a local browser editor. They all read and write the same `.atelier` files and, with the live bridge enabled, observe each other's mutations.
+  - id: q3
+    question: In a minimal `.atelier` document, what is the relationship between a layer, a state, and a delta?
+    choices:
+      A: 'A layer is a keyframe; a state is a property; a delta is a layer parented to another layer'
+      B: 'A layer describes what exists; a state names a duration; a delta interpolates one property of one layer over a frame range with an easing'
+      C: 'A layer is an export format; a state is a render preset; a delta is a diff between two documents'
+      D: 'They are interchangeable names for the same concept — pick whichever reads best'
+    correct: B
+    explanation: Layers describe what exists in the scene (shape/text/image/video). States are named keyframes with a duration in frames. Deltas animate one property of one layer from a `from` value to a `to` value across `startFrame`–`endFrame` with an easing. Everything else in Atelier — easings, presets, templates, interactions, refs — extends these three primitives.
+  - id: q4
+    question: 'The "detected-vs-user-edited" convention in Atelier is a design pattern that solves which problem?'
+    choices:
+      A: 'How to compress YAML files so they download faster'
+      B: 'How to let an AI agent and a human edit the same document repeatedly without one erasing the other'
+      C: 'How to detect whether a user is logged in to Atelier Cloud'
+      D: 'How to choose between Canvas 2D and WebGL at render time'
+    correct: B
+    explanation: 'When an Atelier pipeline (silence-trim, captions, agent mutations) generates layers, those layers carry a tag identifying their source. User edits set `userEdited` / `userAdded` / `hidden` flags. When the pipeline re-runs (re-transcribe, re-detect silence, re-propose layout), it matches existing entries by timing tolerance and preserves the user''s edits. The same idea generalizes to any source — human, agent, or pipeline — so the symbiotic loop never destroys authorship.'
+  - id: q5
+    question: What does `atelier studio` bind to by default, and why?
+    choices:
+      A: '0.0.0.0 — to let teammates connect from the same WiFi network'
+      B: '127.0.0.1 — to keep the editor local-only and prevent drive-by writes from any browser tab'
+      C: 'A randomized public IP — for cloud sync'
+      D: 'It does not bind to a port; it uses raw IPC'
+    correct: B
+    explanation: '`atelier studio` binds to 127.0.0.1 (loopback) so the server is only reachable from the same machine. Mutating endpoints additionally check the Origin header to reject cross-origin POSTs from random browser tabs. There is no LAN or cloud exposure by default — Atelier is a local-first tool.'
+  - id: q6
+    question: You ran `atelier preview hello.atelier --frame 15`. What did it output, and what is it equivalent to inside the engine?
+    choices:
+      A: 'A rendered PNG of frame 15 saved to disk — equivalent to `atelier export --frame 15`'
+      B: 'The resolved layer state at frame 15 (interpolated property values), the same as what the renderer calls `resolveFrame(doc, "default", 15)` produces'
+      C: 'A live video stream starting from frame 15'
+      D: 'Nothing — `preview` requires the studio to be running'
+    correct: B
+    explanation: '`atelier preview` calls the same `resolveFrame` function the renderer uses. It returns the interpolated layer state at that frame — every animatable property resolved through its delta and easing. Use it to inspect what the renderer would draw without actually rasterizing. For PNG output, use `atelier export --frame N --out file.png`.'

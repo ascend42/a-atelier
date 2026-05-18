@@ -1,5 +1,80 @@
 version: '1.0'
-generatedAt: '2026-05-06T23:29:45.263Z'
-totalContent: 0
-entries: []
+generatedAt: '2026-05-18T19:47:00.260Z'
+totalContent: 6
+entries:
+  - id: N-atel-001-first-render
+    title: Render your first animation
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-001
+      - first-render
+      - cli
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-001-first-render.md
+  - id: N-atel-001-install-and-launch
+    title: Install Atelier and launch the studio
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-001
+      - install
+      - cli
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-001-install-and-launch.md
+  - id: N-atel-001-what-is-atelier
+    title: What is Atelier?
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-001
+      - orientation
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-001-what-is-atelier.md
+  - id: N-test-placeholder
+    title: test placeholder
+    type: note
+    author: ascend
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags: []
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-test-placeholder.md
+  - id: Q-atel-001-orientation
+    title: 'ATEL-001: Hello Atelier — Orientation'
+    type: quiz
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-001
+    symbols: []
+    difficulty: beginner
+    file: content/quizzes/Q-atel-001-orientation.yaml
+  - id: LP-atel-001
+    title: 'ATEL-001: Hello Atelier'
+    type: path
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-001
+      - orientation
+    symbols: []
+    file: content/paths/LP-atel-001.yaml
 diplomaCount: 0

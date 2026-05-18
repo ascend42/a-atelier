@@ -1,0 +1,21 @@
+id: LP-atel-001
+title: 'ATEL-001: Hello Atelier'
+description: Orientation track. What Atelier is, how to install it, how to launch the studio, and how to render a first animation from a hand-written `.atelier` document. ~12 minutes.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-001
+  - orientation
+ordered: true
+steps:
+  - content: N-atel-001-what-is-atelier
+    required: true
+  - content: N-atel-001-install-and-launch
+    required: true
+  - content: N-atel-001-first-render
+    required: true
+  - content: Q-atel-001-orientation
+    required: true
+    passRequired: true

@@ -1,0 +1,21 @@
+id: a-atelier
+name: Atelier University
+version: 0.1.0
+schema_version: '1'
+
+tenant_kind: project
+description: Learn Atelier — the AI-native animation engine. Document model, MCP authoring, visual system, recipes, and the silence-trim/transcribe/captions pipelines.
+
+authors:
+  - Atelier team
+license: MIT
+origin_hint: authored
+
+content_types:
+  - note
+  - quiz
+  - path
+
+branding:
+  tagline: AI-native animation, taught by the engine that runs it
+  institution: a-company
