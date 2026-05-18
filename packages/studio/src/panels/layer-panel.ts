@@ -1,5 +1,6 @@
 import type { AtelierDocument, Layer } from "@a-company/atelier-types";
 import { enableDragReorder } from "../utils/drag-reorder.js";
+import { createImageLayerFromFile } from "../utils/image-drop.js";
 
 const TYPE_ICONS: Record<string, string> = {
   shape: "\u25A0",
@@ -319,18 +320,13 @@ export class LayerPanel {
         break;
       }
       case "image": {
-        const w = 400;
-        const h = 400;
-        newLayer = {
-          id: this.nextLayerId("image"),
-          // Schema requires assetId.min(1) — use a placeholder string the
-          // user can swap once they pick a real asset via PropertyPanel.
-          visual: { type: "image", assetId: "placeholder" },
-          frame: { x: (canvasW - w) / 2, y: (canvasH - h) / 2 },
-          bounds: { width: w, height: h },
-          opacity: 1,
-        };
-        break;
+        // Image creation is async (file picker → FileReader → Image
+        // decode) and produces a layer via the shared image-drop
+        // helper so this path converges with canvas drag-drop. Bail
+        // out of the sync switch — the file-picker flow appends and
+        // selects on its own.
+        this.openImageFilePicker();
+        return;
       }
       case "handle": {
         const w = 400;
@@ -401,6 +397,46 @@ export class LayerPanel {
     this.doc.layers.push(newLayer);
     this.selectLayer(newLayer.id);
     this.opts.onDocumentChange();
+  }
+
+  /**
+   * Open a hidden <input type="file"> programmatically so the user can
+   * pick an image from disk. On selection, route through the same
+   * createImageLayerFromFile helper that the canvas drag-drop uses —
+   * both entry points converge on a single image-creation path.
+   *
+   * If the user cancels the file picker (no file chosen), do nothing —
+   * we don't want to leave an empty Image layer in the document.
+   */
+  private openImageFilePicker(): void {
+    if (!this.doc) return;
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.display = "none";
+    input.addEventListener("change", () => {
+      const file = input.files?.[0];
+      input.remove();
+      const doc = this.doc;
+      if (!file || !doc) return;
+      void (async () => {
+        try {
+          // Match canvas-drop semantics: if the user is filling in the
+          // welcome scaffold's placeholder, replace it; otherwise stack
+          // a new layer at the bottom of the z-stack.
+          const replaceBackground = doc.layers[0]?.id === "background";
+          const layer = await createImageLayerFromFile(doc, file, { replaceBackground });
+          this.selectLayer(layer.id);
+          this.opts.onDocumentChange();
+        } catch {
+          // Silently ignore decode failures — the user just sees no
+          // layer appear, and can try a different file.
+        }
+      })();
+    });
+    // The picker must be in the DOM in some browsers for click() to work.
+    document.body.appendChild(input);
+    input.click();
   }
 
   private removeLayer(): void {

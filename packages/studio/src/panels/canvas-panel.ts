@@ -2,6 +2,7 @@ import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
 import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
 import { Player } from "../player.js";
+import { createImageLayerFromFile } from "../utils/image-drop.js";
 
 export interface CanvasPanelOptions {
   onFrameChange?: (frame: number) => void;
@@ -11,6 +12,12 @@ export interface CanvasPanelOptions {
    * Showcase opts in by passing true.
    */
   autoplay?: boolean;
+  /**
+   * Invoked after a successful image drop mutates the document. The
+   * studio shell uses this to trigger save + re-render across all panels
+   * (same channel the layer-panel uses for `+ Add` operations).
+   */
+  onDocumentChange?: () => void;
 }
 
 export class CanvasPanel {
@@ -48,6 +55,43 @@ export class CanvasPanel {
     });
     wrap.appendChild(this.canvas);
     this.el.appendChild(wrap);
+
+    // ─── Drag-and-drop: image files onto the canvas ─────────────────
+    //
+    // Headline v1 workflow: user drags a photo onto the Studio canvas,
+    // it becomes an ImageVisual layer sized-to-fit, centered, behind
+    // existing overlays. Background-layer placeholders (id "background"
+    // from the welcome scaffold) get replaced rather than stacked.
+    //
+    // The drop-target highlight is painted by adding a CSS class to the
+    // canvas wrapper while a drag is hovering — styles.css defines the
+    // visual cue (outline + subtle backdrop).
+    const dropTarget = wrap;
+    dropTarget.addEventListener("dragenter", (e) => {
+      // Only respond to file drags, not in-app drags (layer reorder).
+      if (!hasFileTypes(e.dataTransfer)) return;
+      e.preventDefault();
+      dropTarget.classList.add("atel-canvas--drop-target");
+    });
+    dropTarget.addEventListener("dragover", (e) => {
+      if (!hasFileTypes(e.dataTransfer)) return;
+      // preventDefault is required for the drop event to fire.
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+      dropTarget.classList.add("atel-canvas--drop-target");
+    });
+    dropTarget.addEventListener("dragleave", (e) => {
+      // dragleave fires for every child element entered — only clear
+      // the highlight when the cursor actually leaves the wrap.
+      if (e.target === dropTarget) {
+        dropTarget.classList.remove("atel-canvas--drop-target");
+      }
+    });
+    dropTarget.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropTarget.classList.remove("atel-canvas--drop-target");
+      void this.handleFileDrop(e.dataTransfer);
+    });
 
     // Playback controls
     const playback = document.createElement("div");
@@ -189,4 +233,47 @@ export class CanvasPanel {
   destroy(): void {
     this.player?.destroy();
   }
+
+  /**
+   * Process a drop event's DataTransfer: extract image files (silently
+   * ignoring non-images), create a layer for each, and notify the host
+   * once the document has actually mutated.
+   *
+   * The FIRST image gets `replaceBackground: true` so it swaps out the
+   * welcome scaffold's placeholder; subsequent images stack normally.
+   */
+  private async handleFileDrop(dataTransfer: DataTransfer | null): Promise<void> {
+    if (!this.doc || !dataTransfer) return;
+    const files = Array.from(dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    if (files.length === 0) return;
+
+    let firstDrop = true;
+    for (const file of files) {
+      try {
+        await createImageLayerFromFile(this.doc, file, { replaceBackground: firstDrop });
+        firstDrop = false;
+      } catch {
+        // Skip files that fail to decode rather than aborting the whole
+        // batch — a corrupt drop shouldn't lose the other valid drops.
+        continue;
+      }
+    }
+
+    // Notify the shell — its onDocChange path re-renders the canvas,
+    // refreshes the layer/yaml panels, and triggers autosave.
+    this.opts.onDocumentChange?.();
+  }
+}
+
+/**
+ * Quick check: does this DataTransfer carry files? We use the `types`
+ * array (which is populated during dragover, unlike `files` which is
+ * only filled at drop time).
+ */
+function hasFileTypes(dt: DataTransfer | null): boolean {
+  if (!dt) return false;
+  for (let i = 0; i < dt.types.length; i++) {
+    if (dt.types[i] === "Files") return true;
+  }
+  return false;
 }

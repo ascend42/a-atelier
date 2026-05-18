@@ -132,6 +132,16 @@
   display: block;
 }
 
+/* ─── Image drop target ─── */
+/* Painted on .atel-canvas-wrap while an image-file drag hovers the
+   canvas. Subtle outline + brightened border signals "drop here". */
+.atel-canvas-wrap.atel-canvas--drop-target {
+  outline: 2px dashed var(--atel-accent, #C9A961);
+  outline-offset: 4px;
+  border-color: var(--atel-accent, #C9A961);
+  transition: outline-color 0.12s, border-color 0.12s;
+}
+
 .atel-playback {
   display: flex;
   align-items: center;

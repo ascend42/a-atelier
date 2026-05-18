@@ -108,6 +108,11 @@ export class AtelierStudio {
     this.canvasPanel = new CanvasPanel(this.body, {
       onFrameChange: () => {},
       autoplay: opts.autoplay ?? false,
+      // Image-drop on the canvas mutates the doc directly — route the
+      // change notification through onDocChange, which already triggers
+      // canvas-refresh + layer/yaml panel refresh + the host-side
+      // onDocumentChange consumer (which the CLI uses to autosave).
+      onDocumentChange: () => this.onDocChange(),
     });
 
     // Right panel → right side of body

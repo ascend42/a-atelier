@@ -357,18 +357,22 @@ describe("LayerPanel", async () => {
     expect(selectedId).toBe(added.id);
   });
 
-  it("adds an Image layer via the menu with a placeholder assetId", () => {
+  it("opens a file picker (does NOT immediately add a layer) when Add → Image is clicked", () => {
     const doc = makeTestDoc();
     createPanel(doc);
+    const initialCount = doc.layers.length;
     clickAddMenuOption("Image");
-    const added = doc.layers[doc.layers.length - 1];
-    expect(added.visual.type).toBe("image");
-    if (added.visual.type === "image") {
-      // schema requires assetId.min(1) — placeholder satisfies it
-      expect(added.visual.assetId.length).toBeGreaterThan(0);
-    }
-    expect(added.bounds.width).toBe(400);
-    expect(added.bounds.height).toBe(400);
+    // No layer is appended synchronously — the user must pick a file
+    // first, which routes through the createImageLayerFromFile helper
+    // (covered separately in the ImageDrop suite below). Cancelling
+    // the picker is a no-op.
+    expect(doc.layers.length).toBe(initialCount);
+    // The file picker is a hidden <input> attached to document.body;
+    // confirm it's there and accepts images.
+    const picker = document.body.querySelector('input[type="file"]') as HTMLInputElement | null;
+    expect(picker).toBeTruthy();
+    expect(picker!.accept).toBe("image/*");
+    picker!.remove();
   });
 
   it("adds a Handle layer via the menu with tags:['overlay']", () => {
@@ -397,6 +401,102 @@ describe("LayerPanel", async () => {
       expect(added.visual.style.fontSize).toBe(18);
       expect(added.visual.style.color).toBe("#9CA3AF");
     }
+  });
+});
+
+// ─── ImageDrop helper ─────────────────────────────────────────
+//
+// Pure-function tests for the headline image-drop pipeline. The full
+// async createImageLayerFromFile path is covered by manual browser
+// testing (happy-dom doesn't decode Image.src=dataUrl) — these tests
+// exercise the synchronous building blocks: fit math + layer/asset
+// construction + background replacement.
+
+describe("ImageDrop helpers", async () => {
+  const { fitImageToCanvas, buildImageLayer } = await import("./utils/image-drop.js");
+
+  it("fits a landscape image into a square canvas at canvas width with preserved aspect", () => {
+    const fit = fitImageToCanvas(
+      { width: 1080, height: 1080 },
+      { naturalWidth: 3000, naturalHeight: 2000 },
+    );
+    expect(fit.bounds.width).toBe(1080);
+    expect(fit.bounds.height).toBe(720);
+    expect(fit.frame).toEqual({ x: 540, y: 540 });
+  });
+
+  it("fits a portrait image into a square canvas at canvas height with preserved aspect", () => {
+    const fit = fitImageToCanvas(
+      { width: 1080, height: 1080 },
+      { naturalWidth: 2000, naturalHeight: 3000 },
+    );
+    expect(fit.bounds.width).toBe(720);
+    expect(fit.bounds.height).toBe(1080);
+    expect(fit.frame).toEqual({ x: 540, y: 540 });
+  });
+
+  it("buildImageLayer creates an ImageVisual layer with the data URL as src and a 0.5/0.5 anchor", () => {
+    const doc = makeTestDoc();
+    const dataUrl = "data:image/png;base64,iVBORw0AAA";
+    const layer = buildImageLayer(doc, {
+      dataUrl,
+      naturalWidth: 200,
+      naturalHeight: 200,
+    });
+    expect(layer.visual.type).toBe("image");
+    if (layer.visual.type === "image") {
+      expect(layer.visual.src).toBe(dataUrl);
+      expect(layer.visual.assetId.length).toBeGreaterThan(0);
+    }
+    expect(layer.anchorPoint).toEqual({ x: 0.5, y: 0.5 });
+    // Unshifted onto the layers array — bottom of z-stack (behind overlays).
+    expect(doc.layers[0]).toBe(layer);
+  });
+
+  it("buildImageLayer registers a matching entry in doc.assets keyed by the layer's assetId", () => {
+    const doc = makeTestDoc();
+    expect(doc.assets).toBeUndefined();
+    const dataUrl = "data:image/png;base64,iVBORw0AAA";
+    const layer = buildImageLayer(doc, {
+      dataUrl,
+      naturalWidth: 100,
+      naturalHeight: 100,
+    });
+    expect(doc.assets).toBeDefined();
+    if (layer.visual.type === "image") {
+      const asset = doc.assets![layer.visual.assetId];
+      expect(asset).toBeDefined();
+      expect(asset.type).toBe("image");
+      expect(asset.src).toBe(dataUrl);
+    }
+  });
+
+  it("buildImageLayer with replaceBackground:true swaps the welcome scaffold's background layer in place", () => {
+    const doc = makeTestDoc();
+    // Simulate the welcome.atelier scaffold: layer[0] is a placeholder
+    // named "background" — the dropped image should fill it in.
+    doc.layers.unshift({
+      id: "background",
+      visual: { type: "shape", shape: { type: "rect" }, fill: { type: "solid", color: "#333" } },
+      frame: { x: 0, y: 0 },
+      bounds: { width: doc.canvas.width, height: doc.canvas.height },
+      opacity: 1,
+    });
+    const initialCount = doc.layers.length;
+
+    const layer = buildImageLayer(doc, {
+      dataUrl: "data:image/png;base64,iVBORw0AAA",
+      naturalWidth: 100,
+      naturalHeight: 100,
+      replaceBackground: true,
+    });
+
+    // Same count (swap, not insert) and the new layer occupies slot 0.
+    expect(doc.layers.length).toBe(initialCount);
+    expect(doc.layers[0]).toBe(layer);
+    expect(doc.layers[0].id).not.toBe("background");
+    // No leftover "background" layer anywhere.
+    expect(doc.layers.find((l) => l.id === "background")).toBeUndefined();
   });
 });
 
