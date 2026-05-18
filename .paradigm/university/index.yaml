@@ -1,6 +1,6 @@
 version: '1.0'
-generatedAt: '2026-05-18T19:58:21.959Z'
-totalContent: 18
+generatedAt: '2026-05-18T20:02:05.658Z'
+totalContent: 24
 entries:
   - id: N-atel-001-first-render
     title: Render your first animation
@@ -158,8 +158,68 @@ entries:
     symbols: []
     difficulty: intermediate
     file: content/notes/N-atel-201-visual-and-effects.md
-  - id: N-trigger5
-    title: trigger5
+  - id: N-atel-301-composition-and-overlays
+    title: Composition, refs, and the overlay namespace
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+      - composition
+      - overlays
+      - refs
+      - groups
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-301-composition-and-overlays.md
+  - id: N-atel-301-effects
+    title: Effects — fills, strokes, shadows, blends, clips, motion paths, tints
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+      - effects
+      - rendering
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-301-effects.md
+  - id: N-atel-301-images-and-video
+    title: Images and video — assets, cropping, spritesheets, playback
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+      - images
+      - video
+      - assets
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-301-images-and-video.md
+  - id: N-atel-301-shapes-and-text
+    title: Shapes and text — the foundational visuals
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+      - shapes
+      - text
+      - typography
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-301-shapes-and-text.md
+  - id: N-trigger7
+    title: trigger7
     type: note
     author: ascend
     created: '2026-05-18'
@@ -167,7 +227,7 @@ entries:
     tags: []
     symbols: []
     difficulty: beginner
-    file: content/notes/N-trigger5.md
+    file: content/notes/N-trigger7.md
   - id: Q-atel-001-orientation
     title: 'ATEL-001: Hello Atelier — Orientation'
     type: quiz
@@ -204,6 +264,18 @@ entries:
     symbols: []
     difficulty: intermediate
     file: content/quizzes/Q-atel-201-mcp-authoring.yaml
+  - id: Q-atel-301-visual-system
+    title: 'ATEL-301: Visual System'
+    type: quiz
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-301-visual-system.yaml
   - id: LP-atel-001
     title: 'ATEL-001: Hello Atelier'
     type: path
@@ -239,4 +311,15 @@ entries:
       - mcp
     symbols: []
     file: content/paths/LP-atel-201.yaml
+  - id: LP-atel-301
+    title: 'ATEL-301: Visual System'
+    type: path
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-301
+    symbols: []
+    file: content/paths/LP-atel-301.yaml
 diplomaCount: 0

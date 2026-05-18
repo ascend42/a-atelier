@@ -1,0 +1,22 @@
+id: LP-atel-301
+title: 'ATEL-301: Visual System'
+description: The non-motion visual surface — shapes, text, images, video, effects, composition, and the overlay namespace. After this track you can compose any static scene in Atelier and understand how recipes and the layer-tag isolation invariant make overlays safe across re-runs. ~20 minutes.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-301
+ordered: true
+steps:
+  - content: N-atel-301-shapes-and-text
+    required: true
+  - content: N-atel-301-images-and-video
+    required: true
+  - content: N-atel-301-effects
+    required: true
+  - content: N-atel-301-composition-and-overlays
+    required: true
+  - content: Q-atel-301-visual-system
+    required: true
+    passRequired: true

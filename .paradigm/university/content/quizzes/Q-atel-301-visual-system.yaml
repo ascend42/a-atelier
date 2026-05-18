@@ -1,0 +1,66 @@
+id: Q-atel-301-visual-system
+title: 'ATEL-301: Visual System'
+description: Verify the visual surface — shapes, text, images/video, effects (fills/strokes/shadows/blends/clips/motion paths/tints), composition (groups/refs), and the overlay namespace.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-301
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'For text to render consistently across the browser studio and the CLI PNG export, what is the recommended pattern?'
+    choices:
+      A: Set `fontFamily` to a generic name like `sans-serif` and let each renderer pick
+      B: 'Ship the font as an asset (`atelier_add_asset({ kind: "font", src: "fonts/Inter.woff2" })`) and reference it by PostScript name in `fontFamily`'
+      C: Use only system fonts that ship with macOS, Windows, and Linux
+      D: Convert all text to SVG paths before rendering
+    correct: B
+    explanation: Without font assets, the studio uses browser-available fonts and the CLI PNG export uses node-canvas with whatever's installed on the machine. Renders diverge. Registering the font as an asset and referencing its PostScript name in `fontFamily` makes the renderer load the same font everywhere. The CSS-style fallback chain still works for graceful degradation.
+  - id: q2
+    question: 'You want to crop an image to show only its center 50% in a layer that sits in a 1080×1080 layout. The source image is 2000×1500. Which approach fits the "cropping vs scaling" model best?'
+    choices:
+      A: Pre-process the image with a tool like ImageMagick and ship the cropped version
+      B: 'Set `sourceRect: {x: 500, y: 375, width: 1000, height: 750}` to pick the center 50% from the source; the layer''s bounds and the image''s drawn region handle the rest'
+      C: 'Set `Layer.scale.x: 2.0` and `Layer.scale.y: 2.0` to zoom in'
+      D: Resize the layer's `bounds` to be smaller than the image
+    correct: B
+    explanation: '`sourceRect` is the right tool — it picks a sub-rectangle from the source image in source pixels. The center 50% of a 2000×1500 image is `{x: 500, y: 375, width: 1000, height: 750}`. Layer.scale stretches the rendered layer (lossy zoom). Layer.bounds changes the destination size (the renderer fits per objectFit). Pre-processing forfeits the ability to animate the crop later (ken-burns pan/zoom via deltas on sourceRect).'
+  - id: q3
+    question: A `motionPath` is set on a layer that also has a delta animating `frame.x`. What happens?
+    choices:
+      A: The delta wins; the motion path is ignored
+      B: 'The motion path wins; the frame.x delta is ignored — animate `motionProgress` instead'
+      C: They additively combine, producing a sum trajectory
+      D: 'The schema rejects the document at validate time'
+    correct: B
+    explanation: When a motion path is present, the layer's frame.x and frame.y are overridden — the path is the trajectory. Deltas on frame.x conflict with the path and are ignored at render time. To control speed along the path, animate `motionProgress` (0..1). If you want a custom trajectory, you've already chosen the motion path — express speed/timing through motionProgress + easings, not through frame deltas.
+  - id: q4
+    question: 'Why do overlay layers (handle, page-number) carry `tags: ["overlay"]` instead of being plain text layers?'
+    choices:
+      A: For sidebar grouping in the studio's layer panel only
+      B: 'So the `applyRecipeToOverlay` translator can drop only overlay-tagged layers when re-running — user-authored layers and other pipelines'' tagged outputs are never touched'
+      C: 'For pricing tier enforcement — overlay layers count toward a quota'
+      D: 'Because TextVisual without the tag has reduced rendering quality'
+    correct: B
+    explanation: 'The `overlay` tag is part of the layer-tag isolation invariant. Each pipeline owns a tag namespace; re-running a pipeline drops only its own tagged layers. Without the tag, re-applying a recipe would either destroy the user''s authored text layers (bad) or fail to clear stale overlay layers (also bad). With the tag, recipes are idempotent and human edits survive re-runs.'
+  - id: q5
+    question: 'A `RefVisual` layer references `./lower-third.atelier`. You edit the referenced file in another editor. What does `atelier studio` do?'
+    choices:
+      A: 'Nothing — refs are resolved once at load time'
+      B: The studio file-watches every referenced file; on change, it re-renders the parent composition with the updated ref
+      C: It throws a stale-ref error and forces a reload
+      D: 'It requires the user to re-import the ref manually'
+    correct: B
+    explanation: '`RefVisual` is how Atelier expresses single-source-of-truth for reusable scenes (lock-ups, lower-thirds, carousel templates). The studio file-watches every referenced `.atelier` file and re-renders parent compositions automatically. Editing the source once updates every composition that uses it.'
+  - id: q6
+    question: 'A `page_number` overlay rule has `format: "{current:02d}/{total:02d}"`. You apply the recipe to a single-frame composition (no carousel context). What happens?'
+    choices:
+      A: The page-number layer is created with content `"{current:02d}/{total:02d}"` (template not rendered)
+      B: 'The applyRecipeToOverlay translator skips the page-number layer (logger warns) — page-numbers don''t make sense on standalone compositions; handle still gets added if configured'
+      C: It throws an error halting the whole apply-recipe pipeline
+      D: It picks defaults (`current=1`, `total=1`) and renders `"01/01"`
+    correct: B
+    explanation: 'Page-numbers require carousel context (`currentIndex`, `totalCount`). On single-frame applies, the translator skips the page-number layer with a logger warning — by design, since `01/01` on a standalone post is misleading. The handle overlay is unconditional and still gets added. When the carousel batch driver eventually applies the same recipe per page, it threads the current/total values into the apply context and the page-number renders correctly.'
