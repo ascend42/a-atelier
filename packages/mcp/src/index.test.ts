@@ -127,6 +127,94 @@ describe("DocumentStore", () => {
     store.clear();
     expect(store.list()).toHaveLength(0);
   });
+
+  // ─── onChange emitter ───────────────────────────────────────
+  // Foundation for the live LLM↔human mutation bridge (task #10). Listeners
+  // subscribe here so an external WS bridge can ferry mutations to a Studio
+  // instance running in the browser.
+
+  describe("onChange", () => {
+    function makeDoc(name = "test") {
+      return {
+        version: "1.0",
+        name,
+        canvas: { width: 100, height: 100, fps: 30 },
+        layers: [],
+        states: {},
+      };
+    }
+
+    it("fires after set() with the right (id, doc, source)", () => {
+      const calls: Array<[string, unknown, string]> = [];
+      store.onChange((id, doc, source) => { calls.push([id, doc, source]); });
+
+      const doc = makeDoc("a");
+      store.create(doc, "doc-1"); // create also fires (source defaults to "system")
+      const updated = makeDoc("a-edited");
+      store.set("doc-1", updated, "llm");
+
+      expect(calls.length).toBe(2);
+      expect(calls[0]).toEqual(["doc-1", doc, "system"]);
+      expect(calls[1]).toEqual(["doc-1", updated, "llm"]);
+    });
+
+    it("defaults source to 'system' when not provided on set()", () => {
+      const calls: Array<[string, unknown, string]> = [];
+      store.onChange((id, doc, source) => { calls.push([id, doc, source]); });
+
+      const doc = makeDoc();
+      store.create(doc, "doc-1", "human");
+      const next = makeDoc("renamed");
+      store.set("doc-1", next); // no source → "system"
+
+      expect(calls[0][2]).toBe("human");
+      expect(calls[1][2]).toBe("system");
+    });
+
+    it("delivers to multiple listeners in registration order", () => {
+      const order: string[] = [];
+      store.onChange(() => { order.push("a"); });
+      store.onChange(() => { order.push("b"); });
+      store.onChange(() => { order.push("c"); });
+
+      store.create(makeDoc(), "doc-1");
+
+      expect(order).toEqual(["a", "b", "c"]);
+    });
+
+    it("returns an unsubscribe function that stops further calls", () => {
+      let count = 0;
+      const off = store.onChange(() => { count++; });
+
+      store.create(makeDoc(), "doc-1");
+      expect(count).toBe(1);
+
+      off();
+      store.set("doc-1", makeDoc("after"));
+      expect(count).toBe(1);
+    });
+
+    it("isolates a thrown listener so the rest still fire", () => {
+      const order: string[] = [];
+      store.onChange(() => { order.push("before"); });
+      store.onChange(() => { throw new Error("boom"); });
+      store.onChange(() => { order.push("after"); });
+
+      // Should not throw out of the store.
+      expect(() => store.create(makeDoc(), "doc-1")).not.toThrow();
+      expect(order).toEqual(["before", "after"]);
+    });
+
+    it("fires on delete() with doc=null and the supplied source", () => {
+      const calls: Array<[string, unknown, string]> = [];
+      store.create(makeDoc(), "doc-1");
+      store.onChange((id, doc, source) => { calls.push([id, doc, source]); });
+
+      const removed = store.delete("doc-1", "human");
+      expect(removed).toBe(true);
+      expect(calls).toEqual([["doc-1", null, "human"]]);
+    });
+  });
 });
 
 // ─── MCP Tool Integration Tests ──────────────────────────────

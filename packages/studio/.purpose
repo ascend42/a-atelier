@@ -7,7 +7,7 @@ context:
   - All CSS classes prefixed with atel- to avoid collisions
 components:
   atelier-studio:
-    description: Main widget class — mounts into any DOM element, manages view switching and panel coordination
+    description: Main widget class — mounts into any DOM element, manages view switching and panel coordination, and exposes applyMutation() as the Studio-side endpoint of the LLM↔human live-mutation bridge (task #10)
     components:
       - '#canvas-panel'
       - '#layer-panel'

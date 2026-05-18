@@ -9,6 +9,24 @@ import { ExportDialog } from "./export/export-dialog.js";
 
 export type RightTab = "yaml" | "editor";
 
+/**
+ * Source of a Studio-side mutation. Mirrors the MCP-side
+ * `DocumentStore.MutationSource` so the live WS bridge (task #10) can carry
+ * the tag end-to-end without translation.
+ */
+export type MutationSource = "human" | "llm" | "system";
+
+/**
+ * A mutation op applied via `AtelierStudio.applyMutation()`. v1 supports the
+ * simplest shape — full document replacement. Finer-grained ops (layer-level
+ * patches, delta inserts) will land alongside the WS bridge in task #10.
+ */
+export type MutationOp = {
+  type: "doc:replace";
+  doc: AtelierDocument;
+  source: MutationSource;
+};
+
 export interface StudioOptions {
   mode?: "full" | "compact";
   initialTab?: RightTab;
@@ -46,6 +64,19 @@ export class AtelierStudio {
   private abortController = new AbortController();
   private history = new History();
   private lastSnapshot = "";
+  /**
+   * One-tick suppression flag set by `applyMutation()` so the resulting
+   * `onDocChange()` re-render does not echo the change back to
+   * `opts.onDocumentChange` — which would otherwise round-trip the LLM op
+   * through the file-save loop and back into the bridge as a "human" edit.
+   * Cleared on the next microtask so subsequent real edits resume normally.
+   */
+  private suppressNotify = false;
+  /**
+   * Mirror of `LayerPanel`'s selection so `applyMutation()` can restore the
+   * selected layer after replacing the doc, when that layer still exists.
+   */
+  private selectedLayerId: string | null = null;
 
   constructor(
     private container: HTMLElement,
@@ -85,6 +116,7 @@ export class AtelierStudio {
     // Layer panel → inside right panel (editor tab)
     this.layerPanel = new LayerPanel(this.rightPanel, {
       onSelectLayer: (id) => {
+        this.selectedLayerId = id;
         this.propertyPanel.selectLayer(id);
       },
       onDocumentChange: () => this.onDocChange(),
@@ -177,6 +209,82 @@ export class AtelierStudio {
     this.layerPanel.loadDocument(this.doc);
     this.propertyPanel.loadDocument(this.doc, this.stateName);
     this.yamlPanel.loadDocument(this.doc);
+  }
+
+  /**
+   * Apply an in-memory mutation without firing `onDocumentChange`. Used by
+   * the live LLM↔human bridge so an external MCP client can drive the
+   * Studio's rendered doc in real time without round-tripping through the
+   * file-save loop.
+   *
+   * Mechanics:
+   *   - Replaces `this.doc` and re-renders all panels.
+   *   - Preserves `this.history` and `this.originalDoc` (unlike `loadDocument`).
+   *   - Records a history snapshot so a human can Cmd-Z to revert the op —
+   *     LLM mutations should be undoable from the user's seat.
+   *   - Preserves `stateName` and the selected layer id when they still exist
+   *     in the new doc; falls back to the first state / no selection otherwise.
+   *   - Sets a one-tick `suppressNotify` flag (cleared on the next microtask)
+   *     so the resulting re-render does not echo back to `opts.onDocumentChange`.
+   *
+   * TODO(#10): the WS bridge will call this when it receives ops from the
+   * MCP-side `DocumentStore.onChange` subscription.
+   */
+  applyMutation(op: MutationOp): void {
+    if (op.type !== "doc:replace") return;
+
+    // Snapshot the current state so the user can undo the LLM op.
+    if (this.doc) {
+      this.history.snapshot(this.lastSnapshot);
+    }
+
+    this.suppressNotify = true;
+    try {
+      this.doc = structuredClone(op.doc);
+      this.lastSnapshot = JSON.stringify(this.doc);
+
+      // Preserve current state when it still exists (same pattern as
+      // reloadPanels — avoids teleporting the editor on every LLM op).
+      if (!this.stateName || !this.doc.states[this.stateName]) {
+        this.stateName = Object.keys(this.doc.states)[0] ?? "";
+      }
+
+      // Refresh state selector options to reflect the new doc.
+      this.stateSelect.innerHTML = "";
+      const stateNames = Object.keys(this.doc.states);
+      for (const name of stateNames) {
+        const o = document.createElement("option");
+        o.value = name;
+        o.textContent = name;
+        this.stateSelect.appendChild(o);
+      }
+      this.stateSelect.value = this.stateName;
+      this.stateSelect.style.display = stateNames.length > 1 ? "" : "none";
+
+      // Re-render panels via the same path undo/redo uses.
+      this.canvasPanel.loadDocument(this.doc, this.stateName);
+      this.layerPanel.loadDocument(this.doc);
+      this.propertyPanel.loadDocument(this.doc, this.stateName);
+      this.yamlPanel.loadDocument(this.doc);
+
+      // Preserve the selected layer id when it still exists in the new doc.
+      const preservedId = this.selectedLayerId;
+      if (preservedId && this.doc.layers.some((l) => l.id === preservedId)) {
+        this.layerPanel.selectLayer(preservedId);
+        this.propertyPanel.selectLayer(preservedId);
+        this.selectedLayerId = preservedId;
+      } else {
+        this.selectedLayerId = null;
+      }
+
+      this.updateUndoRedoButtons();
+    } finally {
+      // Release the suppression after the current task drains so subsequent
+      // human edits resume normal notification.
+      queueMicrotask(() => {
+        this.suppressNotify = false;
+      });
+    }
   }
 
   getDocument(): AtelierDocument | null {
@@ -307,6 +415,12 @@ export class AtelierStudio {
   }
 
   private onDocChange(): void {
+    // Suppress consumer notification when this re-render was triggered by
+    // `applyMutation()` — otherwise the change would echo back through the
+    // file-save loop and bounce into the WS bridge as a human-originated
+    // edit, creating a feedback loop with the LLM.
+    if (this.suppressNotify) return;
+
     // Push previous state to undo stack before accepting mutation
     if (this.doc) {
       this.history.snapshot(this.lastSnapshot);

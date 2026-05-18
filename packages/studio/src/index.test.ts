@@ -628,3 +628,172 @@ describe("CanvasPanel autoplay", async () => {
     panel.destroy();
   });
 });
+
+// ─── AtelierStudio.applyMutation ─────────────────────────────
+//
+// Foundation for the live LLM↔human mutation bridge (task #10). Verifies the
+// in-memory mutation channel: external callers can swap the rendered doc
+// without round-tripping through onDocumentChange (which would echo the
+// change back into the bridge as a "human" edit and loop).
+//
+// Requires the same canvas getContext stub as the CanvasPanel suite —
+// AtelierStudio mounts a CanvasPanel internally.
+
+describe("AtelierStudio.applyMutation", async () => {
+  const { AtelierStudio } = await import("./studio.js");
+
+  let container: HTMLElement;
+  let originalGetContext: typeof HTMLCanvasElement.prototype.getContext;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    originalGetContext = HTMLCanvasElement.prototype.getContext;
+    const stubCtx: Partial<CanvasRenderingContext2D> = {
+      save: () => {}, restore: () => {}, translate: () => {}, rotate: () => {},
+      scale: () => {}, clearRect: () => {}, fillRect: () => {}, strokeRect: () => {},
+      beginPath: () => {}, closePath: () => {}, moveTo: () => {}, lineTo: () => {},
+      arc: () => {}, rect: () => {}, fill: () => {}, stroke: () => {}, clip: () => {},
+      drawImage: () => {}, fillText: () => {}, strokeText: () => {},
+      measureText: () => ({ width: 0 } as TextMetrics),
+      setTransform: () => {}, resetTransform: () => {}, transform: () => {},
+      createLinearGradient: () => ({ addColorStop: () => {} } as unknown as CanvasGradient),
+      createRadialGradient: () => ({ addColorStop: () => {} } as unknown as CanvasGradient),
+      createPattern: () => null,
+      getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 } as ImageData),
+      putImageData: () => {},
+      fillStyle: "", strokeStyle: "", lineWidth: 1, globalAlpha: 1, font: "",
+      textAlign: "left" as CanvasTextAlign,
+      textBaseline: "alphabetic" as CanvasTextBaseline,
+      lineCap: "butt" as CanvasLineCap, lineJoin: "miter" as CanvasLineJoin,
+      miterLimit: 10,
+      globalCompositeOperation: "source-over" as GlobalCompositeOperation,
+      shadowBlur: 0, shadowColor: "", shadowOffsetX: 0, shadowOffsetY: 0,
+    };
+    HTMLCanvasElement.prototype.getContext = function (type: string) {
+      if (type === "2d") return stubCtx as CanvasRenderingContext2D;
+      return null;
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
+  afterEach(() => {
+    HTMLCanvasElement.prototype.getContext = originalGetContext;
+    if (container.parentNode) container.parentNode.removeChild(container);
+  });
+
+  function makeDocWithStates(): AtelierDocument {
+    const doc = makeTestDoc();
+    doc.states.hover = { duration: 60, deltas: [] };
+    return doc;
+  }
+
+  it("updates the rendered doc when applied", () => {
+    const studio = new AtelierStudio(container);
+    const initial = makeTestDoc();
+    studio.loadDocument(initial);
+
+    const next = makeTestDoc();
+    next.name = "after-llm-edit";
+    next.canvas.width = 800;
+
+    studio.applyMutation({ type: "doc:replace", doc: next, source: "llm" });
+
+    const current = studio.getDocument();
+    expect(current?.name).toBe("after-llm-edit");
+    expect(current?.canvas.width).toBe(800);
+
+    studio.destroy();
+  });
+
+  it("does NOT fire onDocumentChange for the LLM-side mutation", () => {
+    let calls = 0;
+    const studio = new AtelierStudio(container, {
+      onDocumentChange: () => { calls++; },
+    });
+    studio.loadDocument(makeTestDoc());
+
+    const next = makeTestDoc();
+    next.name = "silent";
+    studio.applyMutation({ type: "doc:replace", doc: next, source: "llm" });
+
+    expect(calls).toBe(0);
+
+    studio.destroy();
+  });
+
+  it("re-enables onDocumentChange for subsequent human edits (one-tick suppression)", async () => {
+    let calls = 0;
+    const studio = new AtelierStudio(container, {
+      onDocumentChange: () => { calls++; },
+    });
+    studio.loadDocument(makeTestDoc());
+
+    const next = makeTestDoc();
+    next.name = "from-llm";
+    studio.applyMutation({ type: "doc:replace", doc: next, source: "llm" });
+    expect(calls).toBe(0);
+
+    // Drain the microtask queue so suppressNotify clears.
+    await Promise.resolve();
+
+    // Now simulate a human edit by toggling the layer panel into adding a layer
+    // — that invokes the same onDocChange path a real GUI edit would.
+    const addBtn = Array.from(container.querySelectorAll("button"))
+      .find((b) => b.textContent?.includes("Add")) as HTMLButtonElement | undefined;
+    expect(addBtn).toBeTruthy();
+    addBtn!.click();
+    const menuItems = Array.from(container.querySelectorAll(".atel-layer-add-menu__item")) as HTMLButtonElement[];
+    expect(menuItems.length).toBeGreaterThan(0);
+    menuItems[0].click();
+
+    expect(calls).toBeGreaterThan(0);
+
+    studio.destroy();
+  });
+
+  it("preserves stateName when the state still exists in the new doc", () => {
+    const studio = new AtelierStudio(container);
+    studio.loadDocument(makeDocWithStates());
+
+    // Select the "hover" state via the toolbar selector.
+    const select = container.querySelector("select.atel-toolbar__select") as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    select.value = "hover";
+    select.dispatchEvent(new Event("change"));
+
+    // Apply an LLM mutation that still has the "hover" state.
+    const next = makeDocWithStates();
+    next.name = "still-has-hover";
+    studio.applyMutation({ type: "doc:replace", doc: next, source: "llm" });
+
+    // Toolbar selector should still read "hover".
+    const selectAfter = container.querySelector("select.atel-toolbar__select") as HTMLSelectElement;
+    expect(selectAfter.value).toBe("hover");
+
+    studio.destroy();
+  });
+
+  it("preserves selected layer id when the layer still exists", () => {
+    const studio = new AtelierStudio(container);
+    studio.loadDocument(makeTestDoc());
+
+    // Select "text-1" via the layer panel.
+    const items = container.querySelectorAll(".atel-layer-item");
+    expect(items.length).toBeGreaterThan(1);
+    (items[1] as HTMLElement).click();
+
+    // Apply an LLM mutation that keeps "text-1" present (we just rename).
+    const next = makeTestDoc();
+    next.name = "renamed";
+    studio.applyMutation({ type: "doc:replace", doc: next, source: "llm" });
+
+    // After mutation the same layer should still be highlighted as selected.
+    const after = container.querySelectorAll(".atel-layer-item--selected");
+    expect(after.length).toBe(1);
+    // The selected item should still be the text-1 layer (second in the list).
+    const allItems = container.querySelectorAll(".atel-layer-item");
+    expect(allItems[1].classList.contains("atel-layer-item--selected")).toBe(true);
+
+    studio.destroy();
+  });
+});

@@ -7,8 +7,10 @@ context:
   - Preview returns resolved frame data (not rendered image) for AI comprehension
 components:
   mcp-store:
-    description: In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls
+    description: In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls, with onChange event emitter for the LLM↔human live-mutation bridge (task #10)
     file: src/store.ts
+    signals:
+      - '!doc-change'
   mcp-document-tools:
     description: Document lifecycle tools — create, info, load (YAML), export (YAML), list
     file: src/tools/document.ts
