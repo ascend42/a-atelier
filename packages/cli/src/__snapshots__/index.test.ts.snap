@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`welcome.atelier template > resolves to a stable scene at frame 15 of default state (snapshot) 1`] = `
+[
+  {
+    "bounds": {
+      "height": 1080,
+      "width": 1080,
+    },
+    "frame": {
+      "x": 0,
+      "y": 0,
+    },
+    "id": "background",
+    "opacity": 1,
+    "tags": [],
+    "type": "shape",
+  },
+  {
+    "bounds": {
+      "height": 52,
+      "width": 600,
+    },
+    "frame": {
+      "x": 48,
+      "y": 980,
+    },
+    "id": "handle",
+    "opacity": 0.6846434157956808,
+    "tags": [
+      "overlay",
+    ],
+    "type": "text",
+  },
+  {
+    "bounds": {
+      "height": 28,
+      "width": 152,
+    },
+    "frame": {
+      "x": 880,
+      "y": 1020,
+    },
+    "id": "page-number",
+    "opacity": 1,
+    "tags": [
+      "overlay",
+    ],
+    "type": "text",
+  },
+]
+`;

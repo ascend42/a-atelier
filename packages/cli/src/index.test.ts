@@ -1813,6 +1813,30 @@ describe("welcome.atelier template", () => {
     expect(doc.states.default).toBeDefined();
     expect(doc.states.default.deltas.length).toBeGreaterThan(0);
   });
+
+  // v1 regression guard — section 2.1 of .paradigm/specs/v1-testing-strategy.md
+  // Snapshots the resolved scene at a key frame so unintended changes to the
+  // welcome template, default values, or easing-output behavior fail loudly.
+  it("resolves to a stable scene at frame 15 of default state (snapshot)", async () => {
+    const content = readFileSync(templatePath, "utf-8");
+    const result = parseAtelier(content);
+    if (!result.success) throw new Error(`welcome.atelier failed to parse: ${JSON.stringify(result.errors)}`);
+    const { resolveFrame } = await import("@a-company/atelier-core");
+    const resolved = resolveFrame(result.data, "default", 15);
+    // Snapshot a deterministic projection: layer ids, types, computed opacity,
+    // frame, tags. Excludes anything time-or-environment-sensitive. ResolvedLayer
+    // keeps the original layer under `.layer` and animated values under
+    // `.computedProperties`.
+    const projection = resolved.layers.map((l) => ({
+      id: l.id,
+      type: l.layer.visual.type,
+      opacity: (l.computedProperties.opacity as number | undefined) ?? l.layer.opacity ?? 1,
+      frame: l.layer.frame,
+      bounds: l.layer.bounds,
+      tags: l.layer.tags ?? [],
+    }));
+    expect(projection).toMatchSnapshot();
+  });
 });
 
 describe("recipeToYaml", () => {
