@@ -1,0 +1,22 @@
+id: LP-atel-101
+title: 'ATEL-101: Document Model Fundamentals'
+description: The vocabulary every Atelier user needs. The `.atelier` format, layer anatomy, states/deltas/resolveFrame, easings. After this track you can read any Atelier document and predict what it renders. ~18 minutes.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-101
+ordered: true
+steps:
+  - content: N-atel-101-the-atelier-format
+    required: true
+  - content: N-atel-101-layers
+    required: true
+  - content: N-atel-101-states-and-deltas
+    required: true
+  - content: N-atel-101-easings
+    required: true
+  - content: Q-atel-101-document-model
+    required: true
+    passRequired: true

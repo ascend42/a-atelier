@@ -1,6 +1,6 @@
 version: '1.0'
-generatedAt: '2026-05-18T19:47:00.260Z'
-totalContent: 6
+generatedAt: '2026-05-18T19:52:12.823Z'
+totalContent: 12
 entries:
   - id: N-atel-001-first-render
     title: Render your first animation
@@ -43,8 +43,65 @@ entries:
     symbols: []
     difficulty: beginner
     file: content/notes/N-atel-001-what-is-atelier.md
-  - id: N-test-placeholder
-    title: test placeholder
+  - id: N-atel-101-easings
+    title: Easings — linear, cubic-bezier, presets, spring, step
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+      - easings
+      - motion
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-101-easings.md
+  - id: N-atel-101-layers
+    title: Layer anatomy
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+      - layers
+      - format
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-101-layers.md
+  - id: N-atel-101-states-and-deltas
+    title: States, deltas, and `resolveFrame`
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+      - states
+      - deltas
+      - resolve-frame
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-101-states-and-deltas.md
+  - id: N-atel-101-the-atelier-format
+    title: The `.atelier` document format
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+      - format
+      - schema
+    symbols: []
+    difficulty: beginner
+    file: content/notes/N-atel-101-the-atelier-format.md
+  - id: N-trigger4
+    title: trigger4
     type: note
     author: ascend
     created: '2026-05-18'
@@ -52,7 +109,7 @@ entries:
     tags: []
     symbols: []
     difficulty: beginner
-    file: content/notes/N-test-placeholder.md
+    file: content/notes/N-trigger4.md
   - id: Q-atel-001-orientation
     title: 'ATEL-001: Hello Atelier — Orientation'
     type: quiz
@@ -65,6 +122,18 @@ entries:
     symbols: []
     difficulty: beginner
     file: content/quizzes/Q-atel-001-orientation.yaml
+  - id: Q-atel-101-document-model
+    title: 'ATEL-101: Document Model Fundamentals'
+    type: quiz
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+    symbols: []
+    difficulty: beginner
+    file: content/quizzes/Q-atel-101-document-model.yaml
   - id: LP-atel-001
     title: 'ATEL-001: Hello Atelier'
     type: path
@@ -77,4 +146,15 @@ entries:
       - orientation
     symbols: []
     file: content/paths/LP-atel-001.yaml
+  - id: LP-atel-101
+    title: 'ATEL-101: Document Model Fundamentals'
+    type: path
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-101
+    symbols: []
+    file: content/paths/LP-atel-101.yaml
 diplomaCount: 0

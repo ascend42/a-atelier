@@ -1,0 +1,66 @@
+id: Q-atel-101-document-model
+title: 'ATEL-101: Document Model Fundamentals'
+description: Verify the document model — format shape, layer anatomy, states/deltas/resolveFrame, easings.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-101
+difficulty: beginner
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: What are the five mandatory top-level keys in every `.atelier` document?
+    choices:
+      A: '`name`, `canvas`, `assets`, `variables`, `presets`'
+      B: '`name`, `canvas`, `layers`, `states`, plus at least one state with a `duration`'
+      C: '`title`, `description`, `frames`, `tracks`, `outputs`'
+      D: '`document`, `scene`, `keyframes`, `easings`, `version`'
+    correct: B
+    explanation: The minimum valid document has `name`, `canvas` (width/height/fps), `layers` array, and `states` with at least one named state containing a `duration`. `assets`, `variables`, `presets`, `templates`, `audio`, `meta` are all optional and added only when needed.
+  - id: q2
+    question: 'A layer has `frame: {x: 400, y: 300}`, `bounds: {width: 600, height: 80}`, and `anchorPoint: {x: 0.5, y: 0.5}`. Where on the canvas does the center of the layer sit?'
+    choices:
+      A: At canvas pixel (0, 0)
+      B: At canvas pixel (400, 300) — the anchor is the pivot, and `frame` positions the anchor
+      C: At canvas pixel (700, 380) — bottom-right of the layer
+      D: At canvas pixel (100, 260) — top-left of the layer
+    correct: B
+    explanation: '`anchorPoint` is normalized 0–1 inside the layer''s `bounds`. `{0.5, 0.5}` puts the anchor at the layer''s center. `frame` then positions that anchor on the canvas. So the layer''s center sits exactly at the `frame` coordinates (400, 300). The anchor is also the pivot for `rotation` and `scale`.'
+  - id: q3
+    question: Two deltas in the same state target the same layer and property, with overlapping `startFrame`/`endFrame` ranges. What happens?
+    choices:
+      A: The engine merges them by averaging the values
+      B: The second delta silently wins over the first
+      C: The schema rejects the document — the no-overlap gate blocks overlapping motion at validate time
+      D: Both deltas play simultaneously and the renderer additively combines them
+    correct: C
+    explanation: Atelier's `no-overlap` gate (in the document-builder) rejects overlapping deltas on the same layer+property because the result is almost always a bug. If you need composed motion, use two layers or a group. The error message names the conflicting deltas so you can fix them quickly.
+  - id: q4
+    question: 'What does `resolveFrame(doc, stateName, frameNumber)` return?'
+    choices:
+      A: A rendered PNG buffer
+      B: 'A ResolvedLayer array — every layer with all animatable properties interpolated through their deltas and easings to concrete values for that frame, ready for any renderer'
+      C: The list of deltas active at that frame
+      D: A diff against the previous frame
+    correct: B
+    explanation: '`resolveFrame` is the engine''s core: it returns a fully-resolved scene where every animatable property has a concrete value. Canvas 2D, SVG export, Lottie export, and the video exporter all consume this same array. Adding a new renderer is "consume ResolvedLayer[] one frame at a time."'
+  - id: q5
+    question: You want a UI element to slide in from the right and feel natural. Which easing is the right default?
+    choices:
+      A: '`linear` — constant rate is the cleanest'
+      B: '`ease-out` — decelerating motion is how organic things arrive (entrance animation convention across the industry)'
+      C: '`step(4)` — discrete jumps look modern'
+      D: '`ease-in` — acceleration into the final position'
+    correct: B
+    explanation: '`ease-out` (CSS cubic-bezier(0, 0, 0.2, 1)) is the de facto standard for UI entrance animation. The element decelerates as it arrives, mimicking a physical object losing momentum. `ease-in` is correct for exits, `linear` is correct for scrubbing/progress bars, and `step()` is for sprite-frame indexing or digital-readout feel. The general rule: if a physical object would do it, use spring or ease-out.'
+  - id: q6
+    question: Why do pipeline-generated layers carry tags like `silence-trim`, `caption`, or `overlay`?
+    choices:
+      A: 'Cosmetic — the tags only affect what color the layer appears as in the layer panel'
+      B: 'For pricing — each tag corresponds to a separately billed feature'
+      C: 'To enforce the layer-tag isolation invariant — re-running a pipeline drops only its own tagged layers; user-authored layers and other pipelines'' outputs are never touched'
+      D: 'For sorting alphabetically'
+    correct: C
+    explanation: Tags are how the pipelines (silence-trim, captions, overlays, future agent-driven pipelines) find layers they own. When `atelier captions regenerate` runs, it drops layers tagged `caption` and `caption-word` and writes fresh ones — but never touches layers tagged `silence-trim` or `overlay`, and never touches user-authored untagged layers. This is the load-bearing invariant that makes the human↔agent symbiotic loop safe.
