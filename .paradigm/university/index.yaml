@@ -1,6 +1,6 @@
 version: '1.0'
-generatedAt: '2026-05-18T19:52:12.823Z'
-totalContent: 12
+generatedAt: '2026-05-18T19:58:21.959Z'
+totalContent: 18
 entries:
   - id: N-atel-001-first-render
     title: Render your first animation
@@ -100,8 +100,66 @@ entries:
     symbols: []
     difficulty: beginner
     file: content/notes/N-atel-101-the-atelier-format.md
-  - id: N-trigger4
-    title: trigger4
+  - id: N-atel-201-authoring-tools
+    title: Authoring tools — document, layer, state, delta
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+      - mcp
+      - authoring
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-201-authoring-tools.md
+  - id: N-atel-201-mcp-overview
+    title: MCP in the Atelier context
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+      - mcp
+      - architecture
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-201-mcp-overview.md
+  - id: N-atel-201-patterns
+    title: Authoring patterns and decision rules
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+      - mcp
+      - patterns
+      - best-practices
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-201-patterns.md
+  - id: N-atel-201-visual-and-effects
+    title: Visual configuration, effects, assets, and refs
+    type: note
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+      - mcp
+      - visual
+      - assets
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-201-visual-and-effects.md
+  - id: N-trigger5
+    title: trigger5
     type: note
     author: ascend
     created: '2026-05-18'
@@ -109,7 +167,7 @@ entries:
     tags: []
     symbols: []
     difficulty: beginner
-    file: content/notes/N-trigger4.md
+    file: content/notes/N-trigger5.md
   - id: Q-atel-001-orientation
     title: 'ATEL-001: Hello Atelier — Orientation'
     type: quiz
@@ -134,6 +192,18 @@ entries:
     symbols: []
     difficulty: beginner
     file: content/quizzes/Q-atel-101-document-model.yaml
+  - id: Q-atel-201-mcp-authoring
+    title: 'ATEL-201: Authoring via MCP'
+    type: quiz
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-201-mcp-authoring.yaml
   - id: LP-atel-001
     title: 'ATEL-001: Hello Atelier'
     type: path
@@ -157,4 +227,16 @@ entries:
       - atel-101
     symbols: []
     file: content/paths/LP-atel-101.yaml
+  - id: LP-atel-201
+    title: 'ATEL-201: Authoring via MCP'
+    type: path
+    author: atelier
+    created: '2026-05-18'
+    updated: '2026-05-18'
+    tags:
+      - course
+      - atel-201
+      - mcp
+    symbols: []
+    file: content/paths/LP-atel-201.yaml
 diplomaCount: 0

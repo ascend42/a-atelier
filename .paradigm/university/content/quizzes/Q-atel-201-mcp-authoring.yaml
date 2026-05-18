@@ -1,0 +1,66 @@
+id: Q-atel-201-mcp-authoring
+title: 'ATEL-201: Authoring via MCP'
+description: Verify the MCP tool surface — the single-store invariant, tool naming conventions, common authoring patterns, and the most-common agent mistakes.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-201
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: An AI agent calls `atelier_add_layer` while a human is editing the same document in `atelier studio`. The Studio's canvas re-renders within a frame. What architectural pattern makes this work?
+    choices:
+      A: The Studio polls the MCP server every 100ms for changes
+      B: 'There is one DocumentStore shared by both the MCP tool handlers and the Studio; mutations fire onChange, the WebSocket bridge broadcasts to Studio, Studio applies via applyMutation(op) with a suppress-notify flag'
+      C: The agent and the human edit separate copies that are merged by an operational-transform algorithm
+      D: 'The Studio receives a full document diff via HTTP long-poll on every keystroke'
+    correct: B
+    explanation: 'Atelier is single-author with an AI collaborator, not a multiplayer canvas. One in-memory DocumentStore is shared; mutations fire onChange; the bridge broadcasts to any connected Studio; the Studio applies via applyMutation(op) with a one-tick suppress-notify flag so the change does not echo back as a human edit. Conflict policy is last-write-wins, tagged source: "human" | "llm" so the UI can attribute changes.'
+  - id: q2
+    question: 'You are an agent. You call `atelier_add_delta` to animate `style.borderRadius` on a TextVisual layer. The tool returns an error. What is the correct response?'
+    choices:
+      A: 'Retry the same call — transient errors are common'
+      B: 'Read the error verbatim, recognize that borderRadius is not animatable on a text layer, choose a real text property (style.fontSize, style.color, opacity) and call again'
+      C: 'Edit the document file directly with `fs.writeFile` to bypass the validator'
+      D: 'Suppress the error and continue — the schema validation is advisory'
+    correct: B
+    explanation: 'The schema rejects animatable-property mismatches with AI-readable errors naming the exact field. The correct flow is read the error, fix the request, retry. Bypassing the validator is not possible (every tool call validates); editing files directly defeats the LLM↔Studio bridge and produces drift. The four most common agent mistakes are documented in the patterns note — this is mistake #1.'
+  - id: q3
+    question: 'Which two-tool pairing covers "I want this fade-in pattern on every title layer in three different states"?'
+    choices:
+      A: '`atelier_add_delta` called 9 times, once per (layer, state) pair — there is no other way'
+      B: '`atelier_define_preset` once to bundle the deltas, then `atelier_apply_preset` per layer per state with an optional offset for staggering'
+      C: '`atelier_instantiate_template` — templates are how repeated motion is expressed'
+      D: '`atelier_set_motion_path` once on each layer — motion paths handle all repetition'
+    correct: B
+    explanation: 'Presets bundle deltas; templates bundle layer subtrees. For "same motion on N layers" the right tool is `atelier_define_preset` + `atelier_apply_preset` with the `offset` parameter for staggering. Templates are for "same layer subtree" (group + children with variable substitution). One-of-a-kind motion should be hand-authored.'
+  - id: q4
+    question: How are layers in the overlay namespace (handle, page-number) protected from being destroyed when a recipe is re-applied?
+    choices:
+      A: They are stored in a separate file outside the document
+      B: 'They are tagged `overlay`; the `applyRecipeToOverlay` translator drops only overlay-tagged layers before re-adding, leaving user-authored layers and other pipelines'' outputs untouched'
+      C: A locking mechanism prevents re-application unless the user confirms
+      D: They are recreated identically every time; user edits are discarded by design
+    correct: B
+    explanation: 'Layer-tag isolation is the load-bearing invariant. Each pipeline owns a tag namespace (`silence-trim`, `caption`, `caption-word`, `overlay`) and re-running a pipeline drops only its own tagged layers. User-authored layers (untagged) and other pipelines'' outputs (different tag) are never touched. The same idea generalizes to agent mutations via the `source: "human" | "llm"` op tagging.'
+  - id: q5
+    question: 'Two `atelier_add_delta` calls target the same layer and the same property, with overlapping `startFrame`–`endFrame` ranges. What happens?'
+    choices:
+      A: The second call replaces the first silently
+      B: The values are averaged
+      C: 'The no-overlap gate rejects the second call with a field-level error naming both deltas; the agent must split into adjacent ranges or use two layers'
+      D: Both run additively at render time
+    correct: C
+    explanation: 'The no-overlap gate lives in the document builder and rejects overlapping deltas on the same layer + property. Overlapping motion is almost always a bug. The error message names both conflicting deltas so the fix is obvious — split into adjacent ranges, or compose by adding a second layer or a group.'
+  - id: q6
+    question: An agent is configuring a Claude Desktop client. The MCP config entry needed to connect to atelier-mcp is which of the following?
+    choices:
+      A: '`{ "mcpServers": { "atelier": { "command": "atelier-mcp" }}}` — that is the full config'
+      B: 'Requires an API token from atelier.dev'
+      C: 'Requires running `atelier login` first to provision credentials'
+      D: 'Requires manually starting `atelier-mcp serve` as a background process; the config points to its port'
+    correct: A
+    explanation: 'Atelier is local-first. The MCP config entry is one line — Claude Desktop spawns the `atelier-mcp` stdio process on demand. No tokens, no login, no separate daemon. To pin the project root, set `ATELIER_PROJECT_ROOT` in the env. To pair with `atelier studio` for live mutation, just run the studio — the bridge connection is auto-detected.'

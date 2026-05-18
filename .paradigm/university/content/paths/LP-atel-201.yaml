@@ -1,0 +1,23 @@
+id: LP-atel-201
+title: 'ATEL-201: Authoring via MCP'
+description: How an AI agent (or any MCP scripter) builds, edits, and inspects Atelier documents through the 51-tool surface. Covers the single-store invariant, the 16 tool groups, common authoring patterns, and the four most common agent mistakes. ~20 minutes.
+author: atelier
+created: '2026-05-18'
+updated: '2026-05-18'
+tags:
+  - course
+  - atel-201
+  - mcp
+ordered: true
+steps:
+  - content: N-atel-201-mcp-overview
+    required: true
+  - content: N-atel-201-authoring-tools
+    required: true
+  - content: N-atel-201-visual-and-effects
+    required: true
+  - content: N-atel-201-patterns
+    required: true
+  - content: Q-atel-201-mcp-authoring
+    required: true
+    passRequired: true
