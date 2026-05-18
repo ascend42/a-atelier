@@ -5,7 +5,13 @@ import {
   loadRecipe,
   applyRecipeToTrimOptions,
   applyRecipeToTranscribeOptions,
+  applyRecipeToOverlay,
 } from "../lib/recipe.js";
+import {
+  loadVideoProject,
+  readComposition,
+  writeComposition,
+} from "../lib/video-project.js";
 
 /**
  * Register `atelier apply-recipe <project> <recipe>` — convenience verb that
@@ -44,6 +50,17 @@ export function applyRecipeCommand(program: Command): void {
           console.log(`\nRunning atelier transcribe...`);
           const r = await transcribeProject(project, transcribeOpts);
           console.log(`  ${r.wordCount} words, ${r.captionsGenerated ? "captions written" : "captions skipped"}`);
+        }
+
+        // Overlay translator — rewrites "overlay"-tagged layers in project.atelier
+        // from recipe.overlay_rules. Single-frame apply: no carousel ctx, so
+        // page_number is silently skipped (handle is always applied if present).
+        if (recipe.overlay_rules) {
+          const vp = loadVideoProject(project);
+          const doc = readComposition(vp);
+          const updated = applyRecipeToOverlay(doc, recipe);
+          writeComposition(vp, updated);
+          console.log(`\nApplied overlay rules to ${vp.compositionPath}`);
         }
 
         console.log(`\nDone.`);

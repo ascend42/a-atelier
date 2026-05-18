@@ -316,15 +316,87 @@ describe("LayerPanel", async () => {
     expect(selectedId).toBe("rect-1");
   });
 
-  it("adds a new layer via the add button", () => {
+  // Helper: click + Add, then click a menu option by label.
+  function clickAddMenuOption(label: string): void {
+    const addBtn = Array.from(parent.querySelectorAll("button"))
+      .find((b) => b.textContent?.includes("Add")) as HTMLButtonElement | undefined;
+    expect(addBtn).toBeTruthy();
+    addBtn!.click();
+    const menuItems = Array.from(parent.querySelectorAll(".atel-layer-add-menu__item")) as HTMLButtonElement[];
+    expect(menuItems.length).toBeGreaterThan(0);
+    const target = menuItems.find((i) => i.textContent?.includes(label));
+    expect(target, `menu option "${label}" should exist`).toBeTruthy();
+    target!.click();
+  }
+
+  it("adds a new shape layer via Add → Shape (preserves default-rect path)", () => {
     const doc = makeTestDoc();
     createPanel(doc);
-    const buttons = Array.from(parent.querySelectorAll("button"));
-    const addBtn = buttons.find((b) => b.textContent?.includes("Add"))!;
-    expect(addBtn).toBeTruthy();
-    addBtn.click();
+    clickAddMenuOption("Shape");
     expect(doc.layers.length).toBe(3);
+    const added = doc.layers[2];
+    expect(added.visual.type).toBe("shape");
     expect(docChanged).toBeGreaterThan(0);
+  });
+
+  it("adds a Text layer via the menu with Inter 32px centered style", () => {
+    const doc = makeTestDoc();
+    createPanel(doc);
+    clickAddMenuOption("Text");
+    expect(doc.layers.length).toBe(3);
+    const added = doc.layers[2];
+    expect(added.visual.type).toBe("text");
+    if (added.visual.type === "text") {
+      expect(added.visual.content).toBe("Text");
+      expect(added.visual.style.fontFamily).toBe("Inter");
+      expect(added.visual.style.fontSize).toBe(32);
+      expect(added.visual.style.textAlign).toBe("center");
+      expect(added.visual.style.color).toBe("#F5F5F7");
+    }
+    expect(added.anchorPoint).toEqual({ x: 0.5, y: 0.5 });
+    expect(selectedId).toBe(added.id);
+  });
+
+  it("adds an Image layer via the menu with a placeholder assetId", () => {
+    const doc = makeTestDoc();
+    createPanel(doc);
+    clickAddMenuOption("Image");
+    const added = doc.layers[doc.layers.length - 1];
+    expect(added.visual.type).toBe("image");
+    if (added.visual.type === "image") {
+      // schema requires assetId.min(1) — placeholder satisfies it
+      expect(added.visual.assetId.length).toBeGreaterThan(0);
+    }
+    expect(added.bounds.width).toBe(400);
+    expect(added.bounds.height).toBe(400);
+  });
+
+  it("adds a Handle layer via the menu with tags:['overlay']", () => {
+    const doc = makeTestDoc();
+    createPanel(doc);
+    clickAddMenuOption("Handle");
+    const added = doc.layers[doc.layers.length - 1];
+    expect(added.visual.type).toBe("text");
+    expect(added.tags).toEqual(["overlay"]);
+    if (added.visual.type === "text") {
+      expect(added.visual.content).toBe("@username");
+      expect(added.visual.style.fontWeight).toBe(600);
+      expect(added.visual.style.fontSize).toBe(24);
+    }
+  });
+
+  it("adds a Page Number layer via the menu with tags:['overlay']", () => {
+    const doc = makeTestDoc();
+    createPanel(doc);
+    clickAddMenuOption("Page Number");
+    const added = doc.layers[doc.layers.length - 1];
+    expect(added.visual.type).toBe("text");
+    expect(added.tags).toEqual(["overlay"]);
+    if (added.visual.type === "text") {
+      expect(added.visual.content).toBe("01/05");
+      expect(added.visual.style.fontSize).toBe(18);
+      expect(added.visual.style.color).toBe("#9CA3AF");
+    }
   });
 });
 

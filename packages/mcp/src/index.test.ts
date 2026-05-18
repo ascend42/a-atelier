@@ -206,7 +206,10 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_diff_frames");
     expect(toolNames).toContain("atelier_batch_preview");
     expect(toolNames).toContain("atelier_complexity");
-    expect(toolNames).toHaveLength(53);
+    // Overlay tools (Phase 1.5)
+    expect(toolNames).toContain("atelier_add_handle");
+    expect(toolNames).toContain("atelier_add_page_number");
+    expect(toolNames).toHaveLength(55);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -2435,6 +2438,60 @@ describe("MCP Tools", () => {
       expect(layer).toBeDefined();
       expect((layer!.visual as any).state).toBe("hover");
       expect((layer!.visual as any).frame).toBe(5);
+    });
+  });
+
+  // ── Overlay tools (Phase 1.5) ────────────────────────────────
+  describe("overlay tools", () => {
+    let docId: string;
+
+    beforeEach(async () => {
+      const result = await callTool(client, "atelier_create", {
+        name: "Overlay Test",
+        width: 1080,
+        height: 1080,
+        fps: 30,
+      });
+      docId = result.id;
+    });
+
+    it("atelier_add_handle creates a TextVisual layer tagged overlay", async () => {
+      const result = await callTool(client, "atelier_add_handle", {
+        id: docId,
+        text: "@matt",
+        anchor: "bottom-left",
+      });
+      expect(result.success).toBe(true);
+      expect(result.layerId).toBe("overlay-handle");
+
+      const doc = store.get(docId)!;
+      const layer = doc.layers.find((l) => l.id === "overlay-handle")!;
+      expect(layer.tags).toEqual(["overlay"]);
+      expect(layer.visual.type).toBe("text");
+      expect((layer.visual as any).content).toBe("@matt");
+      // bottom-left → frame at margin/canvas.height-margin with anchorPoint 0,1
+      expect(layer.frame).toEqual({ x: 24, y: 1080 - 24 });
+      expect(layer.anchorPoint).toEqual({ x: 0, y: 1 });
+    });
+
+    it("atelier_add_page_number renders {current:02d}/{total:02d} with currentIndex=1 totalCount=5", async () => {
+      const result = await callTool(client, "atelier_add_page_number", {
+        id: docId,
+        format: "{current:02d}/{total:02d}",
+        anchor: "top-right",
+        currentIndex: 1,
+        totalCount: 5,
+      });
+      expect(result.success).toBe(true);
+      expect(result.rendered).toBe("01/05");
+
+      const doc = store.get(docId)!;
+      const layer = doc.layers.find((l) => l.id === "overlay-page-number")!;
+      expect(layer.tags).toEqual(["overlay"]);
+      expect((layer.visual as any).content).toBe("01/05");
+      // top-right → frame at (canvas.width-margin, margin) with anchorPoint 1,0
+      expect(layer.frame).toEqual({ x: 1080 - 24, y: 24 });
+      expect(layer.anchorPoint).toEqual({ x: 1, y: 0 });
     });
   });
 });

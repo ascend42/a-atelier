@@ -19,6 +19,7 @@ import { register as registerVariableTools } from "./tools/variables.js";
 import { register as registerInteractionTools } from "./tools/interactions.js";
 import { register as registerRefTools } from "./tools/refs.js";
 import { register as registerPerformanceTools } from "./tools/performance.js";
+import { register as registerOverlayTools } from "./tools/overlays.js";
 
 export { DocumentStore } from "./store.js";
 export { register as registerDocumentTools } from "./tools/document.js";
@@ -37,6 +38,7 @@ export { register as registerVariableTools } from "./tools/variables.js";
 export { register as registerInteractionTools } from "./tools/interactions.js";
 export { register as registerRefTools } from "./tools/refs.js";
 export { register as registerPerformanceTools } from "./tools/performance.js";
+export { register as registerOverlayTools } from "./tools/overlays.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -66,6 +68,7 @@ export function createServer(): { server: McpServer; store: DocumentStore } {
   registerInteractionTools(server, store);
   registerRefTools(server, store);
   registerPerformanceTools(server, store);
+  registerOverlayTools(server, store);
 
   return { server, store };
 }

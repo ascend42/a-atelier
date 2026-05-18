@@ -13,7 +13,7 @@
  */
 
 import { resolve, join, relative, dirname } from "node:path";
-import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
@@ -538,7 +538,12 @@ async function boot(): Promise<void> {
     editorContainer.innerHTML = "";
     const empty = document.createElement("div");
     empty.className = "main__empty";
-    empty.textContent = "No .atelier files found in this directory";
+    empty.style.flexDirection = "column";
+    empty.style.gap = "10px";
+    empty.style.textAlign = "center";
+    empty.style.padding = "40px";
+    empty.innerHTML = '<div style="font-size:16px;color:#F5F0EB">No .atelier files yet</div>' +
+      '<div style="font-size:13px;color:#A89F95;font-family:monospace">Drop a .atelier file here, or run: <code>atelier studio --new</code></div>';
     editorContainer.appendChild(empty);
     statusBar.textContent = "No files";
     renderFileList();
@@ -561,6 +566,84 @@ boot();
 `;
 }
 
+/**
+ * Locate the CLI package directory regardless of whether this module is
+ * running from `dist/cli.js` (production) or `src/commands/studio.ts` (dev).
+ *
+ * In production: this file is `dist/cli.js`, so `..` from its dirname
+ * resolves to the package root.
+ * In dev (vitest, ts-node): this file is `src/commands/studio.ts`, so
+ * we need to climb two levels.
+ *
+ * We probe for a recognisable file (package.json) at each candidate.
+ */
+function resolveCliPackageDir(): string {
+  const here = dirname(new URL(import.meta.url).pathname);
+  const candidates = [
+    resolve(here, ".."),
+    resolve(here, "..", ".."),
+  ];
+  for (const c of candidates) {
+    if (existsSync(join(c, "package.json"))) {
+      return c;
+    }
+  }
+  // Fall back to first candidate; downstream callers handle missing files.
+  return candidates[0];
+}
+
+/**
+ * If `cwd` contains zero `.atelier` files, copy the bundled welcome template
+ * (and any sibling assets) into `cwd`. Skips files that already exist so a
+ * user re-running the command never overwrites their work.
+ *
+ * Returns the basename of the scaffolded file (or null if nothing was done).
+ */
+function scaffoldWelcomeIfEmpty(cwd: string, cliPackageDir: string): string | null {
+  const existing = findAtelierFiles(cwd);
+  if (existing.length > 0) return null;
+
+  const templatesDir = join(cliPackageDir, "templates");
+  const welcomeSrc = join(templatesDir, "welcome.atelier");
+  if (!existsSync(welcomeSrc)) return null;
+
+  const welcomeDest = join(cwd, "welcome.atelier");
+  if (existsSync(welcomeDest)) return null;
+
+  try {
+    copyFileSync(welcomeSrc, welcomeDest);
+  } catch {
+    // Non-fatal: studio still launches with empty-state UI.
+    return null;
+  }
+
+  // Also copy welcome-bg.png if shipped alongside (currently we ship a
+  // ShapeVisual placeholder, so this is a no-op; future-proofs the path).
+  const bgSrc = join(templatesDir, "welcome-bg.png");
+  if (existsSync(bgSrc)) {
+    const bgDest = join(cwd, "welcome-bg.png");
+    if (!existsSync(bgDest)) {
+      try {
+        copyFileSync(bgSrc, bgDest);
+      } catch {
+        // Non-fatal.
+      }
+    }
+  }
+
+  return "welcome.atelier";
+}
+
+/** Read the CLI package version for display in the splash banner. */
+function readCliVersion(cliPackageDir: string): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(cliPackageDir, "package.json"), "utf-8"));
+    return typeof pkg.version === "string" ? pkg.version : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 /** Register the `studio` subcommand on the Commander program. */
 export function studioCommand(program: Command): void {
   program
@@ -581,9 +664,19 @@ export function studioCommand(program: Command): void {
 
         const cwd = process.cwd();
 
-        // Find the CLI package directory (where node_modules lives).
-        // This file is at packages/cli/dist/cli.js (or src/commands/studio.ts in dev).
-        const cliPackageDir = resolve(dirname(new URL(import.meta.url).pathname), "..");
+        // Find the CLI package directory (where node_modules + templates live).
+        const cliPackageDir = resolveCliPackageDir();
+        const version = readCliVersion(cliPackageDir);
+
+        // First-run scaffold: if CWD has zero .atelier files, drop in welcome.atelier
+        // so the user lands on something real instead of an empty-state dead-end.
+        const scaffolded = scaffoldWelcomeIfEmpty(cwd, cliPackageDir);
+
+        console.log("");
+        console.log(`  Atelier Studio · v${version}`);
+        if (scaffolded) {
+          console.log(`   Scaffolded ${scaffolded} — opening…`);
+        }
 
         // Create temp directory with inline app.
         // Use realpathSync to resolve macOS /var -> /private/var symlink,
@@ -607,7 +700,6 @@ export function studioCommand(program: Command): void {
           }
         }
 
-        console.log(`Starting Atelier Studio...`);
         console.log(`  Working directory: ${cwd}`);
 
         // Dynamically import Vite (it's a peer/optional dep)

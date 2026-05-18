@@ -1,0 +1,67 @@
+version: "1.0"
+name: Welcome to Atelier
+description: First-run template — drop your own image, edit the handle, export PNG. Replace the background ShapeVisual with an ImageVisual when you have an asset.
+tags: [welcome, template, social-square]
+canvas:
+  width: 1080
+  height: 1080
+  fps: 30
+  background: "#0F1115"
+
+layers:
+  # Background — solid placeholder; swap for an ImageVisual once you have an asset.
+  - id: background
+    description: Solid placeholder. Replace with an ImageVisual + assets entry to use a photo.
+    visual:
+      type: shape
+      shape: { type: rect }
+      fill: { type: solid, color: "#1A1D24" }
+    frame: { x: 0, y: 0 }
+    bounds: { width: 1080, height: 1080 }
+    opacity: 1
+
+  # @handle overlay — bottom-left, in the "overlay" tag namespace so pipelines
+  # (caption regen, silence-trim, etc.) won't touch it on re-run.
+  - id: handle
+    description: Your handle. Bottom-left overlay.
+    tags: [overlay]
+    visual:
+      type: text
+      content: "@username"
+      style:
+        fontFamily: Inter
+        fontSize: 48
+        fontWeight: 600
+        color: "#F5F5F7"
+        textAlign: left
+    frame: { x: 48, y: 980 }
+    bounds: { width: 600, height: 52 }
+    opacity: 0
+
+  # Page-number overlay — bottom-right, monospaced look (Inter falls back gracefully).
+  - id: page-number
+    description: Carousel page number. Bottom-right overlay.
+    tags: [overlay]
+    visual:
+      type: text
+      content: "01/05"
+      style:
+        fontFamily: Inter
+        fontSize: 24
+        fontWeight: 500
+        color: "#9CA3AF"
+        textAlign: right
+    frame: { x: 880, y: 1020 }
+    bounds: { width: 152, height: 28 }
+    opacity: 1
+
+states:
+  default:
+    duration: 30
+    deltas:
+      - layer: handle
+        property: opacity
+        range: [0, 30]
+        from: 0
+        to: 1
+        easing: ease-out

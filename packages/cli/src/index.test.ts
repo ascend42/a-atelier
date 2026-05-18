@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { writeFileSync, mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { writeFileSync, mkdirSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { join, resolve, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import type { AtelierDocument } from "@a-company/atelier-types";
-import { serializeAtelier } from "@a-company/atelier-schema";
+import { serializeAtelier, parseAtelier } from "@a-company/atelier-schema";
+import { fileURLToPath } from "node:url";
 import { validateFile } from "./commands/validate.js";
 import { lintFile } from "./commands/lint.js";
 import {
@@ -45,6 +46,8 @@ import {
   applyRecipeToTrimOptions,
   applyRecipeToTranscribeOptions,
   applyRecipeToCaptionOptions,
+  applyRecipeToOverlay,
+  renderPageNumberFormat,
   renderRecipeWithDefaults,
   recipeToYaml,
   RECIPE_VERSION,
@@ -1779,6 +1782,39 @@ describe("renderRecipeWithDefaults", () => {
   });
 });
 
+// ─── Welcome template ────────────────────────────────────────
+// The first-run scaffold (atelier studio in an empty dir) copies
+// templates/welcome.atelier into CWD. Round-trip it through parseAtelier
+// to lock in that the template stays schema-valid as the schema evolves.
+
+describe("welcome.atelier template", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  // src/ → ../templates/welcome.atelier
+  const templatePath = resolve(here, "..", "templates", "welcome.atelier");
+
+  it("ships in packages/cli/templates/", () => {
+    expect(existsSync(templatePath), `expected template at ${templatePath}`).toBe(true);
+  });
+
+  it("parses cleanly via parseAtelier (schema-valid)", () => {
+    const content = readFileSync(templatePath, "utf-8");
+    const result = parseAtelier(content);
+    expect(result.success, `parse errors: ${result.success ? "" : JSON.stringify(result.errors)}`).toBe(true);
+    if (!result.success) return;
+    const doc = result.data;
+    // Sanity: the expected first-run shape.
+    expect(doc.canvas.width).toBe(1080);
+    expect(doc.canvas.height).toBe(1080);
+    expect(doc.canvas.background).toBe("#0F1115");
+    // Overlay-tagged layers exist for the layer-tag isolation invariant.
+    const overlayLayers = doc.layers.filter((l) => l.tags?.includes("overlay"));
+    expect(overlayLayers.length).toBeGreaterThanOrEqual(2);
+    // Default state with at least one delta so the user sees motion on open.
+    expect(doc.states.default).toBeDefined();
+    expect(doc.states.default.deltas.length).toBeGreaterThan(0);
+  });
+});
+
 describe("recipeToYaml", () => {
   it("round-trips a recipe through YAML", () => {
     const recipe: StudioRecipe = {
@@ -1792,5 +1828,90 @@ describe("recipeToYaml", () => {
     const loaded = loadRecipe(path);
     expect(loaded.recipe.name).toBe("rt");
     expect(loaded.recipe.silence_policy?.default_padding_pre).toBe(0.05);
+  });
+});
+
+describe("renderPageNumberFormat", () => {
+  it("renders {current}/{total} with 1-based indexing", () => {
+    expect(renderPageNumberFormat("{current}/{total}", 1, 5)).toBe("1/5");
+    expect(renderPageNumberFormat("{current}/{total}", 3, 5)).toBe("3/5");
+  });
+
+  it("renders zero-padded forms {current:02d}/{total:02d}", () => {
+    expect(renderPageNumberFormat("{current:02d}/{total:02d}", 1, 5)).toBe("01/05");
+    expect(renderPageNumberFormat("{current:03d}/{total:03d}", 1, 5)).toBe("001/005");
+  });
+
+  it("accepts surrounding literal text", () => {
+    expect(renderPageNumberFormat("Page {current} of {total}", 2, 7)).toBe("Page 2 of 7");
+  });
+});
+
+describe("applyRecipeToOverlay", () => {
+  const baseDoc = (): import("@a-company/atelier-types").AtelierDocument => ({
+    version: "1.0",
+    name: "test",
+    canvas: { width: 1080, height: 1080, fps: 30, background: "#000" },
+    layers: [
+      { id: "user-card", visual: { type: "shape", shape: { type: "rect" }, fill: { type: "solid", color: "#fff" }}, frame: { x: 0, y: 0 }, bounds: { width: 1080, height: 1080 }},
+    ],
+    states: { default: { duration: 30, deltas: [] }},
+  });
+
+  it("adds a handle overlay layer tagged 'overlay'", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "handle-only",
+      overlay_rules: { handle: { text: "@me", anchor: "bottom-left" }},
+    };
+    const out = applyRecipeToOverlay(baseDoc(), recipe);
+    const handle = out.layers.find((l) => l.id === "overlay-handle");
+    expect(handle).toBeDefined();
+    expect(handle?.tags).toContain("overlay");
+    expect((handle?.visual as { content: string }).content).toBe("@me");
+  });
+
+  it("renders page_number when carousel ctx is provided", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "page-only",
+      overlay_rules: { page_number: { format: "{current:02d}/{total:02d}", anchor: "bottom-right" }},
+    };
+    const out = applyRecipeToOverlay(baseDoc(), recipe, { currentIndex: 1, totalCount: 5 });
+    const page = out.layers.find((l) => l.id === "overlay-page-number");
+    expect(page).toBeDefined();
+    expect((page?.visual as { content: string }).content).toBe("01/05");
+  });
+
+  it("skips page_number when ctx is missing (single-frame apply)", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "page-only",
+      overlay_rules: { page_number: { format: "{current}/{total}", anchor: "bottom-right" }},
+    };
+    const out = applyRecipeToOverlay(baseDoc(), recipe);
+    expect(out.layers.find((l) => l.id === "overlay-page-number")).toBeUndefined();
+  });
+
+  it("is idempotent — re-applying drops prior overlay layers before re-adding", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "h",
+      overlay_rules: { handle: { text: "@me", anchor: "top-right" }},
+    };
+    const once = applyRecipeToOverlay(baseDoc(), recipe);
+    const twice = applyRecipeToOverlay(once, recipe);
+    const handles = twice.layers.filter((l) => l.id === "overlay-handle");
+    expect(handles.length).toBe(1);
+  });
+
+  it("leaves user-authored layers (untagged) untouched", () => {
+    const recipe: StudioRecipe = {
+      version: "1.0",
+      name: "h",
+      overlay_rules: { handle: { text: "@me", anchor: "bottom-left" }},
+    };
+    const out = applyRecipeToOverlay(baseDoc(), recipe);
+    expect(out.layers.find((l) => l.id === "user-card")).toBeDefined();
   });
 });

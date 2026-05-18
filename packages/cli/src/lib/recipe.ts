@@ -8,6 +8,11 @@ import type {
   SilencePolicy,
   CaptionStyle,
   CaptionGrouping,
+  AtelierDocument,
+  Layer,
+  OverlayAnchor,
+  OverlayTextStyle,
+  OverlayPageNumberRule,
 } from "@a-company/atelier-types";
 import type { TrimOptions } from "../commands/trim.js";
 import type { TranscribeOptions } from "../commands/transcribe.js";
@@ -277,4 +282,185 @@ export function renderRecipeWithDefaults(recipe: StudioRecipe): StudioRecipe {
 /** Serialize a recipe back to YAML for `recipe show` output */
 export function recipeToYaml(recipe: StudioRecipe): string {
   return stringifyYaml(recipe);
+}
+
+// ─── Overlay translator ──────────────────────────────────────────
+//
+// Translates recipe.overlay_rules → tag-isolated TextVisual layers
+// (handle + page_number). Mirrors rewriteCaptionLayers' tag-namespace
+// isolation invariant: only "overlay"-tagged layers are touched; all
+// user-authored / silence-trim / caption layers pass through untouched.
+// Re-applying is idempotent — the prior overlay set is dropped before
+// the fresh one is appended.
+
+/** Context for overlay translation — required for page_number rendering */
+export interface ApplyOverlayContext {
+  /** 1-based index in a carousel (substituted for {current}) */
+  currentIndex?: number;
+  /** Total carousel size (substituted for {total}) */
+  totalCount?: number;
+}
+
+/** Default px from the anchored edges when a rule omits margin */
+const DEFAULT_OVERLAY_MARGIN = 24;
+
+/** Default TextStyle baseline — overlay rule.style merges OVER these */
+const DEFAULT_OVERLAY_TEXT_STYLE = {
+  fontFamily: "Inter",
+  fontSize: 24,
+  fontWeight: 600 as const,
+  color: "#F5F5F7",
+};
+
+/** Stable layer ids — re-apply replaces by id within the overlay drop+re-add */
+const HANDLE_LAYER_ID = "overlay-handle";
+const PAGE_NUMBER_LAYER_ID = "overlay-page-number";
+
+/**
+ * Apply a Studio Recipe's overlay_rules to a document. Returns a NEW document;
+ * input is never mutated. Drops every layer tagged "overlay" before appending
+ * the freshly-derived overlay layers, so re-running is idempotent.
+ *
+ * page_number layers are only emitted when ctx.currentIndex + ctx.totalCount
+ * are both present — single-frame application silently skips page_number
+ * (with a one-shot console.warn) so apply-recipe pipelines stay safe outside
+ * carousel batches.
+ */
+export function applyRecipeToOverlay(
+  doc: AtelierDocument,
+  recipe: StudioRecipe,
+  ctx?: ApplyOverlayContext,
+): AtelierDocument {
+  const preserved = doc.layers.filter((l) => !(l.tags ?? []).includes("overlay"));
+  const overlayLayers: Layer[] = [];
+
+  const rules = recipe.overlay_rules;
+  if (!rules) {
+    return { ...doc, layers: preserved };
+  }
+
+  if (rules.handle) {
+    overlayLayers.push(buildHandleLayer(rules.handle, doc.canvas));
+  }
+
+  if (rules.page_number) {
+    if (ctx?.currentIndex != null && ctx?.totalCount != null) {
+      overlayLayers.push(
+        buildPageNumberLayer(rules.page_number, doc.canvas, ctx.currentIndex, ctx.totalCount),
+      );
+    } else {
+      console.warn(
+        `applyRecipeToOverlay: recipe.overlay_rules.page_number present but ` +
+          `currentIndex/totalCount not provided — skipping page_number layer.`,
+      );
+    }
+  }
+
+  return {
+    ...doc,
+    layers: [...preserved, ...overlayLayers],
+  };
+}
+
+/** Build the anchored handle TextVisual layer */
+function buildHandleLayer(
+  rule: { text: string; anchor: OverlayAnchor; margin?: number; style?: OverlayTextStyle },
+  canvas: AtelierDocument["canvas"],
+): Layer {
+  const margin = rule.margin ?? DEFAULT_OVERLAY_MARGIN;
+  const { frame, anchorPoint } = anchorToFrame(rule.anchor, canvas, margin);
+  return {
+    id: HANDLE_LAYER_ID,
+    tags: ["overlay"],
+    visual: {
+      type: "text",
+      content: rule.text,
+      style: mergeOverlayStyle(rule.style),
+    },
+    frame,
+    bounds: { width: 600, height: 80 },
+    anchorPoint,
+  };
+}
+
+/** Build the anchored page-number TextVisual layer */
+function buildPageNumberLayer(
+  rule: OverlayPageNumberRule,
+  canvas: AtelierDocument["canvas"],
+  currentIndex: number,
+  totalCount: number,
+): Layer {
+  const margin = rule.margin ?? DEFAULT_OVERLAY_MARGIN;
+  const { frame, anchorPoint } = anchorToFrame(rule.anchor, canvas, margin);
+  return {
+    id: PAGE_NUMBER_LAYER_ID,
+    tags: ["overlay"],
+    visual: {
+      type: "text",
+      content: renderPageNumberFormat(rule.format, currentIndex, totalCount),
+      style: mergeOverlayStyle(rule.style),
+    },
+    frame,
+    bounds: { width: 200, height: 80 },
+    anchorPoint,
+  };
+}
+
+/** Anchor enum → frame coords + 0/1 anchorPoint */
+function anchorToFrame(
+  anchor: OverlayAnchor,
+  canvas: AtelierDocument["canvas"],
+  margin: number,
+): { frame: { x: number; y: number }; anchorPoint: { x: number; y: number } } {
+  switch (anchor) {
+    case "top-left":
+      return { frame: { x: margin, y: margin }, anchorPoint: { x: 0, y: 0 } };
+    case "top-right":
+      return { frame: { x: canvas.width - margin, y: margin }, anchorPoint: { x: 1, y: 0 } };
+    case "bottom-left":
+      return { frame: { x: margin, y: canvas.height - margin }, anchorPoint: { x: 0, y: 1 } };
+    case "bottom-right":
+      return {
+        frame: { x: canvas.width - margin, y: canvas.height - margin },
+        anchorPoint: { x: 1, y: 1 },
+      };
+  }
+}
+
+/** Merge a partial OverlayTextStyle over the runtime defaults (always returns a complete TextStyle) */
+function mergeOverlayStyle(
+  style: OverlayTextStyle | undefined,
+): { fontFamily: string; fontSize: number; fontWeight: number | "normal" | "bold"; color: string } {
+  return {
+    fontFamily: style?.font_family ?? DEFAULT_OVERLAY_TEXT_STYLE.fontFamily,
+    fontSize: style?.font_size ?? DEFAULT_OVERLAY_TEXT_STYLE.fontSize,
+    fontWeight: style?.font_weight ?? DEFAULT_OVERLAY_TEXT_STYLE.fontWeight,
+    color: style?.color ?? DEFAULT_OVERLAY_TEXT_STYLE.color,
+  };
+}
+
+/**
+ * Render a page_number format template by substituting {current} / {total}
+ * placeholders (including zero-pad forms like {current:02d}, {total:02d}).
+ *
+ * The schema (^valid-recipe gate) already enforces that ≥1 placeholder is
+ * present — this is render-time substitution only.
+ */
+export function renderPageNumberFormat(
+  format: string,
+  currentIndex: number,
+  totalCount: number,
+): string {
+  return format.replace(
+    /\{(current|total)(?::0(\d+)d)?\}/g,
+    (_, name: string, padWidth?: string) => {
+      const value = name === "current" ? currentIndex : totalCount;
+      const str = String(value);
+      if (padWidth) {
+        const width = parseInt(padWidth, 10);
+        return str.padStart(width, "0");
+      }
+      return str;
+    },
+  );
 }
