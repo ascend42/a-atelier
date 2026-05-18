@@ -94,4 +94,9 @@ export type {
   SilencePolicy,
   CaptionStyle,
   CaptionGrouping,
+  OverlayRules,
+  OverlayHandleRule,
+  OverlayPageNumberRule,
+  OverlayTextStyle,
+  OverlayAnchor,
 } from "./recipe.js";

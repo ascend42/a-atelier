@@ -1570,6 +1570,41 @@ describe("scaffoldRecipeYaml", () => {
     expect(loaded.recipe.caption_style?.font_family).toBe("Inter");
     expect(loaded.warnings).toHaveLength(0);
   });
+
+  it("includes a commented overlay_rules block in the scaffold output", () => {
+    const yaml = scaffoldRecipeYaml("my-style");
+    // The commented overlay_rules block should be present so authors discover it.
+    expect(yaml).toMatch(/# overlay_rules:/);
+    expect(yaml).toMatch(/#\s+handle:/);
+    expect(yaml).toMatch(/#\s+page_number:/);
+    expect(yaml).toMatch(/\{current\}\/\{total\}/);
+  });
+
+  it("uncommenting overlay_rules in the scaffold yields a valid recipe", () => {
+    const scaffold = scaffoldRecipeYaml("uncomment-test");
+    // Uncomment lines from "# overlay_rules:" up to the next blank line — the
+    // entire overlay_rules block. The Phase 3 comment block after it stays
+    // commented, exercising the partial-uncomment path real users take.
+    const lines = scaffold.split("\n");
+    const start = lines.findIndex((l) => l.startsWith("# overlay_rules:"));
+    expect(start).toBeGreaterThanOrEqual(0);
+    let end = start;
+    while (end < lines.length && lines[end].startsWith("#")) end++;
+    for (let i = start; i < end; i++) {
+      lines[i] = lines[i].replace(/^# ?/, "");
+    }
+    const yaml = lines.join("\n");
+
+    const yamlPath = join(tmpDir, "uncommented-overlay.recipe.yaml");
+    writeFileSync(yamlPath, yaml, "utf-8");
+    const loaded = loadRecipe(yamlPath);
+    expect(loaded.recipe.overlay_rules?.handle?.text).toBe("@username");
+    expect(loaded.recipe.overlay_rules?.handle?.anchor).toBe("bottom-left");
+    expect(loaded.recipe.overlay_rules?.page_number?.format).toBe("{current}/{total}");
+    expect(loaded.recipe.overlay_rules?.page_number?.anchor).toBe("top-right");
+    // overlay_rules is no longer reserved — no warning about it
+    expect(loaded.warnings.some((w) => /overlay_rules/.test(w))).toBe(false);
+  });
 });
 
 describe("loadRecipe", () => {

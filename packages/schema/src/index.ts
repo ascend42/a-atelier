@@ -32,12 +32,17 @@ export { CanvasSchema, AtelierDocumentSchema } from "./document.js";
 export { validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe } from "./validate.js";
 export type { ValidationResult, ValidationError } from "./validate.js";
 
-// Studio Recipe schema (Phase 1)
+// Studio Recipe schema (Phase 1 + Phase 1.5 overlay_rules)
 export {
   StudioRecipeSchema,
   SilencePolicySchema,
   CaptionStyleSchema,
   CaptionGroupingSchema,
+  OverlayRulesSchema,
+  OverlayHandleRuleSchema,
+  OverlayPageNumberRuleSchema,
+  OverlayTextStyleSchema,
+  OverlayAnchorSchema,
   RESERVED_RECIPE_FIELDS,
 } from "./recipe.js";
 

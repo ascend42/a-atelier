@@ -132,8 +132,28 @@ caption_grouping:
   max_words: 5
   pause_gap: 0.4
 
+# ── Overlay rules (Phase 1.5) — anchored handle + page-number overlays ─
+# overlay_rules:
+#   handle:
+#     text: "@username"
+#     anchor: "bottom-left"   # top-left | top-right | bottom-left | bottom-right
+#     margin: 24              # px from anchored edges
+#     style:
+#       font_family: "Inter"
+#       font_size: 36
+#       font_weight: "bold"
+#       color: "#FFFFFF"
+#   page_number:
+#     format: "{current}/{total}"   # supports {current:02d} / {total:02d} zero-pad
+#     anchor: "top-right"
+#     margin: 24
+#     style:
+#       font_family: "Inter"
+#       font_size: 36
+#       font_weight: "normal"
+#       color: "#FFFFFF"
+
 # ── Phase 3 fields (reserved — Phase 1 ignores these) ──────────────────
-# overlay_rules: []
 # caption_highlight: {}
 # transition_kit: {}
 # palette: {}

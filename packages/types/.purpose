@@ -72,3 +72,7 @@ components:
     description: VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing
     file: src/video-project.ts
     tags: [types, video, ugc, editing]
+  '#recipe-types':
+    description: 'Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.'
+    file: src/recipe.ts
+    tags: [types, recipe, studio-recipe, video]

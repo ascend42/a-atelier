@@ -22,9 +22,13 @@ components:
     file: src/delta.ts
     tags: [validation, schema]
   '#validation-functions':
-    description: validateDocument, validateLayer, validateDelta, validateVideoLayer — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints
+    description: validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields
     file: src/validate.ts
-    tags: [validation, api, video]
+    tags: [validation, api, video, recipe]
+  '#recipe-schema':
+    description: 'Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.'
+    file: src/recipe.ts
+    tags: [validation, schema, recipe, studio-recipe, video]
   '#yaml-parser':
     description: parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)
     file: src/parse.ts
@@ -37,3 +41,5 @@ gates:
     description: Delta references valid property and has valid frame range
   ^valid-video-layer:
     description: VideoVisual passes semantic checks — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty
+  ^valid-recipe:
+    description: StudioRecipe passes Zod validation including overlay_rules (anchor enum, page-number format template syntax)

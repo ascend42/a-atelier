@@ -26,8 +26,9 @@ export interface StudioRecipe {
   /** Consumed by atelier transcribe phrase grouping */
   caption_grouping?: CaptionGrouping;
 
-  /** Reserved — Phase 3 (keyword/beat-triggered asset overlays) */
-  overlay_rules?: unknown[];
+  /** Phase 1.5 — handle + page-number overlay rules (anchored layer presets) */
+  overlay_rules?: OverlayRules;
+
   /** Reserved — Phase 3 (per-word highlight color animation) */
   caption_highlight?: unknown;
   /** Reserved — Phase 3 (transition defaults between clips) */
@@ -75,4 +76,57 @@ export interface CaptionGrouping {
   max_words?: number;
   /** Pause gap in seconds that forces a phrase break */
   pause_gap?: number;
+}
+
+/**
+ * Visual subset for overlay text (handle, page-number, etc.).
+ * Mirrors the recipe's snake_case style convention. Layer-region
+ * concerns (y_ratio, width_ratio, fade_seconds) belong to caption_style,
+ * not overlays — overlays use anchor + margin instead.
+ */
+export interface OverlayTextStyle {
+  font_family?: string;
+  font_size?: number;
+  font_weight?: number | "normal" | "bold";
+  color?: string;
+}
+
+/** Anchor corner for an overlay element */
+export type OverlayAnchor = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+/** Static handle overlay rule — anchored creator/handle text per page */
+export interface OverlayHandleRule {
+  /** Literal handle text, e.g. "@username" (template variables reserved for later) */
+  text: string;
+  anchor: OverlayAnchor;
+  /** Px from the anchored edges. Default 24 at render time. */
+  margin?: number;
+  /** Optional style overrides; falls back to recipe / runtime defaults. */
+  style?: OverlayTextStyle;
+}
+
+/** Static page-number overlay rule — anchored "1/5" style indicator */
+export interface OverlayPageNumberRule {
+  /**
+   * Template string with `{current}` / `{total}` placeholders.
+   * Supports zero-pad form `{current:02d}` / `{total:02d}`.
+   * Render-time substitution; the schema only validates syntax + that
+   * at least one of `{current}` / `{total}` appears.
+   */
+  format: string;
+  anchor: OverlayAnchor;
+  /** Px from the anchored edges. Default 24 at render time. */
+  margin?: number;
+  /** Optional style overrides; falls back to recipe / runtime defaults. */
+  style?: OverlayTextStyle;
+}
+
+/**
+ * Overlay rules block — Phase 1.5 first-class. Either sub-block is optional.
+ * Render-time consumers translate these into anchored TextVisual layers
+ * (handle + page-number layer presets, to be added in a follow-up task).
+ */
+export interface OverlayRules {
+  handle?: OverlayHandleRule;
+  page_number?: OverlayPageNumberRule;
 }
