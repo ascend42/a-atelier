@@ -58,6 +58,8 @@ import { resolveStill } from "./commands/still.js";
 import { buildFfmpegArgs, checkFfmpeg } from "./commands/render-pipeline.js";
 import { renderFrameSVG } from "@a-company/atelier-svg";
 import { exportToLottie } from "@a-company/atelier-lottie";
+import { Command } from "commander";
+import { exportImageCommand, resolveExportDimensions } from "./commands/export-image.js";
 
 // ─── Test Fixtures ────────────────────────────────────────────
 
@@ -1937,5 +1939,198 @@ describe("applyRecipeToOverlay", () => {
     };
     const out = applyRecipeToOverlay(baseDoc(), recipe);
     expect(out.layers.find((l) => l.id === "user-card")).toBeDefined();
+  });
+});
+
+// ─── Export Image (PNG) Tests ────────────────────────────────
+
+/**
+ * Detect at load time whether the native node-canvas binary is available.
+ * The package is listed in pnpm.ignoredBuiltDependencies so in development
+ * sandboxes the .node binary may not have been compiled. PNG-writing tests
+ * are skipped in that case; the error-path tests still run because they
+ * exit before the dynamic canvas import.
+ */
+const canvasAvailable: boolean = await (async (): Promise<boolean> => {
+  try {
+    const mod = await import("canvas");
+    const cvs = mod.createCanvas(1, 1);
+    cvs.toBuffer("image/png");
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
+/** Build a fresh commander program with only export-image registered. */
+function makeExportImageProgram(): Command {
+  const program = new Command();
+  program.exitOverride(); // throw instead of process.exit
+  exportImageCommand(program);
+  return program;
+}
+
+/**
+ * Read PNG dimensions from a file. PNG layout: 8-byte signature, then an
+ * IHDR chunk where width is bytes 16–19 and height is bytes 20–23 (both
+ * big-endian uint32).
+ */
+function readPngDimensions(path: string): { width: number; height: number } {
+  const buf = readFileSync(path);
+  const width = buf.readUInt32BE(16);
+  const height = buf.readUInt32BE(20);
+  return { width, height };
+}
+
+/** PNG magic bytes: 89 50 4E 47 0D 0A 1A 0A */
+function isPng(path: string): boolean {
+  const buf = readFileSync(path);
+  return (
+    buf[0] === 0x89 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x4e &&
+    buf[3] === 0x47 &&
+    buf[4] === 0x0d &&
+    buf[5] === 0x0a &&
+    buf[6] === 0x1a &&
+    buf[7] === 0x0a
+  );
+}
+
+/**
+ * Run the export-image command, capturing process.exit calls so the test
+ * runner doesn't terminate. Returns the exit code (0 = success, undefined
+ * if no exit was attempted, or the code passed to process.exit).
+ */
+async function runExportImage(
+  argv: string[],
+): Promise<{ code?: number; stderr: string }> {
+  const program = makeExportImageProgram();
+  const origExit = process.exit;
+  const origErr = console.error;
+  let exitCode: number | undefined;
+  let stderr = "";
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.error = (msg?: unknown) => {
+    stderr += String(msg) + "\n";
+  };
+  try {
+    await program.parseAsync(["node", "atelier", "export-image", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      // Re-throw unexpected errors (commander's exitOverride throws CommanderError)
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code === "commander.missingMandatoryOptionValue" || cErr?.code === "commander.missingArgument") {
+        exitCode = cErr.exitCode ?? 1;
+      } else if (!(err instanceof Error)) {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.error = origErr;
+  }
+  return { code: exitCode, stderr };
+}
+
+describe("resolveExportDimensions", () => {
+  it("returns doc dimensions when no overrides", () => {
+    expect(resolveExportDimensions(1920, 1080)).toEqual({ width: 1920, height: 1080 });
+  });
+
+  it("preserves aspect when only width is set", () => {
+    expect(resolveExportDimensions(1920, 1080, 960)).toEqual({ width: 960, height: 540 });
+  });
+
+  it("preserves aspect when only height is set", () => {
+    expect(resolveExportDimensions(1920, 1080, undefined, 540)).toEqual({ width: 960, height: 540 });
+  });
+
+  it("uses both dims verbatim when both are set (may squash)", () => {
+    expect(resolveExportDimensions(1920, 1080, 500, 500)).toEqual({ width: 500, height: 500 });
+  });
+});
+
+describe("atelier export-image", () => {
+  it.skipIf(!canvasAvailable)(
+    "writes a PNG file at the requested path with the requested dimensions",
+    async () => {
+      const yaml = serializeAtelier(VALID_DOC);
+      const inPath = writeTmpFile("export-image-custom.atelier", yaml);
+      const outPath = join(tmpDir, "export-image-custom.png");
+      const { code } = await runExportImage([
+        inPath,
+        "--out", outPath,
+        "--state", "intro",
+        "--frame", "0",
+        "--width", "640",
+        "--height", "360",
+      ]);
+      expect(code).toBeUndefined();
+      expect(existsSync(outPath)).toBe(true);
+      expect(isPng(outPath)).toBe(true);
+      const dims = readPngDimensions(outPath);
+      expect(dims).toEqual({ width: 640, height: 360 });
+    },
+  );
+
+  it.skipIf(!canvasAvailable)(
+    "defaults to frame 0, first state, and the document's canvas dimensions",
+    async () => {
+      const yaml = serializeAtelier(VALID_DOC);
+      const inPath = writeTmpFile("export-image-defaults.atelier", yaml);
+      const outPath = join(tmpDir, "export-image-defaults.png");
+      const { code } = await runExportImage([inPath, "--out", outPath]);
+      expect(code).toBeUndefined();
+      expect(existsSync(outPath)).toBe(true);
+      expect(isPng(outPath)).toBe(true);
+      const dims = readPngDimensions(outPath);
+      expect(dims).toEqual({
+        width: VALID_DOC.canvas.width,
+        height: VALID_DOC.canvas.height,
+      });
+    },
+  );
+
+  it("errors gracefully when input file is missing", async () => {
+    const missing = join(tmpDir, "does-not-exist.atelier");
+    const outPath = join(tmpDir, "noop.png");
+    const { code, stderr } = await runExportImage([missing, "--out", outPath]);
+    expect(code).toBe(1);
+    expect(stderr).toContain("Cannot read file");
+    expect(existsSync(outPath)).toBe(false);
+  });
+
+  it("errors gracefully when state doesn't exist", async () => {
+    const yaml = serializeAtelier(VALID_DOC);
+    const inPath = writeTmpFile("export-image-bad-state.atelier", yaml);
+    const outPath = join(tmpDir, "bad-state.png");
+    const { code, stderr } = await runExportImage([
+      inPath,
+      "--out", outPath,
+      "--state", "nonexistent",
+    ]);
+    expect(code).toBe(1);
+    expect(stderr).toContain('State "nonexistent" not found');
+    expect(existsSync(outPath)).toBe(false);
+  });
+
+  it("errors gracefully when frame is out of state's duration", async () => {
+    const yaml = serializeAtelier(VALID_DOC);
+    const inPath = writeTmpFile("export-image-bad-frame.atelier", yaml);
+    const outPath = join(tmpDir, "bad-frame.png");
+    // VALID_DOC.states.intro.duration === 60
+    const { code, stderr } = await runExportImage([
+      inPath,
+      "--out", outPath,
+      "--state", "intro",
+      "--frame", "999",
+    ]);
+    expect(code).toBe(1);
+    expect(stderr).toContain("out of range");
+    expect(existsSync(outPath)).toBe(false);
   });
 });

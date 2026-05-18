@@ -1,5 +1,5 @@
 version: 1.0.0
-description: CLI tool — lint, validate, info, still, render, export-svg, export-lottie, assets, and variables commands for .atelier animation files
+description: CLI tool — lint, validate, info, still, render, export-svg, export-lottie, export-image, assets, and variables commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
   - Lint command runs all named gates (^valid-document, ^valid-delta, ^valid-video-layer) with grouped output and --json flag
@@ -33,6 +33,10 @@ components:
   cli-export-lottie:
     description: Export Lottie command — exports document to Lottie JSON via @atelier/lottie
     file: src/commands/export-lottie.ts
+  cli-export-image:
+    description: 'atelier export-image <file> --out file.png [--frame N] [--state NAME] [--width N] [--height N] — single-frame PNG export. Uses node-canvas (dynamic import; same install path as render command) to render via the engine''s resolveFrame + @atelier/canvas renderFrame. Aspect-preserving when only one of --width/--height is set; both set uses both verbatim. Foundation for the v1 carousel batch driver and the Studio Export PNG button.'
+    file: src/commands/export-image.ts
+    tags: [export, png, image, canvas, studio]
   cli-assets:
     description: Assets command — lists all assets in a document with usage info
     file: src/commands/assets.ts
