@@ -13,6 +13,12 @@ export interface StudioOptions {
   mode?: "full" | "compact";
   initialTab?: RightTab;
   allowSave?: boolean;
+  /**
+   * If true, the canvas panel begins playback immediately when a document is loaded.
+   * Default: false — disables the "open file slams play" footgun in editor contexts.
+   * Showcase opts in by passing true.
+   */
+  autoplay?: boolean;
   onDocumentChange?: (doc: AtelierDocument) => void;
   onSave?: (doc: AtelierDocument) => void;
 }
@@ -70,6 +76,7 @@ export class AtelierStudio {
     // Canvas panel → left side of body (always visible)
     this.canvasPanel = new CanvasPanel(this.body, {
       onFrameChange: () => {},
+      autoplay: opts.autoplay ?? false,
     });
 
     // Right panel → right side of body
@@ -352,11 +359,21 @@ export class AtelierStudio {
 
   private reloadPanels(): void {
     if (!this.doc) return;
-    this.stateName = Object.keys(this.doc.states)[0] ?? "";
+    // Preserve the currently-selected state across undo/redo when it still exists.
+    // Only fall back to the first state if the previous state was deleted by the
+    // undone/redone action — otherwise editing "hover" and hitting Cmd-Z would
+    // teleport the editor back to "default".
+    if (!this.stateName || !this.doc.states[this.stateName]) {
+      this.stateName = Object.keys(this.doc.states)[0] ?? "";
+    }
     this.canvasPanel.loadDocument(this.doc, this.stateName);
     this.layerPanel.loadDocument(this.doc);
     this.propertyPanel.loadDocument(this.doc, this.stateName);
     this.yamlPanel.loadDocument(this.doc);
+    // Keep the toolbar state selector consistent with the preserved selection.
+    if (this.stateSelect && this.stateSelect.value !== this.stateName) {
+      this.stateSelect.value = this.stateName;
+    }
     if (this.currentTab === "yaml") this.yamlPanel.refresh();
     this.opts.onDocumentChange?.(this.doc);
   }

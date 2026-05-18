@@ -105,6 +105,7 @@ function buildApp(): void {
     mode: "compact",
     initialTab: "yaml",
     allowSave: false,
+    autoplay: true,
   });
   studio.setTheme(themes[currentTheme]);
   studio.loadDocument(doc);

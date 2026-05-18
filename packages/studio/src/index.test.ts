@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { History } from "./history.js";
 import { NumberInput } from "./controls/number-input.js";
 import { ColorPicker } from "./controls/color-picker.js";
@@ -449,5 +449,110 @@ describe("GifEncoder", () => {
     const header = String.fromCharCode(...bytes.slice(0, 6));
     expect(header).toBe("GIF89a");
     expect(bytes[bytes.length - 1]).toBe(0x3b);
+  });
+});
+
+// ─── CanvasPanel: autoplay ───────────────────────────────────
+//
+// Regression guard for the "open file slams play / editing fights the scrubber"
+// bug. The play button textContent reflects the current player state:
+//   "▶"           → paused (the right-pointing triangle, U+25B6)
+//   "❚❚"     → playing (two vertical bars, U+275A x2)
+//
+// happy-dom's HTMLCanvasElement.getContext returns null, so the panel's
+// renderAt() would crash on `ctx.fillStyle = ...`. We stub a minimal 2D
+// context (only the methods touched on the test path) by monkey-patching
+// HTMLCanvasElement.prototype.getContext for the duration of this suite.
+
+describe("CanvasPanel autoplay", async () => {
+  const { CanvasPanel } = await import("./panels/canvas-panel.js");
+
+  let parent: HTMLElement;
+  let originalGetContext: typeof HTMLCanvasElement.prototype.getContext;
+
+  beforeEach(() => {
+    parent = document.createElement("div");
+    originalGetContext = HTMLCanvasElement.prototype.getContext;
+    const stubCtx: Partial<CanvasRenderingContext2D> = {
+      save: () => {},
+      restore: () => {},
+      translate: () => {},
+      rotate: () => {},
+      scale: () => {},
+      clearRect: () => {},
+      fillRect: () => {},
+      strokeRect: () => {},
+      beginPath: () => {},
+      closePath: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      arc: () => {},
+      rect: () => {},
+      fill: () => {},
+      stroke: () => {},
+      clip: () => {},
+      drawImage: () => {},
+      fillText: () => {},
+      strokeText: () => {},
+      measureText: () => ({ width: 0 } as TextMetrics),
+      setTransform: () => {},
+      resetTransform: () => {},
+      transform: () => {},
+      createLinearGradient: () => ({ addColorStop: () => {} } as unknown as CanvasGradient),
+      createRadialGradient: () => ({ addColorStop: () => {} } as unknown as CanvasGradient),
+      createPattern: () => null,
+      getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 } as ImageData),
+      putImageData: () => {},
+      fillStyle: "",
+      strokeStyle: "",
+      lineWidth: 1,
+      globalAlpha: 1,
+      font: "",
+      textAlign: "left" as CanvasTextAlign,
+      textBaseline: "alphabetic" as CanvasTextBaseline,
+      lineCap: "butt" as CanvasLineCap,
+      lineJoin: "miter" as CanvasLineJoin,
+      miterLimit: 10,
+      globalCompositeOperation: "source-over" as GlobalCompositeOperation,
+      shadowBlur: 0,
+      shadowColor: "",
+      shadowOffsetX: 0,
+      shadowOffsetY: 0,
+    };
+    HTMLCanvasElement.prototype.getContext = function (type: string) {
+      if (type === "2d") return stubCtx as CanvasRenderingContext2D;
+      return null;
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
+  afterEach(() => {
+    HTMLCanvasElement.prototype.getContext = originalGetContext;
+  });
+
+  it("does NOT autoplay by default — loadDocument leaves player paused", () => {
+    const panel = new CanvasPanel(parent, {});
+    panel.loadDocument(makeTestDoc());
+    const btn = parent.querySelector(".atel-playback__btn") as HTMLButtonElement;
+    expect(btn).toBeTruthy();
+    // Paused glyph
+    expect(btn.textContent).toBe("▶");
+    panel.destroy();
+  });
+
+  it("does NOT autoplay when autoplay:false is passed explicitly", () => {
+    const panel = new CanvasPanel(parent, { autoplay: false });
+    panel.loadDocument(makeTestDoc());
+    const btn = parent.querySelector(".atel-playback__btn") as HTMLButtonElement;
+    expect(btn.textContent).toBe("▶");
+    panel.destroy();
+  });
+
+  it("autoplays when autoplay:true is opted into (Showcase behavior)", () => {
+    const panel = new CanvasPanel(parent, { autoplay: true });
+    panel.loadDocument(makeTestDoc());
+    const btn = parent.querySelector(".atel-playback__btn") as HTMLButtonElement;
+    // Playing glyph (two vertical bars)
+    expect(btn.textContent).toBe("❚❚");
+    panel.destroy();
   });
 });

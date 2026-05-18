@@ -5,6 +5,12 @@ import { Player } from "../player.js";
 
 export interface CanvasPanelOptions {
   onFrameChange?: (frame: number) => void;
+  /**
+   * If true, animation begins playback as soon as a document loads.
+   * Default: false — the CLI studio editor never wants this (it fights the scrubber).
+   * Showcase opts in by passing true.
+   */
+  autoplay?: boolean;
 }
 
 export class CanvasPanel {
@@ -117,7 +123,9 @@ export class CanvasPanel {
     this.player = new Player(doc.canvas.fps, totalFrames, (f) => this.renderAt(f), true);
 
     this.renderAt(0);
-    this.player.play();
+    if (this.opts.autoplay) {
+      this.player.play();
+    }
     this.updatePlayBtn();
   }
 

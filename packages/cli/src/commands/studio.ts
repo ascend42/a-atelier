@@ -102,11 +102,15 @@ async function fetchFileContent(path: string): Promise<string> {
 }
 
 async function saveFileContent(path: string, content: string): Promise<void> {
-  await fetch("/api/file?path=" + encodeURIComponent(path), {
+  const res = await fetch("/api/file?path=" + encodeURIComponent(path), {
     method: "POST",
     headers: { "Content-Type": "text/plain" },
     body: content,
   });
+  if (!res.ok) {
+    const message = (await res.text()) || ("HTTP " + res.status);
+    throw new Error(message);
+  }
 }
 
 async function saveExportBlob(path: string, blob: Blob): Promise<void> {
@@ -320,6 +324,12 @@ style.textContent = \`
   }
   .main__status .save-indicator--saving { color: #C75B39; }
   .main__status .save-indicator--saved { color: #6B8E6B; }
+  .main__status .save-indicator--error {
+    color: #E25C5C;
+    cursor: pointer;
+    text-decoration: underline dotted;
+  }
+  .main__status .save-indicator--error:hover { color: #FF7777; }
   .main__editor {
     flex: 1;
     overflow: hidden;
@@ -436,28 +446,82 @@ async function loadFile(path: string): Promise<void> {
   // Set filename for export downloads (strip path and .atelier extension)
   const baseName = path.split("/").pop()?.replace(/\\.atelier$/, "") || null;
 
+  // Closure state for save status + retry affordance.
+  // Tracks the most recently-attempted payload so a retry click re-sends
+  // the same bytes (the user may have kept editing in the meantime, but
+  // they're retrying THE failed save).
+  let lastPendingContent: string | null = null;
+  let lastPendingPath: string | null = null;
+
+  function setSavedIndicator(): void {
+    const ind = statusBar.querySelector(".save-indicator") as HTMLElement | null;
+    if (!ind) return;
+    ind.className = "save-indicator save-indicator--saved";
+    ind.innerHTML = "&#10003; saved";
+    ind.title = "";
+    ind.onclick = null;
+  }
+
+  function setSavingIndicator(): void {
+    const ind = statusBar.querySelector(".save-indicator") as HTMLElement | null;
+    if (!ind) return;
+    ind.className = "save-indicator save-indicator--saving";
+    ind.innerHTML = "&#9679; saving...";
+    ind.title = "";
+    ind.onclick = null;
+  }
+
+  function setErrorIndicator(message: string): void {
+    const ind = statusBar.querySelector(".save-indicator") as HTMLElement | null;
+    if (!ind) return;
+    ind.className = "save-indicator save-indicator--error";
+    ind.innerHTML = "&#9888; Save failed: " + escapeHtml(message) + " (click to retry)";
+    ind.title = "Click to retry save";
+    ind.onclick = () => { retrySave(); };
+  }
+
+  function escapeHtml(s: string): string {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  async function performSave(path: string, content: string): Promise<void> {
+    lastPendingPath = path;
+    lastPendingContent = content;
+    setSavingIndicator();
+    try {
+      await saveFileContent(path, content);
+      // Only clear error state if this save corresponds to the latest attempt
+      if (lastPendingPath === path && lastPendingContent === content) {
+        lastPendingContent = null;
+        lastPendingPath = null;
+      }
+      setSavedIndicator();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Save failed:", msg);
+      setErrorIndicator(msg);
+    }
+  }
+
+  async function retrySave(): Promise<void> {
+    if (!lastPendingPath || lastPendingContent === null) return;
+    await performSave(lastPendingPath, lastPendingContent);
+  }
+
   studio = new AtelierStudio(editorContainer, {
     mode: "full",
     initialTab: "yaml",
     allowSave: true,
     onDocumentChange: (doc) => {
-      // Auto-save with debounce
-      const indicator = statusBar.querySelector(".save-indicator");
-      if (indicator) {
-        indicator.className = "save-indicator save-indicator--saving";
-        indicator.innerHTML = "&#9679; saving...";
-      }
+      // Auto-save with debounce — flip to "saving" immediately so the user
+      // knows their edit was registered even while the timeout is pending.
+      setSavingIndicator();
 
       if (saveTimeout) clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(async () => {
+      saveTimeout = setTimeout(() => {
         if (!currentFile) return;
         const yaml = serializeAtelier(doc);
-        await saveFileContent(currentFile, yaml);
-        const ind = statusBar.querySelector(".save-indicator");
-        if (ind) {
-          ind.className = "save-indicator save-indicator--saved";
-          ind.innerHTML = "&#10003; saved";
-        }
+        void performSave(currentFile, yaml);
       }, 800);
     },
   });
@@ -557,9 +621,17 @@ export function studioCommand(program: Command): void {
           return;
         }
 
+        // ^localhost-only: bind explicitly to the loopback interface so the
+        // dev server cannot be reached from other machines on the network.
+        // Vite's default is "localhost" which already resolves to loopback,
+        // but we pin 127.0.0.1 to make the invariant intentional + auditable
+        // and to defeat any future change in Vite defaults.
+        const HOSTNAME = "127.0.0.1";
+
         const server = await vite.createServer({
           root: tmpDir,
           server: {
+            host: HOSTNAME,
             port,
             strictPort: false,
             fs: {
@@ -570,8 +642,28 @@ export function studioCommand(program: Command): void {
             {
               name: "atelier-api",
               configureServer(server) {
+                // ^localhost-only: Origin check on mutating endpoints.
+                // Without this, any browser tab on any site can fire
+                // fetch('http://localhost:4321/api/file', { method: 'POST', ... })
+                // and write .atelier files into the user's CWD.
+                // Only allow Origins that match this server's own loopback host.
+                const allowedOrigins = new Set([
+                  `http://localhost:${port}`,
+                  `http://127.0.0.1:${port}`,
+                ]);
+                const MUTATING = new Set(["POST", "PUT", "DELETE", "PATCH"]);
+
                 server.middlewares.use((req, res, next) => {
-                  const url = new URL(req.url ?? "/", `http://localhost:${port}`);
+                  const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${port}`);
+
+                  if (req.method && MUTATING.has(req.method) && url.pathname.startsWith("/api/")) {
+                    const origin = req.headers.origin;
+                    if (!origin || !allowedOrigins.has(origin)) {
+                      res.statusCode = 403;
+                      res.end("Forbidden: cross-origin mutating request rejected");
+                      return;
+                    }
+                  }
 
                   if (url.pathname === "/api/files") {
                     const atelierFiles = findAtelierFiles(cwd);
@@ -617,9 +709,10 @@ export function studioCommand(program: Command): void {
                         try {
                           writeFileSync(absPath, body, "utf-8");
                           res.end("OK");
-                        } catch {
+                        } catch (e) {
+                          const msg = e instanceof Error ? e.message : String(e);
                           res.statusCode = 500;
-                          res.end("Write failed");
+                          res.end(msg);
                         }
                       });
                       return;
@@ -642,9 +735,10 @@ export function studioCommand(program: Command): void {
                         mkdirSync(dirname(absPath), { recursive: true });
                         writeFileSync(absPath, Buffer.concat(chunks));
                         res.end("OK");
-                      } catch {
+                      } catch (e) {
+                        const msg = e instanceof Error ? e.message : String(e);
                         res.statusCode = 500;
-                        res.end("Write failed");
+                        res.end(msg);
                       }
                     });
                     return;

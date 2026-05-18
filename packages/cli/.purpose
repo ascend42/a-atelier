@@ -87,6 +87,11 @@ components:
     description: 'atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.'
     file: src/commands/apply-recipe.ts
     tags: [video, ugc, recipe, cli, studio-recipe]
+  '#cli-studio':
+    description: 'atelier studio [file] — launches a Vite dev server serving the AtelierStudio widget as a browser-based editor. Lists .atelier files in CWD, autosaves edits with visible save/saving/error indicator + click-to-retry on failure, supports per-file and Export-All (gif/mp4/webm). Server bound to 127.0.0.1 only with Origin check on /api/* mutating endpoints (^localhost-only). No autoplay on file open — the embedded studio is constructed with autoplay:false.'
+    file: src/commands/studio.ts
+    gates: ['^localhost-only']
+    tags: [studio, editor, dev-server, vite, security]
   '#recipe-lib':
     description: 'Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.'
     file: src/lib/recipe.ts

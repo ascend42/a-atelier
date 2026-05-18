@@ -20,4 +20,14 @@ gates:
     type: validation
     location: packages/schema/src/validate.ts
     prizes: []
+  valid-recipe:
+    description: Validates a StudioRecipe against the schema — Phase 1 fields strict, Phase 3 reserved fields parsed opaque with warnings
+    type: validation
+    location: packages/schema/src/validate.ts
+    prizes: []
+  localhost-only:
+    description: 'atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user''s CWD.'
+    type: security
+    location: packages/cli/src/commands/studio.ts
+    prizes: []
 routes: {}
