@@ -7,7 +7,14 @@ import { FillEditor } from "../controls/fill-editor.js";
 import { DeltaPanel } from "./delta-panel.js";
 
 export interface PropertyPanelOptions {
+  /** Commit: snapshot undo history + notify the host. Fired on `change`. */
   onPropertyChange: () => void;
+  /**
+   * Live preview: cheap canvas re-render only, no undo snapshot, no host
+   * notification. Fired on continuous `input` (e.g. slider drag). Optional;
+   * falls back to `onPropertyChange` when a control doesn't distinguish them.
+   */
+  onPropertyPreview?: () => void;
 }
 
 export class PropertyPanel {
@@ -113,6 +120,7 @@ export class PropertyPanel {
       const row1 = this.makeRow(true);
       new SliderInput(row1, {
         label: "Opacity", value: layer.opacity ?? 1, min: 0, max: 1, step: 0.01,
+        onInput: (v) => { layer.opacity = v; this.preview(); },
         onChange: (v) => { layer.opacity = v; this.opts.onPropertyChange(); },
       });
 
@@ -212,6 +220,9 @@ export class PropertyPanel {
             label: "Start",
             value: visual.stroke.strokeStart ?? 0,
             min: 0, max: 1, step: 0.01,
+            onInput: (v) => {
+              if (visual.stroke) { visual.stroke.strokeStart = v; this.preview(); }
+            },
             onChange: (v) => {
               if (visual.stroke) {
                 visual.stroke.strokeStart = v;
@@ -223,6 +234,9 @@ export class PropertyPanel {
             label: "End",
             value: visual.stroke.strokeEnd ?? 1,
             min: 0, max: 1, step: 0.01,
+            onInput: (v) => {
+              if (visual.stroke) { visual.stroke.strokeEnd = v; this.preview(); }
+            },
             onChange: (v) => {
               if (visual.stroke) {
                 visual.stroke.strokeEnd = v;
@@ -470,6 +484,17 @@ export class PropertyPanel {
       });
       row4.appendChild(rmBtn);
     });
+  }
+
+  /**
+   * Live-preview hook for continuous controls (e.g. slider drag). Routes to
+   * the host's preview callback when present (cheap canvas re-render, no undo
+   * snapshot), otherwise degrades to a full commit so behavior is never worse
+   * than before.
+   */
+  private preview(): void {
+    if (this.opts.onPropertyPreview) this.opts.onPropertyPreview();
+    else this.opts.onPropertyChange();
   }
 
   private addSection(title: string, buildContent: () => void): void {

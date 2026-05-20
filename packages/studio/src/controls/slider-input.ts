@@ -4,7 +4,18 @@ export interface SliderInputOptions {
   min: number;
   max: number;
   step?: number;
+  /**
+   * Fired on COMMIT (pointerup / keyboard step / blur — the DOM `change`
+   * event). This is the path that should snapshot undo history and notify
+   * the host, so one drag = one undo entry and one host notification.
+   */
   onChange: (value: number) => void;
+  /**
+   * Fired on every `input` tick during a drag (~60Hz). Use this for cheap
+   * live preview (canvas re-render only) — do NOT snapshot history or send
+   * over the bridge here. Optional; falls back to nothing if omitted.
+   */
+  onInput?: (value: number) => void;
 }
 
 export class SliderInput {
@@ -41,7 +52,16 @@ export class SliderInput {
     this.el.appendChild(wrap);
     parent.appendChild(this.el);
 
+    // `input` fires continuously while dragging — live preview only.
     this.input.addEventListener("input", () => {
+      const v = parseFloat(this.input.value);
+      this.display.textContent = formatValue(v);
+      opts.onInput?.(v);
+    });
+
+    // `change` fires once on commit (pointerup / keyboard step / blur) — this
+    // is where history + host notification happen.
+    this.input.addEventListener("change", () => {
       const v = parseFloat(this.input.value);
       this.display.textContent = formatValue(v);
       opts.onChange(v);

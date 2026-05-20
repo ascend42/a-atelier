@@ -333,6 +333,14 @@ let studio: AtelierStudio | null = null;
 let currentFile: string | null = null;
 let files: FileEntry[] = [];
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+// The path + bytes the pending saveTimeout was scheduled for. Captured so a
+// fired timer (and the flush-on-switch below) writes to the file it was
+// scheduled for — NOT whatever currentFile becomes when the user switches
+// files mid-debounce. Without this, editing A then opening B within the 800ms
+// window wrote A's bytes to B's path: real .atelier corruption.
+let pendingSavePath: string | null = null;
+let pendingSaveContent: string | null = null;
+let flushPendingSave: (() => void) | null = null;
 let bridgeSocket: WebSocket | null = null;
 // One-tick suppression: when the bridge delivers an LLM mutation we apply it
 // via studio.applyMutation (which sets suppressNotify internally) — the
@@ -769,6 +777,19 @@ function renderFileList(): void {
 
 // ── Load a file into the studio ──
 async function loadFile(path: string): Promise<void> {
+  // Flush any pending autosave to its OWN file BEFORE switching. This both
+  // (a) avoids dropping the user's unsaved edit to the outgoing file and
+  // (b) prevents the debounce timer from later firing and writing the old
+  // file's bytes to the newly-loaded file's path (.atelier corruption).
+  if (flushPendingSave) flushPendingSave();
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  pendingSavePath = null;
+  pendingSaveContent = null;
+  flushPendingSave = null;
+
   currentFile = path;
   renderFileList();
 
@@ -868,11 +889,32 @@ async function loadFile(path: string): Promise<void> {
       // knows their edit was registered even while the timeout is pending.
       setSavingIndicator();
 
+      // Capture the target path + bytes NOW so the timer writes to the file
+      // this edit belongs to, regardless of what currentFile becomes later.
+      const targetPath = currentFile;
+      const yaml = serializeAtelier(doc);
+      pendingSavePath = targetPath;
+      pendingSaveContent = yaml;
+
+      // Register the synchronous-ish flush used by loadFile on a file switch:
+      // it fires the pending save to its OWN path (fetch is async, but the
+      // captured path guarantees correctness) and clears the timer.
+      flushPendingSave = () => {
+        if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = null; }
+        if (pendingSavePath && pendingSaveContent !== null) {
+          void performSave(pendingSavePath, pendingSaveContent);
+        }
+        pendingSavePath = null;
+        pendingSaveContent = null;
+      };
+
       if (saveTimeout) clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
-        if (!currentFile) return;
-        const yaml = serializeAtelier(doc);
-        void performSave(currentFile, yaml);
+        saveTimeout = null;
+        if (!targetPath) return;
+        pendingSavePath = null;
+        pendingSaveContent = null;
+        void performSave(targetPath, yaml);
       }, 800);
 
       // Bridge: send the human edit so any connected MCP client (or future
@@ -1221,7 +1263,10 @@ export function studioCommand(program: Command): void {
           doc: import("@a-company/atelier-types").AtelierDocument,
         ): void => {
           if (!isSafePath(docId)) return;
-          writeFileSync(resolve(cwd, docId), serializeAtelier(doc), "utf-8");
+          // Create parent dirs first so a doc:patch over the WS bridge for a
+          // subfolder doc (e.g. `notes/x.atelier`) doesn't ENOENT and lose the
+          // edit — mirrors what the POST /api/file handler already does.
+          writeFileEnsuringDir(resolve(cwd, docId), serializeAtelier(doc));
         };
 
         // Persist LLM/system mutations to disk so the on-disk .atelier file

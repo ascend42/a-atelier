@@ -2247,6 +2247,7 @@ import {
   writeFileEnsuringDir,
   type BridgeSessionState,
 } from "./commands/studio.js";
+import { SaveCoordinator } from "./lib/studio-save-coordinator.js";
 import { DocumentStore } from "@a-company/atelier-mcp";
 
 class FakeBridgeWs {
@@ -2376,6 +2377,91 @@ describe("studio — writeFileEnsuringDir (POST /api/file subfolder create)", ()
 
     expect(existsSync(target)).toBe(true);
     expect(readFileSync(target, "utf-8")).toBe("hello-doc");
+  });
+});
+
+// Fix 2: a doc:patch over the WS bridge for a subfolder doc must create the
+// parent dirs (persistHumanPatch now uses writeFileEnsuringDir). This mirrors
+// the wiring the studio command installs (store.onChange → persistHumanPatch),
+// asserting it no longer ENOENTs on `notes/x.atelier`.
+describe("studio — persistHumanPatch (WS bridge subfolder doc)", () => {
+  it("creates parent dirs + writes when persisting a subfolder doc:patch", () => {
+    const cwd = join(tmpDir, "bridge-persist");
+    mkdirSync(cwd, { recursive: true });
+    const docId = "notes/deep/x.atelier";
+    const absPath = resolve(cwd, docId);
+    expect(existsSync(dirname(absPath))).toBe(false);
+
+    // Same body as persistHumanPatch: writeFileEnsuringDir(resolve(cwd,docId),...)
+    const serialized = serializeAtelier(bridgeDoc("from-bridge"));
+    writeFileEnsuringDir(absPath, serialized);
+
+    expect(existsSync(absPath)).toBe(true);
+    const parsed = parseAtelier(readFileSync(absPath, "utf-8"));
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.name).toBe("from-bridge");
+  });
+});
+
+// Fix 1 (BLOCKING): the autosave race that corrupted .atelier files. The
+// SaveCoordinator is the extracted, tested implementation of the schedule /
+// flush-on-switch logic the inline app uses. Editing A then switching to B
+// inside the debounce window must NEVER write A's bytes to B's path, and must
+// not silently drop A's unsaved edit.
+describe("studio — SaveCoordinator (autosave race on fast file switch)", () => {
+  // Manual fake timer so we control exactly when (and whether) a save fires.
+  function makeHarness() {
+    const writes: Array<{ path: string; content: string }> = [];
+    const syncWrites: Array<{ path: string; content: string }> = [];
+    let pendingTimer: (() => void) | null = null;
+    const coord = new SaveCoordinator({
+      save: (path, content) => { writes.push({ path, content }); },
+      saveSync: (path, content) => { syncWrites.push({ path, content }); },
+      delayMs: 800,
+      setTimeoutFn: (fn) => { pendingTimer = fn; return 1 as unknown as ReturnType<typeof setTimeout>; },
+      clearTimeoutFn: () => { pendingTimer = null; },
+    });
+    return {
+      coord,
+      writes,
+      syncWrites,
+      fireTimer: () => { const t = pendingTimer; pendingTimer = null; t?.(); },
+      timerPending: () => pendingTimer !== null,
+    };
+  }
+
+  it("does NOT write A's content to B when switching files mid-debounce", () => {
+    const h = makeHarness();
+    // Edit A — debounced save scheduled.
+    h.coord.schedule("a.atelier", "CONTENT_A");
+    expect(h.timerPending()).toBe(true);
+
+    // Switch to B before the 800ms elapses: flush A, then schedule B.
+    h.coord.flushPending();
+    h.coord.schedule("b.atelier", "CONTENT_B");
+
+    // A's unsaved edit was flushed to A's OWN path — not lost, not on B.
+    expect(h.syncWrites).toEqual([{ path: "a.atelier", content: "CONTENT_A" }]);
+    // The flush cancelled A's timer; only B's debounce remains pending.
+    h.fireTimer();
+    expect(h.writes).toEqual([{ path: "b.atelier", content: "CONTENT_B" }]);
+    // CONTENT_A never landed on b.atelier (the corruption).
+    expect(h.writes.find((w) => w.path === "b.atelier")?.content).not.toBe("CONTENT_A");
+  });
+
+  it("a fired debounce timer writes to the file it was scheduled for", () => {
+    const h = makeHarness();
+    h.coord.schedule("a.atelier", "CONTENT_A");
+    h.fireTimer();
+    expect(h.writes).toEqual([{ path: "a.atelier", content: "CONTENT_A" }]);
+    expect(h.coord.hasPending()).toBe(false);
+  });
+
+  it("flushPending with no pending edit is a no-op", () => {
+    const h = makeHarness();
+    h.coord.flushPending();
+    expect(h.syncWrites).toEqual([]);
+    expect(h.writes).toEqual([]);
   });
 });
 

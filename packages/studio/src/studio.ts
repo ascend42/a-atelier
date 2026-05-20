@@ -130,6 +130,7 @@ export class AtelierStudio {
     // Property panel → inside right panel (editor tab)
     this.propertyPanel = new PropertyPanel(this.rightPanel, {
       onPropertyChange: () => this.onDocChange(),
+      onPropertyPreview: () => this.previewDocChange(),
     });
 
     // YAML panel → inside right panel (yaml tab)
@@ -417,6 +418,22 @@ export class AtelierStudio {
         this.propertyPanel.el.style.display = "";
         break;
     }
+  }
+
+  /**
+   * Live preview during a continuous interaction (e.g. slider drag). Re-renders
+   * the canvas ONLY — deliberately skips:
+   *   - `history.snapshot` / `lastSnapshot` update, so one drag collapses into
+   *     a single undo entry pushed on the eventual commit (`onDocChange`)
+   *   - the layer/yaml panel refresh (visual thrash + cost during a 60Hz drag)
+   *   - the host `onDocumentChange` notification (which would autosave + flood
+   *     the WS bridge on every tick)
+   * The committing `change` event later routes through `onDocChange`, which is
+   * what records history and notifies the host exactly once.
+   */
+  private previewDocChange(): void {
+    if (this.suppressNotify) return;
+    this.canvasPanel.refresh();
   }
 
   private onDocChange(): void {
