@@ -131,18 +131,23 @@ export function register(server: McpServer, store: DocumentStore): void {
       // welcome-placeholder convention from the Studio image-drop helper).
       const allowBackgroundSwap = files.length === 1 && doc.layers[0]?.id === "background";
 
-      if (!doc.assets) doc.assets = {};
-      const usedAssetIds = new Set(Object.keys(doc.assets));
-      const existingLayerIds = new Set(doc.layers.map((l) => l.id));
+      // Copy-on-write: build a NEW doc with cloned assets + layers and store it
+      // once at the end (mirrors applyRecipeToOverlay). A concurrent onChange
+      // reader (the studio bridge) must never observe a half-mutated document.
+      const newAssets: NonNullable<AtelierDocument["assets"]> = { ...(doc.assets ?? {}) };
+      const newLayers: Layer[] = [...doc.layers];
+
+      const usedAssetIds = new Set(Object.keys(newAssets));
+      const existingLayerIds = new Set(newLayers.map((l) => l.id));
 
       const assetIds: string[] = [];
       const layerIds: string[] = [];
 
-      let layerSeq = doc.layers.length + 1;
+      let layerSeq = newLayers.length + 1;
       for (const file of files) {
         const absPath = join(absDir, file);
         const assetId = deriveAssetId(file, usedAssetIds);
-        doc.assets[assetId] = { type: "image", src: absPath, description: file };
+        newAssets[assetId] = { type: "image", src: absPath, description: file };
         assetIds.push(assetId);
 
         if (!makeLayers) continue;
@@ -162,16 +167,17 @@ export function register(server: McpServer, store: DocumentStore): void {
         if (allowBackgroundSwap) {
           // Single image filling the welcome placeholder — swap in place so any
           // existing overlays stay on top.
-          doc.layers[0] = layer;
+          newLayers[0] = layer;
         } else {
           // Bottom of the z-stack (renderer paints index 0 first), behind
           // existing overlays — matches the Studio drop convention.
-          doc.layers.unshift(layer);
+          newLayers.unshift(layer);
         }
         layerIds.push(layerId);
       }
 
-      store.set(documentId, doc, "llm");
+      const newDoc: AtelierDocument = { ...doc, assets: newAssets, layers: newLayers };
+      store.set(documentId, newDoc, "llm");
 
       return ok({
         imported: files.length,

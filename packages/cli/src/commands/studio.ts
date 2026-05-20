@@ -12,7 +12,7 @@
  *   atelier studio --no-open                → don't auto-open browser
  */
 
-import { resolve, join, relative, dirname } from "node:path";
+import { resolve, join, relative, dirname, sep } from "node:path";
 import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
@@ -56,11 +56,32 @@ function findAtelierFiles(dir: string, base: string = dir): string[] {
   return results.sort();
 }
 
-/** Validate that a file path is safe (relative, no traversal). */
-function isSafePath(filePath: string): boolean {
-  if (!filePath || filePath.includes("..") || filePath.startsWith("/")) return false;
-  const resolved = resolve(process.cwd(), filePath);
-  return resolved.startsWith(process.cwd());
+/**
+ * Validate that a file path is safe (relative, contained within cwd).
+ *
+ * Rejects absolute inputs and any path that resolves outside the current
+ * working directory. The containment test uses an exact-or-trailing-separator
+ * prefix match so a sibling directory whose name merely starts with cwd
+ * (e.g. cwd `/a/proj` vs resolved `/a/project-x`) is NOT treated as inside.
+ * We intentionally do NOT reject a literal ".." substring — that blocks legit
+ * names like `my..backup.atelier` while adding no real security (the resolved
+ * containment check is the actual guard).
+ */
+export function isSafePath(filePath: string): boolean {
+  if (!filePath || filePath.startsWith("/")) return false;
+  const cwd = process.cwd();
+  const resolved = resolve(cwd, filePath);
+  return resolved === cwd || resolved.startsWith(cwd + sep);
+}
+
+/**
+ * Write a file, creating any missing parent directories first. Used by the
+ * POST /api/file handler so creating e.g. `notes/foo.atelier` in a subfolder
+ * doesn't ENOENT (mirrors what the /api/export handler already did).
+ */
+export function writeFileEnsuringDir(absPath: string, body: string): void {
+  mkdirSync(dirname(absPath), { recursive: true });
+  writeFileSync(absPath, body, "utf-8");
 }
 
 /**
@@ -76,6 +97,30 @@ export function isAllowedOrigin(origin: string | undefined, port: number): boole
     origin === `http://localhost:${port}` ||
     origin === `http://127.0.0.1:${port}`
   );
+}
+
+/**
+ * Origin check for the /mcp WS upgrade. Unlike /bridge (a real browser origin),
+ * non-browser MCP clients (Claude Desktop, etc.) send NO Origin header — under
+ * the strict isAllowedOrigin check they'd all 403 and the MCP-over-WS feature
+ * would be unreachable. So we tolerate a MISSING Origin here but still reject a
+ * PRESENT-but-foreign one (a browser tab on evil.com still can't reach /mcp).
+ * The loopback bind remains the primary protection.
+ */
+export function isAllowedMcpOrigin(origin: string | undefined, port: number): boolean {
+  return origin === undefined || isAllowedOrigin(origin, port);
+}
+
+/**
+ * Decide whether a store change should be broadcast to the browser (as an
+ * `llm:mutation` envelope) AND re-persisted to disk. Only LLM/agent edits
+ * qualify: "system" (GET-hydration of a file the user just opened) and "human"
+ * (the browser is already current) must stay silent — otherwise a plain
+ * file-open would fire a phantom "agent edited document" toast + bogus undo
+ * entry and needlessly rewrite the just-read bytes back to disk.
+ */
+export function shouldBroadcastMutation(source: string): boolean {
+  return source === "llm";
 }
 
 // ─── Bridge & MCP-over-WS wiring ────────────────────────────────────────────
@@ -1183,7 +1228,12 @@ export function studioCommand(program: Command): void {
         // stays in lock-step with what the browser shows. Without this, a
         // refresh would lose the LLM's edits.
         bridgeState.store.onChange((id, doc, source) => {
-          if (source === "human") return; // already persisted by /api/file POST
+          // Only LLM/agent edits get persisted + broadcast. "human" is already
+          // persisted by /api/file POST and the browser is current; "system" is
+          // GET-hydration of a file the user just opened (the bytes are already
+          // on disk and in the browser) — broadcasting it would fire a phantom
+          // "agent edited document" toast on a plain file-open.
+          if (!shouldBroadcastMutation(source)) return;
           if (doc === null) return;       // deletions don't touch disk in v1
           try {
             persistHumanPatch(id, doc);
@@ -1285,7 +1335,9 @@ export function studioCommand(program: Command): void {
                       req.on("data", (chunk: Buffer) => { body += chunk.toString(); });
                       req.on("end", () => {
                         try {
-                          writeFileSync(absPath, body, "utf-8");
+                          // Creates parent dirs first so a new file in a
+                          // subfolder (e.g. `notes/foo.atelier`) doesn't ENOENT.
+                          writeFileEnsuringDir(absPath, body);
                           // Mirror human writes into the store with source:"human"
                           // so onChange skips re-broadcasting (the browser already
                           // has the latest — no echo needed).
@@ -1360,8 +1412,16 @@ export function studioCommand(program: Command): void {
             const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${port}`);
             if (url.pathname !== "/bridge" && url.pathname !== "/mcp") return;
 
-            // ^localhost-only Origin check for WS upgrades.
-            if (!isAllowedOrigin(req.headers.origin, port)) {
+            // ^localhost-only Origin check for WS upgrades. /bridge is a real
+            // browser origin (strict same-origin), but /mcp serves non-browser
+            // MCP clients that send NO Origin header — so /mcp tolerates a
+            // missing Origin while still rejecting a present-but-foreign one.
+            const origin = req.headers.origin;
+            const originOk =
+              url.pathname === "/mcp"
+                ? isAllowedMcpOrigin(origin, port)
+                : isAllowedOrigin(origin, port);
+            if (!originOk) {
               socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
               socket.destroy();
               return;

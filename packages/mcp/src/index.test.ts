@@ -2824,6 +2824,40 @@ describe("MCP Tools", () => {
       expect(result._isError).toBe(true);
       expect(result.error).toContain("does not exist");
     });
+
+    it("copy-on-write: does not mutate the pre-call doc object in place", async () => {
+      writeImages(tmpDir, ["a.png", "b.png"]);
+      const create = await callTool(client, "atelier_create", {
+        name: "COW", width: 1080, height: 1080, fps: 30,
+      });
+
+      // Capture the doc object + array references the bridge would be holding
+      // before the import runs.
+      const before = store.get(create.id)!;
+      const beforeAssets = before.assets;
+      const beforeLayers = before.layers;
+      const beforeLayerCount = before.layers.length;
+      const beforeAssetCount = Object.keys(before.assets ?? {}).length;
+
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: tmpDir,
+      });
+      expect(result.success).toBe(true);
+
+      // The previously-held references must be untouched (no half-mutated doc
+      // observable to a concurrent onChange reader).
+      expect(before.layers).toBe(beforeLayers);
+      expect(before.layers.length).toBe(beforeLayerCount);
+      expect(Object.keys(before.assets ?? {}).length).toBe(beforeAssetCount);
+
+      // The stored doc is a fresh object with fresh arrays.
+      const after = store.get(create.id)!;
+      expect(after).not.toBe(before);
+      expect(after.layers).not.toBe(beforeLayers);
+      expect(after.assets).not.toBe(beforeAssets);
+      expect(after.layers.length).toBe(2);
+    });
   });
 });
 

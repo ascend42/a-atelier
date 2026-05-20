@@ -22,11 +22,19 @@ export function recipeCommand(program: Command): void {
         if (!existsSync(baseDir)) {
           mkdirSync(baseDir, { recursive: true });
         }
-        const outPath = join(baseDir, `${name}.recipe.yaml`);
+        // Footgun guard: if the name already carries a recognized extension,
+        // treat it as a filename so `recipe new foo.recipe.yaml` doesn't
+        // produce `foo.recipe.yaml.recipe.yaml`. Otherwise append the canonical
+        // extension. The bare-name stem (without ext) is what `recipe validate
+        // <name>` resolves, so they stay in agreement.
+        const hasKnownExt = /\.(recipe\.yaml|recipe\.json|yaml|yml|json)$/i.test(name);
+        const fileName = hasKnownExt ? name : `${name}.recipe.yaml`;
+        const outPath = join(baseDir, fileName);
         if (existsSync(outPath)) {
           throw new Error(`Recipe already exists at ${outPath} — refusing to overwrite.`);
         }
-        const yaml = scaffoldRecipeYaml(name);
+        const recipeName = name.replace(/\.(recipe\.yaml|recipe\.json|yaml|yml|json)$/i, "");
+        const yaml = scaffoldRecipeYaml(recipeName);
         writeFileSync(outPath, yaml, "utf-8");
         console.log(`Created ${outPath}`);
       } catch (err) {
@@ -41,7 +49,10 @@ export function recipeCommand(program: Command): void {
     .option("--json", "Output result as JSON")
     .action((path: string, opts: { json?: boolean }) => {
       try {
-        const loaded = loadRecipe(path);
+        // Resolve a bare name against the project-local recipes dir first
+        // (where `recipe new` writes), then the user library — so new/validate
+        // agree on where a bare name lives.
+        const loaded = loadRecipe(path, process.cwd());
         if (opts.json) {
           console.log(JSON.stringify({
             valid: true,
@@ -72,7 +83,8 @@ export function recipeCommand(program: Command): void {
     .option("--with-defaults", "Overlay code defaults onto omitted fields")
     .action((path: string, opts: { withDefaults?: boolean }) => {
       try {
-        const loaded = loadRecipe(path);
+        // Same project-local-first resolution as `recipe validate`.
+        const loaded = loadRecipe(path, process.cwd());
         const out = opts.withDefaults ? renderRecipeWithDefaults(loaded.recipe) : loaded.recipe;
         console.log(recipeToYaml(out));
         for (const w of loaded.warnings) {

@@ -60,6 +60,7 @@ import { renderFrameSVG } from "@a-company/atelier-svg";
 import { exportToLottie } from "@a-company/atelier-lottie";
 import { Command } from "commander";
 import { exportImageCommand, resolveExportDimensions } from "./commands/export-image.js";
+import { recipeCommand } from "./commands/recipe.js";
 import {
   carouselCommand,
   composeCarouselFrameDoc,
@@ -1690,6 +1691,111 @@ describe("resolveRecipePath", () => {
   });
 });
 
+// ─── recipe new / validate command round-trip (Commit B) ──────────
+//
+// Regression for the path-resolution mismatch: `recipe new <name>` writes to
+// the PROJECT dir (./.atelier/recipes/) but `recipe validate <name>` resolved
+// the bare name against ~/.atelier/recipes/ only, so the just-created file was
+// never found. Both must now agree on project-local resolution. We drive the
+// real commands with cwd pinned to a temp project dir.
+
+/** Run a recipe subcommand with cwd pinned + stdout/stderr/exit captured. */
+async function runRecipe(
+  argv: string[],
+  cwd: string,
+): Promise<{ code?: number; stdout: string; stderr: string }> {
+  const program = new Command();
+  program.exitOverride();
+  recipeCommand(program);
+
+  const origExit = process.exit;
+  const origLog = console.log;
+  const origErr = console.error;
+  const origCwd = process.cwd;
+  let exitCode: number | undefined;
+  let stdout = "";
+  let stderr = "";
+
+  process.cwd = () => cwd;
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.log = (msg?: unknown) => { stdout += String(msg) + "\n"; };
+  console.error = (msg?: unknown) => { stderr += String(msg) + "\n"; };
+
+  try {
+    await program.parseAsync(["node", "atelier", "recipe", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code?.startsWith("commander.")) {
+        exitCode = cErr.exitCode ?? 1;
+      } else {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.log = origLog;
+    console.error = origErr;
+    process.cwd = origCwd;
+  }
+  return { code: exitCode, stdout, stderr };
+}
+
+describe("recipe new/validate path resolution (Commit B)", () => {
+  it("validate finds a bare name that new just wrote (project-local round-trip)", async () => {
+    const projectDir = join(tmpDir, "recipe-rt-bare");
+    mkdirSync(projectDir, { recursive: true });
+
+    const created = await runRecipe(["new", "demo"], projectDir);
+    expect(created.code).toBeUndefined(); // no exit → success
+    expect(
+      existsSync(join(projectDir, ".atelier", "recipes", "demo.recipe.yaml")),
+    ).toBe(true);
+
+    const validated = await runRecipe(["validate", "demo"], projectDir);
+    expect(validated.code).toBeUndefined(); // resolves + passes
+    expect(validated.stdout).toMatch(/PASS/);
+  });
+
+  it("show also resolves a bare project-local name", async () => {
+    const projectDir = join(tmpDir, "recipe-rt-show");
+    mkdirSync(projectDir, { recursive: true });
+    await runRecipe(["new", "showme"], projectDir);
+
+    const shown = await runRecipe(["show", "showme"], projectDir);
+    expect(shown.code).toBeUndefined();
+    expect(shown.stdout).toMatch(/name: showme/);
+  });
+
+  it("new with an explicit .recipe.yaml name does not double the extension", async () => {
+    const projectDir = join(tmpDir, "recipe-double-ext");
+    mkdirSync(projectDir, { recursive: true });
+
+    const created = await runRecipe(["new", "foo.recipe.yaml"], projectDir);
+    expect(created.code).toBeUndefined();
+
+    const recipesDir = join(projectDir, ".atelier", "recipes");
+    expect(existsSync(join(recipesDir, "foo.recipe.yaml"))).toBe(true);
+    expect(existsSync(join(recipesDir, "foo.recipe.yaml.recipe.yaml"))).toBe(false);
+    // And the scaffold's name field uses the clean stem, not the filename.
+    const body = readFileSync(join(recipesDir, "foo.recipe.yaml"), "utf-8");
+    expect(body).toMatch(/name: "foo"/);
+  });
+
+  it("new with a bare .yaml name keeps the single extension", async () => {
+    const projectDir = join(tmpDir, "recipe-yaml-ext");
+    mkdirSync(projectDir, { recursive: true });
+
+    await runRecipe(["new", "bar.yaml"], projectDir);
+    const recipesDir = join(projectDir, ".atelier", "recipes");
+    expect(existsSync(join(recipesDir, "bar.yaml"))).toBe(true);
+    expect(existsSync(join(recipesDir, "bar.yaml.recipe.yaml"))).toBe(false);
+  });
+});
+
 describe("applyRecipeToTrimOptions", () => {
   const recipe: StudioRecipe = {
     version: "1.0",
@@ -2153,6 +2259,10 @@ import {
   attachBridgeClient,
   broadcastToBridge,
   isAllowedOrigin,
+  isAllowedMcpOrigin,
+  isSafePath,
+  shouldBroadcastMutation,
+  writeFileEnsuringDir,
   type BridgeSessionState,
 } from "./commands/studio.js";
 import { DocumentStore } from "@a-company/atelier-mcp";
@@ -2211,6 +2321,82 @@ describe("studio bridge — isAllowedOrigin", () => {
   });
 });
 
+describe("studio bridge — isAllowedMcpOrigin", () => {
+  it("tolerates a MISSING Origin (non-browser MCP clients send none)", () => {
+    // /bridge would reject this; /mcp must allow it or the feature is dead.
+    expect(isAllowedOrigin(undefined, 4321)).toBe(false);
+    expect(isAllowedMcpOrigin(undefined, 4321)).toBe(true);
+  });
+
+  it("accepts a same-origin browser Origin", () => {
+    expect(isAllowedMcpOrigin("http://localhost:4321", 4321)).toBe(true);
+    expect(isAllowedMcpOrigin("http://127.0.0.1:4321", 4321)).toBe(true);
+  });
+
+  it("still rejects a PRESENT-but-foreign Origin (evil.com tab)", () => {
+    expect(isAllowedMcpOrigin("http://evil.example", 4321)).toBe(false);
+    expect(isAllowedMcpOrigin("http://localhost:9999", 4321)).toBe(false);
+    expect(isAllowedMcpOrigin("https://localhost:4321", 4321)).toBe(false);
+  });
+});
+
+describe("studio bridge — shouldBroadcastMutation", () => {
+  it("broadcasts ONLY llm-sourced changes", () => {
+    expect(shouldBroadcastMutation("llm")).toBe(true);
+  });
+
+  it("stays silent for human + system sources", () => {
+    // "human": browser is already current. "system": GET-hydration of a
+    // just-opened file — broadcasting it fires a phantom "agent edited" toast.
+    expect(shouldBroadcastMutation("human")).toBe(false);
+    expect(shouldBroadcastMutation("system")).toBe(false);
+  });
+});
+
+describe("studio — isSafePath", () => {
+  it("accepts a plain relative name", () => {
+    expect(isSafePath("foo.atelier")).toBe(true);
+  });
+
+  it("accepts a relative subfolder path", () => {
+    expect(isSafePath("notes/x.atelier")).toBe(true);
+  });
+
+  it("accepts a name containing '..' that does not escape (my..backup)", () => {
+    expect(isSafePath("my..backup.atelier")).toBe(true);
+  });
+
+  it("rejects empty + absolute inputs", () => {
+    expect(isSafePath("")).toBe(false);
+    expect(isSafePath("/etc/passwd")).toBe(false);
+  });
+
+  it("rejects a traversal that escapes cwd", () => {
+    expect(isSafePath("../escape.atelier")).toBe(false);
+    expect(isSafePath("../../escape.atelier")).toBe(false);
+  });
+
+  it("does NOT match a sibling-prefix directory escape", () => {
+    // cwd is e.g. /a/proj; a resolved /a/proj-x must not pass the containment
+    // check just because its path starts with cwd. We synthesize the input
+    // relative to the real cwd's parent so it resolves to a sibling.
+    const cwdName = resolve(process.cwd()).split("/").pop()!;
+    expect(isSafePath(`../${cwdName}-sibling/x.atelier`)).toBe(false);
+  });
+});
+
+describe("studio — writeFileEnsuringDir (POST /api/file subfolder create)", () => {
+  it("creates missing parent dirs then writes the file", () => {
+    const target = join(tmpDir, "sub", "dir", "new.atelier");
+    expect(existsSync(dirname(target))).toBe(false);
+
+    writeFileEnsuringDir(target, "hello-doc");
+
+    expect(existsSync(target)).toBe(true);
+    expect(readFileSync(target, "utf-8")).toBe("hello-doc");
+  });
+});
+
 describe("studio bridge — attachBridgeClient", () => {
   it("sends hello + doc:loaded on connect, then broadcasts store mutations as llm:mutation", () => {
     const state: BridgeSessionState = {
@@ -2240,7 +2426,7 @@ describe("studio bridge — attachBridgeClient", () => {
 
     // Subscribe + broadcast: simulate an LLM mutation landing in the store.
     state.store.onChange((id, doc, source) => {
-      if (source === "human" || !doc) return;
+      if (!shouldBroadcastMutation(source) || !doc) return;
       broadcastToBridge(clients as any, {
         type: "llm:mutation",
         documentId: id,
@@ -2280,7 +2466,7 @@ describe("studio bridge — attachBridgeClient", () => {
 
     // Same broadcast wiring the studio command installs.
     state.store.onChange((id, doc, source) => {
-      if (source === "human" || !doc) return;
+      if (!shouldBroadcastMutation(source) || !doc) return;
       broadcastToBridge(clients as any, {
         type: "llm:mutation",
         documentId: id,
@@ -2291,6 +2477,12 @@ describe("studio bridge — attachBridgeClient", () => {
 
     state.store.set("session.atelier", bridgeDoc("human-edit"), "human");
     expect(ws.sent).toEqual([]); // nothing broadcast
+
+    // Regression: a "system" change is GET-hydration of a file the user just
+    // opened — it must NOT broadcast (else a phantom "agent edited" toast fires
+    // on a plain file-open).
+    state.store.set("session.atelier", bridgeDoc("system-hydrate"), "system");
+    expect(ws.sent).toEqual([]); // still nothing broadcast
 
     state.store.set("session.atelier", bridgeDoc("llm-edit"), "llm");
     expect(ws.sent.length).toBe(1); // only LLM passes through
