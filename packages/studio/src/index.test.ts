@@ -201,6 +201,35 @@ describe("SliderInput", () => {
     const display = parent.querySelector(".atel-slider-input__value");
     expect(display?.textContent).toBe("0.75");
   });
+
+  it("gates onChange to commit: a drag (input ticks) fires onInput only; onChange fires once on change", () => {
+    const inputs: number[] = [];
+    const changes: number[] = [];
+    new SliderInput(parent, {
+      label: "Opacity",
+      value: 0,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      onInput: (v) => inputs.push(v),
+      onChange: (v) => changes.push(v),
+    });
+    const input = parent.querySelector('input[type="range"]') as HTMLInputElement;
+
+    // Simulate a drag: several `input` ticks, no commit yet.
+    for (const v of [0.2, 0.5, 0.8]) {
+      input.value = String(v);
+      input.dispatchEvent(new Event("input"));
+    }
+    // Live preview fired per tick; history/host notification (onChange) did NOT.
+    expect(inputs).toEqual([0.2, 0.5, 0.8]);
+    expect(changes).toEqual([]);
+
+    // Commit (pointerup / blur → DOM `change`): exactly one onChange.
+    input.value = "0.8";
+    input.dispatchEvent(new Event("change"));
+    expect(changes).toEqual([0.8]);
+  });
 });
 
 // ─── SelectInput ──────────────────────────────────────────────

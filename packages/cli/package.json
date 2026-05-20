@@ -19,11 +19,12 @@
   },
   "files": [
     "dist",
-    "templates/**"
+    "templates/**",
+    "src/web/**"
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p src/web/tsconfig.json",
     "test": "vitest run",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build"
