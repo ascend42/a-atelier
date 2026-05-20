@@ -8,7 +8,9 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "release:dry": "turbo run build && pnpm -r publish --dry-run --no-git-checks",
+    "release": "turbo run build && pnpm -r publish --no-git-checks"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
