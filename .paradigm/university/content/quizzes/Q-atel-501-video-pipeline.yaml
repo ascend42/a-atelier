@@ -1,0 +1,66 @@
+id: Q-atel-501-video-pipeline
+title: 'ATEL-501: Video Project Pipeline'
+description: 'Verify the video pipeline — silence trimming with parametric cuts, Whisper transcription and the transcript edit family, caption generation, and the two re-run safety aspects (detected-vs-user-edited, layer-tag-isolation).'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-501
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'In a CutEntry, which two fields are the immutable AI detections, and which two are the user-tunable overrides?'
+    choices:
+      A: 'paddingPre/paddingPost are detected; rawStart/rawEnd are user-tunable'
+      B: 'rawStart/rawEnd are detected (immutable); paddingPre/paddingPost are the user-tunable overrides'
+      C: 'All four are detected; the user edits the layers directly'
+      D: 'All four are user-tunable; nothing is detected'
+    correct: B
+    explanation: 'rawStart and rawEnd are the detected speech boundaries from silencedetect — you do not edit them by hand. paddingPre and paddingPost are your editorial overrides; the effective cut is [rawStart - paddingPre, rawEnd + paddingPost]. Keeping them in separate fields is what lets a re-detect regenerate the raw boundaries while preserving your padding.'
+  - id: q2
+    question: 'You run `atelier trim ./proj --loosen 120`. What happens?'
+    choices:
+      A: 'The 120 is treated as seconds and added to every paddingPre/paddingPost'
+      B: 'Every cut padding increases by 120 milliseconds (0.12s), composing with any existing per-cut overrides; padding still floors at 0'
+      C: 'Only cut #120 is loosened'
+      D: 'The raw boundaries shift outward by 120 frames'
+    correct: B
+    explanation: '`--tighten` and `--loosen` take milliseconds. 120ms is converted to 0.12s and added to the current padding of every cut, so it composes with overrides you already set rather than clobbering them. `--tighten` subtracts; padding is floored at 0 so you cannot drive a cut negative. Per-cut targeting is done with `--cut <index>`, not `--loosen`.'
+  - id: q3
+    question: 'What does `atelier transcript delete ./proj --word 7` actually do?'
+    choices:
+      A: 'Removes word 7 from transcript.json entirely'
+      B: 'Deletes the caption layer at index 7'
+      C: 'Sets hidden=true on word 7 — it stays in the transcript but is skipped when captions are built'
+      D: 'Lowers word 7 confidence below the caption threshold'
+    correct: C
+    explanation: 'delete is a soft, reversible cut. It sets hidden on the word; the word remains in transcript.json (so a future re-transcribe can re-recognize it) but groupIntoPhrases skips hidden words, so it never appears in a caption. To truly remove it you would have to edit it back in — by design, nothing is destroyed.'
+  - id: q4
+    question: 'A re-transcribe must decide whether to carry your correction forward to a fresh detection. Both conditions must hold for the override to be re-attached. Which pair?'
+    choices:
+      A: 'Same word index AND same segment'
+      B: 'Timing within tolerance (0.3s) AND the detected string is unchanged'
+      C: 'Same confidence value AND same language'
+      D: 'Identical text AND identical start time to the millisecond'
+    correct: B
+    explanation: 'mergeTranscriptWithExisting matches a fresh detection to an old entry on timing within 0.3s AND an unchanged detected string. Timing alone is not enough — if Whisper now hears a different word at that timestamp, carrying the old fix forward would graft it onto the wrong word. Requiring the detected string to match guarantees you are editing the same finding. (Cuts use the same idea with a 0.5s tolerance on both raw boundaries.)'
+  - id: q5
+    question: 'You added a word with `atelier transcript add` that Whisper never heard. On the next `atelier transcribe`, what happens to it?'
+    choices:
+      A: 'It is dropped — there is no matching fresh detection'
+      B: 'It is converted into a detected word with confidence 1.0'
+      C: 'It blocks the re-transcribe until you remove it'
+      D: 'It is preserved as a userAdded orphan and re-inserted into the right segment by its timing'
+    correct: D
+    explanation: 'A userAdded word has no fresh detection to match against by definition — Whisper did not produce it. The merge collects these orphans and re-inserts each into the segment that contains its timing. Your manual additions survive a re-transcribe just like your text corrections do.'
+  - id: q6
+    question: 'You run `atelier transcribe`, which rewrites caption layers. You also have hand-authored title layers and silence-trim layers in the same document. Why are your titles safe?'
+    choices:
+      A: 'transcribe only ever appends; it never removes layers'
+      B: 'Layer-tag isolation — the rewrite drops only caption-tagged layers; untagged (user-authored) and silence-trim-tagged layers fall into the preserved set and pass through unchanged'
+      C: 'Title layers are stored in a separate file from caption layers'
+      D: 'The schema locks all non-caption layers during a transcribe run'
+    correct: B
+    explanation: 'rewriteCaptionLayers partitions the document: everything that is NOT caption-tagged is preserved, and only the caption set is dropped and rebuilt. Your untagged titles and the silence-trim-tagged cut layers are untouched. Each pipeline owns exactly one tag namespace and cleans up only after itself — the invariant the test suite asserts directly.'

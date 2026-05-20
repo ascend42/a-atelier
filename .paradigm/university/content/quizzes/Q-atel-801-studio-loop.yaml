@@ -1,0 +1,66 @@
+id: Q-atel-801-studio-loop
+title: 'ATEL-801: Studio & the Live Agent Loop'
+description: 'Verify the live agent loop — `atelier studio` as a local-first editor, the autosave save-race fix, image drop and the layer-type picker, the WebSocket bridge + MCP-over-WS transport, the source-tagged-mutation aspect, and the symbiotic human-agent editing pattern.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-801
+difficulty: advanced
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'When you switch files in the studio sidebar while an autosave is still pending in the 800ms debounce window, what stops the outgoing file''s bytes from being written to the newly-loaded file''s path?'
+    choices:
+      A: 'The save is dropped — switching files cancels the pending timer with no write'
+      B: 'The pending timer closure captures the target path AND serialized bytes, and `loadFile` flushes the pending save to its OWN path before switching'
+      C: 'The server rejects any write whose path differs from the currently-open file'
+      D: 'A CRDT merges the two files so neither is corrupted'
+    correct: B
+    explanation: 'This is the #cli-studio autosave-corruption bug. The original timer closed over the *doc* but read the GLOBAL current file at fire time — so editing A then opening B within 800ms wrote A''s bytes to B''s path. The fix is twofold: the timer captures both `pendingSavePath` and `pendingSaveContent` so a fired timer writes the bytes it was given to the file it was given; and `loadFile` calls `flushPendingSave()` at its very top to write any in-flight edit to its own path before switching. The extracted, testable version of this logic is the `SaveCoordinator` class; the inline browser app embeds the same manual debounce pattern.'
+  - id: q2
+    question: 'You drag two images from Finder onto the studio canvas of a freshly-scaffolded `welcome.atelier`. What happens to the welcome scaffold''s placeholder layer?'
+    choices:
+      A: 'Both images append on top of it; the placeholder stays visible underneath'
+      B: 'The FIRST dropped image replaces the layer whose id is `background` in-place; the second is unshifted onto the layers array (behind any overlays)'
+      C: 'Both images replace the placeholder, leaving only the second image'
+      D: 'The drop is rejected until you delete the placeholder manually'
+    correct: B
+    explanation: '`createImageLayerFromFile` is called with `replaceBackground: true` only for the FIRST image in a drop batch (`firstDrop` flips to false after the first). `buildImageLayer` swaps in-place only when `doc.layers[0]?.id === "background"` — a specific id contract, the welcome scaffold''s placeholder. Subsequent images are `unshift`-ed onto the layers array, which puts them at the bottom of the z-stack (the renderer paints index 0 first) so they sit behind any handle / page-number overlays.'
+  - id: q3
+    question: 'A property slider in the studio fires `onInput` continuously during a drag and `onChange` once on release. Why is the commit (undo snapshot) gated to `onChange` rather than `onInput`?'
+    choices:
+      A: '`onInput` is unreliable across browsers, so commits must wait for `onChange`'
+      B: 'So one slider drag produces exactly one undo entry — `onInput` does a cheap live-preview re-render with no snapshot, `onChange` commits and notifies the host'
+      C: 'Because `onInput` cannot read the slider''s value mid-drag'
+      D: 'To throttle autosave to once per second'
+    correct: B
+    explanation: 'The PropertyPanel splits the two events. `onPropertyPreview` (fired on `input`) does a cheap canvas re-render only — no undo snapshot, no host notification — so dragging gives live feedback. `onPropertyChange` (fired on `change`) snapshots undo history and notifies the host (which triggers autosave). The result: one drag = one undo, not one undo per pixel of slider travel. This was the slider-commit-flood bug, hidden while the client lived as an un-typechecked string.'
+  - id: q4
+    question: 'The studio binds the dev server to `127.0.0.1` and the WS upgrade handler re-runs an Origin check on `/bridge` and `/mcp`. Why does `/mcp` tolerate a MISSING Origin header while `/bridge` requires a strict same-origin match?'
+    choices:
+      A: '`/mcp` is unauthenticated by design and accepts any connection'
+      B: 'Non-browser MCP clients (e.g. Claude Desktop) send NO Origin header; rejecting them would make MCP-over-WS unreachable, so `/mcp` allows a missing Origin but still rejects a present-but-foreign one'
+      C: '`/bridge` carries secrets and `/mcp` does not'
+      D: 'The Origin check on `/mcp` is a bug that has not been fixed yet'
+    correct: B
+    explanation: 'WS upgrades bypass the connect middleware (Node fires `upgrade` before connect), so the bridge re-runs the Origin check itself via `isAllowedOrigin` / `isAllowedMcpOrigin`. `/bridge` is a real browser origin, so it demands strict same-origin. `/mcp` serves non-browser MCP clients that send no Origin — `isAllowedMcpOrigin` returns true for `undefined` but still rejects a present-but-foreign Origin (a tab on evil.com still cannot reach `/mcp`). The loopback bind to `127.0.0.1` remains the primary protection (^localhost-only).'
+  - id: q5
+    question: 'An MCP tool call mutates the shared `DocumentStore`, firing `onChange` with a source tag. Under the ~source-tagged-mutation aspect, which sources cause the bridge to broadcast an `llm:mutation` envelope to the browser?'
+    choices:
+      A: 'All three — human, llm, and system — so the browser always stays current'
+      B: 'Only `llm` — `human` (the browser is already current) and `system` (file-read hydration) stay silent to avoid echo loops and false attribution'
+      C: 'Only `human`, since human edits are the ones worth showing'
+      D: 'Only `system`, because that is the default tag'
+    correct: B
+    explanation: '`shouldBroadcastMutation(source)` returns true only for `source === "llm"`. Human edits arrive via `doc:patch` and are written with `source: "human"` so the filter skips them (otherwise the browser would echo its own edit back to itself). File-read hydration writes `source: "system"` — broadcasting it would fire a phantom "agent edited document" toast and a bogus undo entry on a plain file-open. Only genuine agent mutations broadcast, get persisted to disk, and surface a toast with a Cmd-Z undo affordance.'
+  - id: q6
+    question: 'In the symbiotic loop, an agent generates a batch of images by shelling out to an external generator (e.g. a Higgsfield CLI) and brings them into the open document. Which statement correctly describes Atelier''s role?'
+    choices:
+      A: 'Atelier runs the image generator in-process as one of its MCP tools'
+      B: 'Atelier owns no generation — the agent runs the external generator, then `atelier_import_images` ingests the results into the doc as ImageVisual layers + asset entries, which the human watches appear live and keeps or undoes'
+      C: 'The human must manually copy each generated file into the project before Atelier sees it'
+      D: 'Atelier regenerates the images itself to guarantee consistency'
+    correct: B
+    explanation: 'Atelier is an ingest-and-compose tool, not a generator. The agent runs the generation step in chat; `atelier_import_images` brings the results into the open document; the live bridge broadcasts the mutation so the human watches the layers appear and keeps or Cmd-Z-undoes each one; recipes and overlays compose the set; and `atelier carousel` exports it. Generation lives outside Atelier — the human and agent co-edit the same single-store document.'

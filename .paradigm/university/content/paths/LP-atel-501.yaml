@@ -1,0 +1,22 @@
+id: LP-atel-501
+title: 'ATEL-501: Video Project Pipeline'
+description: 'The video pipeline — silence trimming with parametric cuts, Whisper transcription, the transcript edit family, and caption generation. Two aspects make the loop safe: detections are immutable while your overrides survive every re-run, and each pipeline touches only its own tagged layers. After this track you can drive a VideoProject end to end and re-run any stage without losing human work. ~24 minutes.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-501
+ordered: true
+steps:
+  - content: N-atel-501-silence-trim
+    required: true
+  - content: N-atel-501-transcribe-and-captions
+    required: true
+  - content: N-atel-501-detected-vs-user-edited
+    required: true
+  - content: N-atel-501-layer-tag-isolation
+    required: true
+  - content: Q-atel-501-video-pipeline
+    required: true
+    passRequired: true

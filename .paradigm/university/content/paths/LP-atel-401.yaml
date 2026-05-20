@@ -1,0 +1,22 @@
+id: LP-atel-401
+title: 'ATEL-401: State Machines & Motion'
+description: 'From states-as-data to interactive, physically-tuned, reusable motion. Hierarchical states and their merge rule, transitions and the interaction layer, the motion deep dive (springs, expression-valued deltas, motion paths), and the preset-vs-template distinction. After this track you can build and package interactive UI motion in Atelier. ~27 minutes.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-401
+ordered: true
+steps:
+  - content: N-atel-401-hierarchical-states
+    required: true
+  - content: N-atel-401-transitions
+    required: true
+  - content: N-atel-401-motion-deep-dive
+    required: true
+  - content: N-atel-401-presets-and-templates
+    required: true
+  - content: Q-atel-401-state-machines
+    required: true
+    passRequired: true

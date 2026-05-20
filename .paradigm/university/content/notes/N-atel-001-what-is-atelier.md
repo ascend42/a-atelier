@@ -33,7 +33,7 @@ Once a document exists, Atelier can:
 Three things, in order of importance:
 
 1. **The document format was designed for an agent to write.** Layers have descriptive IDs, deltas reference layers by ID, states reference each other by name. There is no "drag this onto the canvas" — there is `atelier_add_layer({ id: "title", visual: { type: "text", content: "Hello", style: {...} } })`. The schema gives AI-readable validation errors when the agent gets it wrong.
-2. **52 MCP tools cover the full authoring surface.** An agent doesn't compose YAML by hand and pray it parses. It calls typed tools that mutate a document store, validate after each mutation, and return the updated document. Mistakes are caught at the tool boundary, not at render time.
+2. **61 MCP tools cover the full authoring surface.** An agent doesn't compose YAML by hand and pray it parses. It calls typed tools that mutate a document store, validate after each mutation, and return the updated document. Mistakes are caught at the tool boundary, not at render time.
 3. **The detected-vs-user-edited convention.** When a pipeline (silence-trim, captions) generates layers from analysis, those layers are tagged. User edits set `userEdited` / `userAdded` / `hidden` flags. Re-running the pipeline preserves user fixes by matching on timing tolerance. The human and the agent can both edit the same document forever without one erasing the other.
 
 ## What it is not

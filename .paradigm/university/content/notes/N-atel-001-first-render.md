@@ -83,16 +83,16 @@ Outputs the resolved layer state at frame 15: the title at 50% opacity, mid-fade
 ## Export
 
 ```bash
-atelier export hello.atelier --frame 30 --out hello.png
+atelier export-image hello.atelier --frame 30 --out hello.png
 ```
 
-PNG export from a single frame. For MP4 / WebM / GIF, drop the `--frame` flag and add `--format mp4`:
+PNG export from a single frame, via the `@napi-rs/canvas` rasterizer (prebuilt binaries — no native build, works on a plain `npm install`). For video, use `atelier render`:
 
 ```bash
-atelier export hello.atelier --format mp4 --out hello.mp4
+atelier render hello.atelier --format mp4 --out hello.mp4
 ```
 
-The CLI uses FFmpeg for video formats (must be on `$PATH`). The studio exports use WebCodecs in the browser — no FFmpeg dependency there.
+The CLI's `render` uses FFmpeg (must be on `$PATH`) and outputs MP4 or GIF. The browser studio exports via WebCodecs (MP4 / WebM / GIF, no FFmpeg dependency). Vector output is `atelier export-svg` and `atelier export-lottie` — see ATEL-701.
 
 ## What you just learned about the format
 
@@ -106,7 +106,7 @@ That's the mental model. Layers describe what exists. States describe how long. 
 ## Where to go next
 
 - **ATEL-101**: Document Model Fundamentals — every layer type, every easing, the resolveFrame interpolation model
-- **ATEL-201**: Authoring via MCP — the 52 tools an agent uses to build documents like this without touching YAML
+- **ATEL-201**: Authoring via MCP — the 61 tools an agent uses to build documents like this without touching YAML
 - **ATEL-301**: Visual System — shapes, typography, images, video; fills, strokes, shadows, blend modes, motion paths
 - **ATEL-501**: Video Project Pipeline — silence-trim, transcribe, captions, parametric cuts
 - **ATEL-601**: Studio Recipes — bundle silence policy + caption style + overlay rules + palette into a reusable preset

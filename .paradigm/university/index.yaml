@@ -1,6 +1,6 @@
 version: '1.0'
-generatedAt: '2026-05-18T20:02:05.658Z'
-totalContent: 24
+generatedAt: '2026-05-20T23:04:09.487Z'
+totalContent: 53
 entries:
   - id: N-atel-001-first-render
     title: Render your first animation
@@ -218,16 +218,296 @@ entries:
     symbols: []
     difficulty: intermediate
     file: content/notes/N-atel-301-shapes-and-text.md
-  - id: N-trigger7
-    title: trigger7
+  - id: N-atel-401-hierarchical-states
+    title: Hierarchical states — `parent`, inheritance, and merge
     type: note
-    author: ascend
-    created: '2026-05-18'
-    updated: '2026-05-18'
-    tags: []
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+      - states
+      - hierarchy
+      - resolve-frame
     symbols: []
-    difficulty: beginner
-    file: content/notes/N-trigger7.md
+    difficulty: intermediate
+    file: content/notes/N-atel-401-hierarchical-states.md
+  - id: N-atel-401-motion-deep-dive
+    title: Motion deep dive — springs, expressions, motion paths
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+      - motion
+      - springs
+      - expressions
+      - motion-path
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-401-motion-deep-dive.md
+  - id: N-atel-401-presets-and-templates
+    title: Presets and templates — reusing motion and structure
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+      - presets
+      - templates
+      - reuse
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-401-presets-and-templates.md
+  - id: N-atel-401-transitions
+    title: Transitions and the interaction layer
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+      - transitions
+      - interactions
+      - state-machine
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-401-transitions.md
+  - id: N-atel-501-detected-vs-user-edited
+    title: Detected vs. user-edited — why your fixes survive a re-run
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+      - video
+      - aspects
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-501-detected-vs-user-edited.md
+  - id: N-atel-501-layer-tag-isolation
+    title: Layer-tag isolation — pipelines that never step on each other
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+      - video
+      - aspects
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-501-layer-tag-isolation.md
+  - id: N-atel-501-silence-trim
+    title: Silence trimming with parametric cuts
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+      - video
+      - trim
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-501-silence-trim.md
+  - id: N-atel-501-transcribe-and-captions
+    title: Transcription, transcript editing, and captions
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+      - video
+      - captions
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-501-transcribe-and-captions.md
+  - id: N-atel-601-carousel
+    title: The carousel driver — a folder of images into posts
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+      - carousel
+      - batch
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-601-carousel.md
+  - id: N-atel-601-overlay-rules
+    title: Overlay rules — anchored handle and page-number presets
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+      - overlays
+      - recipe
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-601-overlay-rules.md
+  - id: N-atel-601-recipe-tools-and-apply
+    title: Recipe tooling — CLI verbs, MCP tools, and resolution
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+      - cli
+      - mcp
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-601-recipe-tools-and-apply.md
+  - id: N-atel-601-studio-recipe
+    title: The Studio Recipe — style as a reusable preset
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+      - recipe
+      - presets
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-601-studio-recipe.md
+  - id: N-atel-701-choosing-output
+    title: Choosing an output — a decision guide by destination
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+      - delivery
+      - decision-guide
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-701-choosing-output.md
+  - id: N-atel-701-png-and-frames
+    title: PNG and frames — the raster export path
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+      - png
+      - raster
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-701-png-and-frames.md
+  - id: N-atel-701-vector
+    title: Vector export — SVG per frame, Lottie per document
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+      - svg
+      - lottie
+      - vector
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-701-vector.md
+  - id: N-atel-701-video
+    title: Video export — MP4 and GIF via FFmpeg, WebM in the studio
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+      - video
+      - ffmpeg
+      - webcodecs
+    symbols: []
+    difficulty: intermediate
+    file: content/notes/N-atel-701-video.md
+  - id: N-atel-801-editing-surface
+    title: The editing surface — layers, image drop, and slider commit-gating
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+      - studio
+      - editing
+      - undo
+    symbols: []
+    difficulty: advanced
+    file: content/notes/N-atel-801-editing-surface.md
+  - id: N-atel-801-live-bridge
+    title: The live bridge — WebSocket, MCP-over-WS, and source-tagged mutations
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+      - bridge
+      - mcp
+      - aspects
+    symbols: []
+    difficulty: advanced
+    file: content/notes/N-atel-801-live-bridge.md
+  - id: N-atel-801-studio-app
+    title: '`atelier studio` — the local-first editor'
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+      - studio
+      - cli
+    symbols: []
+    difficulty: advanced
+    file: content/notes/N-atel-801-studio-app.md
+  - id: N-atel-801-symbiotic-loop
+    title: The symbiotic loop — ingest, compose, co-edit, export
+    type: note
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+      - workflow
+      - import
+      - vision
+    symbols: []
+    difficulty: advanced
+    file: content/notes/N-atel-801-symbiotic-loop.md
   - id: Q-atel-001-orientation
     title: 'ATEL-001: Hello Atelier — Orientation'
     type: quiz
@@ -276,6 +556,66 @@ entries:
     symbols: []
     difficulty: intermediate
     file: content/quizzes/Q-atel-301-visual-system.yaml
+  - id: Q-atel-401-state-machines
+    title: 'ATEL-401: State Machines & Motion'
+    type: quiz
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-401-state-machines.yaml
+  - id: Q-atel-501-video-pipeline
+    title: 'ATEL-501: Video Project Pipeline'
+    type: quiz
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-501-video-pipeline.yaml
+  - id: Q-atel-601-recipes
+    title: 'ATEL-601: Recipes, Overlays & Carousel'
+    type: quiz
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-601-recipes.yaml
+  - id: Q-atel-701-export
+    title: 'ATEL-701: Export & Delivery'
+    type: quiz
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+    symbols: []
+    difficulty: intermediate
+    file: content/quizzes/Q-atel-701-export.yaml
+  - id: Q-atel-801-studio-loop
+    title: 'ATEL-801: Studio & the Live Agent Loop'
+    type: quiz
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+    symbols: []
+    difficulty: advanced
+    file: content/quizzes/Q-atel-801-studio-loop.yaml
   - id: LP-atel-001
     title: 'ATEL-001: Hello Atelier'
     type: path
@@ -322,4 +662,59 @@ entries:
       - atel-301
     symbols: []
     file: content/paths/LP-atel-301.yaml
+  - id: LP-atel-401
+    title: 'ATEL-401: State Machines & Motion'
+    type: path
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-401
+    symbols: []
+    file: content/paths/LP-atel-401.yaml
+  - id: LP-atel-501
+    title: 'ATEL-501: Video Project Pipeline'
+    type: path
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-501
+    symbols: []
+    file: content/paths/LP-atel-501.yaml
+  - id: LP-atel-601
+    title: 'ATEL-601: Recipes, Overlays & Carousel'
+    type: path
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-601
+    symbols: []
+    file: content/paths/LP-atel-601.yaml
+  - id: LP-atel-701
+    title: 'ATEL-701: Export & Delivery'
+    type: path
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-701
+    symbols: []
+    file: content/paths/LP-atel-701.yaml
+  - id: LP-atel-801
+    title: 'ATEL-801: Studio & the Live Agent Loop'
+    type: path
+    author: atelier
+    created: '2026-05-20'
+    updated: '2026-05-20'
+    tags:
+      - course
+      - atel-801
+    symbols: []
+    file: content/paths/LP-atel-801.yaml
 diplomaCount: 0

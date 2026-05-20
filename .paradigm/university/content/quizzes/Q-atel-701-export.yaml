@@ -1,0 +1,66 @@
+id: Q-atel-701-export
+title: 'ATEL-701: Export & Delivery'
+description: Verify the export surface — single-frame raster (export-image / still), vector (export-svg / export-lottie), video (render via FFmpeg, studio via WebCodecs), the two canvas backends, and choosing a format by destination.
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-701
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'You run `atelier export-image hero.atelier --out card.png --width 400` on a 1920×1080 document. What dimensions is `card.png`?'
+    choices:
+      A: '400×400 — the missing dimension defaults to match the width'
+      B: '400×225 — the height is derived to preserve the document''s aspect ratio'
+      C: '1920×1080 — --width is ignored without a matching --height'
+      D: '400×1080 — width is overridden, height stays at the document value'
+    correct: B
+    explanation: 'When only one of --width/--height is set, the other is derived to preserve the document aspect ratio. 1920×1080 is 16:9, so a width of 400 gives a height of 225. Override both and the renderer uses both verbatim (which can squash); override one and the aspect ratio carries the other.'
+  - id: q2
+    question: 'A teammate says "PNG export needs cairo, so I have to run brew install before I can export a thumbnail." Are they right?'
+    choices:
+      A: 'Yes — all Atelier rendering goes through node-canvas, which needs cairo/pango'
+      B: 'No — the single-frame raster path uses @napi-rs/canvas, which ships prebuilt binaries and works on a plain npm install'
+      C: 'Only on Linux; macOS bundles cairo with the OS'
+      D: 'Yes, but only the first time — the binary is cached afterward'
+    correct: B
+    explanation: 'The raster path (export-image, still --format png, carousel) uses @napi-rs/canvas — prebuilt platform binaries, no node-gyp, no system libraries. PNG export works the moment npm install finishes. The cairo/pango requirement belongs to the separate node-canvas package used by the video render path, not to single-frame raster.'
+  - id: q3
+    question: 'Why does `atelier export-lottie` have no `--frame` flag when `atelier export-svg` does?'
+    choices:
+      A: 'An oversight — both should accept --frame'
+      B: 'Lottie exports the whole animated document (the entire timeline as keyframes); SVG exports a single resolved frame'
+      C: 'Lottie always exports frame 0 and ignores everything else'
+      D: 'Lottie requires the document to have exactly one frame'
+    correct: B
+    explanation: 'Scope is the difference. export-svg serializes one resolved frame as an SVG snapshot, so it needs a frame. export-lottie walks the whole document''s deltas and writes them as Lottie keyframes — it is the animation, not a still — so a single frame would make no sense.'
+  - id: q4
+    question: 'You run `atelier render intro.atelier -f webm` to get a WebM file. What happens?'
+    choices:
+      A: 'It renders a WebM via FFmpeg'
+      B: 'The CLI render command only supports mp4 and gif; webm is rejected. WebM comes from the studio Export button (WebCodecs)'
+      C: 'It silently falls back to MP4'
+      D: 'It renders WebM but warns that quality may be reduced'
+    correct: B
+    explanation: 'The CLI render path supports mp4 and gif only — its format type is literally "mp4" | "gif". WebM is a studio-only output, produced in the browser via WebCodecs. The two video surfaces have different format reach: CLI via FFmpeg (mp4/gif), studio via WebCodecs (commonly mp4 and webm).'
+  - id: q5
+    question: 'A user can export a PNG from a fresh `npm install` but `atelier render clip.atelier` fails. Which two things does the video path need that the raster path does not?'
+    choices:
+      A: 'A GPU and a license key'
+      B: 'FFmpeg on $PATH and the node-canvas (`canvas`) package with its cairo/pango system libraries'
+      C: 'A newer Node version and more RAM'
+      D: 'An internet connection and a registered asset'
+    correct: B
+    explanation: 'Video from the CLI asks for two things stills never do: FFmpeg on $PATH (render shells out to ffmpeg -version first) and the optional native `canvas` package with cairo/pango/etc. The raster path uses prebuilt @napi-rs/canvas and no encoder. A clean PNG install does not imply a clean MP4 install.'
+  - id: q6
+    question: 'You are handing an animation to a front-end team to drop into a product screen, and they want a small, scalable file they can play in a runtime. Which export fits best?'
+    choices:
+      A: 'A folder of PNG frames'
+      B: 'Lottie JSON via `atelier export-lottie`'
+      C: 'An MP4 via `atelier render`'
+      D: 'An SVG via `atelier export-svg`'
+    correct: B
+    explanation: 'Lottie is the motion-design / runtime handoff format — vector-crisp, tiny, and playable in every major runtime with a few lines of code. SVG is a single still (no motion); MP4 is heavier and not vector; PNG frames are neither animation nor small. Watch export-lottie''s stderr warnings, though — an unsupported feature is reported there, not silently dropped.'

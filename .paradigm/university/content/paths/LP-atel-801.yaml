@@ -1,0 +1,22 @@
+id: LP-atel-801
+title: 'ATEL-801: Studio & the Live Agent Loop'
+description: 'The live editing loop — `atelier studio` as a local-first browser editor, the editing surface (layer-type picker, image drop, slider commit-gating), the WebSocket bridge + MCP-over-WS transport that lets an agent mutate the open document in real time, and the symbiotic pattern where the human and agent co-edit the same single-store doc. After this track you understand how Atelier turns a chat conversation into a live, undoable canvas. ~22 minutes.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-801
+ordered: true
+steps:
+  - content: N-atel-801-studio-app
+    required: true
+  - content: N-atel-801-editing-surface
+    required: true
+  - content: N-atel-801-live-bridge
+    required: true
+  - content: N-atel-801-symbiotic-loop
+    required: true
+  - content: Q-atel-801-studio-loop
+    required: true
+    passRequired: true

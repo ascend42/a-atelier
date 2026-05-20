@@ -64,7 +64,7 @@ In your Claude Desktop config (or any MCP client):
 }
 ```
 
-The agent now has 52 tools across 16 groups — document/layer/state/delta operations, visual configuration, asset and variable management, presets, templates, exports, and more. ATEL-201 covers the full tool surface and when to use which.
+The agent now has 61 tools across 15 groups — document/layer/state/delta operations, visual configuration, asset and variable management, presets, templates, exports, and more. ATEL-201 covers the full tool surface and when to use which.
 
 ## How the three commands relate
 

@@ -1,0 +1,22 @@
+id: LP-atel-701
+title: 'ATEL-701: Export & Delivery'
+description: Getting work out of Atelier — single-frame raster (PNG), vector (SVG and Lottie), and video (MP4/GIF via FFmpeg, WebM via the studio), then a decision guide that picks a format by destination. After this track you can choose the right exporter for any target and know which paths need extra dependencies. ~25 minutes.
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-701
+ordered: true
+steps:
+  - content: N-atel-701-png-and-frames
+    required: true
+  - content: N-atel-701-vector
+    required: true
+  - content: N-atel-701-video
+    required: true
+  - content: N-atel-701-choosing-output
+    required: true
+  - content: Q-atel-701-export
+    required: true
+    passRequired: true

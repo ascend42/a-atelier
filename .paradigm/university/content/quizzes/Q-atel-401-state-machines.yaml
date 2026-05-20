@@ -1,0 +1,66 @@
+id: Q-atel-401-state-machines
+title: 'ATEL-401: State Machines & Motion'
+description: 'Verify hierarchical states, transitions and the interaction layer, motion (springs, expressions, motion paths), and the preset-vs-template distinction.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-401
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'A state `hover` has `parent: default`. `default` animates `title:opacity` with a spring. `hover` adds its own `title:opacity` delta with a linear easing. What does `resolveFrame` use for the title''s opacity on `hover`?'
+    choices:
+      A: 'The child''s linear delta only — the parent''s spring delta for that layer+property is dropped entirely'
+      B: 'Both deltas, additively combined into one curve'
+      C: 'The parent''s spring, because parents take precedence over children'
+      D: 'A field-level merge: the child''s easing with the parent''s from/to values'
+    correct: A
+    explanation: 'Inheritance merges per layer+property group, not per field. Deltas are grouped by a `layer+property` key, and the most-derived state''s group wins outright. Because `hover` declares any `title:opacity` delta, the parent''s `title:opacity` group is dropped wholesale — there is no field-level patching. To keep the parent''s spring and add motion, the child must animate a different property or layer.'
+  - id: q2
+    question: 'You configured `atelier_configure_transition` from `default` to `hover`. Does the reverse transition (`hover` to `default`) now exist?'
+    choices:
+      A: 'Yes — configuring one direction auto-creates the symmetric reverse'
+      B: 'No — transitions are directional; you must configure `hover` to `default` separately'
+      C: 'Yes, but only if both states share a parent'
+      D: 'No — transitions cannot point back to a previously visited state'
+    correct: B
+    explanation: 'Transitions are directional. `default` to `hover` and `hover` to `default` are configured independently, and they usually differ in duration and easing — entrances ease-out, exits ease-in. There is no auto-symmetry.'
+  - id: q3
+    question: 'A layer has a `click` interaction whose action is `go-to-state` targeting `pressed`. No transition is configured from the current state to `pressed`. What happens on click?'
+    choices:
+      A: 'The click is ignored because the transition is missing'
+      B: 'It plays a default 300ms ease-in-out transition'
+      C: 'The runtime cuts directly to `pressed` frame 0 — the action fires, but there is no bridge to animate across'
+      D: 'The schema rejected the document at validate time, so the click never wired up'
+    correct: C
+    explanation: 'Interactions decide when; transitions decide how it looks getting there. A `go-to-state` action runs the configured transition for that state pair. With no transition configured, the action still fires but the runtime snaps to the target state''s frame 0. A click that appears to "do nothing" is almost always a missing transition for that pair, not a missing interaction.'
+  - id: q4
+    question: 'In a spring easing `{ type: spring, stiffness: 100, damping: 10 }`, what most directly determines whether the motion visibly overshoots and bounces?'
+    choices:
+      A: 'Damping relative to stiffness — low damping against high stiffness oscillates; high damping glides in with no overshoot'
+      B: 'The `mass` field alone — higher mass always adds bounce'
+      C: 'The delta''s frame range length'
+      D: 'Whether `position: start` or `position: end` is set'
+    correct: A
+    explanation: 'Bounce is governed by damping relative to stiffness. Low damping against high stiffness oscillates; raising damping at the same stiffness removes overshoot and the spring glides in. Mass adds inertia and lag, not bounce. `position` belongs to step easings, not springs.'
+  - id: q5
+    question: 'You want a layer to follow a defined curved trajectory and control its speed along that curve. Which approach matches Atelier''s model?'
+    choices:
+      A: 'Animate `frame.x` and `frame.y` with matching deltas; the engine infers the curve'
+      B: 'Use an expression on `frame.x` that returns the full 2D path'
+      C: 'Define the path as a preset and apply it to the layer'
+      D: 'Set a `motionPath` on the layer and animate the `motionPath.progress` property; `frame.x`/`frame.y` deltas would be overridden by the path'
+    correct: D
+    explanation: 'A motion path overrides the layer''s `frame.x`/`frame.y` — the path is the trajectory, so frame deltas conflict and are ignored at render time. You control position along the path by animating `motionPath.progress` (0 to 1); that delta''s easing shapes speed along the curve. `autoRotate` can additionally bank the layer into the tangent.'
+  - id: q6
+    question: 'What is the difference between a preset and a template in Atelier?'
+    choices:
+      A: 'A preset is a bundle of deltas applied to an existing layer; a template is a layer subtree instantiated (with variable bindings) into a new document'
+      B: 'A preset is for export; a template is for the studio editor'
+      C: 'A preset creates new layers; a template animates existing ones'
+      D: 'They are interchangeable names for the same reuse mechanism'
+    correct: A
+    explanation: 'Presets = delta bundles; templates = layer subtrees. `atelier_define_preset` then `atelier_apply_preset` stamp motion onto a layer that already exists (expanding `offset` windows relative to `startFrame`). `atelier_instantiate_template` resolves `{{variable}}` placeholders against bindings and creates a new document with the structure. Motion from one mechanism, structure from the other.'

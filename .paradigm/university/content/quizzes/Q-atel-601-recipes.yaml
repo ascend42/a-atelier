@@ -1,0 +1,66 @@
+id: Q-atel-601-recipes
+title: 'ATEL-601: Recipes, Overlays & Carousel'
+description: 'Verify the Studio Recipe surface — what a recipe is and how partial recipes fall back, overlay_rules (handle + page_number, anchors, format templates), the CLI/MCP tooling and precedence, and the carousel batch driver.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-601
+difficulty: intermediate
+passThreshold: 0.7
+questions:
+  - id: q1
+    question: 'You author a recipe that sets only `caption_style.color`. What happens to the silence policy and the rest of the caption style when you apply it?'
+    choices:
+      A: 'The apply fails — a recipe must declare every Phase 1 section to be valid'
+      B: 'Omitted fields fall back to the code defaults (e.g. noise -30dB, font_size 84); the merge is shallow per section, so setting one caption field does not wipe the others'
+      C: 'Only the color is applied and all other styling is cleared to empty/zero'
+      D: 'The recipe silently does nothing because it is incomplete'
+    correct: B
+    explanation: 'Every section and every field is optional. Omitted fields fall back to the code defaults baked into renderRecipeWithDefaults, and the merge overlays your section over the defaults section — so setting one caption field leaves the rest of the defaults intact. Run `atelier recipe show <name> --with-defaults` to see the fully-resolved effective recipe.'
+  - id: q2
+    question: 'A recipe includes a `palette` section. You run `atelier recipe validate` on it. What is the result?'
+    choices:
+      A: 'FAIL — palette is not a recognized field'
+      B: 'PASS with no remarks — palette is fully implemented'
+      C: 'PASS, but with a forward-compat warning that palette is a reserved Phase 3 field that Phase 1 ignores'
+      D: 'It strips the palette section and rewrites the file'
+    correct: C
+    explanation: 'palette is one of the six reserved Phase 3 fields. They parse cleanly as opaque (unknown) values so recipes stay forward-compatible, but Phase 1 ignores their contents. validate emits a forward-compat warning (not an error) so you are not caught off-guard that the section is inert. Note overlay_rules was promoted to first-class Phase 1.5 and does NOT warn.'
+  - id: q3
+    question: 'A `page_number` rule has `format: "{current:02d}/{total:02d}"` and you apply the recipe to a single-frame composition via `atelier apply-recipe` (no carousel context). What renders?'
+    choices:
+      A: 'A page-number layer with the literal content `{current:02d}/{total:02d}` (template not substituted)'
+      B: 'The page-number layer is skipped with a warning; the handle is still applied if present'
+      C: 'It defaults to current=1, total=1 and renders `01/01`'
+      D: 'The whole apply-recipe pipeline throws and halts'
+    correct: B
+    explanation: 'applyRecipeToOverlay only emits the page-number layer when both currentIndex and totalCount are in its context. A single-frame apply has no carousel context, so the page-number is skipped with a one-shot warning — `01/01` on a standalone post would be misleading. The handle overlay is unconditional and still gets added. The carousel driver is what threads current/total in.'
+  - id: q4
+    question: 'In the four-corner anchor math, what does the `anchor` value `bottom-right` map to (with margin m on a canvas of width W and height H)?'
+    choices:
+      A: 'frame `{ x: m, y: m }`, anchorPoint `{ x: 0, y: 0 }`'
+      B: 'frame `{ x: W - m, y: H - m }`, anchorPoint `{ x: 1, y: 1 }`'
+      C: 'frame `{ x: W - m, y: m }`, anchorPoint `{ x: 1, y: 0 }`'
+      D: 'frame `{ x: W / 2, y: H / 2 }`, anchorPoint `{ x: 0.5, y: 0.5 }`'
+    correct: B
+    explanation: 'anchorToFrame pairs the frame position with a matching anchorPoint so the corner sticks. bottom-right places frame at `{ W - margin, H - margin }` and sets anchorPoint `{ 1, 1 }`, so the overlay anchors its own bottom-right corner at the canvas bottom-right-minus-margin point and grows inward regardless of text length. The anchor doubles as the rotation/scale pivot.'
+  - id: q5
+    question: 'How does `atelier_recipe_save` (MCP) differ from `atelier recipe new` (CLI), and why does it matter for an editing agent?'
+    choices:
+      A: 'They are identical; save is just the MCP alias for new'
+      B: 'new writes an always-valid scaffold template; save validates BEFORE writing and refuses to write an invalid recipe — so an agent persisting an edited recipe cannot land a malformed file on disk'
+      C: 'save writes without validating; new validates first'
+      D: 'new can only write YAML, save can only write JSON'
+    correct: B
+    explanation: 'recipe new scaffolds a starter template that is valid by construction and does not validate. atelier_recipe_save is how an agent persists an EDITED recipe, so it runs validateRecipe first and refuses to write if invalid, returning the issues instead. That validate-before-write guard is what keeps a malformed agent edit from ever reaching disk.'
+  - id: q6
+    question: 'The carousel driver loops over a sorted folder of N images. For image at loop position n (0-based), what index does it thread into the page-number overlay, and how is the output filename prefixed?'
+    choices:
+      A: 'index = n (0-based); filename prefixed with the raw loop counter, no padding'
+      B: 'index = n + 1 (1-based); filename prefixed with a zero-padded number of width max(2, digits-in-N)'
+      C: 'index is a random uuid; filename uses the original image name unchanged'
+      D: 'index = N - n (counts down); filename prefixed with the total count'
+    correct: B
+    explanation: 'The driver computes `const index = n + 1` (1-based) and passes `{ currentIndex: index, totalCount: total }` so the page-number renders i/N. The output name is zero-padded to `Math.max(2, String(total).length)` digits then carries the original stem, so files sort in deck order. Both the page-number content and the filename prefix derive from the same 1-based index, keeping what the viewer sees and how files sort in agreement.'

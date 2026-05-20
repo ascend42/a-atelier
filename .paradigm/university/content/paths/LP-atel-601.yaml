@@ -1,0 +1,22 @@
+id: LP-atel-601
+title: 'ATEL-601: Recipes, Overlays & Carousel'
+description: 'Style as a reusable preset — the Studio Recipe, anchored handle and page-number overlays, the CLI/MCP tooling and precedence, and the carousel batch driver that turns a folder of images into a numbered, branded post deck. After this track you can author a recipe, apply it through the CLI and MCP, and batch-compose a carousel. ~22 minutes.'
+author: atelier
+created: '2026-05-20'
+updated: '2026-05-20'
+tags:
+  - course
+  - atel-601
+ordered: true
+steps:
+  - content: N-atel-601-studio-recipe
+    required: true
+  - content: N-atel-601-overlay-rules
+    required: true
+  - content: N-atel-601-recipe-tools-and-apply
+    required: true
+  - content: N-atel-601-carousel
+    required: true
+  - content: Q-atel-601-recipes
+    required: true
+    passRequired: true

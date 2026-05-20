@@ -20,7 +20,7 @@ summary: What the `atelier-mcp` server actually is, why every authoring tool map
 
 ## What `atelier-mcp` is
 
-`atelier-mcp` is a Model Context Protocol server. An AI agent connects to it (via stdio in Claude Desktop, or WebSocket when paired with `atelier studio`) and gains 51 tools across 16 groups. Each tool is a typed function the agent calls; each call is a single mutation against a shared in-memory `DocumentStore`. The server doesn't talk to the LLM; it just exposes the mutation surface and lets the LLM drive.
+`atelier-mcp` is a Model Context Protocol server. An AI agent connects to it (via stdio in Claude Desktop, or WebSocket when paired with `atelier studio`) and gains 61 tools across 15 groups. Each tool is a typed function the agent calls; each call is a single mutation against a shared in-memory `DocumentStore`. The server doesn't talk to the LLM; it just exposes the mutation surface and lets the LLM drive.
 
 The boundary is intentional: the agent does the planning, the server does the validating. If the agent asks `atelier_add_delta` to animate a property that doesn't exist on a layer, the Zod schema rejects the call with an AI-readable error message. The agent reads the error, fixes the request, retries. No invalid document ever reaches the renderer.
 
@@ -45,7 +45,7 @@ Every MCP tool follows the same conventions. Recognize the pattern once and you 
 | Validation runs after every mutation; tool calls fail fast with field-level errors | Errors include the offending path: `layers[0].visual.style.fontSize: expected number` |
 | Tools that need a frame number accept either an absolute frame or `{ state, frame }` | Clarity over cleverness |
 
-## The 16 groups
+## The 15 groups
 
 ```
 document    — create, load, list, info, validate, preview, batch_preview,
@@ -63,6 +63,8 @@ interaction — add, list, remove
 ref         — set_ref, resolve_refs
 audio       — set_audio
 overlay     — add_handle, add_page_number   (Phase 1.5)
+recipe      — recipe_list, recipe_get, recipe_validate, recipe_save, recipe_apply
+import      — import_images
 ```
 
 The next three notes cover the high-frequency tools — what to call and when. The full reference is `docs/mcp-reference.md` in the atelier repo (and at `https://atelier.dev/mcp`, when that lands).
