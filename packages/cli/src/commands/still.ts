@@ -113,19 +113,12 @@ export function stillCommand(program: Command): void {
               console.log(json);
             }
           } else {
-            // PNG format — dynamic import of canvas
-            let canvasMod: typeof import("canvas");
-            try {
-              canvasMod = await import("canvas");
-            } catch {
-              console.error("PNG output requires the 'canvas' package. Install it: npm i canvas");
-              process.exit(1);
-              return;
-            }
-
+            // PNG format — rasterize via @napi-rs/canvas (prebuilt platform
+            // binaries; no node-gyp / system libraries, so PNG output works on
+            // a plain install).
+            const { createCanvas } = await import("@napi-rs/canvas");
             const { renderFrame } = await import("@a-company/atelier-canvas");
 
-            const { createCanvas } = canvasMod;
             const cvs = createCanvas(doc.canvas.width, doc.canvas.height);
             const ctx = cvs.getContext("2d");
             renderFrame(ctx as unknown as import("@a-company/atelier-canvas").RenderContext, resolved, doc);

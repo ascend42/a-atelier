@@ -2057,24 +2057,6 @@ describe("applyRecipeToOverlay", () => {
 
 // ─── Export Image (PNG) Tests ────────────────────────────────
 
-/**
- * Detect at load time whether the native node-canvas binary is available.
- * The package is listed in pnpm.ignoredBuiltDependencies so in development
- * sandboxes the .node binary may not have been compiled. PNG-writing tests
- * are skipped in that case; the error-path tests still run because they
- * exit before the dynamic canvas import.
- */
-const canvasAvailable: boolean = await (async (): Promise<boolean> => {
-  try {
-    const mod = await import("canvas");
-    const cvs = mod.createCanvas(1, 1);
-    cvs.toBuffer("image/png");
-    return true;
-  } catch {
-    return false;
-  }
-})();
-
 /** Build a fresh commander program with only export-image registered. */
 function makeExportImageProgram(): Command {
   const program = new Command();
@@ -2168,7 +2150,7 @@ describe("resolveExportDimensions", () => {
 });
 
 describe("atelier export-image", () => {
-  it.skipIf(!canvasAvailable)(
+  it(
     "writes a PNG file at the requested path with the requested dimensions",
     async () => {
       const yaml = serializeAtelier(VALID_DOC);
@@ -2190,7 +2172,7 @@ describe("atelier export-image", () => {
     },
   );
 
-  it.skipIf(!canvasAvailable)(
+  it(
     "defaults to frame 0, first state, and the document's canvas dimensions",
     async () => {
       const yaml = serializeAtelier(VALID_DOC);
@@ -2780,13 +2762,13 @@ overlay_rules:
     expect(stderr).toMatch(/no image files matched/i);
   });
 
-  it.skipIf(!canvasAvailable)(
+  it(
     "writes a zero-padded sortable PNG per input image into the out-dir",
     async () => {
       const recipePath = writeTmpFile("carousel-render.recipe.yaml", recipeYaml);
 
-      // Generate 3 real PNGs via node-canvas so loadImage can decode them.
-      const mod = await import("canvas");
+      // Generate 3 real PNGs via @napi-rs/canvas so loadImage can decode them.
+      const mod = await import("@napi-rs/canvas");
       const imgsDir = join(tmpDir, "carousel-render-inputs");
       mkdirSync(imgsDir, { recursive: true });
       for (const name of ["alpha", "bravo", "charlie"]) {

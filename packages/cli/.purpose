@@ -5,8 +5,9 @@ context:
   - Lint command runs all named gates (^valid-document, ^valid-delta, ^valid-video-layer) with grouped output and --json flag
   - Validate command checks schema + delta overlaps (legacy, predates named gates)
   - Info command outputs document summary
-  - Still command resolves a frame and outputs JSON or PNG
-  - Render command produces MP4/GIF via FFmpeg (requires node-canvas + FFmpeg)
+  - Still command resolves a frame and outputs JSON or PNG (PNG rasterized via @napi-rs/canvas — prebuilt binaries, no system libs)
+  - export-image + carousel PNG export rasterize via @napi-rs/canvas (prebuilt platform binaries; works on a plain install with no node-gyp / cairo / pango)
+  - Render command produces MP4/GIF via FFmpeg (requires the optional node-canvas peer dep for raw-frame piping + FFmpeg)
 components:
   cli-lint:
     description: Lint command — runs ^valid-document, ^valid-delta, ^valid-video-layer gates across one or more files; supports --json for CI
@@ -38,7 +39,7 @@ components:
     file: src/commands/export-image.ts
     tags: [export, png, image, canvas, studio]
   '#render-image':
-    description: 'Shared single-frame render-to-PNG path. renderDocumentToPng (dynamic node-canvas import via loadCanvasModule, image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError. refitImageBounds hook re-fits image layers once node-canvas decodes natural dims (used by carousel). Consumed by export-image + carousel.'
+    description: 'Shared single-frame render-to-PNG path. Rasterizes via @napi-rs/canvas (prebuilt platform binaries — no node-gyp / system libs, so PNG export works on a plain install; loadCanvasModule is now a thin accessor over the static import). renderDocumentToPng (image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer via canvas.toBuffer(image/png)), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError (defensive — fires only if the platform binary is missing). refitImageBounds hook re-fits image layers once the rasterizer decodes natural dims (used by carousel). Consumed by export-image + carousel.'
     file: src/lib/render-image.ts
     tags: [export, png, image, canvas, render, shared]
   '#cli-carousel':

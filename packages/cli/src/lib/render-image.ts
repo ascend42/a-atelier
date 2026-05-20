@@ -2,29 +2,32 @@
  * Shared single-frame render-to-PNG path.
  *
  * Extracted from `atelier export-image` so the carousel batch driver and the
- * single-frame export command render through one code path. Loads node-canvas
- * dynamically (native compilation required), pre-loads any ImageVisual layers
- * via node-canvas `loadImage` (file path / data-URL both work server-side, the
- * same mechanism the MP4 render-pipeline uses), and renders one resolved frame
- * scaled to the requested output dimensions.
+ * single-frame export command render through one code path. Rasterizes via
+ * `@napi-rs/canvas` — a Canvas2D implementation shipped as prebuilt platform
+ * binaries, so PNG export works on a plain install with no node-gyp build and
+ * no system libraries (cairo/pango/etc.). Pre-loads any ImageVisual layers via
+ * its `loadImage` (file path / data-URL / buffer all work server-side, the same
+ * mechanism the MP4 render-pipeline uses) and renders one resolved frame scaled
+ * to the requested output dimensions.
  */
 
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-/** node-canvas surface — the subset this module touches. */
+/** @napi-rs/canvas surface — the subset this module touches. */
 interface NodeCanvas {
   getContext(id: "2d"): unknown;
   toBuffer(format: "image/png"): Buffer;
 }
 
-/** A node-canvas loaded image — width/height are the natural pixel dims. */
+/** A loaded image — width/height are the natural pixel dims. */
 export interface LoadedImage {
   width: number;
   height: number;
 }
 
-/** node-canvas module surface. */
+/** Canvas module surface (createCanvas + loadImage). */
 interface CanvasModule {
   createCanvas: (w: number, h: number) => NodeCanvas;
   loadImage: (src: string) => Promise<LoadedImage>;
@@ -76,35 +79,39 @@ export function fitImageToCanvas(
   return { bounds: { width, height }, frame: { x: cw / 2, y: ch / 2 } };
 }
 
-/** Raised when the optional `canvas` native dependency is not installed. */
+/**
+ * Raised when the `@napi-rs/canvas` rasterizer cannot be loaded. In practice
+ * this never fires: `@napi-rs/canvas` is a hard dependency that ships prebuilt
+ * platform binaries (no node-gyp, no system libraries). It can only happen if
+ * the install is corrupt or running on an unsupported platform with no prebuilt
+ * binary — in which case a reinstall is the fix. Kept as a typed seam so call
+ * sites can still distinguish a missing-rasterizer failure from a bad document.
+ */
 export class CanvasUnavailableError extends Error {
   constructor() {
     super(
-      "The 'canvas' package is not installed.\n" +
-        "Install it with:\n" +
-        "  npm install canvas\n" +
-        "Prerequisites vary by OS:\n" +
-        "  macOS:   brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman\n" +
-        "  Ubuntu:  sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev\n" +
-        "See: https://github.com/Automattic/node-canvas#compiling",
+      "The '@napi-rs/canvas' rasterizer could not be loaded.\n" +
+        "This package ships prebuilt platform binaries — no system libraries needed.\n" +
+        "Try reinstalling dependencies (e.g. `npm install`) to fetch the binary for this platform.",
     );
     this.name = "CanvasUnavailableError";
   }
 }
 
 /**
- * Dynamically import node-canvas. Throws {@link CanvasUnavailableError} when
- * the native binary is missing. The module name is held in a variable so
- * bundlers don't try to resolve the optional peer dependency at build time.
+ * Resolve the canvas module. `@napi-rs/canvas` is a hard, statically-imported
+ * dependency, so this is a thin accessor that surfaces a typed
+ * {@link CanvasUnavailableError} on the (essentially impossible) chance the
+ * platform binary failed to load.
  */
 export async function loadCanvasModule(): Promise<CanvasModule> {
-  const canvasModuleName = "canvas";
-  try {
-    const mod = await import(/* webpackIgnore: true */ canvasModuleName);
-    return { createCanvas: mod.createCanvas, loadImage: mod.loadImage };
-  } catch {
+  if (typeof createCanvas !== "function" || typeof loadImage !== "function") {
     throw new CanvasUnavailableError();
   }
+  return {
+    createCanvas: createCanvas as unknown as CanvasModule["createCanvas"],
+    loadImage: loadImage as unknown as CanvasModule["loadImage"],
+  };
 }
 
 /**
@@ -135,7 +142,7 @@ export function resolveExportDimensions(
 
 /**
  * Build an {@link ImageCache} pre-populated with every ImageVisual source in
- * the document. Mirrors render-pipeline.ts: load each source with node-canvas
+ * the document. Mirrors render-pipeline.ts: load each source with
  * `loadImage`, then wire a synchronous-from-cache `createImage` so the renderer
  * resolves images immediately. Returns the cache plus a map of src → loaded
  * image so callers can read natural dimensions.
@@ -204,7 +211,7 @@ export interface RenderToPngOptions {
    * are known from the loaded image. Receives the layer src + natural dims and
    * the doc canvas; returns new bounds (and frame). Used by the carousel driver
    * to aspect-fit fit-to-canvas images that were composed with placeholder
-   * bounds (natural dims are unknown until node-canvas decodes the file).
+   * bounds (natural dims are unknown until the rasterizer decodes the file).
    */
   refitImageBounds?: (args: {
     canvas: { width: number; height: number };
@@ -217,8 +224,8 @@ export interface RenderToPngOptions {
  *
  * Validates state/frame, pre-loads image layers, scales rendering to fit the
  * requested output dimensions, and returns the encoded PNG bytes. Throws
- * {@link CanvasUnavailableError} when node-canvas is missing and a plain Error
- * for bad state/frame selection.
+ * {@link CanvasUnavailableError} when the rasterizer is missing and a plain
+ * Error for bad state/frame selection.
  */
 export async function renderDocumentToPng(
   doc: AtelierDocument,
