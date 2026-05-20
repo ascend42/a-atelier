@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 0.35.0** | 11 packages | 2 apps
+**Version 0.36.0** | 11 packages | 2 apps
 
 ---
 

@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.36.0] — 2026-05-19
+
+A **hardening pass** on the v0.34/v0.35 surface: PNG export now works on a plain install, ten audit-confirmed bugs fixed (one was silent `.atelier` corruption), and the studio client extracted from a string into a typechecked module. Package bumps: `@a-company/atelier` 0.36.0, `-studio` 0.28.0, `-mcp` 0.27.1.
+
+### Fixed
+- **PNG export works on a fresh `npm i -g`** — swapped the server-side rasterizer from `canvas` (node-canvas; needed `brew install cairo pango ...` via node-gyp) to **`@napi-rs/canvas`** (prebuilt platform binaries, no native build). `export-image`, `carousel`, and `still` now produce real PNGs out of the box. Verified: `file out.png` → `PNG image data, 1080 x 1080`. The 3 previously-skipped PNG tests now run.
+- **BLOCKING: autosave could corrupt `.atelier` files** — `loadFile` never cleared the pending 800ms `saveTimeout`, so editing file A then switching to B within the debounce window wrote A's bytes to B's path. Extracted the debounced save into a `SaveCoordinator` that clears the timer and `flushPending()`-writes any unsaved edit to its *own* file before switching.
+- **`/mcp` WS endpoint was unreachable by real MCP clients** — the Origin check rejected requests with no Origin header, but non-browser clients (Claude Desktop) send none → every external client got 403. Split the check: `/bridge` keeps strict same-origin; `/mcp` tolerates a missing Origin while still rejecting a foreign one.
+- **Phantom "agent edited" toast + disk rewrite on every file open** — a `system`-source store hydration on GET fell through the broadcast filter; now only `llm`-source changes broadcast/persist.
+- **New file in a subfolder threw ENOENT** — `POST /api/file` and the WS-bridge `persistHumanPatch` now `mkdir -p` the parent (via `writeFileEnsuringDir`).
+- **Slider drag flooded undo + the bridge** — numeric controls now split `onInput` (live canvas preview, ~60Hz) from `onChange` (commit only — one undo entry per drag, one bridge frame), instead of snapshotting history and sending a full-doc frame every tick.
+- **`isSafePath` hardened** — dropped the over-broad `".."` substring check (it blocked legit names like `my..backup.atelier`); containment now uses an exact / trailing-separator prefix test that also blocks sibling-prefix escapes.
+- **`import-images` copy-on-write** — builds a new doc before `store.set` so the bridge never observes a half-mutated document.
+- **`recipe new`/`validate` path resolution unified** — a bare name written by `recipe new` to `./.atelier/recipes/` is now found by `recipe validate` (was resolving against `~/.atelier/recipes/`); fixed the `foo.recipe.yaml` → `foo.recipe.yaml.recipe.yaml` double-extension footgun.
+
+### Changed
+- **Studio client extracted to a typechecked module** — the ~700-LOC inline app (previously a template-literal string with no typecheck/lint/tests — the reason the two bugs above hid) now lives in `packages/cli/src/web/inline-app.ts` (`bootStudioApp(config)`), compiled via a dedicated DOM `tsconfig`. The studio command writes a 2-line entry shim. Behavior is byte-for-behavior identical; verified end-to-end (boots, serves, Vite-transpiles cleanly, saves).
+
+### Testing
+- Workspace tests **676 → 696 passing, 0 skipped** (was 3 skipped; the PNG tests now run), 23/23 typechecks green. Studio boot + save + the canvas swap all verified end-to-end, not just via unit tests.
+
 ## [0.35.0] — 2026-05-19
 
 The **agent-driven content workflow** round: an AI agent can now ingest a folder of images, read/edit recipes conversationally, and batch-export a composed set — the pieces that turn "talk to Claude about a folder of images" into finished posts. Package bumps: `@a-company/atelier` 0.35.0, `-mcp` 0.27.0.
