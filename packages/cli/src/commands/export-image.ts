@@ -3,7 +3,14 @@ import { resolve } from "node:path";
 import type { Command } from "commander";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { parseAtelier } from "@a-company/atelier-schema";
-import { resolveFrame } from "@a-company/atelier-core";
+import {
+  renderDocumentToPng,
+  resolveExportDimensions,
+  CanvasUnavailableError,
+} from "../lib/render-image.js";
+
+// Re-export so existing import sites (index.ts, tests) keep resolving.
+export { resolveExportDimensions };
 
 /** Read and parse an .atelier file, exiting on failure. */
 function readAndParse(file: string): AtelierDocument {
@@ -26,32 +33,6 @@ function readAndParse(file: string): AtelierDocument {
   }
 
   return result.data;
-}
-
-/**
- * Compute final output dimensions from the document canvas and optional
- * width/height overrides. When only one of width/height is provided, the
- * other is derived to preserve the document's aspect ratio. When both are
- * provided, both are used verbatim (allows non-uniform scaling).
- */
-export function resolveExportDimensions(
-  docWidth: number,
-  docHeight: number,
-  width?: number,
-  height?: number,
-): { width: number; height: number } {
-  if (width !== undefined && height !== undefined) {
-    return { width, height };
-  }
-  if (width !== undefined) {
-    const h = Math.max(1, Math.round((width * docHeight) / docWidth));
-    return { width, height: h };
-  }
-  if (height !== undefined) {
-    const w = Math.max(1, Math.round((height * docWidth) / docHeight));
-    return { width: w, height };
-  }
-  return { width: docWidth, height: docHeight };
 }
 
 interface ExportImageOptions {
@@ -97,84 +78,23 @@ export function exportImageCommand(program: Command): void {
         return;
       }
 
-      const stateNames = Object.keys(doc.states);
-      if (stateNames.length === 0) {
-        console.error("Document has no states");
-        process.exit(1);
-        return;
-      }
-
-      const stateName = options.state ?? stateNames[0];
-      if (!doc.states[stateName]) {
-        console.error(
-          `State "${stateName}" not found. Available: ${stateNames.join(", ")}`,
-        );
-        process.exit(1);
-        return;
-      }
-
-      const duration = doc.states[stateName].duration;
-      if (frameNumber >= duration) {
-        console.error(
-          `Frame ${frameNumber} is out of range for state "${stateName}" (duration ${duration})`,
-        );
-        process.exit(1);
-        return;
-      }
-
       const width = parseDim(options.width, "width");
       const height = parseDim(options.height, "height");
 
-      // Dynamic import — canvas requires native compilation.
-      const canvasModuleName = "canvas";
-      let createCanvas: (w: number, h: number) => {
-        getContext(id: "2d"): unknown;
-        toBuffer(format: "image/png"): Buffer;
-      };
       try {
-        const canvasModule = await import(/* webpackIgnore: true */ canvasModuleName);
-        createCanvas = canvasModule.createCanvas;
-      } catch {
-        console.error(
-          "The 'canvas' package is not installed.\n" +
-            "Install it with:\n" +
-            "  npm install canvas\n" +
-            "Prerequisites vary by OS:\n" +
-            "  macOS:   brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman\n" +
-            "  Ubuntu:  sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev\n" +
-            "See: https://github.com/Automattic/node-canvas#compiling",
-        );
-        process.exit(1);
-        return;
-      }
-
-      const { renderFrame } = await import("@a-company/atelier-canvas");
-
-      try {
-        const { width: outW, height: outH } = resolveExportDimensions(
-          doc.canvas.width,
-          doc.canvas.height,
+        const buffer = await renderDocumentToPng(doc, {
+          state: options.state,
+          frame: frameNumber,
           width,
           height,
-        );
-
-        const resolved = resolveFrame(doc, stateName, frameNumber);
-        const cvs = createCanvas(outW, outH);
-        const ctx = cvs.getContext("2d") as unknown as import("@a-company/atelier-canvas").RenderContext;
-
-        // Scale rendering to fit the output canvas while letting renderFrame
-        // operate on the document's native canvas dimensions.
-        const sx = outW / doc.canvas.width;
-        const sy = outH / doc.canvas.height;
-        if (sx !== 1 || sy !== 1) {
-          ctx.scale(sx, sy);
-        }
-
-        renderFrame(ctx, resolved, doc);
-
-        const buffer = cvs.toBuffer("image/png");
+        });
         writeFileSync(resolve(options.out), buffer);
       } catch (err) {
+        if (err instanceof CanvasUnavailableError) {
+          console.error(err.message);
+          process.exit(1);
+          return;
+        }
         console.error((err as Error).message);
         process.exit(1);
       }

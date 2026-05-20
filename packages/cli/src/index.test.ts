@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { writeFileSync, mkdirSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync, rmSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import type { AtelierDocument } from "@a-company/atelier-types";
@@ -60,6 +60,13 @@ import { renderFrameSVG } from "@a-company/atelier-svg";
 import { exportToLottie } from "@a-company/atelier-lottie";
 import { Command } from "commander";
 import { exportImageCommand, resolveExportDimensions } from "./commands/export-image.js";
+import {
+  carouselCommand,
+  composeCarouselFrameDoc,
+  expandInputs,
+  carouselFileName,
+} from "./commands/carousel.js";
+import { fitImageToCanvas } from "./lib/render-image.js";
 
 // ─── Test Fixtures ────────────────────────────────────────────
 
@@ -2354,4 +2361,266 @@ describe("studio bridge — attachBridgeClient", () => {
     // The store should now be hot for future MCP queries.
     expect(state.store.get("lazy.atelier")?.name).toBe("from-disk");
   });
+});
+
+// ─── Carousel (batch image → overlay'd PNG) Tests ────────────
+
+describe("fitImageToCanvas (carousel aspect-fit)", () => {
+  it("fits a landscape image to the canvas width", () => {
+    const fit = fitImageToCanvas({ width: 1080, height: 1080 }, { width: 1920, height: 1080 });
+    expect(fit.bounds.width).toBe(1080);
+    expect(fit.bounds.height).toBeCloseTo(607.5, 1);
+    expect(fit.frame).toEqual({ x: 540, y: 540 });
+  });
+
+  it("fits a portrait image to the canvas height", () => {
+    const fit = fitImageToCanvas({ width: 1080, height: 1080 }, { width: 1080, height: 1920 });
+    expect(fit.bounds.height).toBe(1080);
+    expect(fit.bounds.width).toBeCloseTo(607.5, 1);
+  });
+
+  it("falls back to canvas extents for degenerate natural dims", () => {
+    const fit = fitImageToCanvas({ width: 800, height: 600 }, { width: 0, height: 0 });
+    expect(fit.bounds).toEqual({ width: 800, height: 600 });
+    expect(fit.frame).toEqual({ x: 400, y: 300 });
+  });
+});
+
+describe("carouselFileName", () => {
+  it("zero-pads to at least 2 digits, sortable", () => {
+    expect(carouselFileName(1, 3, "/in/foo.jpg")).toBe("01-foo.png");
+    expect(carouselFileName(2, 3, "/in/bar.png")).toBe("02-bar.png");
+  });
+
+  it("widens the pad to the digit-count of N", () => {
+    expect(carouselFileName(7, 120, "/in/shot.webp")).toBe("007-shot.png");
+  });
+});
+
+describe("expandInputs", () => {
+  let inDir: string;
+  beforeAll(() => {
+    inDir = join(tmpDir, "carousel-inputs");
+    mkdirSync(inDir, { recursive: true });
+    writeFileSync(join(inDir, "c.png"), "x");
+    writeFileSync(join(inDir, "a.jpg"), "x");
+    writeFileSync(join(inDir, "b.jpeg"), "x");
+    writeFileSync(join(inDir, "notes.txt"), "x"); // filtered out
+    writeFileSync(join(inDir, "img-1.webp"), "x");
+  });
+
+  it("lists image files in a directory, sorted, excluding non-images", () => {
+    const out = expandInputs(inDir).map((p) => p.split("/").pop());
+    expect(out).toEqual(["a.jpg", "b.jpeg", "c.png", "img-1.webp"]);
+  });
+
+  it("expands a single-segment *-glob in the final path component", () => {
+    const out = expandInputs(join(inDir, "*.png")).map((p) => p.split("/").pop());
+    expect(out).toEqual(["c.png"]);
+  });
+
+  it("matches a *-stem glob across extensions", () => {
+    const out = expandInputs(join(inDir, "img-*")).map((p) => p.split("/").pop());
+    expect(out).toEqual(["img-1.webp"]);
+  });
+
+  it("returns a single image for a literal file path", () => {
+    const out = expandInputs(join(inDir, "a.jpg"));
+    expect(out).toEqual([join(inDir, "a.jpg")]);
+  });
+
+  it("returns [] for an empty / non-image-only directory glob", () => {
+    expect(expandInputs(join(inDir, "*.gif"))).toEqual([]);
+  });
+});
+
+describe("composeCarouselFrameDoc", () => {
+  const recipe: StudioRecipe = {
+    version: "1.0",
+    name: "carousel-style",
+    overlay_rules: {
+      handle: { text: "@kit", anchor: "bottom-left" },
+      page_number: { format: "{current}/{total}", anchor: "top-right" },
+    },
+  };
+
+  it("threads currentIndex/totalCount into the page-number overlay", () => {
+    const doc = composeCarouselFrameDoc({
+      imagePath: "/imgs/shot.png",
+      index: 2,
+      total: 5,
+      width: 1080,
+      height: 1080,
+      recipe,
+    });
+    const page = doc.layers.find((l) => l.id === "overlay-page-number");
+    expect(page).toBeDefined();
+    expect((page!.visual as { content: string }).content).toBe("2/5");
+  });
+
+  it("emits a distinct i/N per frame across a batch", () => {
+    const contents = [1, 2, 3].map((i) => {
+      const doc = composeCarouselFrameDoc({
+        imagePath: `/imgs/s${i}.png`,
+        index: i,
+        total: 3,
+        width: 1080,
+        height: 1080,
+        recipe,
+      });
+      const page = doc.layers.find((l) => l.id === "overlay-page-number");
+      return (page!.visual as { content: string }).content;
+    });
+    expect(contents).toEqual(["1/3", "2/3", "3/3"]);
+  });
+
+  it("builds one fit-to-canvas image layer pointing at the source path", () => {
+    const doc = composeCarouselFrameDoc({
+      imagePath: "/imgs/shot.png",
+      index: 1,
+      total: 1,
+      width: 1080,
+      height: 1350,
+      recipe,
+    });
+    expect(doc.canvas).toMatchObject({ width: 1080, height: 1350 });
+    const img = doc.layers.find((l) => l.visual.type === "image");
+    expect(img).toBeDefined();
+    expect((img!.visual as { src: string }).src).toBe("/imgs/shot.png");
+    expect(doc.states.default.duration).toBe(1);
+  });
+
+  it("applies the handle overlay too", () => {
+    const doc = composeCarouselFrameDoc({
+      imagePath: "/imgs/shot.png",
+      index: 1,
+      total: 1,
+      width: 1080,
+      height: 1080,
+      recipe,
+    });
+    const handle = doc.layers.find((l) => l.id === "overlay-handle");
+    expect((handle!.visual as { content: string }).content).toBe("@kit");
+  });
+});
+
+/** Build a fresh commander program with only carousel registered. */
+function makeCarouselProgram(): Command {
+  const program = new Command();
+  program.exitOverride();
+  carouselCommand(program);
+  return program;
+}
+
+/**
+ * Run the carousel command, trapping process.exit so the runner survives.
+ * Returns the captured exit code (undefined = no exit) and stderr text.
+ */
+async function runCarousel(argv: string[]): Promise<{ code?: number; stderr: string }> {
+  const program = makeCarouselProgram();
+  const origExit = process.exit;
+  const origErr = console.error;
+  const origLog = console.log;
+  let exitCode: number | undefined;
+  let stderr = "";
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.error = (msg?: unknown) => {
+    stderr += String(msg) + "\n";
+  };
+  console.log = () => {};
+  try {
+    await program.parseAsync(["node", "atelier", "carousel", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code === "commander.missingMandatoryOptionValue" || cErr?.code === "commander.missingArgument") {
+        exitCode = cErr.exitCode ?? 1;
+      } else if (!(err instanceof Error)) {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.error = origErr;
+    console.log = origLog;
+  }
+  return { code: exitCode, stderr };
+}
+
+describe("atelier carousel", () => {
+  const recipeYaml = `version: "1.0"
+name: "carousel-cmd"
+overlay_rules:
+  handle:
+    text: "@kit"
+    anchor: "bottom-left"
+  page_number:
+    format: "{current}/{total}"
+    anchor: "top-right"
+`;
+
+  it("errors cleanly when the recipe cannot be resolved", async () => {
+    const imgsDir = join(tmpDir, "carousel-cmd-missing-recipe");
+    mkdirSync(imgsDir, { recursive: true });
+    writeFileSync(join(imgsDir, "a.png"), "x");
+    const { code, stderr } = await runCarousel([
+      join(tmpDir, "does-not-exist.recipe.yaml"),
+      "--inputs", imgsDir,
+      "--out-dir", join(tmpDir, "carousel-cmd-missing-out"),
+    ]);
+    expect(code).toBe(1);
+    expect(stderr).toMatch(/recipe|not found/i);
+  });
+
+  it("errors cleanly when the input glob matches no images", async () => {
+    const recipePath = writeTmpFile("carousel-empty.recipe.yaml", recipeYaml);
+    const emptyDir = join(tmpDir, "carousel-empty-inputs");
+    mkdirSync(emptyDir, { recursive: true });
+    const { code, stderr } = await runCarousel([
+      recipePath,
+      "--inputs", join(emptyDir, "*.png"),
+      "--out-dir", join(tmpDir, "carousel-empty-out"),
+    ]);
+    expect(code).toBe(1);
+    expect(stderr).toMatch(/no image files matched/i);
+  });
+
+  it.skipIf(!canvasAvailable)(
+    "writes a zero-padded sortable PNG per input image into the out-dir",
+    async () => {
+      const recipePath = writeTmpFile("carousel-render.recipe.yaml", recipeYaml);
+
+      // Generate 3 real PNGs via node-canvas so loadImage can decode them.
+      const mod = await import("canvas");
+      const imgsDir = join(tmpDir, "carousel-render-inputs");
+      mkdirSync(imgsDir, { recursive: true });
+      for (const name of ["alpha", "bravo", "charlie"]) {
+        const c = mod.createCanvas(200, 100);
+        const cx = c.getContext("2d");
+        cx.fillStyle = "#3366cc";
+        cx.fillRect(0, 0, 200, 100);
+        writeFileSync(join(imgsDir, `${name}.png`), c.toBuffer("image/png"));
+      }
+
+      const outDir = join(tmpDir, "carousel-render-out");
+      const { code } = await runCarousel([
+        recipePath,
+        "--inputs", imgsDir,
+        "--out-dir", outDir,
+        "--width", "512",
+        "--height", "512",
+      ]);
+
+      expect(code).toBeUndefined();
+      const written = readdirSync(outDir).sort();
+      expect(written).toEqual(["01-alpha.png", "02-bravo.png", "03-charlie.png"]);
+      for (const f of written) {
+        expect(isPng(join(outDir, f))).toBe(true);
+        expect(readPngDimensions(join(outDir, f))).toEqual({ width: 512, height: 512 });
+      }
+    },
+  );
 });

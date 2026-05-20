@@ -9,6 +9,18 @@ export { renderCommand } from "./commands/render.js";
 export { exportSvgCommand } from "./commands/export-svg.js";
 export { exportLottieCommand } from "./commands/export-lottie.js";
 export { exportImageCommand, resolveExportDimensions } from "./commands/export-image.js";
+export {
+  carouselCommand,
+  composeCarouselFrameDoc,
+  expandInputs,
+  carouselFileName,
+} from "./commands/carousel.js";
+export {
+  renderDocumentToPng,
+  fitImageToCanvas,
+  loadCanvasModule,
+  CanvasUnavailableError,
+} from "./lib/render-image.js";
 export { assetsCommand, getAssets } from "./commands/assets.js";
 export type { AssetInfo } from "./commands/assets.js";
 export { variablesCommand, getVariables } from "./commands/variables.js";

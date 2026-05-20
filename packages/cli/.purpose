@@ -34,9 +34,17 @@ components:
     description: Export Lottie command — exports document to Lottie JSON via @atelier/lottie
     file: src/commands/export-lottie.ts
   cli-export-image:
-    description: 'atelier export-image <file> --out file.png [--frame N] [--state NAME] [--width N] [--height N] — single-frame PNG export. Uses node-canvas (dynamic import; same install path as render command) to render via the engine''s resolveFrame + @atelier/canvas renderFrame. Aspect-preserving when only one of --width/--height is set; both set uses both verbatim. Foundation for the v1 carousel batch driver and the Studio Export PNG button.'
+    description: 'atelier export-image <file> --out file.png [--frame N] [--state NAME] [--width N] [--height N] — single-frame PNG export. Delegates to the shared #render-image render path (renderDocumentToPng). Aspect-preserving when only one of --width/--height is set; both set uses both verbatim. Foundation for the v1 carousel batch driver and the Studio Export PNG button.'
     file: src/commands/export-image.ts
     tags: [export, png, image, canvas, studio]
+  '#render-image':
+    description: 'Shared single-frame render-to-PNG path. renderDocumentToPng (dynamic node-canvas import via loadCanvasModule, image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError. refitImageBounds hook re-fits image layers once node-canvas decodes natural dims (used by carousel). Consumed by export-image + carousel.'
+    file: src/lib/render-image.ts
+    tags: [export, png, image, canvas, render, shared]
+  '#cli-carousel':
+    description: 'atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe, expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + ''i/N'' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.'
+    file: src/commands/carousel.ts
+    tags: [export, png, image, carousel, recipe, batch, cli, studio]
   cli-assets:
     description: Assets command — lists all assets in a document with usage info
     file: src/commands/assets.ts
