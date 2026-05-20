@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.35.0] — 2026-05-19
+
+The **agent-driven content workflow** round: an AI agent can now ingest a folder of images, read/edit recipes conversationally, and batch-export a composed set — the pieces that turn "talk to Claude about a folder of images" into finished posts. Package bumps: `@a-company/atelier` 0.35.0, `-mcp` 0.27.0.
+
+> Design note: Atelier deliberately ships **no** image-generation provider. Generation is chat-orchestrated — the user/agent runs an external tool (e.g. the Higgsfield CLI) and Atelier ingests the resulting files via the tools below. An in-Atelier generator interface was prototyped and intentionally reverted (recoverable via `git cherry-pick e87d29e`); see lore `L-2026-05-20-ascend-035028-001`.
+
+### Added
+- **Recipe MCP tools** (`@a-company/atelier-mcp`) — `atelier_recipe_list / get / validate / save / apply`. An agent can read, explain, validate, and edit a Studio Recipe conversationally; `save` refuses to write an invalid recipe; `apply` lands the recipe's `overlay_rules` on the in-store document (trim/transcribe/caption application remains CLI-only). Resolved the cli↔mcp dependency-cycle concern by building on `@a-company/atelier-schema` + `yaml` rather than importing the CLI package.
+- **Folder image ingestion** — `atelier_import_images({ documentId, dir, glob?, asLayers? })` lists images in a directory, registers each as an asset, and (by default) creates one fit-to-canvas `ImageVisual` layer per image (reusing the studio's image-drop aspect math). Honors the single-image welcome-background-swap convention. Makes "use the images in this folder" a first-class agent operation.
+- **`atelier carousel`** (`@a-company/atelier`) — `atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width/--height/--frame]`. For each input image, builds a fit-to-canvas doc, applies the recipe's `overlay_rules` with `currentIndex`/`totalCount` threaded into the page-number overlay, renders via the shared `render-image` helper, and writes zero-padded sortable PNGs to the destination. Completes the "folder of images → composed posts → export to a destination" workflow. Extracted `packages/cli/src/lib/render-image.ts` as the shared single-frame render path (consumed by both `export-image` and `carousel`).
+
+### Testing
+- Workspace tests **649 → 676 passing** (+27: +11 mcp recipe/import, +16 cli carousel), 3 skipped (node-canvas-dependent render assertions), 23/23 typechecks green.
+
 ## [0.34.0] — 2026-05-19
 
 The **Studio v1** milestone: `atelier studio` becomes a locally-launchable editor with a live LLM↔human editing loop, plus the first Atelier University content pack. Package bumps: `@a-company/atelier` 0.34.0, `-types` 0.31.0, `-schema` 0.28.0, `-studio` 0.27.0, `-mcp` 0.26.0.
