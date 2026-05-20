@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier-types",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "publishConfig": {
     "access": "public"
   },

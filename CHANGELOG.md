@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.34.0] — 2026-05-19
+
+The **Studio v1** milestone: `atelier studio` becomes a locally-launchable editor with a live LLM↔human editing loop, plus the first Atelier University content pack. Package bumps: `@a-company/atelier` 0.34.0, `-types` 0.31.0, `-schema` 0.28.0, `-studio` 0.27.0, `-mcp` 0.26.0.
+
+### Added
+- **`atelier studio` first-run + file management**
+  - Bundled `welcome.atelier` template (1080×1080 social-square — placeholder background, `@handle` overlay, `01/05` page-number overlay, handle fade-in). An empty working directory now scaffolds it instead of dead-ending.
+  - In-app **"+ New" file creation** — sidebar-header button + empty-state button; prompts for a name, builds a minimal starter doc, validates it round-trips, writes via `/api/file`, and opens it.
+  - **Layer type picker** — the Layer panel's Add button is now a 5-option menu (Text / Shape / Image / Handle / Page Number); Handle and Page Number emit `tags: ["overlay"]` layers.
+  - **Image drag-drop** onto the canvas — creates an `ImageVisual` layer from the dropped file (data URL), aspect-fit and centered; the first drop replaces the `welcome.atelier` placeholder background. The Layer panel "Image" option converges on the same `createImageLayerFromFile` helper via a file picker.
+- **Live LLM↔human mutation bridge**
+  - `DocumentStore.onChange(listener)` — synchronous emitter firing `(docId, doc, source)` where `source` is `human | llm | system`; returns an unsubscribe.
+  - `AtelierStudio.applyMutation(op)` — applies an in-memory doc replacement without echoing back as a human edit (one-tick suppress-notify), preserving current state + selection. LLM mutations are undoable (Cmd-Z).
+  - **WebSocket bridge at `/bridge`** — broadcasts non-human store mutations as `llm:mutation` envelopes; inbound `doc:patch` from the browser lands as `source:"human"` (no echo loop). Shared envelope types in `@a-company/atelier-mcp` (`bridge-protocol.ts`).
+  - **MCP-over-WebSocket transport** at `/mcp` (`WebSocketServerTransport`) — Claude Desktop / any MCP client can reach `atelier-mcp` over WS, not just stdio; per-connection server, shared store.
+  - Browser toast attributes each agent edit (`agent edited <tool> — Cmd-Z to undo`).
+- **Recipe `overlay_rules`** promoted from reserved Phase 3 to first-class **Phase 1.5**
+  - Types: `OverlayRules`, `OverlayHandleRule`, `OverlayPageNumberRule` in `@a-company/atelier-types`; Zod validation + anchor-enum + format-template checks in `@a-company/atelier-schema` (other Phase 3 fields remain reserved-opaque).
+  - `applyRecipeToOverlay` translator (idempotent, drops only `overlay`-tagged layers) threaded into `atelier apply-recipe`; `renderPageNumberFormat` handles `{current}/{total}` and zero-padded `{current:0Nd}` forms.
+  - MCP convenience tools `atelier_add_handle` and `atelier_add_page_number`.
+- **`atelier export-image`** — single-frame PNG export `--frame N --state NAME --width/--height`, aspect-preserving; foundation for the Studio Export button and the v1.1 carousel batch driver.
+- **Atelier University pack v0.1.0** (`.paradigm/university/`) — 4 tracks, 24 validated entries: ATEL-001 (Hello Atelier), ATEL-101 (Document Model), ATEL-201 (Authoring via MCP), ATEL-301 (Visual System). Servable via `paradigm university serve --project`.
+- **v1 testing strategy** (`.paradigm/specs/v1-testing-strategy.md`) + a `welcome.atelier` resolveFrame snapshot regression guard.
+
+### Fixed
+- **Studio: autoplay-on-load** — opening a file no longer force-starts playback (`autoplay` defaults off in editor context; Showcase opts in).
+- **Studio: autosave silent-failure** — `POST /api/file` now returns non-2xx with the error; the client surfaces it in the status bar with a retry affordance instead of falsely showing "saved".
+- **Studio: undo state-reset** — undo/redo preserves the current `stateName` when the state still exists, instead of teleporting to the first state.
+
+### Security
+- **`^localhost-only` gate** — `atelier studio` binds to `127.0.0.1` (not `0.0.0.0`) and rejects mutating `/api/*` and WS-upgrade requests whose `Origin` is not the loopback host, preventing drive-by writes from arbitrary browser tabs.
+
+### Testing
+- Workspace tests **578 → 649 passing** (+71), 2 skipped (pending `node-canvas` binary for the `export-image` suite), across 12 packages. All typechecks green (23/23).
+
 ## [0.33.0] — 2026-05-13
 
 ### Added
