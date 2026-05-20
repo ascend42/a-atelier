@@ -1,4 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer, DocumentStore } from "./index.js";
@@ -301,7 +304,15 @@ describe("MCP Tools", () => {
     // Overlay tools (Phase 1.5)
     expect(toolNames).toContain("atelier_add_handle");
     expect(toolNames).toContain("atelier_add_page_number");
-    expect(toolNames).toHaveLength(55);
+
+    expect(toolNames).toContain("atelier_recipe_list");
+    expect(toolNames).toContain("atelier_recipe_get");
+    expect(toolNames).toContain("atelier_recipe_validate");
+    expect(toolNames).toContain("atelier_recipe_save");
+    expect(toolNames).toContain("atelier_recipe_apply");
+
+    expect(toolNames).toContain("atelier_import_images");
+    expect(toolNames).toHaveLength(61);
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -2584,6 +2595,234 @@ describe("MCP Tools", () => {
       // top-right → frame at (canvas.width-margin, margin) with anchorPoint 1,0
       expect(layer.frame).toEqual({ x: 1080 - 24, y: 24 });
       expect(layer.anchorPoint).toEqual({ x: 1, y: 0 });
+    });
+  });
+
+  // ── Recipe tools ──────────────────────────────────────────
+  describe("recipe tools", () => {
+    let tmpDir: string;
+
+    // A minimal, valid Phase 1.5 recipe with overlay_rules.
+    const recipeYaml = [
+      'version: "1.0"',
+      'name: "test-recipe"',
+      "overlay_rules:",
+      "  handle:",
+      '    text: "@matt"',
+      '    anchor: "bottom-left"',
+      "",
+    ].join("\n");
+
+    beforeEach(() => {
+      tmpDir = mkdtempSync(join(tmpdir(), "atelier-recipe-"));
+    });
+
+    afterEach(() => {
+      rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    it("atelier_recipe_get returns the parsed recipe + yaml text", async () => {
+      const recipePath = join(tmpDir, "test.recipe.yaml");
+      writeFileSync(recipePath, recipeYaml, "utf-8");
+
+      const result = await callTool(client, "atelier_recipe_get", { path: recipePath });
+      expect(result.success).toBe(true);
+      expect(result.recipe.name).toBe("test-recipe");
+      expect(result.recipe.overlay_rules.handle.text).toBe("@matt");
+      expect(typeof result.yaml).toBe("string");
+      expect(result.yaml).toContain("name: test-recipe");
+    });
+
+    it("atelier_recipe_save refuses an invalid recipe", async () => {
+      const outPath = join(tmpDir, "bad.recipe.yaml");
+      // Missing required `name` → schema rejects.
+      const result = await callTool(client, "atelier_recipe_save", {
+        path: outPath,
+        recipe: { version: "1.0" },
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("invalid recipe");
+      expect(Array.isArray(result.errors)).toBe(true);
+      expect(existsSync(outPath)).toBe(false);
+    });
+
+    it("atelier_recipe_save writes a valid recipe", async () => {
+      const outPath = join(tmpDir, "good.recipe.yaml");
+      const result = await callTool(client, "atelier_recipe_save", {
+        path: outPath,
+        recipe: { version: "1.0", name: "saved" },
+      });
+      expect(result.success).toBe(true);
+      expect(existsSync(outPath)).toBe(true);
+      expect(readFileSync(outPath, "utf-8")).toContain("saved");
+    });
+
+    it("atelier_recipe_validate flags an invalid recipe via inline yaml", async () => {
+      const result = await callTool(client, "atelier_recipe_validate", {
+        yaml: 'version: "1.0"\n', // missing name
+      });
+      expect(result.success).toBe(true);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it("atelier_recipe_apply adds overlay-tagged layers to the doc", async () => {
+      const create = await callTool(client, "atelier_create", {
+        name: "Recipe Apply", width: 1080, height: 1080, fps: 30,
+      });
+      const result = await callTool(client, "atelier_recipe_apply", {
+        documentId: create.id,
+        recipe: {
+          version: "1.0",
+          name: "applied",
+          overlay_rules: { handle: { text: "@kit", anchor: "top-left" } },
+        },
+      });
+      expect(result.success).toBe(true);
+
+      const doc = store.get(create.id)!;
+      const overlay = doc.layers.find((l) => l.id === "overlay-handle")!;
+      expect(overlay).toBeDefined();
+      expect(overlay.tags).toEqual(["overlay"]);
+      expect((overlay.visual as any).content).toBe("@kit");
+    });
+
+    it("atelier_recipe_apply warns when page_number lacks index context", async () => {
+      const create = await callTool(client, "atelier_create", {
+        name: "Recipe PN", width: 1080, height: 1080, fps: 30,
+      });
+      const result = await callTool(client, "atelier_recipe_apply", {
+        documentId: create.id,
+        recipe: {
+          version: "1.0",
+          name: "pn",
+          overlay_rules: { page_number: { format: "{current}/{total}", anchor: "top-right" } },
+        },
+      });
+      expect(result.success).toBe(true);
+      expect(result.warnings.length).toBeGreaterThan(0);
+      const doc = store.get(create.id)!;
+      expect(doc.layers.find((l) => l.id === "overlay-page-number")).toBeUndefined();
+    });
+  });
+
+  // ── Import-images tool ─────────────────────────────────────
+  describe("import-images tool", () => {
+    let tmpDir: string;
+    // 8-byte PNG signature — the tool only checks file extension, not bytes.
+    const PNG_SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+    function writeImages(dir: string, names: string[]): void {
+      for (const name of names) writeFileSync(join(dir, name), PNG_SIG);
+    }
+
+    beforeEach(() => {
+      tmpDir = mkdtempSync(join(tmpdir(), "atelier-import-"));
+    });
+
+    afterEach(() => {
+      rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    it("registers 3 assets + 3 layers for a folder of 3 images", async () => {
+      writeImages(tmpDir, ["c.png", "a.png", "b.png"]);
+      const create = await callTool(client, "atelier_create", {
+        name: "Import", width: 1080, height: 1080, fps: 30,
+      });
+
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: tmpDir,
+      });
+      expect(result.success).toBe(true);
+      expect(result.imported).toBe(3);
+      expect(result.assetIds).toHaveLength(3);
+      expect(result.layerIds).toHaveLength(3);
+      // Sorted by name → assets in a,b,c order.
+      expect(result.assetIds).toEqual(["a", "b", "c"]);
+
+      const doc = store.get(create.id)!;
+      expect(Object.keys(doc.assets!)).toHaveLength(3);
+      expect(doc.layers).toHaveLength(3);
+      const imgLayers = doc.layers.filter((l) => l.visual.type === "image");
+      expect(imgLayers).toHaveLength(3);
+    });
+
+    it("with asLayers:false registers assets only", async () => {
+      writeImages(tmpDir, ["x.png", "y.jpg"]);
+      const create = await callTool(client, "atelier_create", {
+        name: "Assets Only", width: 1080, height: 1080, fps: 30,
+      });
+
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: tmpDir,
+        asLayers: false,
+      });
+      expect(result.success).toBe(true);
+      expect(result.imported).toBe(2);
+      expect(result.assetIds).toHaveLength(2);
+      expect(result.layerIds).toHaveLength(0);
+
+      const doc = store.get(create.id)!;
+      expect(Object.keys(doc.assets!)).toHaveLength(2);
+      expect(doc.layers).toHaveLength(0);
+    });
+
+    it("swaps the welcome background placeholder for a single image", async () => {
+      writeImages(tmpDir, ["only.png"]);
+      const create = await callTool(client, "atelier_create", {
+        name: "BG Swap", width: 1080, height: 1080, fps: 30,
+      });
+      // Seed a welcome-style background placeholder at layer[0].
+      const doc = store.get(create.id)!;
+      doc.layers.unshift({
+        id: "background",
+        visual: { type: "shape", shape: { type: "rect" }, fill: { type: "solid", color: "#333" } },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 1080, height: 1080 },
+        opacity: 1,
+      });
+      store.set(create.id, doc);
+
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: tmpDir,
+      });
+      expect(result.success).toBe(true);
+
+      const after = store.get(create.id)!;
+      // Swap, not insert → still a single layer, and the placeholder is gone.
+      expect(after.layers).toHaveLength(1);
+      expect(after.layers.find((l) => l.id === "background")).toBeUndefined();
+      expect(after.layers[0].visual.type).toBe("image");
+    });
+
+    it("honors a glob filter", async () => {
+      writeImages(tmpDir, ["keep.png", "skip.jpg", "keep2.png"]);
+      const create = await callTool(client, "atelier_create", {
+        name: "Glob", width: 1080, height: 1080, fps: 30,
+      });
+
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: tmpDir,
+        glob: "*.png",
+      });
+      expect(result.success).toBe(true);
+      expect(result.imported).toBe(2);
+    });
+
+    it("errors when the directory does not exist", async () => {
+      const create = await callTool(client, "atelier_create", {
+        name: "Missing", width: 100, height: 100, fps: 30,
+      });
+      const result = await callTool(client, "atelier_import_images", {
+        documentId: create.id,
+        dir: join(tmpDir, "nope"),
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("does not exist");
     });
   });
 });

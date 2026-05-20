@@ -20,6 +20,8 @@ import { register as registerInteractionTools } from "./tools/interactions.js";
 import { register as registerRefTools } from "./tools/refs.js";
 import { register as registerPerformanceTools } from "./tools/performance.js";
 import { register as registerOverlayTools } from "./tools/overlays.js";
+import { register as registerRecipeTools } from "./tools/recipes.js";
+import { register as registerImportImageTools } from "./tools/import-images.js";
 
 export { DocumentStore } from "./store.js";
 export type { MutationSource, ChangeListener } from "./store.js";
@@ -55,6 +57,8 @@ export { register as registerInteractionTools } from "./tools/interactions.js";
 export { register as registerRefTools } from "./tools/refs.js";
 export { register as registerPerformanceTools } from "./tools/performance.js";
 export { register as registerOverlayTools } from "./tools/overlays.js";
+export { register as registerRecipeTools } from "./tools/recipes.js";
+export { register as registerImportImageTools } from "./tools/import-images.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -92,6 +96,8 @@ export function createServer(
   registerRefTools(server, store);
   registerPerformanceTools(server, store);
   registerOverlayTools(server, store);
+  registerRecipeTools(server, store);
+  registerImportImageTools(server, store);
 
   return { server, store };
 }

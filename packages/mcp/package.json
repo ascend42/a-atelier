@@ -37,6 +37,7 @@
     "@a-company/atelier-types": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "ws": "^8.20.1",
+    "yaml": "^2.7.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

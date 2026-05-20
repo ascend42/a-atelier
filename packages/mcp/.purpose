@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 53 tools
+description: MCP server — AI authoring interface for Atelier animations with 61 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -59,3 +59,12 @@ components:
   mcp-performance-tools:
     description: Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)
     file: src/tools/performance.ts
+  mcp-overlay-tools:
+    description: Overlay layer tools — add_handle, add_page_number; tag-isolated TextVisual overlays for social-feed compositions
+    file: src/tools/overlays.ts
+  mcp-recipe-tools:
+    description: Studio Recipe tools — recipe_list/get/validate/save/apply. Wraps the recipe load/validate/serialize/applyRecipeToOverlay pipeline (re-implemented locally on @a-company/atelier-schema + yaml to avoid a cli↔mcp dependency cycle). save refuses invalid recipes; apply wires overlay_rules only (trim/transcribe/caption application stays CLI-only)
+    file: src/tools/recipes.ts
+  mcp-import-images:
+    description: Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)
+    file: src/tools/import-images.ts
