@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.36.1] — 2026-05-20
+
+### Fixed
+- **`@a-company/atelier-mcp` bin is now executable** (0.27.1 → 0.27.2). The package's `atelier-mcp` bin points at `dist/index.js`, which auto-starts the stdio server via its `isMain` guard — but the tsup build emitted no `#!/usr/bin/env node` shebang, so `npx @a-company/atelier-mcp` ran it as a shell script and died (`import: command not found`). Added the shebang banner to the mcp build (mirroring what the CLI already does for the same entry). Verified: the bin starts and answers an MCP `initialize` handshake, and the library exports still import cleanly (Node strips the shebang on import). This is what the Claude Code plugin (`ascend42/a-atelier-plugin`) now launches.
+
 ## [0.36.0] — 2026-05-19
 
 A **hardening pass** on the v0.34/v0.35 surface: PNG export now works on a plain install, ten audit-confirmed bugs fixed (one was silent `.atelier` corruption), and the studio client extracted from a string into a typechecked module. Package bumps: `@a-company/atelier` 0.36.0, `-studio` 0.28.0, `-mcp` 0.27.1.
