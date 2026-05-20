@@ -2,10 +2,10 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-06T23:29:45.223Z",
+    "generatedAt": "2026-05-20T22:45:04.139Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 12,
+      "purposeFiles": 13,
       "portalFiles": 1,
       "premiseFiles": 0
     },
@@ -201,7 +201,7 @@
       "symbol": "#atelier-studio",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Main widget class — mounts into any DOM element, manages view switching and panel coordination",
+      "description": "Main widget class — mounts into any DOM element, manages view switching and panel coordination, and exposes applyMutation() as the Studio-side endpoint of the LLM↔human live-mutation bridge (task",
       "visualTags": [],
       "related": [
         "#canvas-panel",
@@ -228,6 +228,36 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
       "description": "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables",
+      "visualTags": [],
+      "related": []
+    },
+    "#element-provider": {
+      "id": "#element-provider",
+      "name": "#element Provider",
+      "symbol": "##element-provider",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "HTMLVideoElement-backed VideoFrameProvider for preview mode — seeks via currentTime, one element per src, notifies caller on seek complete via onFrame callback",
+      "visualTags": [],
+      "related": []
+    },
+    "#webcodecs-provider": {
+      "id": "#webcodecs-provider",
+      "name": "#webcodecs Provider",
+      "symbol": "##webcodecs-provider",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "WebCodecs VideoDecoder-backed provider for frame-accurate export rendering — Chrome/Chromium only; Mediabunny demux integration pending (T-002b)",
+      "visualTags": [],
+      "related": []
+    },
+    "#ffmpeg-encoder": {
+      "id": "#ffmpeg-encoder",
+      "name": "#ffmpeg Encoder",
+      "symbol": "##ffmpeg-encoder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "FFmpeg WASM encoding pipeline skeleton — stable interface for MP4/WebM export from canvas frame sequence; full implementation in T-003",
       "visualTags": [],
       "related": []
     },
@@ -277,7 +307,7 @@
       "symbol": "##layer-types",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Layer, Visual union (shape, text, image, group, ref), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
+      "description": "Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
       "visualTags": [],
       "related": []
     },
@@ -347,7 +377,7 @@
       "symbol": "##asset-types",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio) with optional spritesheet metadata",
+      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata",
       "visualTags": [],
       "related": []
     },
@@ -381,80 +411,23 @@
       "visualTags": [],
       "related": []
     },
-    "#svg-renderer": {
-      "id": "#svg-renderer",
-      "name": "#svg Renderer",
-      "symbol": "##svg-renderer",
+    "#video-project-types": {
+      "id": "#video-project-types",
+      "name": "#video Project Types",
+      "symbol": "##video-project-types",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
-      "visualTags": [],
-      "related": [
-        "#svg-shapes",
-        "#svg-text",
-        "#svg-gradients",
-        "#svg-filters",
-        "#svg-clip",
-        "#svg-properties"
-      ]
-    },
-    "#svg-shapes": {
-      "id": "#svg-shapes",
-      "name": "#svg Shapes",
-      "symbol": "##svg-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing",
       "visualTags": [],
       "related": []
     },
-    "#svg-text": {
-      "id": "#svg-text",
-      "name": "#svg Text",
-      "symbol": "##svg-text",
+    "#recipe-types": {
+      "id": "#recipe-types",
+      "name": "#recipe Types",
+      "symbol": "##recipe-types",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-gradients": {
-      "id": "#svg-gradients",
-      "name": "#svg Gradients",
-      "symbol": "##svg-gradients",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-filters": {
-      "id": "#svg-filters",
-      "name": "#svg Filters",
-      "symbol": "##svg-filters",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-clip": {
-      "id": "#svg-clip",
-      "name": "#svg Clip",
-      "symbol": "##svg-clip",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-properties": {
-      "id": "#svg-properties",
-      "name": "#svg Properties",
-      "symbol": "##svg-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.",
       "visualTags": [],
       "related": []
     },
@@ -601,58 +574,6 @@
       "visualTags": [],
       "related": []
     },
-    "#document-schema": {
-      "id": "#document-schema",
-      "name": "#document Schema",
-      "symbol": "##document-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
-      "visualTags": [],
-      "related": [
-        "#atelier-types"
-      ]
-    },
-    "#layer-schema": {
-      "id": "#layer-schema",
-      "name": "#layer Schema",
-      "symbol": "##layer-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "LayerSchema and Visual discriminated union validation",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-schema": {
-      "id": "#delta-schema",
-      "name": "#delta Schema",
-      "symbol": "##delta-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
-      "visualTags": [],
-      "related": []
-    },
-    "#validation-functions": {
-      "id": "#validation-functions",
-      "name": "#validation Functions",
-      "symbol": "##validation-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateDocument, validateLayer, validateDelta — typed results with error formatting",
-      "visualTags": [],
-      "related": []
-    },
-    "#yaml-parser": {
-      "id": "#yaml-parser",
-      "name": "#yaml Parser",
-      "symbol": "##yaml-parser",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
-      "visualTags": [],
-      "related": []
-    },
     "animation": {
       "id": "animation",
       "name": "Animation",
@@ -697,15 +618,199 @@
       "related": [],
       "componentType": "service"
     },
+    "#svg-renderer": {
+      "id": "#svg-renderer",
+      "name": "#svg Renderer",
+      "symbol": "##svg-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+      "visualTags": [],
+      "related": [
+        "#svg-shapes",
+        "#svg-text",
+        "#svg-gradients",
+        "#svg-filters",
+        "#svg-clip",
+        "#svg-properties"
+      ]
+    },
+    "#svg-shapes": {
+      "id": "#svg-shapes",
+      "name": "#svg Shapes",
+      "symbol": "##svg-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-text": {
+      "id": "#svg-text",
+      "name": "#svg Text",
+      "symbol": "##svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-gradients": {
+      "id": "#svg-gradients",
+      "name": "#svg Gradients",
+      "symbol": "##svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-filters": {
+      "id": "#svg-filters",
+      "name": "#svg Filters",
+      "symbol": "##svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-clip": {
+      "id": "#svg-clip",
+      "name": "#svg Clip",
+      "symbol": "##svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-properties": {
+      "id": "#svg-properties",
+      "name": "#svg Properties",
+      "symbol": "##svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+      "visualTags": [],
+      "related": [
+        "#atelier-types"
+      ]
+    },
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
+      "visualTags": [],
+      "related": []
+    },
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields",
+      "visualTags": [],
+      "related": [
+        "^valid-video-layer",
+        "^valid-recipe"
+      ]
+    },
+    "#recipe-schema": {
+      "id": "#recipe-schema",
+      "name": "#recipe Schema",
+      "symbol": "##recipe-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.",
+      "visualTags": [],
+      "related": []
+    },
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
     "mcp-store": {
       "id": "mcp-store",
       "name": "Mcp Store",
       "symbol": "#mcp-store",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls",
+      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls, with onChange event emitter for the LLM↔human live-mutation bridge (task",
       "visualTags": [],
-      "related": []
+      "related": [
+        "!doc-change"
+      ]
     },
     "mcp-document-tools": {
       "id": "mcp-document-tools",
@@ -869,132 +974,36 @@
       ],
       "related": []
     },
-    "#easing-functions": {
-      "id": "#easing-functions",
-      "name": "#easing Functions",
-      "symbol": "##easing-functions",
+    "mcp-overlay-tools": {
+      "id": "mcp-overlay-tools",
+      "name": "Mcp Overlay Tools",
+      "symbol": "#mcp-overlay-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Overlay layer tools — add_handle, add_page_number; tag-isolated TextVisual overlays for social-feed compositions",
       "visualTags": [],
       "related": []
     },
-    "#spring-solver": {
-      "id": "#spring-solver",
-      "name": "#spring Solver",
-      "symbol": "##spring-solver",
+    "mcp-recipe-tools": {
+      "id": "mcp-recipe-tools",
+      "name": "Mcp Recipe Tools",
+      "symbol": "#mcp-recipe-tools",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Studio Recipe tools — recipe_list/get/validate/save/apply. Wraps the recipe load/validate/serialize/applyRecipeToOverlay pipeline (re-implemented locally on @a-company/atelier-schema + yaml to avoid a cli↔mcp dependency cycle). save refuses invalid recipes; apply wires overlay_rules only (trim/transcribe/caption application stays CLI-only)",
       "visualTags": [],
       "related": []
     },
-    "#lerp-functions": {
-      "id": "#lerp-functions",
-      "name": "#lerp Functions",
-      "symbol": "##lerp-functions",
+    "mcp-import-images": {
+      "id": "mcp-import-images",
+      "name": "Mcp Import Images",
+      "symbol": "#mcp-import-images",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-math": {
-      "id": "#color-math",
-      "name": "#color Math",
-      "symbol": "##color-math",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-exporter": {
-      "id": "#lottie-exporter",
-      "name": "#lottie Exporter",
-      "symbol": "##lottie-exporter",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers",
-        "#lottie-warnings"
-      ]
-    },
-    "#lottie-types": {
-      "id": "#lottie-types",
-      "name": "#lottie Types",
-      "symbol": "##lottie-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-layers": {
-      "id": "#lottie-map-layers",
-      "name": "#lottie Map Layers",
-      "symbol": "##lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-shapes",
-        "#lottie-map-keyframes",
-        "#lottie-map-colors",
-        "#lottie-map-easing"
-      ]
-    },
-    "#lottie-map-shapes": {
-      "id": "#lottie-map-shapes",
-      "name": "#lottie Map Shapes",
-      "symbol": "##lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-keyframes": {
-      "id": "#lottie-map-keyframes",
-      "name": "#lottie Map Keyframes",
-      "symbol": "##lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-colors": {
-      "id": "#lottie-map-colors",
-      "name": "#lottie Map Colors",
-      "symbol": "##lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-easing": {
-      "id": "#lottie-map-easing",
-      "name": "#lottie Map Easing",
-      "symbol": "##lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-warnings": {
-      "id": "#lottie-warnings",
-      "name": "#lottie Warnings",
-      "symbol": "##lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
-      "visualTags": [],
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)",
+      "visualTags": [
+        "image"
+      ],
       "related": []
     },
     "#frame-resolver": {
@@ -1003,7 +1012,7 @@
       "symbol": "##frame-resolver",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Given document + frame number, computes resolved state of all layers",
+      "description": "Given document + frame number, computes resolved state of all layers; computes videoSourceTime (seconds into source video) for VideoVisual layers",
       "visualTags": [],
       "related": []
     },
@@ -1107,60 +1116,19 @@
       "visualTags": [],
       "related": []
     },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
+    "cli-lint": {
+      "id": "cli-lint",
+      "name": "Cli Lint",
+      "symbol": "#cli-lint",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Lint command — runs ^valid-document, ^valid-delta, ^valid-video-layer gates across one or more files; supports --json for CI",
       "visualTags": [],
       "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer"
+        "^valid-document",
+        "^valid-delta",
+        "^valid-video-layer"
       ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "visualTags": [],
-      "related": []
     },
     "cli-validate": {
       "id": "cli-validate",
@@ -1168,7 +1136,7 @@
       "symbol": "#cli-validate",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Validate command — checks .atelier files for schema validity and delta overlaps",
+      "description": "Validate command — checks .atelier files for schema validity and delta overlaps (legacy; lint is preferred)",
       "visualTags": [],
       "related": []
     },
@@ -1232,6 +1200,44 @@
       "visualTags": [],
       "related": []
     },
+    "cli-export-image": {
+      "id": "cli-export-image",
+      "name": "Cli Export Image",
+      "symbol": "#cli-export-image",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier export-image <file> --out file.png [--frame N] [--state NAME] [--width N] [--height N] — single-frame PNG export. Delegates to the shared #render-image render path (renderDocumentToPng). Aspect-preserving when only one of --width/--height is set; both set uses both verbatim. Foundation for the v1 carousel batch driver and the Studio Export PNG button.",
+      "visualTags": [
+        "image"
+      ],
+      "related": [
+        "#render-image"
+      ]
+    },
+    "#render-image": {
+      "id": "#render-image",
+      "name": "#render Image",
+      "symbol": "##render-image",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Shared single-frame render-to-PNG path. Rasterizes via @napi-rs/canvas (prebuilt platform binaries — no node-gyp / system libs, so PNG export works on a plain install; loadCanvasModule is now a thin accessor over the static import). renderDocumentToPng (image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer via canvas.toBuffer(image/png)), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError (defensive — fires only if the platform binary is missing). refitImageBounds hook re-fits image layers once the rasterizer decodes natural dims (used by carousel). Consumed by export-image + carousel.",
+      "visualTags": [
+        "image"
+      ],
+      "related": []
+    },
+    "#cli-carousel": {
+      "id": "#cli-carousel",
+      "name": "#cli Carousel",
+      "symbol": "##cli-carousel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe, expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + 'i/N' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.",
+      "visualTags": [],
+      "related": [
+        "#render-image"
+      ]
+    },
     "cli-assets": {
       "id": "cli-assets",
       "name": "Cli Assets",
@@ -1249,6 +1255,304 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
       "description": "Variables command — lists all variables in a document with usage info",
+      "visualTags": [],
+      "related": []
+    },
+    "#video-project": {
+      "id": "#video-project",
+      "name": "#video Project",
+      "symbol": "##video-project",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "VideoProject filesystem utilities — createVideoProject, loadVideoProject, readCutList/writeCutList (1.0→1.1 migration), readTranscript/writeTranscript, readComposition/writeComposition, rewriteCutLayers, effectiveSpan — scaffold and manage the source.mp4/project.atelier/transcript.json/cuts.json/export/ folder; layer-tag isolation (silence-trim, caption, overlay) preserves user-authored layers across pipeline re-runs",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-trim": {
+      "id": "#cli-trim",
+      "name": "#cli Trim",
+      "symbol": "##cli-trim",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier trim — silence detection + parametric cuts pipeline. Runs ffmpeg silencedetect, inverts to speech intervals, builds CutEntry[] with default padding, preserves user paddingPre/paddingPost on re-run via raw-boundary matching (0.5s tolerance), supports --tighten/--loosen global ms adjustments, --cut single-cut overrides, --reset, --dry-run, --json. Rewrites silence-trim tagged VideoVisual layers in project.atelier; never touches user-authored or other-tagged layers.",
+      "visualTags": [],
+      "related": []
+    },
+    "#silence-detect": {
+      "id": "#silence-detect",
+      "name": "#silence Detect",
+      "symbol": "##silence-detect",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "ffmpeg silencedetect subprocess + ffprobe duration helpers. probeSilencedetect (filter availability check), probeDuration (ffprobe), runSilenceDetect (silencedetect to null muxer), parseSilenceDetectStderr (pairs silence_start/silence_end lines, tolerates ffmpeg chatter, clamps negative starts). All via node:child_process.spawn; no new npm dependencies.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cut-model": {
+      "id": "#cut-model",
+      "name": "#cut Model",
+      "symbol": "##cut-model",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Pure functions over CutEntry[] — invertToSpeechIntervals, buildInitialCuts (default 80ms pre / 120ms post padding), resolveOverlaps (split at silence midpoint), clampBoundaries ([0, duration]), mergeWithExisting (preserves user padding on matching raw boundary within tolerance), applyGlobalPadding (tighten/loosen with floor at 0). All unit-tested in isolation.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-transcribe": {
+      "id": "#cli-transcribe",
+      "name": "#cli Transcribe",
+      "symbol": "##cli-transcribe",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier transcribe — Whisper transcription pipeline. Probes whisper-cpp/openai-api backend, runs Whisper, parses JSON output, merges with existing transcript (preserves userEdited/userAdded/hidden flags on words matching by timing + detected text), writes transcript.json 1.1, and rewrites caption-tagged TextVisual layers in project.atelier. Supports --model, --language, --reset, --no-captions, --dry-run, --json.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-transcript": {
+      "id": "#cli-transcript",
+      "name": "#cli Transcript",
+      "symbol": "##cli-transcript",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier transcript family — fix (single word or batch --replace), add (insert userAdded word), delete (hide word), merge (concat adjacent), split (fractional split with optional text override), list. All edits set userEdited/userAdded/hidden flags and regenerate caption layers unless --no-regenerate.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-captions": {
+      "id": "#cli-captions",
+      "name": "#cli Captions",
+      "symbol": "##cli-captions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier captions regenerate — re-derive caption-tagged TextVisual layers from current transcript.json without re-running Whisper. Used when caption styling changes.",
+      "visualTags": [],
+      "related": []
+    },
+    "#whisper": {
+      "id": "#whisper",
+      "name": "#whisper",
+      "symbol": "##whisper",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Whisper subprocess + parser lib. probeWhisper (whisper-cpp / openai-api / none), runWhisperCpp (--output-json --word-thold), parseWhisperCppJson (token-level word timing when available, even-split fallback, filters [_BEG_] / empty tokens). ENOENT translated to clear install guidance. Same subprocess pattern as ffmpeg.",
+      "visualTags": [],
+      "related": []
+    },
+    "#transcript-model": {
+      "id": "#transcript-model",
+      "name": "#transcript Model",
+      "symbol": "##transcript-model",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Pure functions over VideoTranscript. flattenWords (segments → ordered word array), groupIntoPhrases (break on punctuation / maxWords / pauseGap), mergeTranscriptWithExisting (preserve user edits on word matching by start time ±0.3s AND detected text), applyTextEdit / applyBatchReplace / applyHide / applyAdd / applyMerge / applySplit. All transforms are immutable and set the appropriate flag (userEdited / userAdded / hidden). Unit-tested in isolation.",
+      "visualTags": [],
+      "related": []
+    },
+    "#caption-builder": {
+      "id": "#caption-builder",
+      "name": "#caption Builder",
+      "symbol": "##caption-builder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Builds caption-tagged TextVisual layers + opacity fade-in/out deltas from a VideoTranscript. buildCaptionLayers (transcript → Layer[] + Delta[]), rewriteCaptionLayers (drops only caption-tagged layers and their deltas from the default state; preserves silence-trim, overlay, and user-authored layers — the tag-namespace isolation invariant). Caption style overridable.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-recipe": {
+      "id": "#cli-recipe",
+      "name": "#cli Recipe",
+      "symbol": "##cli-recipe",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier recipe new/validate/show — Studio Recipe management. recipe new scaffolds a commented starter YAML with every Phase 1 default present; recipe validate runs the ^valid-recipe gate and warns on reserved Phase 3 fields; recipe show prints a recipe with optional --with-defaults overlay.",
+      "visualTags": [],
+      "related": [
+        "^valid-recipe"
+      ]
+    },
+    "#cli-apply-recipe": {
+      "id": "#cli-apply-recipe",
+      "name": "#cli Apply Recipe",
+      "symbol": "##cli-apply-recipe",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.",
+      "visualTags": [],
+      "related": []
+    },
+    "#cli-studio": {
+      "id": "#cli-studio",
+      "name": "#cli Studio",
+      "symbol": "##cli-studio",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "atelier studio [file] — launches a Vite dev server serving the AtelierStudio widget as a browser-based editor. Lists .atelier files in CWD, autosaves edits with visible save/saving/error indicator + click-to-retry on failure, supports per-file and Export-All (gif/mp4/webm). Server bound to 127.0.0.1 only with Origin check on /api/* mutating endpoints (^localhost-only). No autoplay on file open — the embedded studio is constructed with autoplay:false.",
+      "visualTags": [],
+      "related": [
+        "^localhost-only"
+      ]
+    },
+    "#recipe-lib": {
+      "id": "#recipe-lib",
+      "name": "#recipe Lib",
+      "symbol": "##recipe-lib",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.",
+      "visualTags": [],
+      "related": []
+    },
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer",
+        "#video-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
+    },
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
+    },
+    "video-renderer": {
+      "id": "video-renderer",
+      "name": "Video Renderer",
+      "symbol": "#video-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)",
+      "visualTags": [],
+      "related": []
+    },
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
       "visualTags": [],
       "related": []
     },
@@ -1324,6 +1628,32 @@
         "#svg-renderer"
       ]
     },
+    "render-image": {
+      "id": "render-image",
+      "name": "Render Image",
+      "symbol": "#render-image",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Referenced from #cli-export-image",
+      "visualTags": [
+        "image"
+      ],
+      "related": [
+        "#cli-export-image"
+      ]
+    },
+    "frame-resolver": {
+      "id": "frame-resolver",
+      "name": "Frame Resolver",
+      "symbol": "#frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Referenced from #render-frame",
+      "visualTags": [],
+      "related": [
+        "#render-frame"
+      ]
+    },
     "lottie-map-layers": {
       "id": "lottie-map-layers",
       "name": "Lottie Map Layers",
@@ -1391,18 +1721,6 @@
       "related": [
         "#lottie-map-layers"
       ]
-    },
-    "frame-resolver": {
-      "id": "frame-resolver",
-      "name": "Frame Resolver",
-      "symbol": "#frame-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Referenced from #render-frame",
-      "visualTags": [],
-      "related": [
-        "#render-frame"
-      ]
     }
   },
   "features": {},
@@ -1467,6 +1785,24 @@
       "description": "Delta references valid property and has valid frame range",
       "related": []
     },
+    "^valid-video-layer": {
+      "id": "^valid-video-layer",
+      "name": "^valid Video Layer",
+      "symbol": "^^valid-video-layer",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VideoVisual passes semantic checks — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty",
+      "related": []
+    },
+    "^valid-recipe": {
+      "id": "^valid-recipe",
+      "name": "^valid Recipe",
+      "symbol": "^^valid-recipe",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StudioRecipe passes Zod validation including overlay_rules (anchor enum, page-number format template syntax)",
+      "related": []
+    },
     "^no-overlap": {
       "id": "^no-overlap",
       "name": "^no Overlap",
@@ -1476,13 +1812,22 @@
       "description": "Rejects delta additions that overlap with existing deltas on same property",
       "related": []
     },
-    "no-overlap": {
-      "id": "no-overlap",
-      "name": "No Overlap",
-      "symbol": "^no-overlap",
+    "valid-video-layer": {
+      "id": "valid-video-layer",
+      "name": "Valid Video Layer",
+      "symbol": "^valid-video-layer",
       "category": "gates",
       "path": "/Users/ascend/Documents/GitHub/a-atelier",
-      "description": "Rejects delta additions that overlap with existing deltas on the same layer+property",
+      "description": "Validates a VideoVisual layer — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty",
+      "related": []
+    },
+    "valid-recipe": {
+      "id": "valid-recipe",
+      "name": "Valid Recipe",
+      "symbol": "^valid-recipe",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Validates a StudioRecipe against the schema — Phase 1 fields strict, Phase 3 reserved fields parsed opaque with warnings",
       "related": []
     },
     "valid-document": {
@@ -1502,10 +1847,77 @@
       "path": "/Users/ascend/Documents/GitHub/a-atelier",
       "description": "Validates that a Delta object conforms to the schema — property types, value ranges, and easing references",
       "related": []
+    },
+    "localhost-only": {
+      "id": "localhost-only",
+      "name": "Localhost Only",
+      "symbol": "^localhost-only",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user's CWD.",
+      "related": []
+    },
+    "no-overlap": {
+      "id": "no-overlap",
+      "name": "No Overlap",
+      "symbol": "^no-overlap",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Rejects delta additions that overlap with existing deltas on the same layer+property",
+      "related": []
     }
   },
-  "signals": {},
-  "aspects": {},
+  "signals": {
+    "doc-change": {
+      "id": "doc-change",
+      "name": "Doc Change",
+      "symbol": "!doc-change",
+      "category": "signals",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-store",
+      "related": [
+        "#mcp-store"
+      ]
+    }
+  },
+  "aspects": {
+    "layer-tag-isolation": {
+      "id": "layer-tag-isolation",
+      "name": "Layer Tag Isolation",
+      "symbol": "~layer-tag-isolation",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Every content pipeline owns a layer tag-namespace (silence-trim, caption, caption-word, overlay) and on re-run drops ONLY its own tagged layers before re-adding them — never touching user-authored (untagged) layers or other pipelines' outputs. The load-bearing invariant that lets AI regenerate content repeatedly without erasing human work or sibling pipeline output.",
+      "related": []
+    },
+    "detected-vs-user-edited": {
+      "id": "detected-vs-user-edited",
+      "name": "Detected Vs User Edited",
+      "symbol": "~detected-vs-user-edited",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "AI-detected content (silence-cut boundaries, transcript words) is immutable, but user overrides — padding, userEdited/userAdded/hidden flags, corrected text — are preserved across re-runs by matching fresh detections to existing entries on timing tolerance plus unchanged detected text. Fix a misheard word or nudge a cut, re-run the pipeline, and the human edit survives.",
+      "related": []
+    },
+    "copy-on-write-doc": {
+      "id": "copy-on-write-doc",
+      "name": "Copy On Write Doc",
+      "symbol": "~copy-on-write-doc",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Any code that mutates an AtelierDocument constructs a NEW document object (spread the doc, replace the layers/assets arrays) before calling DocumentStore.set — it never mutates the stored object in place. Guarantees a concurrent reader (notably the live WebSocket bridge broadcasting to the studio) can never observe a half-mutated document mid-update.",
+      "related": []
+    },
+    "source-tagged-mutation": {
+      "id": "source-tagged-mutation",
+      "name": "Source Tagged Mutation",
+      "symbol": "~source-tagged-mutation",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "DocumentStore mutations carry a source tag (human | llm | system). The studio WebSocket bridge re-broadcasts a change to the browser ONLY when source is llm; human-sourced changes (the browser is already current) and system-sourced changes (file-read hydration) stay silent. Prevents echo loops and false \"agent edited\" attribution on the live human↔LLM editing loop.",
+      "related": []
+    }
+  },
   "screens": {},
   "symbolMap": {
     "#animation-engine": {
@@ -1584,6 +1996,18 @@
       "category": "components",
       "id": "atelier-cli"
     },
+    "##element-provider": {
+      "category": "components",
+      "id": "#element-provider"
+    },
+    "##webcodecs-provider": {
+      "category": "components",
+      "id": "#webcodecs-provider"
+    },
+    "##ffmpeg-encoder": {
+      "category": "components",
+      "id": "#ffmpeg-encoder"
+    },
     "##unit-types": {
       "category": "components",
       "id": "#unit-types"
@@ -1644,33 +2068,13 @@
       "category": "components",
       "id": "#preset-types"
     },
-    "##svg-renderer": {
+    "##video-project-types": {
       "category": "components",
-      "id": "#svg-renderer"
+      "id": "#video-project-types"
     },
-    "##svg-shapes": {
+    "##recipe-types": {
       "category": "components",
-      "id": "#svg-shapes"
-    },
-    "##svg-text": {
-      "category": "components",
-      "id": "#svg-text"
-    },
-    "##svg-gradients": {
-      "category": "components",
-      "id": "#svg-gradients"
-    },
-    "##svg-filters": {
-      "category": "components",
-      "id": "#svg-filters"
-    },
-    "##svg-clip": {
-      "category": "components",
-      "id": "#svg-clip"
-    },
-    "##svg-properties": {
-      "category": "components",
-      "id": "#svg-properties"
+      "id": "#recipe-types"
     },
     "#canvas-panel": {
       "category": "components",
@@ -1720,6 +2124,50 @@
       "category": "components",
       "id": "drag-reorder"
     },
+    "#animation": {
+      "category": "components",
+      "id": "animation"
+    },
+    "#use-animation": {
+      "category": "components",
+      "id": "use-animation"
+    },
+    "#use-animation-state": {
+      "category": "components",
+      "id": "use-animation-state"
+    },
+    "#animation-player": {
+      "category": "components",
+      "id": "animation-player"
+    },
+    "##svg-renderer": {
+      "category": "components",
+      "id": "#svg-renderer"
+    },
+    "##svg-shapes": {
+      "category": "components",
+      "id": "#svg-shapes"
+    },
+    "##svg-text": {
+      "category": "components",
+      "id": "#svg-text"
+    },
+    "##svg-gradients": {
+      "category": "components",
+      "id": "#svg-gradients"
+    },
+    "##svg-filters": {
+      "category": "components",
+      "id": "#svg-filters"
+    },
+    "##svg-clip": {
+      "category": "components",
+      "id": "#svg-clip"
+    },
+    "##svg-properties": {
+      "category": "components",
+      "id": "#svg-properties"
+    },
     "##document-schema": {
       "category": "components",
       "id": "#document-schema"
@@ -1736,25 +2184,29 @@
       "category": "components",
       "id": "#validation-functions"
     },
+    "##recipe-schema": {
+      "category": "components",
+      "id": "#recipe-schema"
+    },
     "##yaml-parser": {
       "category": "components",
       "id": "#yaml-parser"
     },
-    "#animation": {
+    "##easing-functions": {
       "category": "components",
-      "id": "animation"
+      "id": "#easing-functions"
     },
-    "#use-animation": {
+    "##spring-solver": {
       "category": "components",
-      "id": "use-animation"
+      "id": "#spring-solver"
     },
-    "#use-animation-state": {
+    "##lerp-functions": {
       "category": "components",
-      "id": "use-animation-state"
+      "id": "#lerp-functions"
     },
-    "#animation-player": {
+    "##color-math": {
       "category": "components",
-      "id": "animation-player"
+      "id": "#color-math"
     },
     "#mcp-store": {
       "category": "components",
@@ -1824,53 +2276,17 @@
       "category": "components",
       "id": "mcp-performance-tools"
     },
-    "##easing-functions": {
+    "#mcp-overlay-tools": {
       "category": "components",
-      "id": "#easing-functions"
+      "id": "mcp-overlay-tools"
     },
-    "##spring-solver": {
+    "#mcp-recipe-tools": {
       "category": "components",
-      "id": "#spring-solver"
+      "id": "mcp-recipe-tools"
     },
-    "##lerp-functions": {
+    "#mcp-import-images": {
       "category": "components",
-      "id": "#lerp-functions"
-    },
-    "##color-math": {
-      "category": "components",
-      "id": "#color-math"
-    },
-    "##lottie-exporter": {
-      "category": "components",
-      "id": "#lottie-exporter"
-    },
-    "##lottie-types": {
-      "category": "components",
-      "id": "#lottie-types"
-    },
-    "##lottie-map-layers": {
-      "category": "components",
-      "id": "#lottie-map-layers"
-    },
-    "##lottie-map-shapes": {
-      "category": "components",
-      "id": "#lottie-map-shapes"
-    },
-    "##lottie-map-keyframes": {
-      "category": "components",
-      "id": "#lottie-map-keyframes"
-    },
-    "##lottie-map-colors": {
-      "category": "components",
-      "id": "#lottie-map-colors"
-    },
-    "##lottie-map-easing": {
-      "category": "components",
-      "id": "#lottie-map-easing"
-    },
-    "##lottie-warnings": {
-      "category": "components",
-      "id": "#lottie-warnings"
+      "id": "mcp-import-images"
     },
     "##frame-resolver": {
       "category": "components",
@@ -1916,25 +2332,9 @@
       "category": "components",
       "id": "#audio-timing"
     },
-    "#render-frame": {
+    "#cli-lint": {
       "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
+      "id": "cli-lint"
     },
     "#cli-validate": {
       "category": "components",
@@ -1964,6 +2364,18 @@
       "category": "components",
       "id": "cli-export-lottie"
     },
+    "#cli-export-image": {
+      "category": "components",
+      "id": "cli-export-image"
+    },
+    "##render-image": {
+      "category": "components",
+      "id": "#render-image"
+    },
+    "##cli-carousel": {
+      "category": "components",
+      "id": "#cli-carousel"
+    },
     "#cli-assets": {
       "category": "components",
       "id": "cli-assets"
@@ -1971,6 +2383,118 @@
     "#cli-variables": {
       "category": "components",
       "id": "cli-variables"
+    },
+    "##video-project": {
+      "category": "components",
+      "id": "#video-project"
+    },
+    "##cli-trim": {
+      "category": "components",
+      "id": "#cli-trim"
+    },
+    "##silence-detect": {
+      "category": "components",
+      "id": "#silence-detect"
+    },
+    "##cut-model": {
+      "category": "components",
+      "id": "#cut-model"
+    },
+    "##cli-transcribe": {
+      "category": "components",
+      "id": "#cli-transcribe"
+    },
+    "##cli-transcript": {
+      "category": "components",
+      "id": "#cli-transcript"
+    },
+    "##cli-captions": {
+      "category": "components",
+      "id": "#cli-captions"
+    },
+    "##whisper": {
+      "category": "components",
+      "id": "#whisper"
+    },
+    "##transcript-model": {
+      "category": "components",
+      "id": "#transcript-model"
+    },
+    "##caption-builder": {
+      "category": "components",
+      "id": "#caption-builder"
+    },
+    "##cli-recipe": {
+      "category": "components",
+      "id": "#cli-recipe"
+    },
+    "##cli-apply-recipe": {
+      "category": "components",
+      "id": "#cli-apply-recipe"
+    },
+    "##cli-studio": {
+      "category": "components",
+      "id": "#cli-studio"
+    },
+    "##recipe-lib": {
+      "category": "components",
+      "id": "#recipe-lib"
+    },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#video-renderer": {
+      "category": "components",
+      "id": "video-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
+    },
+    "##lottie-exporter": {
+      "category": "components",
+      "id": "#lottie-exporter"
+    },
+    "##lottie-types": {
+      "category": "components",
+      "id": "#lottie-types"
+    },
+    "##lottie-map-layers": {
+      "category": "components",
+      "id": "#lottie-map-layers"
+    },
+    "##lottie-map-shapes": {
+      "category": "components",
+      "id": "#lottie-map-shapes"
+    },
+    "##lottie-map-keyframes": {
+      "category": "components",
+      "id": "#lottie-map-keyframes"
+    },
+    "##lottie-map-colors": {
+      "category": "components",
+      "id": "#lottie-map-colors"
+    },
+    "##lottie-map-easing": {
+      "category": "components",
+      "id": "#lottie-map-easing"
+    },
+    "##lottie-warnings": {
+      "category": "components",
+      "id": "#lottie-warnings"
     },
     "^^valid-document": {
       "category": "gates",
@@ -1980,6 +2504,14 @@
       "category": "gates",
       "id": "^valid-delta"
     },
+    "^^valid-video-layer": {
+      "category": "gates",
+      "id": "^valid-video-layer"
+    },
+    "^^valid-recipe": {
+      "category": "gates",
+      "id": "^valid-recipe"
+    },
     "^^no-overlap": {
       "category": "gates",
       "id": "^no-overlap"
@@ -1987,6 +2519,22 @@
     "$$frame-resolution": {
       "category": "flows",
       "id": "$frame-resolution"
+    },
+    "~layer-tag-isolation": {
+      "category": "aspects",
+      "id": "layer-tag-isolation"
+    },
+    "~detected-vs-user-edited": {
+      "category": "aspects",
+      "id": "detected-vs-user-edited"
+    },
+    "~copy-on-write-doc": {
+      "category": "aspects",
+      "id": "copy-on-write-doc"
+    },
+    "~source-tagged-mutation": {
+      "category": "aspects",
+      "id": "source-tagged-mutation"
     },
     "#svg-shapes": {
       "category": "components",
@@ -2012,6 +2560,38 @@
       "category": "components",
       "id": "svg-properties"
     },
+    "^valid-video-layer": {
+      "category": "gates",
+      "id": "valid-video-layer"
+    },
+    "^valid-recipe": {
+      "category": "gates",
+      "id": "valid-recipe"
+    },
+    "!doc-change": {
+      "category": "signals",
+      "id": "doc-change"
+    },
+    "^valid-document": {
+      "category": "gates",
+      "id": "valid-document"
+    },
+    "^valid-delta": {
+      "category": "gates",
+      "id": "valid-delta"
+    },
+    "#render-image": {
+      "category": "components",
+      "id": "render-image"
+    },
+    "^localhost-only": {
+      "category": "gates",
+      "id": "localhost-only"
+    },
+    "#frame-resolver": {
+      "category": "components",
+      "id": "frame-resolver"
+    },
     "#lottie-map-layers": {
       "category": "components",
       "id": "lottie-map-layers"
@@ -2036,21 +2616,9 @@
       "category": "components",
       "id": "lottie-map-easing"
     },
-    "#frame-resolver": {
-      "category": "components",
-      "id": "frame-resolver"
-    },
     "^no-overlap": {
       "category": "gates",
       "id": "no-overlap"
-    },
-    "^valid-document": {
-      "category": "gates",
-      "id": "valid-document"
-    },
-    "^valid-delta": {
-      "category": "gates",
-      "id": "valid-delta"
     }
   }
 }

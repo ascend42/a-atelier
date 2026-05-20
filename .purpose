@@ -1,79 +1,129 @@
 version: 1.0.0
-description: "AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D/SVG, exported to video/Lottie"
+description: AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D/SVG, exported to video/Lottie
 context:
-  - "Monorepo: 11 packages (types, math, schema, core, canvas, svg, lottie, react, studio, mcp, cli) + 2 apps (playground, showcase)"
-  - "Build order: types + math (parallel) → schema → core → canvas → svg + lottie + react + studio + mcp + cli (parallel)"
-  - "Primary AI interface: @atelier/mcp exposes 52 tools across 16 tool groups for structured animation authoring"
-  - "27 animatable properties, 5 easing types, state machines (hierarchical + transitions), templates, presets, assets, variables, interactions, refs"
-  - "Blend modes (16 Canvas 2D composite operations), motion path animation, clip paths, gradient animation, audio sync"
-  - "Export paths: browser (WebCodecs MP4/WebM/GIF via studio), CLI (FFmpeg MP4/GIF), SVG string, Lottie JSON, React component"
+  - 'Monorepo: 11 packages (types, math, schema, core, canvas, svg, lottie, react, studio, mcp, cli) + 2 apps (playground, showcase)'
+  - 'Build order: types + math (parallel) → schema → core → canvas → svg + lottie + react + studio + mcp + cli (parallel)'
+  - 'Primary AI interface: @atelier/mcp exposes 52 tools across 16 tool groups for structured animation authoring'
+  - 27 animatable properties, 5 easing types, state machines (hierarchical + transitions), templates, presets, assets, variables, interactions, refs
+  - Blend modes (16 Canvas 2D composite operations), motion path animation, clip paths, gradient animation, audio sync
+  - 'Export paths: browser (WebCodecs MP4/WebM/GIF via studio), CLI (FFmpeg MP4/GIF), SVG string, Lottie JSON, React component'
 features:
   animation-engine:
-    description: "Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing; hierarchical states with parent inheritance; smooth state transition interpolation"
+    description: Core animation pipeline — define layers, states, and deltas as YAML; resolve any frame via interpolation and easing; hierarchical states with parent inheritance; smooth state transition interpolation
     components:
-      - "#atelier-types"
-      - "#atelier-math"
-      - "#atelier-schema"
-      - "#atelier-core"
+      - '#atelier-types'
+      - '#atelier-math'
+      - '#atelier-schema'
+      - '#atelier-core'
   rendering:
-    description: "Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim, blend modes, motion paths, clip paths"
+    description: Canvas 2D renderer — shapes, text, images, groups, gradients, shadows, stroke trim, blend modes, motion paths, clip paths
     components:
-      - "#atelier-canvas"
+      - '#atelier-canvas'
   svg-renderer:
-    description: "SVG renderer — render any frame as an SVG string for thumbnails, SSR, and static export"
+    description: SVG renderer — render any frame as an SVG string for thumbnails, SSR, and static export
     components:
-      - "#atelier-svg"
+      - '#atelier-svg'
   lottie-export:
-    description: "Lottie JSON exporter — lossy but best-effort conversion of .atelier documents to Lottie format"
+    description: Lottie JSON exporter — lossy but best-effort conversion of .atelier documents to Lottie format
     components:
-      - "#atelier-lottie"
+      - '#atelier-lottie'
   react-integration:
-    description: "React integration — Animation component, useAnimation hook, useAnimationState hook for embedding Atelier in React apps"
+    description: React integration — Animation component, useAnimation hook, useAnimationState hook for embedding Atelier in React apps
     components:
-      - "#atelier-react"
+      - '#atelier-react'
   ai-authoring:
-    description: "MCP server with 52 tools across 16 groups for AI agents to create, edit, preview, export, and analyze animations"
+    description: MCP server with 52 tools across 16 groups for AI agents to create, edit, preview, export, and analyze animations
     components:
-      - "#atelier-mcp"
+      - '#atelier-mcp'
   studio:
-    description: "Browser editor widget — canvas preview, YAML viewer, GUI editor, undo/redo, drag-to-reorder, MP4/WebM/GIF export"
+    description: Browser editor widget — canvas preview, YAML viewer, GUI editor, undo/redo, drag-to-reorder, MP4/WebM/GIF export
     components:
-      - "#atelier-studio"
+      - '#atelier-studio'
   cli:
-    description: "Command-line tool — validate, info, still, render, export-svg, export-lottie, assets, variables (9 commands)"
+    description: Command-line tool — validate, info, still, render, export-svg, export-lottie, assets, variables (9 commands)
     components:
-      - "#atelier-cli"
+      - '#atelier-cli'
 components:
   atelier-types:
-    description: "60+ TypeScript type definitions across 16 modules — layers, deltas, easing, states, shadows, audio, assets, variables, interactions, presets"
+    description: 60+ TypeScript type definitions across 16 modules — layers, deltas, easing, states, shadows, audio, assets, variables, interactions, presets
     file: packages/types/src/index.ts
   atelier-math:
-    description: "Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation"
+    description: Pure interpolation engine — easing functions, spring physics, color lerp, path interpolation
     file: packages/math/src/index.ts
   atelier-schema:
-    description: "Zod validation schemas + YAML parse/serialize with AI-readable errors"
+    description: Zod validation schemas + YAML parse/serialize with AI-readable errors
     file: packages/schema/src/index.ts
   atelier-core:
-    description: "Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing, unit resolver"
+    description: Animation engine — resolveFrame, DocumentBuilder, StateMachine (hierarchical + transitions), blendResolvedFrames, templates, presets, expression evaluator, audio timing, unit resolver
     file: packages/core/src/index.ts
   atelier-canvas:
-    description: "Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim"
+    description: Canvas 2D renderer — renderFrame, shapes, text, images, gradients, shadows, stroke trim
     file: packages/canvas/src/index.ts
   atelier-svg:
-    description: "SVG renderer — renderFrameSVG, shape/gradient/filter/clip/text mapping to SVG elements"
+    description: SVG renderer — renderFrameSVG, shape/gradient/filter/clip/text mapping to SVG elements
     file: packages/svg/src/index.ts
   atelier-lottie:
-    description: "Lottie JSON exporter — exportToLottie, layer/shape/keyframe/easing/color mapping with unsupported feature warnings"
+    description: Lottie JSON exporter — exportToLottie, layer/shape/keyframe/easing/color mapping with unsupported feature warnings
     file: packages/lottie/src/index.ts
   atelier-react:
-    description: "React integration — Animation component, useAnimation/useAnimationState hooks, AnimationPlayer class"
+    description: React integration — Animation component, useAnimation/useAnimationState hooks, AnimationPlayer class
     file: packages/react/src/index.ts
   atelier-studio:
-    description: "Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points"
+    description: Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points
     file: packages/studio/src/index.ts
   atelier-mcp:
-    description: "MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)"
+    description: MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)
     file: packages/mcp/src/index.ts
   atelier-cli:
-    description: "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables"
+    description: 'CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables'
     file: packages/cli/src/index.ts
+aspects:
+  layer-tag-isolation:
+    description: Every content pipeline owns a layer tag-namespace (silence-trim, caption, caption-word, overlay) and on re-run drops ONLY its own tagged layers before re-adding them — never touching user-authored (untagged) layers or other pipelines' outputs. The load-bearing invariant that lets AI regenerate content repeatedly without erasing human work or sibling pipeline output.
+    tags:
+      - convention
+      - pipeline
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/video-project.ts:319
+      - packages/cli/src/lib/caption-builder.ts:93
+      - packages/cli/src/lib/recipe.ts:334
+      - packages/mcp/src/tools/recipes.ts:143
+    enforcement: filter-by-tag before rewrite
+  detected-vs-user-edited:
+    description: AI-detected content (silence-cut boundaries, transcript words) is immutable, but user overrides — padding, userEdited/userAdded/hidden flags, corrected text — are preserved across re-runs by matching fresh detections to existing entries on timing tolerance plus unchanged detected text. Fix a misheard word or nudge a cut, re-run the pipeline, and the human edit survives.
+    tags:
+      - convention
+      - pipeline
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/cut-model.ts:127-139
+      - packages/cli/src/lib/transcript-model.ts:100-115
+    enforcement: merge-on-match (timing tolerance + unchanged detected text)
+  copy-on-write-doc:
+    description: Any code that mutates an AtelierDocument constructs a NEW document object (spread the doc, replace the layers/assets arrays) before calling DocumentStore.set — it never mutates the stored object in place. Guarantees a concurrent reader (notably the live WebSocket bridge broadcasting to the studio) can never observe a half-mutated document mid-update.
+    tags:
+      - convention
+      - immutability
+      - concurrency
+    anchors:
+      - packages/cli/src/lib/video-project.ts:349
+      - packages/cli/src/lib/caption-builder.ts:118-121
+      - packages/cli/src/lib/recipe.ts:359-362
+      - packages/mcp/src/tools/import-images.ts:179
+      - packages/mcp/src/tools/recipes.ts:169
+    enforcement: build-new-doc-before-set
+  source-tagged-mutation:
+    description: DocumentStore mutations carry a source tag (human | llm | system). The studio WebSocket bridge re-broadcasts a change to the browser ONLY when source is llm; human-sourced changes (the browser is already current) and system-sourced changes (file-read hydration) stay silent. Prevents echo loops and false "agent edited" attribution on the live human↔LLM editing loop.
+    anchors:
+      - packages/mcp/src/store.ts:17
+      - packages/mcp/src/store.ts:62-65
+      - packages/mcp/src/store.ts:114-127
+      - packages/cli/src/commands/studio.ts:122-124
+      - packages/cli/src/commands/studio.ts:538-556
+      - packages/studio/src/studio.ts:239-294
+    tags:
+      - convention
+      - live-bridge
+      - attribution
+    enforcement: source-filtered broadcast
