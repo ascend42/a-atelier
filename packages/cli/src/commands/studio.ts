@@ -318,6 +318,69 @@ async function saveFileContent(path: string, content: string): Promise<void> {
   }
 }
 
+// Build a minimal-but-non-empty starter document for a brand-new file.
+// One centered text layer so the canvas isn't a confusing void; 1080x1080
+// to match the social-square default the welcome template uses.
+function newStarterDoc(title: string) {
+  return {
+    version: "1.0",
+    name: title,
+    canvas: { width: 1080, height: 1080, fps: 30, background: "#0F1115" },
+    layers: [
+      {
+        id: "title",
+        visual: {
+          type: "text",
+          content: title,
+          style: {
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontSize: 72,
+            fontWeight: 600,
+            color: "#F5F0EB",
+            textAlign: "center",
+          },
+        },
+        frame: { x: 540, y: 540 },
+        bounds: { width: 900, height: 120 },
+        anchorPoint: { x: 0.5, y: 0.5 },
+      },
+    ],
+    states: { default: { duration: 60, deltas: [] } },
+  };
+}
+
+// Create a new .atelier file in the project root, then select it.
+// The server's POST /api/file writes arbitrary safe paths, so a "new file"
+// is just a write of a fresh starter doc followed by a file-list refresh.
+async function createNewFile() {
+  const raw = window.prompt("New file name", "untitled.atelier");
+  if (raw === null) return; // user cancelled
+  let name = raw.trim();
+  if (!name) return;
+  if (!name.endsWith(".atelier")) name += ".atelier";
+  if (files.some((f) => f.path === name || f.name === name)) {
+    window.alert('A file named "' + name + '" already exists.');
+    return;
+  }
+  const baseName = name.replace(/\\.atelier$/, "");
+  const content = serializeAtelier(newStarterDoc(baseName));
+  // Sanity-check the serialized doc round-trips before writing it to disk.
+  const parsed = parseAtelier(content);
+  if (!parsed.success) {
+    window.alert("Could not create file (internal schema error).");
+    return;
+  }
+  try {
+    await saveFileContent(name, content);
+  } catch (e) {
+    window.alert("Failed to create file: " + (e instanceof Error ? e.message : String(e)));
+    return;
+  }
+  files = await fetchFiles();
+  renderFileList();
+  await loadFile(name);
+}
+
 async function saveExportBlob(path: string, blob: Blob): Promise<void> {
   const buf = await blob.arrayBuffer();
   await fetch("/api/export?path=" + encodeURIComponent(path), {
@@ -586,7 +649,16 @@ sidebar.className = "sidebar";
 
 const sidebarHeader = document.createElement("div");
 sidebarHeader.className = "sidebar__header";
-sidebarHeader.innerHTML = '<span>&#9670;</span> ATELIER STUDIO';
+sidebarHeader.style.cssText = "display:flex;align-items:center;justify-content:space-between";
+const sidebarTitle = document.createElement("span");
+sidebarTitle.innerHTML = '<span>&#9670;</span> ATELIER STUDIO';
+sidebarHeader.appendChild(sidebarTitle);
+const newFileBtn = document.createElement("button");
+newFileBtn.textContent = "+ New";
+newFileBtn.title = "Create a new .atelier file";
+newFileBtn.style.cssText = "background:#3D3D3D;color:#F5F0EB;border:1px solid #4A4A4A;border-radius:4px;padding:3px 10px;font-size:11px;font-family:inherit;cursor:pointer";
+newFileBtn.addEventListener("click", () => { createNewFile(); });
+sidebarHeader.appendChild(newFileBtn);
 sidebar.appendChild(sidebarHeader);
 
 const sidebarList = document.createElement("div");
@@ -894,7 +966,12 @@ async function boot(): Promise<void> {
     empty.style.textAlign = "center";
     empty.style.padding = "40px";
     empty.innerHTML = '<div style="font-size:16px;color:#F5F0EB">No .atelier files yet</div>' +
-      '<div style="font-size:13px;color:#A89F95;font-family:monospace">Drop a .atelier file here, or run: <code>atelier studio --new</code></div>';
+      '<div style="font-size:13px;color:#A89F95">Create a new document, or drop a .atelier file anywhere on this window.</div>';
+    const newBtn = document.createElement("button");
+    newBtn.textContent = "+ New document";
+    newBtn.style.cssText = "background:#C75B39;color:#F5F0EB;border:none;border-radius:4px;padding:8px 18px;font-size:13px;font-family:inherit;cursor:pointer;margin-top:6px";
+    newBtn.addEventListener("click", () => { createNewFile(); });
+    empty.appendChild(newBtn);
     editorContainer.appendChild(empty);
     statusBar.textContent = "No files";
     renderFileList();
