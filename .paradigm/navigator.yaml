@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-20T22:45:04.141Z'
+generated: '2026-05-21T05:30:01.299Z'
 structure: {}
 key_files:
   config:
@@ -89,23 +89,16 @@ symbols:
   '#purpose-component-easing-picker': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-range-slider': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-drag-reorder': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
-  '#purpose-component-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
-  '#purpose-component-use-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
-  '#purpose-component-use-animation-state': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
-  '#purpose-component-animation-player': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
-  '#purpose-component-#svg-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-text': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-gradients': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-filters': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-clip': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-component-#svg-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-component-#document-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-#layer-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-#delta-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-#validation-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-#recipe-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-#yaml-parser': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
+  '#purpose-component-use-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
+  '#purpose-component-use-animation-state': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
+  '#purpose-component-animation-player': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
   '#purpose-component-#easing-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   '#purpose-component-#spring-solver': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   '#purpose-component-#lerp-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
@@ -130,6 +123,14 @@ symbols:
   '#purpose-component-mcp-overlay-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-component-mcp-recipe-tools': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-component-mcp-import-images': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-#lottie-exporter': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-types': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-map-layers': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-map-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-map-keyframes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-map-colors': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-map-easing': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#lottie-warnings': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-component-#frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   '#purpose-component-#delta-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   '#purpose-component-#easing-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
@@ -174,14 +175,13 @@ symbols:
   '#purpose-component-video-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-apply-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-canvas-styles': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
-  '#purpose-component-#lottie-exporter': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-types': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-map-layers': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-map-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-map-keyframes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-map-colors': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-map-easing': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
-  '#purpose-component-#lottie-warnings': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  '#purpose-component-#svg-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-text': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-gradients': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-filters': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-clip': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-component-#svg-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   ^purpose-gate-^valid-document: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-video-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
@@ -192,26 +192,50 @@ symbols:
   ~purpose-aspect-detected-vs-user-edited: /Users/ascend/Documents/GitHub/a-atelier/.purpose
   ~purpose-aspect-copy-on-write-doc: /Users/ascend/Documents/GitHub/a-atelier/.purpose
   ~purpose-aspect-source-tagged-mutation: /Users/ascend/Documents/GitHub/a-atelier/.purpose
-  '#purpose-ref-component-svg-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-ref-component-svg-text': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-ref-component-svg-gradients': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-ref-component-svg-filters': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-ref-component-svg-clip': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  '#purpose-ref-component-svg-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  ~purpose-aspect-frame-resolution-determinism: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-video-source-time-clamp: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-hold-last-completed-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-discrete-value-snap-thresholds: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-instantaneous-range-progress: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-easing-dispatch-fallthrough: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-boundary-touching-not-overlap: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-overlap-scoped-by-layer-property: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-builder-deep-clone-on-build: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-builder-validation-on-add: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-percentage-relative-to-reference: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-preset-offset-vs-full-duration: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-hierarchical-delta-merge: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-circular-parent-detection: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-seek-and-tick-clamping: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-transition-fade-on-presence-mismatch: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-no-eval-recursive-descent: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-divide-by-zero-returns-zero: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-power-right-associative: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-exact-match-preserves-type: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-template-validation-and-strip: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-audio-loop-wraps-available-time: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-audio-frame-time-conversion: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ~purpose-aspect-audio-before-start-silent: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   ^purpose-ref-gate-valid-video-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-ref-gate-valid-recipe: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '!purpose-ref-signal-doc-change': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  ^purpose-ref-gate-valid-document: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  ^purpose-ref-gate-valid-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-ref-component-render-image': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  ^purpose-ref-gate-localhost-only: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  '#purpose-ref-component-frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-ref-component-lottie-map-layers': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-warnings': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-map-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-map-keyframes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-map-colors': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-map-easing': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
+  ^purpose-ref-gate-valid-document: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-ref-gate-valid-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-ref-component-render-image': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-ref-gate-localhost-only: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-ref-component-frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-ref-component-svg-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-ref-component-svg-text': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-ref-component-svg-gradients': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-ref-component-svg-filters': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-ref-component-svg-clip': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
+  '#purpose-ref-component-svg-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   ^gate-no-overlap: /Users/ascend/Documents/GitHub/a-atelier
   ^gate-valid-document: /Users/ascend/Documents/GitHub/a-atelier
   ^gate-valid-delta: /Users/ascend/Documents/GitHub/a-atelier

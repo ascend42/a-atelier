@@ -81,3 +81,239 @@ flows:
         action: interpolate value
       - component: '#frame-resolver'
         action: merge into ResolvedFrame
+aspects:
+  frame-resolution-determinism:
+    description: resolveFrame is a pure function — same document + stateName + frame produces identical ResolvedFrame with no clock, RNG, or external IO. Re-rendering any frame is reproducible, which is what makes seek, export, and SSR consistent.
+    tags:
+      - determinism
+      - pure-function
+    anchors:
+      - packages/core/src/resolver/frame-resolver.ts:30-77
+    enforcement: pure function — no side effects
+    appliesTo: ["#frame-resolver"]
+  video-source-time-clamp:
+    description: videoSourceTime is clamped to sourceEnd when set, and relativeFrame uses Math.max(0, frame - startFrame) so frames before startFrame freeze at sourceOffset rather than seeking negative. Only computed for video visual layers.
+    tags:
+      - edge-case
+      - video
+      - clamp
+    anchors:
+      - packages/core/src/resolver/frame-resolver.ts:61-71
+    enforcement: Math.max + Math.min clamp
+    appliesTo: ["#frame-resolver"]
+  hold-last-completed-delta:
+    description: When no delta is active at a frame, resolvePropertyAtFrame holds the `to` value of the most recently completed delta (latest range end before the frame) instead of reverting. This is THE invariant that lets sequenced deltas chain naturally without snapping back between segments.
+    tags:
+      - core-invariant
+      - ordering
+      - edge-case
+    anchors:
+      - packages/core/src/resolver/delta-resolver.ts:106-128
+    enforcement: scan for latest-ended completed delta
+    appliesTo: ["#delta-resolver"]
+  discrete-value-snap-thresholds:
+    description: interpolateValue has three distinct snap rules — non-color strings snap to `to` at t >= 1, booleans flip at t >= 0.5 (midpoint for frame-precise control), and unknown/mismatched types snap at t >= 1. Only numbers and hex colors are truly interpolated. Easy to misimplement by treating all discrete types identically.
+    tags:
+      - edge-case
+      - magic-number
+      - interpolation
+    anchors:
+      - packages/core/src/resolver/delta-resolver.ts:73
+      - packages/core/src/resolver/delta-resolver.ts:78
+      - packages/core/src/resolver/delta-resolver.ts:82
+    enforcement: threshold compare per type
+    appliesTo: ["#delta-resolver"]
+  instantaneous-range-progress:
+    description: computeProgress returns 1 (not NaN) when a delta range has start == end, treating zero-length ranges as instantaneous. Otherwise progress is clamped to 0..1, so frames inside the range never produce out-of-bound interpolation.
+    tags:
+      - edge-case
+      - clamp
+    anchors:
+      - packages/core/src/resolver/delta-resolver.ts:16-20
+    enforcement: guard clause + clamp
+    appliesTo: ["#delta-resolver"]
+  easing-dispatch-fallthrough:
+    description: resolveEasing dispatches over string presets (linear, ease-in, ease-out, ease-in-out) and object types (linear, cubic-bezier, spring, step), defaulting to linear for undefined input and any unrecognized preset or type. No throw — unknown easing silently degrades to linear.
+    tags:
+      - dispatch
+      - edge-case
+    anchors:
+      - packages/core/src/resolver/easing-resolver.ts:8-40
+    enforcement: switch with linear default
+    appliesTo: ["#easing-resolver"]
+  boundary-touching-not-overlap:
+    description: rangesOverlap uses strict `<` on both sides, so boundary-touching ranges like [0,50] and [50,90] are NOT overlaps — they share exactly one frame and are allowed. This is the load-bearing edge-case behind ^no-overlap that lets back-to-back deltas abut cleanly.
+    tags:
+      - edge-case
+      - core-invariant
+    anchors:
+      - packages/core/src/validation/overlap-validator.ts:16-18
+    enforcement: strict-less-than range compare
+    appliesTo: ["#overlap-validator"]
+  overlap-scoped-by-layer-property:
+    description: Overlap detection only triggers for deltas sharing the SAME layer AND property — different properties on the same layer (e.g. x and opacity) may freely cover the same frame range. validateAllDeltas is O(n^2) pairwise.
+    tags:
+      - validation
+      - scoping
+    anchors:
+      - packages/core/src/validation/overlap-validator.ts:28-33
+      - packages/core/src/validation/overlap-validator.ts:54-63
+    enforcement: layer+property equality guard
+    appliesTo: ["#overlap-validator"]
+  builder-deep-clone-on-build:
+    description: build() returns a JSON deep-clone (JSON.parse(JSON.stringify(...))) of the internal doc, so mutating the builder after build never affects the returned document and vice versa. Note this also strips any non-JSON-serializable values.
+    tags:
+      - immutability
+      - gotcha
+    anchors:
+      - packages/core/src/builder/document-builder.ts:99-101
+    enforcement: JSON round-trip clone
+    appliesTo: ["#document-builder"]
+  builder-validation-on-add:
+    description: addLayer rejects duplicate IDs, addDelta requires the target layer to already exist and runs validateNoOverlap before pushing — so invalid documents fail at construction time (throw) rather than at resolve time.
+    tags:
+      - validation
+      - fail-fast
+    anchors:
+      - packages/core/src/builder/document-builder.ts:58-96
+    enforcement: throw on invalid add
+    appliesTo: ["#document-builder"]
+  percentage-relative-to-reference:
+    description: resolveUnit treats percentage strings as a fraction of the supplied reference dimension (parsePercentage / 100 * reference); raw pixel numbers pass through unchanged. The caller must pass the correct reference (width vs height) per axis.
+    tags:
+      - units
+      - convention
+    anchors:
+      - packages/core/src/units/resolve-units.ts:22-27
+    enforcement: percent detection + scale
+    appliesTo: ["#unit-resolver"]
+  preset-offset-vs-full-duration:
+    description: expandPreset maps each preset delta to startFrame + its offset range when an offset is present, otherwise spans the full [startFrame, startFrame + duration]. Generated delta IDs are deterministic (`preset-<layerId>-<index>`), so re-expanding the same preset yields stable IDs.
+    tags:
+      - presets
+      - determinism
+    anchors:
+      - packages/core/src/presets/preset-resolver.ts:17-34
+    enforcement: per-delta offset mapping
+    appliesTo: ["#preset-resolver"]
+  hierarchical-delta-merge:
+    description: collectDeltas walks the ancestor chain root → child; for a given layer+property key the CHILD replaces the parent (override), while different keys ACCUMULATE across all ancestors. Get this backwards and child states silently inherit instead of overriding.
+    tags:
+      - core-invariant
+      - ordering
+      - inheritance
+    anchors:
+      - packages/core/src/state/state-machine.ts:115-141
+    enforcement: keyed override map root→child
+    appliesTo: ["#state-machine"]
+  circular-parent-detection:
+    description: resolveAncestorChain tracks visited states in a Set and throws on a repeated state, so a circular parent reference fails loudly instead of looping forever.
+    tags:
+      - edge-case
+      - failure-mode
+    anchors:
+      - packages/core/src/state/state-machine.ts:89-108
+    enforcement: visited-set guard + throw
+    appliesTo: ["#state-machine"]
+  seek-and-tick-clamping:
+    description: seek clamps to [0, duration-1] and tick stops advancing currentFrame at duration-1, so playback and scrubbing can never run off the end of a state. isComplete is currentFrame >= duration-1.
+    tags:
+      - clamp
+      - playback
+      - edge-case
+    anchors:
+      - packages/core/src/state/state-machine.ts:66-68
+      - packages/core/src/state/state-machine.ts:163-165
+      - packages/core/src/state/state-machine.ts:254-256
+    enforcement: clamp to duration-1
+    appliesTo: ["#state-machine"]
+  transition-fade-on-presence-mismatch:
+    description: blendResolvedFrames fades a layer out (opacity * (1-t)) when it exists only in the from-frame and fades in (opacity * t) when only in the to-frame; layers in both blend property-by-property. Discrete props snap at t >= 0.5 via interpolateValue.
+    tags:
+      - transition
+      - edge-case
+    anchors:
+      - packages/core/src/state/state-machine.ts:318-339
+      - packages/core/src/state/state-machine.ts:369-378
+    enforcement: presence-based fade
+    appliesTo: ["#state-machine"]
+  no-eval-recursive-descent:
+    description: The expression evaluator is a hand-written tokenizer + recursive-descent parser with NO eval(), Function(), or code generation — the security guarantee that lets untrusted document expressions run safely. Only whitelisted FUNCTIONS and CONSTANTS are callable.
+    tags:
+      - security
+      - core-invariant
+    anchors:
+      - packages/core/src/expressions/expression-evaluator.ts:1-14
+      - packages/core/src/expressions/expression-evaluator.ts:135-150
+      - packages/core/src/expressions/expression-evaluator.ts:331-335
+    enforcement: whitelist parser — no eval
+    appliesTo: ["#expression-evaluator"]
+  divide-by-zero-returns-zero:
+    description: Division by zero in an expression silently returns 0 (not Infinity or NaN). Modulo and other ops are unguarded — only `/` is special-cased. A future maintainer debugging a surprising 0 should look here.
+    tags:
+      - edge-case
+      - gotcha
+      - magic-number
+    anchors:
+      - packages/core/src/expressions/expression-evaluator.ts:232
+    enforcement: guarded divide
+    appliesTo: ["#expression-evaluator"]
+  power-right-associative:
+    description: The ** operator is right-associative (2 ** 3 ** 2 == 2 ** 9), implemented by recursing into parsePower for the exponent. Precedence climbs ternary → comparison → additive → multiplicative → power → unary → primary.
+    tags:
+      - ordering
+      - precedence
+    anchors:
+      - packages/core/src/expressions/expression-evaluator.ts:238-247
+    enforcement: right-recursive parse
+    appliesTo: ["#expression-evaluator"]
+  exact-match-preserves-type:
+    description: substituteString returns the RAW typed binding value when the whole string is a single placeholder, but coerces to string for partial/multi-placeholder substitution. So a number variable stays a number only on whole-string match — embed it in text and it becomes a string.
+    tags:
+      - edge-case
+      - gotcha
+      - templates
+    anchors:
+      - packages/core/src/templates/template-resolver.ts:99-111
+    enforcement: exact-match raw, else String()
+    appliesTo: ["#template-resolver"]
+  template-validation-and-strip:
+    description: instantiateTemplate fails (no partial result) if any required variable lacks a binding/default OR any unknown binding is supplied, and on success deletes doc.variables so the output is no longer a template. All-or-nothing instantiation.
+    tags:
+      - validation
+      - fail-fast
+      - templates
+    anchors:
+      - packages/core/src/templates/template-resolver.ts:30-62
+    enforcement: pre-validate then strip variables
+    appliesTo: ["#template-resolver"]
+  audio-loop-wraps-available-time:
+    description: In loop mode currentTime wraps elapsedTime modulo the available state time (stateDuration - startFrame converted to seconds), NOT modulo the audio file's intrinsic duration. The loop length is the remaining state window — a gotcha if the audio asset is shorter or longer than that window.
+    tags:
+      - gotcha
+      - audio
+      - edge-case
+    anchors:
+      - packages/core/src/audio/audio-timing.ts:70-84
+    enforcement: modulo available-time
+    appliesTo: ["#audio-timing"]
+  audio-frame-time-conversion:
+    description: frameToTime is frame / fps and timeToFrame floors (Math.floor) the result, so time→frame conversion is lossy and never rounds up. Audio cue frames are derived from these conversions.
+    tags:
+      - conversion
+      - edge-case
+    anchors:
+      - packages/core/src/audio/audio-timing.ts:16-25
+    enforcement: floor on time→frame
+    appliesTo: ["#audio-timing"]
+  audio-before-start-silent:
+    description: Before startFrame computeAudioState returns shouldPlay false with currentTime 0 (volume still reported), and shouldPlay is gated on frame < stateDuration so audio is silent outside its active window. Looping with non-positive segment duration also returns silent.
+    tags:
+      - edge-case
+      - audio
+    anchors:
+      - packages/core/src/audio/audio-timing.ts:47-49
+      - packages/core/src/audio/audio-timing.ts:60-67
+      - packages/core/src/audio/audio-timing.ts:73-75
+    enforcement: guard clauses on window
+    appliesTo: ["#audio-timing"]

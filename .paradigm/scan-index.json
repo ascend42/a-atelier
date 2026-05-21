@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-20T22:45:04.139Z",
+    "generatedAt": "2026-05-21T05:30:01.297Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 13,
@@ -574,127 +574,6 @@
       "visualTags": [],
       "related": []
     },
-    "animation": {
-      "id": "animation",
-      "name": "Animation",
-      "symbol": "#animation",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "React component that mounts an AnimationPlayer and manages its lifecycle",
-      "visualTags": [],
-      "related": [],
-      "componentType": "component"
-    },
-    "use-animation": {
-      "id": "use-animation",
-      "name": "Use Animation",
-      "symbol": "#use-animation",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Hook that drives animation playback state — play, pause, seek, loop controls",
-      "visualTags": [],
-      "related": [],
-      "componentType": "hook"
-    },
-    "use-animation-state": {
-      "id": "use-animation-state",
-      "name": "Use Animation State",
-      "symbol": "#use-animation-state",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Hook that exposes frame-level resolved state for reactive rendering",
-      "visualTags": [],
-      "related": [],
-      "componentType": "hook"
-    },
-    "animation-player": {
-      "id": "animation-player",
-      "name": "Animation Player",
-      "symbol": "#animation-player",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Low-level player class for advanced usage — direct frame control outside the React component model",
-      "visualTags": [],
-      "related": [],
-      "componentType": "service"
-    },
-    "#svg-renderer": {
-      "id": "#svg-renderer",
-      "name": "#svg Renderer",
-      "symbol": "##svg-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
-      "visualTags": [],
-      "related": [
-        "#svg-shapes",
-        "#svg-text",
-        "#svg-gradients",
-        "#svg-filters",
-        "#svg-clip",
-        "#svg-properties"
-      ]
-    },
-    "#svg-shapes": {
-      "id": "#svg-shapes",
-      "name": "#svg Shapes",
-      "symbol": "##svg-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-text": {
-      "id": "#svg-text",
-      "name": "#svg Text",
-      "symbol": "##svg-text",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-gradients": {
-      "id": "#svg-gradients",
-      "name": "#svg Gradients",
-      "symbol": "##svg-gradients",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-filters": {
-      "id": "#svg-filters",
-      "name": "#svg Filters",
-      "symbol": "##svg-filters",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-clip": {
-      "id": "#svg-clip",
-      "name": "#svg Clip",
-      "symbol": "##svg-clip",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-properties": {
-      "id": "#svg-properties",
-      "name": "#svg Properties",
-      "symbol": "##svg-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
-      "visualTags": [],
-      "related": []
-    },
     "#document-schema": {
       "id": "#document-schema",
       "name": "#document Schema",
@@ -759,6 +638,50 @@
       "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
       "visualTags": [],
       "related": []
+    },
+    "animation": {
+      "id": "animation",
+      "name": "Animation",
+      "symbol": "#animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "React component that mounts an AnimationPlayer and manages its lifecycle",
+      "visualTags": [],
+      "related": [],
+      "componentType": "component"
+    },
+    "use-animation": {
+      "id": "use-animation",
+      "name": "Use Animation",
+      "symbol": "#use-animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that drives animation playback state — play, pause, seek, loop controls",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "use-animation-state": {
+      "id": "use-animation-state",
+      "name": "Use Animation State",
+      "symbol": "#use-animation-state",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that exposes frame-level resolved state for reactive rendering",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "animation-player": {
+      "id": "animation-player",
+      "name": "Animation Player",
+      "symbol": "#animation-player",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Low-level player class for advanced usage — direct frame control outside the React component model",
+      "visualTags": [],
+      "related": [],
+      "componentType": "service"
     },
     "#easing-functions": {
       "id": "#easing-functions",
@@ -1004,6 +927,94 @@
       "visualTags": [
         "image"
       ],
+      "related": []
+    },
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
+      "visualTags": [],
       "related": []
     },
     "#frame-resolver": {
@@ -1468,93 +1479,176 @@
       "visualTags": [],
       "related": []
     },
-    "#lottie-exporter": {
-      "id": "#lottie-exporter",
-      "name": "#lottie Exporter",
-      "symbol": "##lottie-exporter",
+    "#svg-renderer": {
+      "id": "#svg-renderer",
+      "name": "#svg Renderer",
+      "symbol": "##svg-renderer",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
       "visualTags": [],
       "related": [
-        "#lottie-map-layers",
-        "#lottie-warnings"
+        "#svg-shapes",
+        "#svg-text",
+        "#svg-gradients",
+        "#svg-filters",
+        "#svg-clip",
+        "#svg-properties"
       ]
     },
-    "#lottie-types": {
-      "id": "#lottie-types",
-      "name": "#lottie Types",
-      "symbol": "##lottie-types",
+    "#svg-shapes": {
+      "id": "#svg-shapes",
+      "name": "#svg Shapes",
+      "symbol": "##svg-shapes",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
       "visualTags": [],
       "related": []
     },
-    "#lottie-map-layers": {
-      "id": "#lottie-map-layers",
-      "name": "#lottie Map Layers",
-      "symbol": "##lottie-map-layers",
+    "#svg-text": {
+      "id": "#svg-text",
+      "name": "#svg Text",
+      "symbol": "##svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-gradients": {
+      "id": "#svg-gradients",
+      "name": "#svg Gradients",
+      "symbol": "##svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-filters": {
+      "id": "#svg-filters",
+      "name": "#svg Filters",
+      "symbol": "##svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-clip": {
+      "id": "#svg-clip",
+      "name": "#svg Clip",
+      "symbol": "##svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-properties": {
+      "id": "#svg-properties",
+      "name": "#svg Properties",
+      "symbol": "##svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-map-layers": {
+      "id": "lottie-map-layers",
+      "name": "Lottie Map Layers",
+      "symbol": "#lottie-map-layers",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-warnings": {
+      "id": "lottie-warnings",
+      "name": "Lottie Warnings",
+      "symbol": "#lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-map-shapes": {
+      "id": "lottie-map-shapes",
+      "name": "Lottie Map Shapes",
+      "symbol": "#lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
       "visualTags": [],
       "related": [
-        "#lottie-map-shapes",
-        "#lottie-map-keyframes",
-        "#lottie-map-colors",
-        "#lottie-map-easing"
+        "#lottie-map-layers"
       ]
     },
-    "#lottie-map-shapes": {
-      "id": "#lottie-map-shapes",
-      "name": "#lottie Map Shapes",
-      "symbol": "##lottie-map-shapes",
+    "lottie-map-keyframes": {
+      "id": "lottie-map-keyframes",
+      "name": "Lottie Map Keyframes",
+      "symbol": "#lottie-map-keyframes",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "description": "Referenced from ##lottie-map-layers",
       "visualTags": [],
-      "related": []
+      "related": [
+        "#lottie-map-layers"
+      ]
     },
-    "#lottie-map-keyframes": {
-      "id": "#lottie-map-keyframes",
-      "name": "#lottie Map Keyframes",
-      "symbol": "##lottie-map-keyframes",
+    "lottie-map-colors": {
+      "id": "lottie-map-colors",
+      "name": "Lottie Map Colors",
+      "symbol": "#lottie-map-colors",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "description": "Referenced from ##lottie-map-layers",
       "visualTags": [],
-      "related": []
+      "related": [
+        "#lottie-map-layers"
+      ]
     },
-    "#lottie-map-colors": {
-      "id": "#lottie-map-colors",
-      "name": "#lottie Map Colors",
-      "symbol": "##lottie-map-colors",
+    "lottie-map-easing": {
+      "id": "lottie-map-easing",
+      "name": "Lottie Map Easing",
+      "symbol": "#lottie-map-easing",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "description": "Referenced from ##lottie-map-layers",
       "visualTags": [],
-      "related": []
+      "related": [
+        "#lottie-map-layers"
+      ]
     },
-    "#lottie-map-easing": {
-      "id": "#lottie-map-easing",
-      "name": "#lottie Map Easing",
-      "symbol": "##lottie-map-easing",
+    "render-image": {
+      "id": "render-image",
+      "name": "Render Image",
+      "symbol": "#render-image",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
-      "visualTags": [],
-      "related": []
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Referenced from #cli-export-image",
+      "visualTags": [
+        "image"
+      ],
+      "related": [
+        "#cli-export-image"
+      ]
     },
-    "#lottie-warnings": {
-      "id": "#lottie-warnings",
-      "name": "#lottie Warnings",
-      "symbol": "##lottie-warnings",
+    "frame-resolver": {
+      "id": "frame-resolver",
+      "name": "Frame Resolver",
+      "symbol": "#frame-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Referenced from #render-frame",
       "visualTags": [],
-      "related": []
+      "related": [
+        "#render-frame"
+      ]
     },
     "svg-shapes": {
       "id": "svg-shapes",
@@ -1626,100 +1720,6 @@
       "visualTags": [],
       "related": [
         "#svg-renderer"
-      ]
-    },
-    "render-image": {
-      "id": "render-image",
-      "name": "Render Image",
-      "symbol": "#render-image",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Referenced from #cli-export-image",
-      "visualTags": [
-        "image"
-      ],
-      "related": [
-        "#cli-export-image"
-      ]
-    },
-    "frame-resolver": {
-      "id": "frame-resolver",
-      "name": "Frame Resolver",
-      "symbol": "#frame-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Referenced from #render-frame",
-      "visualTags": [],
-      "related": [
-        "#render-frame"
-      ]
-    },
-    "lottie-map-layers": {
-      "id": "lottie-map-layers",
-      "name": "Lottie Map Layers",
-      "symbol": "#lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-exporter",
-      "visualTags": [],
-      "related": []
-    },
-    "lottie-warnings": {
-      "id": "lottie-warnings",
-      "name": "Lottie Warnings",
-      "symbol": "#lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-exporter",
-      "visualTags": [],
-      "related": []
-    },
-    "lottie-map-shapes": {
-      "id": "lottie-map-shapes",
-      "name": "Lottie Map Shapes",
-      "symbol": "#lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-keyframes": {
-      "id": "lottie-map-keyframes",
-      "name": "Lottie Map Keyframes",
-      "symbol": "#lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-colors": {
-      "id": "lottie-map-colors",
-      "name": "Lottie Map Colors",
-      "symbol": "#lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-easing": {
-      "id": "lottie-map-easing",
-      "name": "Lottie Map Easing",
-      "symbol": "#lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
       ]
     }
   },
@@ -1915,6 +1915,224 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
       "description": "DocumentStore mutations carry a source tag (human | llm | system). The studio WebSocket bridge re-broadcasts a change to the browser ONLY when source is llm; human-sourced changes (the browser is already current) and system-sourced changes (file-read hydration) stay silent. Prevents echo loops and false \"agent edited\" attribution on the live human↔LLM editing loop.",
+      "related": []
+    },
+    "frame-resolution-determinism": {
+      "id": "frame-resolution-determinism",
+      "name": "Frame Resolution Determinism",
+      "symbol": "~frame-resolution-determinism",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "resolveFrame is a pure function — same document + stateName + frame produces identical ResolvedFrame with no clock, RNG, or external IO. Re-rendering any frame is reproducible, which is what makes seek, export, and SSR consistent.",
+      "related": []
+    },
+    "video-source-time-clamp": {
+      "id": "video-source-time-clamp",
+      "name": "Video Source Time Clamp",
+      "symbol": "~video-source-time-clamp",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "videoSourceTime is clamped to sourceEnd when set, and relativeFrame uses Math.max(0, frame - startFrame) so frames before startFrame freeze at sourceOffset rather than seeking negative. Only computed for video visual layers.",
+      "related": []
+    },
+    "hold-last-completed-delta": {
+      "id": "hold-last-completed-delta",
+      "name": "Hold Last Completed Delta",
+      "symbol": "~hold-last-completed-delta",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "When no delta is active at a frame, resolvePropertyAtFrame holds the `to` value of the most recently completed delta (latest range end before the frame) instead of reverting. This is THE invariant that lets sequenced deltas chain naturally without snapping back between segments.",
+      "related": []
+    },
+    "discrete-value-snap-thresholds": {
+      "id": "discrete-value-snap-thresholds",
+      "name": "Discrete Value Snap Thresholds",
+      "symbol": "~discrete-value-snap-thresholds",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "interpolateValue has three distinct snap rules — non-color strings snap to `to` at t >= 1, booleans flip at t >= 0.5 (midpoint for frame-precise control), and unknown/mismatched types snap at t >= 1. Only numbers and hex colors are truly interpolated. Easy to misimplement by treating all discrete types identically.",
+      "related": []
+    },
+    "instantaneous-range-progress": {
+      "id": "instantaneous-range-progress",
+      "name": "Instantaneous Range Progress",
+      "symbol": "~instantaneous-range-progress",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "computeProgress returns 1 (not NaN) when a delta range has start == end, treating zero-length ranges as instantaneous. Otherwise progress is clamped to 0..1, so frames inside the range never produce out-of-bound interpolation.",
+      "related": []
+    },
+    "easing-dispatch-fallthrough": {
+      "id": "easing-dispatch-fallthrough",
+      "name": "Easing Dispatch Fallthrough",
+      "symbol": "~easing-dispatch-fallthrough",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "resolveEasing dispatches over string presets (linear, ease-in, ease-out, ease-in-out) and object types (linear, cubic-bezier, spring, step), defaulting to linear for undefined input and any unrecognized preset or type. No throw — unknown easing silently degrades to linear.",
+      "related": []
+    },
+    "boundary-touching-not-overlap": {
+      "id": "boundary-touching-not-overlap",
+      "name": "Boundary Touching Not Overlap",
+      "symbol": "~boundary-touching-not-overlap",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "rangesOverlap uses strict `<` on both sides, so boundary-touching ranges like [0,50] and [50,90] are NOT overlaps — they share exactly one frame and are allowed. This is the load-bearing edge-case behind ^no-overlap that lets back-to-back deltas abut cleanly.",
+      "related": [
+        "^no-overlap"
+      ]
+    },
+    "overlap-scoped-by-layer-property": {
+      "id": "overlap-scoped-by-layer-property",
+      "name": "Overlap Scoped By Layer Property",
+      "symbol": "~overlap-scoped-by-layer-property",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Overlap detection only triggers for deltas sharing the SAME layer AND property — different properties on the same layer (e.g. x and opacity) may freely cover the same frame range. validateAllDeltas is O(n^2) pairwise.",
+      "related": []
+    },
+    "builder-deep-clone-on-build": {
+      "id": "builder-deep-clone-on-build",
+      "name": "Builder Deep Clone On Build",
+      "symbol": "~builder-deep-clone-on-build",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "build() returns a JSON deep-clone (JSON.parse(JSON.stringify(...))) of the internal doc, so mutating the builder after build never affects the returned document and vice versa. Note this also strips any non-JSON-serializable values.",
+      "related": []
+    },
+    "builder-validation-on-add": {
+      "id": "builder-validation-on-add",
+      "name": "Builder Validation On Add",
+      "symbol": "~builder-validation-on-add",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "addLayer rejects duplicate IDs, addDelta requires the target layer to already exist and runs validateNoOverlap before pushing — so invalid documents fail at construction time (throw) rather than at resolve time.",
+      "related": []
+    },
+    "percentage-relative-to-reference": {
+      "id": "percentage-relative-to-reference",
+      "name": "Percentage Relative To Reference",
+      "symbol": "~percentage-relative-to-reference",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "resolveUnit treats percentage strings as a fraction of the supplied reference dimension (parsePercentage / 100 * reference); raw pixel numbers pass through unchanged. The caller must pass the correct reference (width vs height) per axis.",
+      "related": []
+    },
+    "preset-offset-vs-full-duration": {
+      "id": "preset-offset-vs-full-duration",
+      "name": "Preset Offset Vs Full Duration",
+      "symbol": "~preset-offset-vs-full-duration",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "expandPreset maps each preset delta to startFrame + its offset range when an offset is present, otherwise spans the full [startFrame, startFrame + duration]. Generated delta IDs are deterministic (`preset-<layerId>-<index>`), so re-expanding the same preset yields stable IDs.",
+      "related": []
+    },
+    "hierarchical-delta-merge": {
+      "id": "hierarchical-delta-merge",
+      "name": "Hierarchical Delta Merge",
+      "symbol": "~hierarchical-delta-merge",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "collectDeltas walks the ancestor chain root → child; for a given layer+property key the CHILD replaces the parent (override), while different keys ACCUMULATE across all ancestors. Get this backwards and child states silently inherit instead of overriding.",
+      "related": []
+    },
+    "circular-parent-detection": {
+      "id": "circular-parent-detection",
+      "name": "Circular Parent Detection",
+      "symbol": "~circular-parent-detection",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "resolveAncestorChain tracks visited states in a Set and throws on a repeated state, so a circular parent reference fails loudly instead of looping forever.",
+      "related": []
+    },
+    "seek-and-tick-clamping": {
+      "id": "seek-and-tick-clamping",
+      "name": "Seek And Tick Clamping",
+      "symbol": "~seek-and-tick-clamping",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "seek clamps to [0, duration-1] and tick stops advancing currentFrame at duration-1, so playback and scrubbing can never run off the end of a state. isComplete is currentFrame >= duration-1.",
+      "related": []
+    },
+    "transition-fade-on-presence-mismatch": {
+      "id": "transition-fade-on-presence-mismatch",
+      "name": "Transition Fade On Presence Mismatch",
+      "symbol": "~transition-fade-on-presence-mismatch",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "blendResolvedFrames fades a layer out (opacity * (1-t)) when it exists only in the from-frame and fades in (opacity * t) when only in the to-frame; layers in both blend property-by-property. Discrete props snap at t >= 0.5 via interpolateValue.",
+      "related": []
+    },
+    "no-eval-recursive-descent": {
+      "id": "no-eval-recursive-descent",
+      "name": "No Eval Recursive Descent",
+      "symbol": "~no-eval-recursive-descent",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "The expression evaluator is a hand-written tokenizer + recursive-descent parser with NO eval(), Function(), or code generation — the security guarantee that lets untrusted document expressions run safely. Only whitelisted FUNCTIONS and CONSTANTS are callable.",
+      "related": []
+    },
+    "divide-by-zero-returns-zero": {
+      "id": "divide-by-zero-returns-zero",
+      "name": "Divide By Zero Returns Zero",
+      "symbol": "~divide-by-zero-returns-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Division by zero in an expression silently returns 0 (not Infinity or NaN). Modulo and other ops are unguarded — only `/` is special-cased. A future maintainer debugging a surprising 0 should look here.",
+      "related": []
+    },
+    "power-right-associative": {
+      "id": "power-right-associative",
+      "name": "Power Right Associative",
+      "symbol": "~power-right-associative",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "The ** operator is right-associative (2 ** 3 ** 2 == 2 ** 9), implemented by recursing into parsePower for the exponent. Precedence climbs ternary → comparison → additive → multiplicative → power → unary → primary.",
+      "related": []
+    },
+    "exact-match-preserves-type": {
+      "id": "exact-match-preserves-type",
+      "name": "Exact Match Preserves Type",
+      "symbol": "~exact-match-preserves-type",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "substituteString returns the RAW typed binding value when the whole string is a single placeholder, but coerces to string for partial/multi-placeholder substitution. So a number variable stays a number only on whole-string match — embed it in text and it becomes a string.",
+      "related": []
+    },
+    "template-validation-and-strip": {
+      "id": "template-validation-and-strip",
+      "name": "Template Validation And Strip",
+      "symbol": "~template-validation-and-strip",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "instantiateTemplate fails (no partial result) if any required variable lacks a binding/default OR any unknown binding is supplied, and on success deletes doc.variables so the output is no longer a template. All-or-nothing instantiation.",
+      "related": []
+    },
+    "audio-loop-wraps-available-time": {
+      "id": "audio-loop-wraps-available-time",
+      "name": "Audio Loop Wraps Available Time",
+      "symbol": "~audio-loop-wraps-available-time",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "In loop mode currentTime wraps elapsedTime modulo the available state time (stateDuration - startFrame converted to seconds), NOT modulo the audio file's intrinsic duration. The loop length is the remaining state window — a gotcha if the audio asset is shorter or longer than that window.",
+      "related": []
+    },
+    "audio-frame-time-conversion": {
+      "id": "audio-frame-time-conversion",
+      "name": "Audio Frame Time Conversion",
+      "symbol": "~audio-frame-time-conversion",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "frameToTime is frame / fps and timeToFrame floors (Math.floor) the result, so time→frame conversion is lossy and never rounds up. Audio cue frames are derived from these conversions.",
+      "related": []
+    },
+    "audio-before-start-silent": {
+      "id": "audio-before-start-silent",
+      "name": "Audio Before Start Silent",
+      "symbol": "~audio-before-start-silent",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Before startFrame computeAudioState returns shouldPlay false with currentTime 0 (volume still reported), and shouldPlay is gated on frame < stateDuration so audio is silent outside its active window. Looping with non-positive segment duration also returns silent.",
       "related": []
     }
   },
@@ -2124,50 +2342,6 @@
       "category": "components",
       "id": "drag-reorder"
     },
-    "#animation": {
-      "category": "components",
-      "id": "animation"
-    },
-    "#use-animation": {
-      "category": "components",
-      "id": "use-animation"
-    },
-    "#use-animation-state": {
-      "category": "components",
-      "id": "use-animation-state"
-    },
-    "#animation-player": {
-      "category": "components",
-      "id": "animation-player"
-    },
-    "##svg-renderer": {
-      "category": "components",
-      "id": "#svg-renderer"
-    },
-    "##svg-shapes": {
-      "category": "components",
-      "id": "#svg-shapes"
-    },
-    "##svg-text": {
-      "category": "components",
-      "id": "#svg-text"
-    },
-    "##svg-gradients": {
-      "category": "components",
-      "id": "#svg-gradients"
-    },
-    "##svg-filters": {
-      "category": "components",
-      "id": "#svg-filters"
-    },
-    "##svg-clip": {
-      "category": "components",
-      "id": "#svg-clip"
-    },
-    "##svg-properties": {
-      "category": "components",
-      "id": "#svg-properties"
-    },
     "##document-schema": {
       "category": "components",
       "id": "#document-schema"
@@ -2191,6 +2365,22 @@
     "##yaml-parser": {
       "category": "components",
       "id": "#yaml-parser"
+    },
+    "#animation": {
+      "category": "components",
+      "id": "animation"
+    },
+    "#use-animation": {
+      "category": "components",
+      "id": "use-animation"
+    },
+    "#use-animation-state": {
+      "category": "components",
+      "id": "use-animation-state"
+    },
+    "#animation-player": {
+      "category": "components",
+      "id": "animation-player"
     },
     "##easing-functions": {
       "category": "components",
@@ -2287,6 +2477,38 @@
     "#mcp-import-images": {
       "category": "components",
       "id": "mcp-import-images"
+    },
+    "##lottie-exporter": {
+      "category": "components",
+      "id": "#lottie-exporter"
+    },
+    "##lottie-types": {
+      "category": "components",
+      "id": "#lottie-types"
+    },
+    "##lottie-map-layers": {
+      "category": "components",
+      "id": "#lottie-map-layers"
+    },
+    "##lottie-map-shapes": {
+      "category": "components",
+      "id": "#lottie-map-shapes"
+    },
+    "##lottie-map-keyframes": {
+      "category": "components",
+      "id": "#lottie-map-keyframes"
+    },
+    "##lottie-map-colors": {
+      "category": "components",
+      "id": "#lottie-map-colors"
+    },
+    "##lottie-map-easing": {
+      "category": "components",
+      "id": "#lottie-map-easing"
+    },
+    "##lottie-warnings": {
+      "category": "components",
+      "id": "#lottie-warnings"
     },
     "##frame-resolver": {
       "category": "components",
@@ -2464,37 +2686,33 @@
       "category": "components",
       "id": "canvas-styles"
     },
-    "##lottie-exporter": {
+    "##svg-renderer": {
       "category": "components",
-      "id": "#lottie-exporter"
+      "id": "#svg-renderer"
     },
-    "##lottie-types": {
+    "##svg-shapes": {
       "category": "components",
-      "id": "#lottie-types"
+      "id": "#svg-shapes"
     },
-    "##lottie-map-layers": {
+    "##svg-text": {
       "category": "components",
-      "id": "#lottie-map-layers"
+      "id": "#svg-text"
     },
-    "##lottie-map-shapes": {
+    "##svg-gradients": {
       "category": "components",
-      "id": "#lottie-map-shapes"
+      "id": "#svg-gradients"
     },
-    "##lottie-map-keyframes": {
+    "##svg-filters": {
       "category": "components",
-      "id": "#lottie-map-keyframes"
+      "id": "#svg-filters"
     },
-    "##lottie-map-colors": {
+    "##svg-clip": {
       "category": "components",
-      "id": "#lottie-map-colors"
+      "id": "#svg-clip"
     },
-    "##lottie-map-easing": {
+    "##svg-properties": {
       "category": "components",
-      "id": "#lottie-map-easing"
-    },
-    "##lottie-warnings": {
-      "category": "components",
-      "id": "#lottie-warnings"
+      "id": "#svg-properties"
     },
     "^^valid-document": {
       "category": "gates",
@@ -2536,29 +2754,101 @@
       "category": "aspects",
       "id": "source-tagged-mutation"
     },
-    "#svg-shapes": {
-      "category": "components",
-      "id": "svg-shapes"
+    "~frame-resolution-determinism": {
+      "category": "aspects",
+      "id": "frame-resolution-determinism"
     },
-    "#svg-text": {
-      "category": "components",
-      "id": "svg-text"
+    "~video-source-time-clamp": {
+      "category": "aspects",
+      "id": "video-source-time-clamp"
     },
-    "#svg-gradients": {
-      "category": "components",
-      "id": "svg-gradients"
+    "~hold-last-completed-delta": {
+      "category": "aspects",
+      "id": "hold-last-completed-delta"
     },
-    "#svg-filters": {
-      "category": "components",
-      "id": "svg-filters"
+    "~discrete-value-snap-thresholds": {
+      "category": "aspects",
+      "id": "discrete-value-snap-thresholds"
     },
-    "#svg-clip": {
-      "category": "components",
-      "id": "svg-clip"
+    "~instantaneous-range-progress": {
+      "category": "aspects",
+      "id": "instantaneous-range-progress"
     },
-    "#svg-properties": {
-      "category": "components",
-      "id": "svg-properties"
+    "~easing-dispatch-fallthrough": {
+      "category": "aspects",
+      "id": "easing-dispatch-fallthrough"
+    },
+    "~boundary-touching-not-overlap": {
+      "category": "aspects",
+      "id": "boundary-touching-not-overlap"
+    },
+    "~overlap-scoped-by-layer-property": {
+      "category": "aspects",
+      "id": "overlap-scoped-by-layer-property"
+    },
+    "~builder-deep-clone-on-build": {
+      "category": "aspects",
+      "id": "builder-deep-clone-on-build"
+    },
+    "~builder-validation-on-add": {
+      "category": "aspects",
+      "id": "builder-validation-on-add"
+    },
+    "~percentage-relative-to-reference": {
+      "category": "aspects",
+      "id": "percentage-relative-to-reference"
+    },
+    "~preset-offset-vs-full-duration": {
+      "category": "aspects",
+      "id": "preset-offset-vs-full-duration"
+    },
+    "~hierarchical-delta-merge": {
+      "category": "aspects",
+      "id": "hierarchical-delta-merge"
+    },
+    "~circular-parent-detection": {
+      "category": "aspects",
+      "id": "circular-parent-detection"
+    },
+    "~seek-and-tick-clamping": {
+      "category": "aspects",
+      "id": "seek-and-tick-clamping"
+    },
+    "~transition-fade-on-presence-mismatch": {
+      "category": "aspects",
+      "id": "transition-fade-on-presence-mismatch"
+    },
+    "~no-eval-recursive-descent": {
+      "category": "aspects",
+      "id": "no-eval-recursive-descent"
+    },
+    "~divide-by-zero-returns-zero": {
+      "category": "aspects",
+      "id": "divide-by-zero-returns-zero"
+    },
+    "~power-right-associative": {
+      "category": "aspects",
+      "id": "power-right-associative"
+    },
+    "~exact-match-preserves-type": {
+      "category": "aspects",
+      "id": "exact-match-preserves-type"
+    },
+    "~template-validation-and-strip": {
+      "category": "aspects",
+      "id": "template-validation-and-strip"
+    },
+    "~audio-loop-wraps-available-time": {
+      "category": "aspects",
+      "id": "audio-loop-wraps-available-time"
+    },
+    "~audio-frame-time-conversion": {
+      "category": "aspects",
+      "id": "audio-frame-time-conversion"
+    },
+    "~audio-before-start-silent": {
+      "category": "aspects",
+      "id": "audio-before-start-silent"
     },
     "^valid-video-layer": {
       "category": "gates",
@@ -2571,26 +2861,6 @@
     "!doc-change": {
       "category": "signals",
       "id": "doc-change"
-    },
-    "^valid-document": {
-      "category": "gates",
-      "id": "valid-document"
-    },
-    "^valid-delta": {
-      "category": "gates",
-      "id": "valid-delta"
-    },
-    "#render-image": {
-      "category": "components",
-      "id": "render-image"
-    },
-    "^localhost-only": {
-      "category": "gates",
-      "id": "localhost-only"
-    },
-    "#frame-resolver": {
-      "category": "components",
-      "id": "frame-resolver"
     },
     "#lottie-map-layers": {
       "category": "components",
@@ -2615,6 +2885,50 @@
     "#lottie-map-easing": {
       "category": "components",
       "id": "lottie-map-easing"
+    },
+    "^valid-document": {
+      "category": "gates",
+      "id": "valid-document"
+    },
+    "^valid-delta": {
+      "category": "gates",
+      "id": "valid-delta"
+    },
+    "#render-image": {
+      "category": "components",
+      "id": "render-image"
+    },
+    "^localhost-only": {
+      "category": "gates",
+      "id": "localhost-only"
+    },
+    "#frame-resolver": {
+      "category": "components",
+      "id": "frame-resolver"
+    },
+    "#svg-shapes": {
+      "category": "components",
+      "id": "svg-shapes"
+    },
+    "#svg-text": {
+      "category": "components",
+      "id": "svg-text"
+    },
+    "#svg-gradients": {
+      "category": "components",
+      "id": "svg-gradients"
+    },
+    "#svg-filters": {
+      "category": "components",
+      "id": "svg-filters"
+    },
+    "#svg-clip": {
+      "category": "components",
+      "id": "svg-clip"
+    },
+    "#svg-properties": {
+      "category": "components",
+      "id": "svg-properties"
     },
     "^no-overlap": {
       "category": "gates",
