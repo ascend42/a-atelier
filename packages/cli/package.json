@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -20,14 +20,19 @@
   "files": [
     "dist",
     "templates/**",
-    "src/web/**"
+    "src/web/**",
+    "university/**"
   ],
+  "paradigm": {
+    "universityPack": "university/"
+  },
   "scripts": {
     "build": "tsup",
+    "bundle-university": "node scripts/bundle-university.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p src/web/tsconfig.json",
     "test": "vitest run",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "pnpm run build"
+    "clean": "rm -rf dist university",
+    "prepublishOnly": "pnpm run build && pnpm run bundle-university"
   },
   "dependencies": {
     "@a-company/atelier-mcp": "workspace:*",

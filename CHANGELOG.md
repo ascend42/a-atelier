@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [0.37.0] — 2026-05-22
+
+### Added
+- **Atelier University ships in the npm package.** `@a-company/atelier` now bundles the project's University pack (9 tracks / 53 entries — ATEL-001 through 801) into its tarball, so every published atelier version carries that version's learning content for all users. A `scripts/bundle-university.mjs` step (run by `prepublishOnly`) copies the source-of-truth pack from `.paradigm/university/` into `packages/cli/university/` at publish time; `package.json` declares `paradigm.universityPack: "university/"` so Paradigm's pack loader discovers it from an installed copy. The bundled dir is gitignored — regenerated on each release so it never drifts from source.
+
 ## [0.36.1] — 2026-05-20
 
 ### Fixed

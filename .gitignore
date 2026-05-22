@@ -26,3 +26,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Generated at publish by bundle-university (source of truth: .paradigm/university/)
+packages/cli/university/
