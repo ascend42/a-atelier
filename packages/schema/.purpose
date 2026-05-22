@@ -43,3 +43,166 @@ gates:
     description: VideoVisual passes semantic checks — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty
   ^valid-recipe:
     description: StudioRecipe passes Zod validation including overlay_rules (anchor enum, page-number format template syntax)
+
+aspects:
+  document-shape-asymmetry:
+    description: 'AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.'
+    tags:
+      - schema
+      - convention
+      - composition
+    anchors:
+      - packages/schema/src/document.ts:9-11
+      - packages/schema/src/document.ts:24-25
+    enforcement: array vs record + int().positive() bounds
+    appliesTo: ["#document-schema"]
+  visual-discriminated-union:
+    description: 'VisualSchema is a discriminatedUnion on the literal "type" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal("type") member and a union entry.'
+    tags:
+      - schema
+      - discriminated-union
+      - core-invariant
+    anchors:
+      - packages/schema/src/layer.ts:82-89
+    enforcement: z.discriminatedUnion on "type" literal
+    appliesTo: ["#layer-schema"]
+  video-bound-asymmetry:
+    description: 'VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.'
+    tags:
+      - schema
+      - video
+      - edge-case
+    anchors:
+      - packages/schema/src/layer.ts:62-68
+    enforcement: per-field min/positive/max bounds
+    appliesTo: ["#layer-schema"]
+  layer-clamps-and-min-points:
+    description: 'Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.'
+    tags:
+      - schema
+      - clamp
+      - validation
+    anchors:
+      - packages/schema/src/layer.ts:15
+      - packages/schema/src/layer.ts:100
+      - packages/schema/src/layer.ts:108-111
+    enforcement: min/max clamp + min(1) non-empty
+    appliesTo: ["#layer-schema"]
+  animatable-property-canonical-enum:
+    description: 'AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.'
+    tags:
+      - schema
+      - core-invariant
+      - canonical-source
+    anchors:
+      - packages/schema/src/delta.ts:4-40
+    enforcement: z.enum allowlist of property paths
+    appliesTo: ["#delta-schema"]
+  frame-range-ordering-refinement:
+    description: 'FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.'
+    tags:
+      - schema
+      - edge-case
+      - refinement
+    anchors:
+      - packages/schema/src/delta.ts:42-47
+    enforcement: tuple int min(0) + refine end >= start
+    appliesTo: ["#delta-schema"]
+  delta-values-unvalidated-at-parse:
+    description: 'DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver''s interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.'
+    tags:
+      - schema
+      - gotcha
+      - boundary
+    anchors:
+      - packages/schema/src/delta.ts:55-56
+    enforcement: z.unknown() — type checked downstream
+    appliesTo: ["#delta-schema"]
+  flat-ai-readable-error-shape:
+    description: 'formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with "." and falls back to "(root)" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.'
+    tags:
+      - validation
+      - api-contract
+      - ai-readable
+    anchors:
+      - packages/schema/src/validate.ts:19-24
+    enforcement: issue.path.join + "(root)" fallback
+    appliesTo: ["#validation-functions"]
+  video-semantic-checks-beyond-zod:
+    description: 'validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.'
+    tags:
+      - validation
+      - video
+      - semantic
+    anchors:
+      - packages/schema/src/validate.ts:67-88
+    enforcement: cross-field compare with value-rich messages
+    appliesTo: ["#validation-functions"]
+  recipe-warnings-side-channel:
+    description: 'validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.'
+    tags:
+      - validation
+      - recipe
+      - forward-compat
+    anchors:
+      - packages/schema/src/validate.ts:107-117
+    enforcement: success + conditional warnings array
+    appliesTo: ["#validation-functions"]
+  recipe-strict-no-unknown-keys:
+    description: 'Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo''d or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.'
+    tags:
+      - schema
+      - recipe
+      - strict
+      - core-invariant
+    anchors:
+      - packages/schema/src/recipe.ts:10
+      - packages/schema/src/recipe.ts:108-122
+      - packages/schema/src/recipe.ts:152
+    enforcement: .strict() on every recipe object
+    appliesTo: ["#recipe-schema"]
+  page-number-format-template-syntax:
+    description: 'validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of "{" == count of "}"), requires every "{...}" group to match (current|total) with an optional ":0Nd" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.'
+    tags:
+      - validation
+      - recipe
+      - template
+      - edge-case
+    anchors:
+      - packages/schema/src/recipe.ts:54-100
+    enforcement: superRefine — brace balance + group regex
+    appliesTo: ["#recipe-schema"]
+  recipe-phase-split-strict-vs-opaque:
+    description: 'StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.'
+    tags:
+      - schema
+      - recipe
+      - phasing
+      - convention
+    anchors:
+      - packages/schema/src/recipe.ts:139-151
+      - packages/schema/src/recipe.ts:155-161
+    enforcement: typed blocks vs z.unknown() reserved tuple
+    appliesTo: ["#recipe-schema"]
+  yaml-parse-never-throws:
+    description: 'parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path "(yaml)" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.'
+    tags:
+      - parsing
+      - api-contract
+      - error-handling
+    anchors:
+      - packages/schema/src/parse.ts:11-20
+    enforcement: try/catch to ValidationResult, never throw
+    appliesTo: ["#yaml-parser"]
+  yaml-safe-by-default-data-only:
+    description: 'parseAtelier uses the yaml package''s parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.'
+    tags:
+      - parsing
+      - security
+      - core-invariant
+    anchors:
+      - packages/schema/src/parse.ts:1
+      - packages/schema/src/parse.ts:13
+      - packages/schema/src/parse.ts:20
+    enforcement: plain-data parse then schema-validate
+    appliesTo: ["#yaml-parser"]

@@ -24,3 +24,160 @@ components:
     description: Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path
     file: src/color.ts
     tags: [math, color, interpolation]
+aspects:
+  bezier-binary-search-not-newton:
+    description: 'cubicBezier solves for the parametric t via BINARY SEARCH (not Newton-Raphson) — a fixed 20-iteration loop that bisects [0,1] until sampleBezier x is within epsilon 1e-6 of the input t, then samples the y axis. Iteration count and epsilon are hard-coded magic numbers, so accuracy never adapts to the curve.'
+    tags:
+      - magic-number
+      - numeric
+      - algorithm
+    anchors:
+      - packages/math/src/easing.ts:35
+      - packages/math/src/easing.ts:38
+    enforcement: fixed 20-iter bisection + 1e-6 epsilon
+    appliesTo: ["#easing-functions"]
+  easing-endpoint-snap:
+    description: 'Every easing closure short-circuits the endpoints — cubicBezier and step both return exactly 0 for t <= 0 and exactly 1 for t >= 1 before any interpolation, so out-of-range input is clamped to the unit interval rather than extrapolated.'
+    tags:
+      - edge-case
+      - clamp
+    anchors:
+      - packages/math/src/easing.ts:27-28
+      - packages/math/src/easing.ts:69-70
+    enforcement: t<=0 / t>=1 guard returns 0 / 1
+    appliesTo: ["#easing-functions"]
+  css-preset-control-points:
+    description: 'The easeIn/easeOut/easeInOut presets are fixed CSS-standard cubic-bezier control points (0.42,0,1,1 / 0,0,0.58,1 / 0.42,0,0.58,1). These exact magic numbers are what make the presets match browser CSS keyword timing.'
+    tags:
+      - magic-number
+      - convention
+    anchors:
+      - packages/math/src/easing.ts:55-57
+    enforcement: hard-coded control-point quadruples
+    appliesTo: ["#easing-functions"]
+  step-position-asymmetry:
+    description: 'step easing is asymmetric at t <= 0 — position "start" returns 1/steps (the first riser has already fired) while "end" returns 0; mid-range "start" floors to (s+1)/steps capped at 1 and "end" floors to s/steps. Confusing start vs end shifts the whole staircase by one step.'
+    tags:
+      - edge-case
+      - magic-number
+    anchors:
+      - packages/math/src/easing.ts:69
+      - packages/math/src/easing.ts:72-76
+    enforcement: position branch on floor(t*steps)
+    appliesTo: ["#easing-functions"]
+  spring-default-config:
+    description: 'spring() defaults are mass=1, stiffness=100, damping=10, velocity=0 when the corresponding config field is omitted. These defaults define the out-of-the-box underdamped feel (with stiffness=100/damping=10 the damping ratio zeta is 0.5).'
+    tags:
+      - magic-number
+      - convention
+    anchors:
+      - packages/math/src/spring.ts:16-21
+    enforcement: destructuring defaults
+    appliesTo: ["#spring-solver"]
+  spring-closed-form-three-regimes:
+    description: 'The spring value is an ANALYTIC closed-form of the damped harmonic oscillator — there is no integration loop or rest-threshold check. It branches on the damping ratio zeta: underdamped (zeta < 1) uses damped sin/cos, critically damped (zeta === 1) uses the (1 + ...)*t form, overdamped (zeta > 1) uses two real exponentials. Misclassifying the regime produces NaN from the sqrt of a negative.'
+    tags:
+      - core-invariant
+      - numeric
+      - physics
+    anchors:
+      - packages/math/src/spring.ts:37-56
+    enforcement: zeta-vs-1 branch over closed forms
+    appliesTo: ["#spring-solver"]
+  spring-settle-time-heuristic:
+    description: 'duration is a HEURISTIC settle-time estimate used only to normalize t into seconds, not a runtime rest threshold — overdamped/critical use 10/(zeta*w0) and underdamped uses ln(1000)/(zeta*w0) (the time to decay within ~0.1% of target). Changing these formulas rescales the entire spring timeline.'
+    tags:
+      - magic-number
+      - numeric
+      - heuristic
+    anchors:
+      - packages/math/src/spring.ts:65-71
+    enforcement: zeta-branched settle-time formula
+    appliesTo: ["#spring-solver"]
+  spring-endpoint-snap:
+    description: 'spring forces exact 0 at t <= 0 and exact 1 at t >= 1 before evaluating the oscillator, so even though the underlying physics overshoots, the start and end frames always land precisely on target.'
+    tags:
+      - edge-case
+      - clamp
+    anchors:
+      - packages/math/src/spring.ts:31-32
+    enforcement: t<=0 / t>=1 guard returns 0 / 1
+    appliesTo: ["#spring-solver"]
+  lerp-is-unclamped:
+    description: 'lerp(a,b,t) = a + (b-a)*t is intentionally UNCLAMPED — t outside [0,1] extrapolates beyond the endpoints. Callers needing bounded output must wrap with clamp(); contrast clamp() which uses Math.min(Math.max(...)).'
+    tags:
+      - edge-case
+      - gotcha
+    anchors:
+      - packages/math/src/lerp.ts:5
+      - packages/math/src/lerp.ts:12
+    enforcement: no internal clamp on lerp
+    appliesTo: ["#lerp-functions"]
+  lerp-array-no-length-guard:
+    description: 'lerpArray maps over a only and reads b[i] with no length check — if b is shorter than a the missing indices read undefined and produce NaN, and extra elements of b are silently ignored. Equal length is an unenforced caller contract.'
+    tags:
+      - edge-case
+      - gotcha
+    anchors:
+      - packages/math/src/lerp.ts:20
+    enforcement: caller-contract, no runtime guard
+    appliesTo: ["#lerp-functions"]
+  remap-divide-by-zero:
+    description: 'remap divides by (inMax - inMin) with no guard, so a degenerate input range where inMin === inMax yields NaN or Infinity for t and therefore for the result. Zero-width input ranges are undefined behavior.'
+    tags:
+      - edge-case
+      - numeric
+    anchors:
+      - packages/math/src/lerp.ts:33
+    enforcement: unguarded divide by range width
+    appliesTo: ["#lerp-functions"]
+  hex-alpha-defaults-ff:
+    description: 'hexToRgba normalizes shorthand and missing alpha to opaque — 3-char #RGB and 6-char #RRGGBB get "ff" appended, 4-char #RGBA doubles each nibble, before parsing each channel as base-16. Alpha is divided by 255 to land in 0-1 while r/g/b stay 0-255.'
+    tags:
+      - edge-case
+      - convention
+    anchors:
+      - packages/math/src/color.ts:24-28
+      - packages/math/src/color.ts:34
+    enforcement: length-based expand + ff default
+    appliesTo: ["#color-math"]
+  rgba-to-hex-clamp-and-omit-ff:
+    description: 'rgbaToHex rounds and clamps each channel to 0-255, pads each to 2 hex digits, and OMITS the alpha pair entirely when it rounds to "ff" — so fully opaque colors serialize to the short #RRGGBB form rather than #RRGGBBff.'
+    tags:
+      - convention
+      - edge-case
+    anchors:
+      - packages/math/src/color.ts:42-53
+      - packages/math/src/color.ts:54
+    enforcement: round+clamp+padStart, drop ff alpha
+    appliesTo: ["#color-math"]
+  rgba-interpolation-is-unrounded:
+    description: 'lerpRgba interpolates in RGB space and leaves channels as raw floats (no rounding), unlike hslaToRgba which Math.round-s r/g/b to integers. Chained RGBA interpolations therefore stay precise; rounding only happens at hex serialization.'
+    tags:
+      - edge-case
+      - numeric
+    anchors:
+      - packages/math/src/color.ts:60-67
+      - packages/math/src/color.ts:116-119
+    enforcement: float channels, round deferred
+    appliesTo: ["#color-math"]
+  hsla-shortest-hue-path:
+    description: 'lerpHsla interpolates hue along the SHORTEST arc — the raw hue delta is wrapped into -180..180 (subtract/add 360) before lerping, then the result is euclidean-mod normalized via (((x % 360) + 360) % 360) to stay 0-360. Without this, a 350→10 transition would sweep the long way round.'
+    tags:
+      - core-invariant
+      - magic-number
+      - numeric
+    anchors:
+      - packages/math/src/color.ts:137-142
+    enforcement: +-180 delta wrap + euclidean mod 360
+    appliesTo: ["#color-math"]
+  hsl-zero-saturation-guard:
+    description: 'rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.'
+    tags:
+      - edge-case
+      - numeric
+    anchors:
+      - packages/math/src/color.ts:85-86
+      - packages/math/src/color.ts:105
+    enforcement: delta!==0 / s===0 guard clauses
+    appliesTo: ["#color-math"]

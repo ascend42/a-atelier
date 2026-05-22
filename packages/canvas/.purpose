@@ -36,3 +36,192 @@ components:
   canvas-styles:
     description: colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support
     file: src/styles.ts
+aspects:
+  painters-algorithm-order:
+    description: 'Layers render in effList order — first element is drawn first and ends up at the back, last on top. The list is built by iterating resolvedFrame.layers in order, so resolution order IS z-order. There is no separate sort or z-index.'
+    tags:
+      - core-invariant
+      - ordering
+    anchors:
+      - packages/canvas/src/render-frame.ts:56-66
+    enforcement: iterate effList in resolution order
+    appliesTo: ["#render-frame"]
+  save-restore-per-layer:
+    description: 'Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.'
+    tags:
+      - core-invariant
+      - transform
+    anchors:
+      - packages/canvas/src/render-frame.ts:91-92
+      - packages/canvas/src/render-frame.ts:213
+    enforcement: balanced save/restore per layer
+    appliesTo: ["#render-frame"]
+  transform-stack-anchor-order:
+    description: 'Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.'
+    tags:
+      - core-invariant
+      - transform
+      - ordering
+    anchors:
+      - packages/canvas/src/render-frame.ts:104-122
+    enforcement: anchor translate around rotate/scale
+    appliesTo: ["#render-frame"]
+  ancestor-transforms-root-first:
+    description: 'applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.'
+    tags:
+      - core-invariant
+      - transform
+      - edge-case
+    anchors:
+      - packages/canvas/src/render-frame.ts:285-319
+    enforcement: reverse-apply chain + visited-set guard
+    appliesTo: ["#render-frame"]
+  tint-offscreen-multiply-mask:
+    description: 'Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.'
+    tags:
+      - compositing
+      - technique
+      - gotcha
+    anchors:
+      - packages/canvas/src/render-frame.ts:137-211
+    enforcement: offscreen multiply + destination-in mask
+    appliesTo: ["#render-frame"]
+  early-skip-invisible-layers:
+    description: 'A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.'
+    tags:
+      - edge-case
+      - performance
+    anchors:
+      - packages/canvas/src/render-frame.ts:69-73
+      - packages/canvas/src/render-frame.ts:158-165
+    enforcement: guard clauses before save
+    appliesTo: ["#render-frame"]
+  render-context-no-dom-dependency:
+    description: 'Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.'
+    tags:
+      - architecture
+      - core-invariant
+      - portability
+    anchors:
+      - packages/canvas/src/renderers/video-renderer.ts:2
+      - packages/canvas/src/renderers/video-renderer.ts:24
+    enforcement: depend on RenderContext interface only
+    appliesTo: ["#render-frame"]
+  perimeter-from-shape-type:
+    description: 'Stroke trim (strokeStart/strokeEnd dash math) needs a path length, so each shape computes its own perimeter — rect via 2*(w+h), ellipse via the Ramanujan approximation, path by summing segment chord distances with bezier segments fudged at chord * 1.2. Wrong perimeter desyncs the dash offset and the trim animation drifts.'
+    tags:
+      - approximation
+      - magic-number
+    anchors:
+      - packages/canvas/src/renderers/shape-renderer.ts:26-64
+    enforcement: per-shape perimeter formula
+    appliesTo: ["#shape-renderer"]
+  rounded-rect-feature-detect:
+    description: 'roundRect is feature-detected (cornerRadius && ctx.roundRect) — when a cornerRadius is set but the context lacks roundRect, rect rendering falls back to plain fillRect/strokeRect (square corners) rather than throwing. clipPath has its own manual moveTo/lineTo fallback for the same reason.'
+    tags:
+      - edge-case
+      - feature-detection
+    anchors:
+      - packages/canvas/src/renderers/shape-renderer.ts:77-94
+      - packages/canvas/src/render-frame.ts:222-231
+    enforcement: feature-detect roundRect with fallback
+    appliesTo: ["#shape-renderer"]
+  path-needs-two-points:
+    description: 'renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.'
+    tags:
+      - edge-case
+      - geometry
+    anchors:
+      - packages/canvas/src/renderers/shape-renderer.ts:124-144
+    enforcement: guard length + handle-pair check
+    appliesTo: ["#shape-renderer"]
+  text-align-offset-baseline:
+    description: 'Canvas textAlign anchors at the draw point, so the X draw position is offset to keep text inside the layer bounds — left=0, center=width/2, right=width. textBaseline is forced to "top" so y=0 is the top edge of the box, matching the layer coordinate system rather than the canvas alphabetic default.'
+    tags:
+      - core-invariant
+      - text
+      - gotcha
+    anchors:
+      - packages/canvas/src/renderers/text-renderer.ts:17-36
+    enforcement: align-derived X offset + top baseline
+    appliesTo: ["#text-renderer"]
+  font-string-assembly:
+    description: 'The CSS font shorthand is assembled in strict order "<fontStyle> <fontWeight> <fontSizepx> <fontFamily>" with fontStyle/fontWeight defaulting to "normal"; fontSize is always emitted in px. Reorder the tokens and the canvas silently ignores the malformed font string.'
+    tags:
+      - text
+      - gotcha
+      - ordering
+    anchors:
+      - packages/canvas/src/renderers/text-renderer.ts:11-15
+    enforcement: fixed CSS font token order
+    appliesTo: ["#text-renderer"]
+  video-null-provider-retry:
+    description: 'renderVideo draws nothing (silent return) when visual.src is missing OR the provider returns null — null means the frame is not decoded yet, and the contract is that the caller re-renders on a later tick until the provider yields a frame. No placeholder is drawn, so the previous frame content remains visible.'
+    tags:
+      - core-invariant
+      - video
+      - async
+    anchors:
+      - packages/canvas/src/renderers/video-renderer.ts:18-24
+    enforcement: silent return on null frame
+    appliesTo: ["#video-renderer"]
+  effective-property-override-defaults:
+    description: 'buildEffectiveLayer merges computedProperties (animated values) over layer defaults using ?? chains — cp value first, then the static layer field, then a hard default. shadow and tint blocks are only constructed when either the static layer has them OR a relevant computed key is present, otherwise they stay undefined to skip that work downstream.'
+    tags:
+      - core-invariant
+      - merge
+    anchors:
+      - packages/canvas/src/apply-properties.ts:72-117
+    enforcement: cp ?? layer ?? default chain
+    appliesTo: ["#apply-properties"]
+  percentage-resolved-at-render:
+    description: 'resolveUnit converts a percentage string to pixels (parseFloat/100 * reference) at render time, with x/width measured against parentWidth and y/height against parentHeight. Raw numbers pass through unchanged. The correct reference axis must be supplied per field — using the wrong dimension skews percentage layouts.'
+    tags:
+      - units
+      - convention
+    anchors:
+      - packages/canvas/src/apply-properties.ts:51-56
+      - packages/canvas/src/apply-properties.ts:76-97
+    enforcement: percent detect + per-axis reference
+    appliesTo: ["#apply-properties"]
+  visual-override-copy-on-write:
+    description: 'buildEffectiveVisual returns the ORIGINAL visual untouched when no visual/image computed keys are present, and otherwise shallow-clones before mutating fill/stroke/style/sourceRect — so the source document visual is never mutated. frameIndex is floored to an integer when animated.'
+    tags:
+      - immutability
+      - merge
+      - gotcha
+    anchors:
+      - packages/canvas/src/apply-properties.ts:124-146
+      - packages/canvas/src/apply-properties.ts:234-236
+    enforcement: early-return original else clone
+    appliesTo: ["#apply-properties"]
+  stroke-trim-via-dash:
+    description: 'strokeStart/strokeEnd trim is implemented with the line-dash trick — a dash of [visible, pathLength+1] plus lineDashOffset = -start*pathLength reveals only the (end-start)*pathLength segment of the perimeter. The +1 guarantees the gap exceeds the path so only one dash shows; visible is clamped to >= 0. Plain stroke.dash applies only when no trim is set.'
+    tags:
+      - technique
+      - magic-number
+      - stroke
+    anchors:
+      - packages/canvas/src/styles.ts:73-82
+    enforcement: dash array + dash offset trim
+    appliesTo: ["#canvas-styles"]
+  color-css-type-dispatch:
+    description: 'colorToCSS dispatches on shape — a string passes through as a hex literal, an object with "r" becomes rgba() with r/g/b rounded, an object with "h" becomes hsla(); anything else falls back to #000000. The fallback means malformed color objects render black rather than throwing.'
+    tags:
+      - dispatch
+      - edge-case
+      - color
+    anchors:
+      - packages/canvas/src/styles.ts:7-21
+    enforcement: shape-based dispatch + black fallback
+    appliesTo: ["#canvas-styles"]
+  gradient-geometry-from-bounds:
+    description: 'applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.'
+    tags:
+      - geometry
+      - gradient
+      - units
+    anchors:
+      - packages/canvas/src/styles.ts:32-59
+    enforcement: bounds-derived gradient coordinates
+    appliesTo: ["#canvas-styles"]
