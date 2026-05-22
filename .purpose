@@ -72,10 +72,10 @@ components:
     description: Browser editor widget + video/GIF export via WebCodecs + easing curve editor with interactive bezier control points
     file: packages/studio/src/index.ts
   atelier-mcp:
-    description: MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)
+    description: MCP server — 61 tools across 15 groups for AI animation authoring (document, layer, state, delta, visual, asset, variable, preset, template, interaction, ref, audio, overlay, recipe, import)
     file: packages/mcp/src/index.ts
   atelier-cli:
-    description: 'CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables'
+    description: 'CLI tool — validate/lint, the video pipeline (trim, transcribe, transcript, captions), recipes (recipe, apply-recipe), rendering (still, render, export-svg/lottie/image, carousel), assets/variables, and the studio editor'
     file: packages/cli/src/index.ts
 aspects:
   layer-tag-isolation:
@@ -127,3 +127,113 @@ aspects:
       - live-bridge
       - attribution
     enforcement: source-filtered broadcast
+  types-schema-duplication:
+    description: 'Type definitions are the source of truth for the document shape, but several closed unions (notably AnimatableProperty, ~35 members) are DUPLICATED in @atelier/schema''s Zod schemas — adding an animatable property or visual type requires editing BOTH packages or validation silently rejects it.'
+    tags:
+      - package-level
+      - source-of-truth
+      - gotcha
+    anchors:
+      - packages/types/src/index.ts:1
+    enforcement: keep types and schema unions in sync
+    appliesTo: ["#atelier-types"]
+  math-pure-deterministic:
+    description: Every export is a pure function — no state, no IO, no clock, no RNG. This is what lets resolveFrame (which composes these) stay deterministic and reproducible across seek, export, and SSR.
+    tags:
+      - package-level
+      - determinism
+      - pure-function
+    anchors:
+      - packages/math/src/index.ts:1
+    enforcement: pure functions only
+    appliesTo: ["#atelier-math"]
+  schema-validation-boundary:
+    description: The single validation boundary — every .atelier document crossing from text/agent into the engine validates here, returning flat AI-readable path+message errors. parseAtelier never throws (try/catch into a ValidationResult).
+    tags:
+      - package-level
+      - boundary
+      - validation
+    anchors:
+      - packages/schema/src/index.ts:1
+    enforcement: validate-at-boundary
+    appliesTo: ["#atelier-schema"]
+  core-engine-no-rendering:
+    description: The engine resolves frames and runs state machines but performs NO rendering or IO — output is a plain ResolvedFrame consumed by the separate renderer packages (canvas/svg/lottie). resolveFrame is pure; adding a renderer never touches core.
+    tags:
+      - package-level
+      - architecture
+      - separation
+    anchors:
+      - packages/core/src/index.ts:1
+    enforcement: engine emits data, renderers consume
+    appliesTo: ["#atelier-core"]
+  canvas-renderer-no-dom:
+    description: Renders a ResolvedFrame against a minimal RenderContext interface (not DOM CanvasRenderingContext2D), so the same code drives browser canvas, OffscreenCanvas, and node/@napi-rs backends with no DOM-lib dependency.
+    tags:
+      - package-level
+      - portability
+      - renderer
+    anchors:
+      - packages/canvas/src/index.ts:1
+    enforcement: depend on RenderContext interface only
+    appliesTo: ["#atelier-canvas"]
+  svg-declarative-emit:
+    description: 'Emits SVG markup as STRINGS (declarative) rather than imperative ctx calls; some canvas features are lossy here (e.g. combined shadow+tint drops the tint). Output is self-contained with a <defs> block for gradients/clips.'
+    tags:
+      - package-level
+      - renderer
+      - lossy
+    anchors:
+      - packages/svg/src/index.ts:1
+    enforcement: string emission with self-contained defs
+    appliesTo: ["#atelier-svg"]
+  lottie-lossy-subset:
+    description: Exports a SUBSET of Atelier features to Lottie JSON; unsupported features (audio, expressions, shadow, motion path, clip path, multi-state) are reported through the warnings catalog rather than silently dropped.
+    tags:
+      - package-level
+      - export
+      - lossy
+    anchors:
+      - packages/lottie/src/index.ts:1
+    enforcement: warn on unsupported, never silently drop
+    appliesTo: ["#atelier-lottie"]
+  react-imperative-via-ref:
+    description: The animation player is driven imperatively through a ref (play/pause/seek); the document is deliberately NOT render-triggering state, and the rAF loop is torn down on unmount to prevent leaks.
+    tags:
+      - package-level
+      - lifecycle
+      - integration
+    anchors:
+      - packages/react/src/index.ts:1
+    enforcement: ref-driven player + unmount teardown
+    appliesTo: ["#atelier-react"]
+  studio-embeddable-widget:
+    description: A framework-agnostic editor widget — host apps embed AtelierStudio, observe edits via onDocumentChange, and push external edits via applyMutation (suppress-notify to avoid echo). The CLI's `atelier studio` is just one host.
+    tags:
+      - package-level
+      - widget
+      - embeddable
+    anchors:
+      - packages/studio/src/index.ts:1
+    enforcement: embeddable widget with callback + applyMutation
+    appliesTo: ["#atelier-studio"]
+  mcp-shared-store-multi-transport:
+    description: '61 tools over a SINGLE shared DocumentStore, reachable via stdio (Claude Desktop) and WebSocket (the studio bridge) at once; mutations flow through one onChange emitter. Gotcha: most tools mutate in place without store.set, so onChange fires only for the few that do.'
+    tags:
+      - package-level
+      - architecture
+      - gotcha
+    anchors:
+      - packages/mcp/src/index.ts:1
+    enforcement: one store, multiple transports
+    appliesTo: ["#atelier-mcp"]
+  cli-thin-over-engine:
+    description: Commands are thin orchestrators over the engine packages — parsing, IO, and flag-handling only, with no animation logic of their own. The same npm package ships both the `atelier` CLI and the `atelier-mcp` server bins.
+    tags:
+      - package-level
+      - architecture
+      - thin-layer
+    anchors:
+      - packages/cli/src/index.ts:1
+    enforcement: orchestrate engine packages, no domain logic
+    appliesTo: ["#atelier-cli"]

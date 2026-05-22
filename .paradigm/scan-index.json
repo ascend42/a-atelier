@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-22T18:46:16.627Z",
+    "generatedAt": "2026-05-22T18:49:49.722Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 13,
@@ -217,7 +217,7 @@
       "symbol": "#atelier-mcp",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "MCP server — 52 tools across 16 groups for AI animation authoring (documents, layers, shapes, states, deltas, presets, preview, templates, effects, state-config, export, assets, variables, interactions, refs, performance)",
+      "description": "MCP server — 61 tools across 15 groups for AI animation authoring (document, layer, state, delta, visual, asset, variable, preset, template, interaction, ref, audio, overlay, recipe, import)",
       "visualTags": [],
       "related": []
     },
@@ -227,7 +227,7 @@
       "symbol": "#atelier-cli",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
-      "description": "CLI tool — 9 commands: validate, info, still, render, export-svg, export-lottie, assets, variables",
+      "description": "CLI tool — validate/lint, the video pipeline (trim, transcribe, transcript, captions), recipes (recipe, apply-recipe), rendering (still, render, export-svg/lottie/image, carousel), assets/variables, and the studio editor",
       "visualTags": [],
       "related": []
     },
@@ -508,149 +508,6 @@
       "visualTags": [],
       "related": []
     },
-    "canvas-panel": {
-      "id": "canvas-panel",
-      "name": "Canvas Panel",
-      "symbol": "#canvas-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
-      "visualTags": [],
-      "related": []
-    },
-    "layer-panel": {
-      "id": "layer-panel",
-      "name": "Layer Panel",
-      "symbol": "#layer-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
-      "visualTags": [],
-      "related": [
-        "#drag-reorder"
-      ]
-    },
-    "property-panel": {
-      "id": "property-panel",
-      "name": "Property Panel",
-      "symbol": "#property-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
-      "visualTags": [],
-      "related": [
-        "#number-input",
-        "#color-picker",
-        "#select-input",
-        "#slider-input",
-        "#delta-panel"
-      ]
-    },
-    "delta-panel": {
-      "id": "delta-panel",
-      "name": "Delta Panel",
-      "symbol": "#delta-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
-      "visualTags": [],
-      "related": [
-        "#number-input",
-        "#slider-input",
-        "#color-picker",
-        "#select-input",
-        "#easing-picker",
-        "#range-slider",
-        "#drag-reorder"
-      ]
-    },
-    "yaml-panel": {
-      "id": "yaml-panel",
-      "name": "Yaml Panel",
-      "symbol": "#yaml-panel",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
-      "visualTags": [],
-      "related": []
-    },
-    "number-input": {
-      "id": "number-input",
-      "name": "Number Input",
-      "symbol": "#number-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Labeled number input control with optional step, min, max, suffix",
-      "visualTags": [
-        "input"
-      ],
-      "related": []
-    },
-    "color-picker": {
-      "id": "color-picker",
-      "name": "Color Picker",
-      "symbol": "#color-picker",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Color input with native color picker and hex text display",
-      "visualTags": [],
-      "related": []
-    },
-    "select-input": {
-      "id": "select-input",
-      "name": "Select Input",
-      "symbol": "#select-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Labeled dropdown select control",
-      "visualTags": [
-        "input",
-        "input"
-      ],
-      "related": []
-    },
-    "slider-input": {
-      "id": "slider-input",
-      "name": "Slider Input",
-      "symbol": "#slider-input",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Range slider control with label and value display",
-      "visualTags": [
-        "input"
-      ],
-      "related": []
-    },
-    "easing-picker": {
-      "id": "easing-picker",
-      "name": "Easing Picker",
-      "symbol": "#easing-picker",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Easing type selector with preset and structured easing options",
-      "visualTags": [],
-      "related": []
-    },
-    "range-slider": {
-      "id": "range-slider",
-      "name": "Range Slider",
-      "symbol": "#range-slider",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
-      "visualTags": [],
-      "related": []
-    },
-    "drag-reorder": {
-      "id": "drag-reorder",
-      "name": "Drag Reorder",
-      "symbol": "#drag-reorder",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
-      "visualTags": [],
-      "related": []
-    },
     "#document-schema": {
       "id": "#document-schema",
       "name": "#document Schema",
@@ -759,6 +616,46 @@
       "visualTags": [],
       "related": [],
       "componentType": "service"
+    },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
     },
     "mcp-store": {
       "id": "mcp-store",
@@ -966,43 +863,146 @@
       ],
       "related": []
     },
-    "#easing-functions": {
-      "id": "#easing-functions",
-      "name": "#easing Functions",
-      "symbol": "##easing-functions",
+    "canvas-panel": {
+      "id": "canvas-panel",
+      "name": "Canvas Panel",
+      "symbol": "#canvas-panel",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
       "visualTags": [],
       "related": []
     },
-    "#spring-solver": {
-      "id": "#spring-solver",
-      "name": "#spring Solver",
-      "symbol": "##spring-solver",
+    "layer-panel": {
+      "id": "layer-panel",
+      "name": "Layer Panel",
+      "symbol": "#layer-panel",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder",
+      "visualTags": [],
+      "related": [
+        "#drag-reorder"
+      ]
+    },
+    "property-panel": {
+      "id": "property-panel",
+      "name": "Property Panel",
+      "symbol": "#property-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Property inspector for selected layer — position, size, transform, visual, and delta editing",
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#color-picker",
+        "#select-input",
+        "#slider-input",
+        "#delta-panel"
+      ]
+    },
+    "delta-panel": {
+      "id": "delta-panel",
+      "name": "Delta Panel",
+      "symbol": "#delta-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Stateful delta editor panel — expand/collapse inline editing with property-matched controls (slider, number, color picker, easing), dual-thumb range slider, optional naming, sort by start frame, mini timeline bar in collapsed view, drag-to-reorder, and live canvas updates",
+      "visualTags": [],
+      "related": [
+        "#number-input",
+        "#slider-input",
+        "#color-picker",
+        "#select-input",
+        "#easing-picker",
+        "#range-slider",
+        "#drag-reorder"
+      ]
+    },
+    "yaml-panel": {
+      "id": "yaml-panel",
+      "name": "Yaml Panel",
+      "symbol": "#yaml-panel",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
       "visualTags": [],
       "related": []
     },
-    "#lerp-functions": {
-      "id": "#lerp-functions",
-      "name": "#lerp Functions",
-      "symbol": "##lerp-functions",
+    "number-input": {
+      "id": "number-input",
+      "name": "Number Input",
+      "symbol": "#number-input",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Labeled number input control with optional step, min, max, suffix",
+      "visualTags": [
+        "input"
+      ],
+      "related": []
+    },
+    "color-picker": {
+      "id": "color-picker",
+      "name": "Color Picker",
+      "symbol": "#color-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Color input with native color picker and hex text display",
       "visualTags": [],
       "related": []
     },
-    "#color-math": {
-      "id": "#color-math",
-      "name": "#color Math",
-      "symbol": "##color-math",
+    "select-input": {
+      "id": "select-input",
+      "name": "Select Input",
+      "symbol": "#select-input",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Labeled dropdown select control",
+      "visualTags": [
+        "input",
+        "input"
+      ],
+      "related": []
+    },
+    "slider-input": {
+      "id": "slider-input",
+      "name": "Slider Input",
+      "symbol": "#slider-input",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Range slider control with label and value display",
+      "visualTags": [
+        "input"
+      ],
+      "related": []
+    },
+    "easing-picker": {
+      "id": "easing-picker",
+      "name": "Easing Picker",
+      "symbol": "#easing-picker",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Easing type selector with preset and structured easing options",
+      "visualTags": [],
+      "related": []
+    },
+    "range-slider": {
+      "id": "range-slider",
+      "name": "Range Slider",
+      "symbol": "#range-slider",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Dual-thumb range slider control for frame range selection with filled track between thumbs",
+      "visualTags": [],
+      "related": []
+    },
+    "drag-reorder": {
+      "id": "drag-reorder",
+      "name": "Drag Reorder",
+      "symbol": "#drag-reorder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
       "visualTags": [],
       "related": []
     },
@@ -1917,6 +1917,105 @@
       "description": "DocumentStore mutations carry a source tag (human | llm | system). The studio WebSocket bridge re-broadcasts a change to the browser ONLY when source is llm; human-sourced changes (the browser is already current) and system-sourced changes (file-read hydration) stay silent. Prevents echo loops and false \"agent edited\" attribution on the live human↔LLM editing loop.",
       "related": []
     },
+    "types-schema-duplication": {
+      "id": "types-schema-duplication",
+      "name": "Types Schema Duplication",
+      "symbol": "~types-schema-duplication",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Type definitions are the source of truth for the document shape, but several closed unions (notably AnimatableProperty, ~35 members) are DUPLICATED in @atelier/schema's Zod schemas — adding an animatable property or visual type requires editing BOTH packages or validation silently rejects it.",
+      "related": []
+    },
+    "math-pure-deterministic": {
+      "id": "math-pure-deterministic",
+      "name": "Math Pure Deterministic",
+      "symbol": "~math-pure-deterministic",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Every export is a pure function — no state, no IO, no clock, no RNG. This is what lets resolveFrame (which composes these) stay deterministic and reproducible across seek, export, and SSR.",
+      "related": []
+    },
+    "schema-validation-boundary": {
+      "id": "schema-validation-boundary",
+      "name": "Schema Validation Boundary",
+      "symbol": "~schema-validation-boundary",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "The single validation boundary — every .atelier document crossing from text/agent into the engine validates here, returning flat AI-readable path+message errors. parseAtelier never throws (try/catch into a ValidationResult).",
+      "related": []
+    },
+    "core-engine-no-rendering": {
+      "id": "core-engine-no-rendering",
+      "name": "Core Engine No Rendering",
+      "symbol": "~core-engine-no-rendering",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "The engine resolves frames and runs state machines but performs NO rendering or IO — output is a plain ResolvedFrame consumed by the separate renderer packages (canvas/svg/lottie). resolveFrame is pure; adding a renderer never touches core.",
+      "related": []
+    },
+    "canvas-renderer-no-dom": {
+      "id": "canvas-renderer-no-dom",
+      "name": "Canvas Renderer No Dom",
+      "symbol": "~canvas-renderer-no-dom",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Renders a ResolvedFrame against a minimal RenderContext interface (not DOM CanvasRenderingContext2D), so the same code drives browser canvas, OffscreenCanvas, and node/@napi-rs backends with no DOM-lib dependency.",
+      "related": []
+    },
+    "svg-declarative-emit": {
+      "id": "svg-declarative-emit",
+      "name": "Svg Declarative Emit",
+      "symbol": "~svg-declarative-emit",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Emits SVG markup as STRINGS (declarative) rather than imperative ctx calls; some canvas features are lossy here (e.g. combined shadow+tint drops the tint). Output is self-contained with a <defs> block for gradients/clips.",
+      "related": []
+    },
+    "lottie-lossy-subset": {
+      "id": "lottie-lossy-subset",
+      "name": "Lottie Lossy Subset",
+      "symbol": "~lottie-lossy-subset",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Exports a SUBSET of Atelier features to Lottie JSON; unsupported features (audio, expressions, shadow, motion path, clip path, multi-state) are reported through the warnings catalog rather than silently dropped.",
+      "related": []
+    },
+    "react-imperative-via-ref": {
+      "id": "react-imperative-via-ref",
+      "name": "React Imperative Via Ref",
+      "symbol": "~react-imperative-via-ref",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "The animation player is driven imperatively through a ref (play/pause/seek); the document is deliberately NOT render-triggering state, and the rAF loop is torn down on unmount to prevent leaks.",
+      "related": []
+    },
+    "studio-embeddable-widget": {
+      "id": "studio-embeddable-widget",
+      "name": "Studio Embeddable Widget",
+      "symbol": "~studio-embeddable-widget",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "A framework-agnostic editor widget — host apps embed AtelierStudio, observe edits via onDocumentChange, and push external edits via applyMutation (suppress-notify to avoid echo). The CLI's `atelier studio` is just one host.",
+      "related": []
+    },
+    "mcp-shared-store-multi-transport": {
+      "id": "mcp-shared-store-multi-transport",
+      "name": "Mcp Shared Store Multi Transport",
+      "symbol": "~mcp-shared-store-multi-transport",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "61 tools over a SINGLE shared DocumentStore, reachable via stdio (Claude Desktop) and WebSocket (the studio bridge) at once; mutations flow through one onChange emitter. Gotcha: most tools mutate in place without store.set, so onChange fires only for the few that do.",
+      "related": []
+    },
+    "cli-thin-over-engine": {
+      "id": "cli-thin-over-engine",
+      "name": "Cli Thin Over Engine",
+      "symbol": "~cli-thin-over-engine",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
+      "description": "Commands are thin orchestrators over the engine packages — parsing, IO, and flag-handling only, with no animation logic of their own. The same npm package ships both the `atelier` CLI and the `atelier-mcp` server bins.",
+      "related": []
+    },
     "element-one-per-src-reuse": {
       "id": "element-one-per-src-reuse",
       "name": "Element One Per Src Reuse",
@@ -2387,294 +2486,6 @@
       "description": "escapeXml replaces exactly five entities — & < > \" ' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.",
       "related": []
     },
-    "apply-mutation-one-tick-suppress": {
-      "id": "apply-mutation-one-tick-suppress",
-      "name": "Apply Mutation One Tick Suppress",
-      "symbol": "~apply-mutation-one-tick-suppress",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "applyMutation sets suppressNotify=true then clears it on the NEXT microtask via queueMicrotask, so the panel re-renders it triggers do not echo back to opts.onDocumentChange. The window is exactly one task: any human edit after the microtask drains resumes normal notification. This is what stops an LLM op from round-tripping through the file-save loop and re-entering the WS bridge as a \"human\" edit (feedback loop).",
-      "related": []
-    },
-    "apply-mutation-preserves-state-and-selection": {
-      "id": "apply-mutation-preserves-state-and-selection",
-      "name": "Apply Mutation Preserves State And Selection",
-      "symbol": "~apply-mutation-preserves-state-and-selection",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Unlike loadDocument (which resets to the first state and clears selection), applyMutation keeps the current stateName and selectedLayerId when they still exist in the replacement doc, only falling back to first-state / no-selection when the prior value was deleted. This prevents the editor from teleporting on every LLM op while the human is mid-edit.",
-      "related": []
-    },
-    "llm-op-is-undoable": {
-      "id": "llm-op-is-undoable",
-      "name": "Llm Op Is Undoable",
-      "symbol": "~llm-op-is-undoable",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "applyMutation snapshots the pre-mutation lastSnapshot onto history BEFORE replacing the doc, so an LLM-driven change is a single Cmd-Z away for the human at the keyboard. It deliberately preserves history and originalDoc (loadDocument clears both), keeping the undo timeline continuous across remote ops.",
-      "related": []
-    },
-    "keyboard-shortcut-input-passthrough": {
-      "id": "keyboard-shortcut-input-passthrough",
-      "name": "Keyboard Shortcut Input Passthrough",
-      "symbol": "~keyboard-shortcut-input-passthrough",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "handleKeydown lets Cmd/Ctrl-Z and Cmd/Ctrl-Shift-Z through ALWAYS (even while typing in an input), but returns early for Space/arrows/Delete/Backspace when the event target is an input, textarea, or select — so typing a space or deleting text in a field never toggles playback or deletes the selected layer. Order matters: the undo/redo check precedes the input-guard.",
-      "related": []
-    },
-    "preview-vs-commit-render-split": {
-      "id": "preview-vs-commit-render-split",
-      "name": "Preview Vs Commit Render Split",
-      "symbol": "~preview-vs-commit-render-split",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "previewDocChange re-renders the canvas ONLY — it skips history.snapshot/lastSnapshot, the layer+yaml panel refresh, and the host onDocumentChange notification, and short-circuits entirely when suppressNotify is set. The committing onDocChange is the one path that records history and notifies the host exactly once, so a 60Hz slider drag collapses into a single undo entry and a single save.",
-      "related": []
-    },
-    "undo-redo-preserves-state": {
-      "id": "undo-redo-preserves-state",
-      "name": "Undo Redo Preserves State",
-      "symbol": "~undo-redo-preserves-state",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "reloadPanels (the shared undo/redo + state-switch path) keeps the currently-selected stateName across Cmd-Z/Cmd-Shift-Z when that state still exists in the restored doc, only falling back to the first state when the action being undone deleted it — otherwise editing \"hover\" and hitting undo would snap the editor back to \"default\". It also resyncs the toolbar state selector.",
-      "related": []
-    },
-    "player-loop-and-clamp": {
-      "id": "player-loop-and-clamp",
-      "name": "Player Loop And Clamp",
-      "symbol": "~player-loop-and-clamp",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "The Player accumulator advances currentFrame by whole frames of 1000/fps elapsed time; on reaching totalFrames it wraps to 0 when loop, else clamps to totalFrames-1 and pauses. seek clamps to [0, totalFrames-1] and setTotalFrames resets currentFrame to 0 only if it now exceeds the new total. CanvasPanel drives all playback through this.",
-      "related": []
-    },
-    "scrub-pause-resume": {
-      "id": "scrub-pause-resume",
-      "name": "Scrub Pause Resume",
-      "symbol": "~scrub-pause-resume",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.",
-      "related": []
-    },
-    "image-drop-files-only": {
-      "id": "image-drop-files-only",
-      "name": "Image Drop Files Only",
-      "symbol": "~image-drop-files-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Canvas drag handlers respond ONLY to file drags — hasFileTypes checks dataTransfer.types for \"Files\" (populated during dragover, unlike dataTransfer.files which fills only at drop), so in-app layer-reorder drags never trigger the image-drop highlight or pipeline. dragover must preventDefault for the drop event to fire, and dragleave clears the highlight only when the cursor truly leaves the wrap (target === dropTarget).",
-      "related": []
-    },
-    "image-drop-first-replaces-background": {
-      "id": "image-drop-first-replaces-background",
-      "name": "Image Drop First Replaces Background",
-      "symbol": "~image-drop-first-replaces-background",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "On a multi-file drop, only the FIRST image gets replaceBackground:true so it swaps the welcome scaffold placeholder (doc.layers[0].id === \"background\") in place; subsequent images stack. createImageLayerFromFile aspect-fits the image to the canvas (fit to width when wider than canvas, else fit to height, both capped at canvas extents) with a 0.5/0.5 anchor centered, and unshifts onto layers so new images sit BEHIND existing overlays. A file that fails to decode is skipped without aborting the batch.",
-      "related": []
-    },
-    "layer-id-collision-free": {
-      "id": "layer-id-collision-free",
-      "name": "Layer Id Collision Free",
-      "symbol": "~layer-id-collision-free",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "nextLayerId/nextImageLayerId start the counter at layers.length+1 and increment past any existing `${prefix}-N` id, so re-adding a removed variant never produces a duplicate id even after deletions reshuffle the count. Image creation uses an \"image\" prefix and registers a matching `${id}-asset` entry in doc.assets.",
-      "related": []
-    },
-    "overlay-tagged-presets": {
-      "id": "overlay-tagged-presets",
-      "name": "Overlay Tagged Presets",
-      "symbol": "~overlay-tagged-presets",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "The + Add menu Handle and Page Number variants build text layers carrying tags:[\"overlay\"] (anchored to canvas corners with fixed margins), so downstream overlay-isolation pipelines (caption regen, silence-trim) skip user-edited overlays. Plain Text/Shape variants are untagged. Image variant bails out of the sync switch into the async file-picker path.",
-      "related": []
-    },
-    "remove-layer-cascades-deltas": {
-      "id": "remove-layer-cascades-deltas",
-      "name": "Remove Layer Cascades Deltas",
-      "symbol": "~remove-layer-cascades-deltas",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "removeLayer deletes the selected layer AND filters every state.deltas array to drop deltas referencing that layer id, then clears the selection — so deleting a layer never leaves orphaned deltas that would resolve against a missing layer. Visibility toggle flips layer.visible between true and an explicit false (undefined treated as visible).",
-      "related": []
-    },
-    "layer-reorder-scroll-preserved": {
-      "id": "layer-reorder-scroll-preserved",
-      "name": "Layer Reorder Scroll Preserved",
-      "symbol": "~layer-reorder-scroll-preserved",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "render() captures and restores list.scrollTop around the full innerHTML rebuild, so toggling visibility or reordering does not jump the layer list back to the top. reorderLayer splices the moved layer out and back into doc.layers (the array order IS z-order downstream).",
-      "related": []
-    },
-    "property-input-vs-change-commit": {
-      "id": "property-input-vs-change-commit",
-      "name": "Property Input Vs Change Commit",
-      "symbol": "~property-input-vs-change-commit",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Continuous controls (Opacity, stroke Start/End sliders) wire onInput → preview() (cheap canvas re-render via onPropertyPreview) and onChange → onPropertyChange (the committing path that snapshots undo + notifies host), so one slider drag is one undo entry. preview() degrades to a full commit when onPropertyPreview is absent — never worse than before. Discrete controls (number, color, select) fire only onPropertyChange.",
-      "related": []
-    },
-    "layer-id-rename-rewrites-deltas": {
-      "id": "layer-id-rename-rewrites-deltas",
-      "name": "Layer Id Rename Rewrites Deltas",
-      "symbol": "~layer-id-rename-rewrites-deltas",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Renaming a layer via the ID text input rewrites every delta whose `layer` matches the old id across ALL states before assigning the new id, and updates this.layerId so the still-selected layer stays selected. Skip the rewrite and renamed layers silently lose their animations.",
-      "related": []
-    },
-    "visual-section-discriminated-by-type": {
-      "id": "visual-section-discriminated-by-type",
-      "name": "Visual Section Discriminated By Type",
-      "symbol": "~visual-section-discriminated-by-type",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "addVisualSection branches on visual.type (shape | image | text) and within shape on visual.shape.type (rect cornerRadius, path point editing), narrowing the discriminated union before each control. Optional blocks (fill, stroke, shadow) render only when present, with \"+ Add\"/\"Remove\" buttons to toggle them, so the inspector only shows controls that apply to the selected layer.",
-      "related": []
-    },
-    "delta-view-filtered-by-layer": {
-      "id": "delta-view-filtered-by-layer",
-      "name": "Delta View Filtered By Layer",
-      "symbol": "~delta-view-filtered-by-layer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "DeltaPanel works on a this.deltas VIEW filtered from the shared state.deltas by layerId, but every mutation (add/remove/reorder/sort) edits the flat state.deltas array directly and then re-derives the view. reorderDelta and sortByStartFrame translate view indices to absolute indices in the flat array so other layers' deltas keep their positions — a known sharp edge of the doc-reference-duplicated-across-panels design.",
-      "related": []
-    },
-    "delta-control-matched-to-property": {
-      "id": "delta-control-matched-to-property",
-      "name": "Delta Control Matched To Property",
-      "symbol": "~delta-control-matched-to-property",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "buildControlForProperty dispatches the From/To editor by property: color properties get a ColorPicker, opacity / stroke.start / stroke.end get a 0..1 SliderInput, everything else a NumberInput with per-property step/min/max/suffix from getNumberConfig. Changing the property resets from/to to getDefaultValues for the new property so the values stay type-correct.",
-      "related": []
-    },
-    "range-slider-input-mirror": {
-      "id": "range-slider-input-mirror",
-      "name": "Range Slider Input Mirror",
-      "symbol": "~range-slider-input-mirror",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "The dual-thumb RangeSlider and the Start/End NumberInputs are kept in lock-step — RangeSlider.onChangeLow/High write delta.range and call the matching NumberInput.setValue, while the NumberInputs round their value and call rangeSlider.setValue. Either control reflects the other instantly without a full re-render.",
-      "related": []
-    },
-    "delta-minibar-proportional": {
-      "id": "delta-minibar-proportional",
-      "name": "Delta Minibar Proportional",
-      "symbol": "~delta-minibar-proportional",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "The collapsed mini-timeline bar positions its fill via percentage left=(range[0]/duration)*100 and right=((duration-range[1])/duration)*100 with duration defaulting to 1 to avoid divide-by-zero, so the bar visually scales to the state duration. The collapsed detail row formats from→to and the easing label.",
-      "related": []
-    },
-    "yaml-clipboard-fallback-select": {
-      "id": "yaml-clipboard-fallback-select",
-      "name": "Yaml Clipboard Fallback Select",
-      "symbol": "~yaml-clipboard-fallback-select",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Copy uses navigator.clipboard.writeText and flashes \"Copied!\" for 1500ms; if the clipboard API rejects (insecure context / permission) it falls back to selecting the pre element's text via a Range so the user can copy manually. The viewer is read-only — it always re-serializes from the live doc on refresh, never edits it.",
-      "related": []
-    },
-    "yaml-highlight-escapes-html": {
-      "id": "yaml-highlight-escapes-html",
-      "name": "Yaml Highlight Escapes Html",
-      "symbol": "~yaml-highlight-escapes-html",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "highlightYaml builds HTML by wrapping tokens in spans, so every raw segment is run through esc() (&/</> entity-escaped) before insertion to prevent document string content from injecting markup into the highlighted view. Lines are classified in order: comment, key:value, bare list-item, else plain.",
-      "related": []
-    },
-    "number-input-fires-on-input": {
-      "id": "number-input-fires-on-input",
-      "name": "Number Input Fires On Input",
-      "symbol": "~number-input-fires-on-input",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "NumberInput emits onChange on every `input` event (not on commit/blur) and guards with !isNaN so a transient empty or partial value (e.g. \"-\" while typing) never pushes NaN into the doc. This means typing into a number field commits continuously — callers that want one undo per edit must rely on the doc-level history, not this control.",
-      "related": []
-    },
-    "color-picker-hex-normalize": {
-      "id": "color-picker-hex-normalize",
-      "name": "Color Picker Hex Normalize",
-      "symbol": "~color-picker-hex-normalize",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "normalizeHex coerces input to the 7-char #RRGGBB form the native color input requires — it expands a 3-digit #RGB shorthand to 6 digits and truncates an 8-digit #RRGGBBAA (alpha) to its opaque RGB, since <input type=color> cannot represent alpha. So round-tripping an #RRGGBBAA color through this picker silently drops the alpha channel.",
-      "related": []
-    },
-    "select-preselect-by-value": {
-      "id": "select-preselect-by-value",
-      "name": "Select Preselect By Value",
-      "symbol": "~select-preselect-by-value",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "SelectInput marks the option whose value equals opts.value as selected while building the list, so the control reflects the current model value on construction rather than defaulting to the first option. onChange fires on the native `change` event (commit), emitting the raw string value for the caller to cast.",
-      "related": []
-    },
-    "slider-input-vs-change": {
-      "id": "slider-input-vs-change",
-      "name": "Slider Input Vs Change",
-      "symbol": "~slider-input-vs-change",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "SliderInput splits the two native range events: `input` (≈60Hz during drag) calls onInput for cheap live preview and updates the value display only, while `change` (pointerup / keyboard step / blur) calls onChange — the path that snapshots undo history and notifies the host. So one drag = one undo entry. onInput is optional; omitting it means a drag previews nothing until commit.",
-      "related": []
-    },
-    "easing-preset-vs-structured": {
-      "id": "easing-preset-vs-structured",
-      "name": "Easing Preset Vs Structured",
-      "symbol": "~easing-preset-vs-structured",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "EasingPicker maps the dropdown to either a string preset (ease-in/out/in-out passed through raw) or a structured object — linear/spring/cubic-bezier/step become typed objects with default params on selection (emitChange), and selecting a parameterized type spawns extra NumberInput/SelectInput config rows. The live curve preview is rebuilt for every type, and the previous EasingCurveEditor is destroyed before a new one is created to avoid leaks.",
-      "related": []
-    },
-    "range-slider-thumb-clamp": {
-      "id": "range-slider-thumb-clamp",
-      "name": "Range Slider Thumb Clamp",
-      "symbol": "~range-slider-thumb-clamp",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "The two overlaid range thumbs are prevented from crossing — the low thumb is clamped to ≤ high and the high thumb to ≥ low on every input, snapping the dragged thumb back rather than swapping the bounds. The filled track between thumbs is recomputed as left/right percentages of (max-min), with a ||1 guard against a zero-width range.",
-      "related": []
-    },
-    "drag-reorder-handle-only": {
-      "id": "drag-reorder-handle-only",
-      "name": "Drag Reorder Handle Only",
-      "symbol": "~drag-reorder-handle-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "enableDragReorder makes an item draggable ONLY while a pointer is down on its .atel-drag-handle (pointerdown sets draggable=true, pointerup/cleanup clears it), so a plain click on the row selects rather than drags. A MutationObserver re-binds handles as the list re-renders, and handle.dataset.bound dedupes so re-render does not stack duplicate listeners.",
-      "related": []
-    },
-    "drag-reorder-index-adjust": {
-      "id": "drag-reorder-index-adjust",
-      "name": "Drag Reorder Index Adjust",
-      "symbol": "~drag-reorder-index-adjust",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "On drop the target index is computed from the cursor position relative to the row midpoint (below the midpoint inserts after), then decremented when fromIndex < toIndex to account for the source being spliced out first — the off-by-one fix that makes downward drags land where the indicator showed. No reorder fires when from === to.",
-      "related": []
-    },
-    "drag-reorder-aborts-clean": {
-      "id": "drag-reorder-aborts-clean",
-      "name": "Drag Reorder Aborts Clean",
-      "symbol": "~drag-reorder-aborts-clean",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.",
-      "related": []
-    },
     "document-shape-asymmetry": {
       "id": "document-shape-asymmetry",
       "name": "Document Shape Asymmetry",
@@ -2918,6 +2729,150 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
       "description": "The ImageCache onLoad callback re-invokes renderCurrentFrame, so async-loaded images repaint the current frame once decoded even when playback is paused — without this, a paused first frame referencing a not-yet-loaded image would stay blank. renderCurrentFrame also silently returns if getContext(\"2d\") yields null.",
+      "related": []
+    },
+    "bezier-binary-search-not-newton": {
+      "id": "bezier-binary-search-not-newton",
+      "name": "Bezier Binary Search Not Newton",
+      "symbol": "~bezier-binary-search-not-newton",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "cubicBezier solves for the parametric t via BINARY SEARCH (not Newton-Raphson) — a fixed 20-iteration loop that bisects [0,1] until sampleBezier x is within epsilon 1e-6 of the input t, then samples the y axis. Iteration count and epsilon are hard-coded magic numbers, so accuracy never adapts to the curve.",
+      "related": []
+    },
+    "easing-endpoint-snap": {
+      "id": "easing-endpoint-snap",
+      "name": "Easing Endpoint Snap",
+      "symbol": "~easing-endpoint-snap",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Every easing closure short-circuits the endpoints — cubicBezier and step both return exactly 0 for t <= 0 and exactly 1 for t >= 1 before any interpolation, so out-of-range input is clamped to the unit interval rather than extrapolated.",
+      "related": []
+    },
+    "css-preset-control-points": {
+      "id": "css-preset-control-points",
+      "name": "Css Preset Control Points",
+      "symbol": "~css-preset-control-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "The easeIn/easeOut/easeInOut presets are fixed CSS-standard cubic-bezier control points (0.42,0,1,1 / 0,0,0.58,1 / 0.42,0,0.58,1). These exact magic numbers are what make the presets match browser CSS keyword timing.",
+      "related": []
+    },
+    "step-position-asymmetry": {
+      "id": "step-position-asymmetry",
+      "name": "Step Position Asymmetry",
+      "symbol": "~step-position-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "step easing is asymmetric at t <= 0 — position \"start\" returns 1/steps (the first riser has already fired) while \"end\" returns 0; mid-range \"start\" floors to (s+1)/steps capped at 1 and \"end\" floors to s/steps. Confusing start vs end shifts the whole staircase by one step.",
+      "related": []
+    },
+    "spring-default-config": {
+      "id": "spring-default-config",
+      "name": "Spring Default Config",
+      "symbol": "~spring-default-config",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "spring() defaults are mass=1, stiffness=100, damping=10, velocity=0 when the corresponding config field is omitted. These defaults define the out-of-the-box underdamped feel (with stiffness=100/damping=10 the damping ratio zeta is 0.5).",
+      "related": []
+    },
+    "spring-closed-form-three-regimes": {
+      "id": "spring-closed-form-three-regimes",
+      "name": "Spring Closed Form Three Regimes",
+      "symbol": "~spring-closed-form-three-regimes",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "The spring value is an ANALYTIC closed-form of the damped harmonic oscillator — there is no integration loop or rest-threshold check. It branches on the damping ratio zeta: underdamped (zeta < 1) uses damped sin/cos, critically damped (zeta === 1) uses the (1 + ...)*t form, overdamped (zeta > 1) uses two real exponentials. Misclassifying the regime produces NaN from the sqrt of a negative.",
+      "related": []
+    },
+    "spring-settle-time-heuristic": {
+      "id": "spring-settle-time-heuristic",
+      "name": "Spring Settle Time Heuristic",
+      "symbol": "~spring-settle-time-heuristic",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "duration is a HEURISTIC settle-time estimate used only to normalize t into seconds, not a runtime rest threshold — overdamped/critical use 10/(zeta*w0) and underdamped uses ln(1000)/(zeta*w0) (the time to decay within ~0.1% of target). Changing these formulas rescales the entire spring timeline.",
+      "related": []
+    },
+    "spring-endpoint-snap": {
+      "id": "spring-endpoint-snap",
+      "name": "Spring Endpoint Snap",
+      "symbol": "~spring-endpoint-snap",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "spring forces exact 0 at t <= 0 and exact 1 at t >= 1 before evaluating the oscillator, so even though the underlying physics overshoots, the start and end frames always land precisely on target.",
+      "related": []
+    },
+    "lerp-is-unclamped": {
+      "id": "lerp-is-unclamped",
+      "name": "Lerp Is Unclamped",
+      "symbol": "~lerp-is-unclamped",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerp(a,b,t) = a + (b-a)*t is intentionally UNCLAMPED — t outside [0,1] extrapolates beyond the endpoints. Callers needing bounded output must wrap with clamp(); contrast clamp() which uses Math.min(Math.max(...)).",
+      "related": []
+    },
+    "lerp-array-no-length-guard": {
+      "id": "lerp-array-no-length-guard",
+      "name": "Lerp Array No Length Guard",
+      "symbol": "~lerp-array-no-length-guard",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpArray maps over a only and reads b[i] with no length check — if b is shorter than a the missing indices read undefined and produce NaN, and extra elements of b are silently ignored. Equal length is an unenforced caller contract.",
+      "related": []
+    },
+    "remap-divide-by-zero": {
+      "id": "remap-divide-by-zero",
+      "name": "Remap Divide By Zero",
+      "symbol": "~remap-divide-by-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "remap divides by (inMax - inMin) with no guard, so a degenerate input range where inMin === inMax yields NaN or Infinity for t and therefore for the result. Zero-width input ranges are undefined behavior.",
+      "related": []
+    },
+    "hex-alpha-defaults-ff": {
+      "id": "hex-alpha-defaults-ff",
+      "name": "Hex Alpha Defaults Ff",
+      "symbol": "~hex-alpha-defaults-ff",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "hexToRgba normalizes shorthand and missing alpha to opaque — 3-char #RGB and 6-char #RRGGBB get \"ff\" appended, 4-char #RGBA doubles each nibble, before parsing each channel as base-16. Alpha is divided by 255 to land in 0-1 while r/g/b stay 0-255.",
+      "related": []
+    },
+    "rgba-to-hex-clamp-and-omit-ff": {
+      "id": "rgba-to-hex-clamp-and-omit-ff",
+      "name": "Rgba To Hex Clamp And Omit Ff",
+      "symbol": "~rgba-to-hex-clamp-and-omit-ff",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "rgbaToHex rounds and clamps each channel to 0-255, pads each to 2 hex digits, and OMITS the alpha pair entirely when it rounds to \"ff\" — so fully opaque colors serialize to the short #RRGGBB form rather than #RRGGBBff.",
+      "related": []
+    },
+    "rgba-interpolation-is-unrounded": {
+      "id": "rgba-interpolation-is-unrounded",
+      "name": "Rgba Interpolation Is Unrounded",
+      "symbol": "~rgba-interpolation-is-unrounded",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpRgba interpolates in RGB space and leaves channels as raw floats (no rounding), unlike hslaToRgba which Math.round-s r/g/b to integers. Chained RGBA interpolations therefore stay precise; rounding only happens at hex serialization.",
+      "related": []
+    },
+    "hsla-shortest-hue-path": {
+      "id": "hsla-shortest-hue-path",
+      "name": "Hsla Shortest Hue Path",
+      "symbol": "~hsla-shortest-hue-path",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpHsla interpolates hue along the SHORTEST arc — the raw hue delta is wrapped into -180..180 (subtract/add 360) before lerping, then the result is euclidean-mod normalized via (((x % 360) + 360) % 360) to stay 0-360. Without this, a 350→10 transition would sweep the long way round.",
+      "related": []
+    },
+    "hsl-zero-saturation-guard": {
+      "id": "hsl-zero-saturation-guard",
+      "name": "Hsl Zero Saturation Guard",
+      "symbol": "~hsl-zero-saturation-guard",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
       "related": []
     },
     "store-synchronous-registration-order-emit": {
@@ -3264,148 +3219,292 @@
       "description": "matchesGlob is a single-segment matcher (no path separators) translating * → .* and ? → . over a regex-escaped pattern, case-insensitive, matching all when the glob is empty. deriveAssetId slugifies the filename stem and de-dupes collisions as `${base}-${n}` starting at n=2; layer ids follow the same `image-${n}` scheme. Results are sorted by localeCompare.",
       "related": []
     },
-    "bezier-binary-search-not-newton": {
-      "id": "bezier-binary-search-not-newton",
-      "name": "Bezier Binary Search Not Newton",
-      "symbol": "~bezier-binary-search-not-newton",
+    "apply-mutation-one-tick-suppress": {
+      "id": "apply-mutation-one-tick-suppress",
+      "name": "Apply Mutation One Tick Suppress",
+      "symbol": "~apply-mutation-one-tick-suppress",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "cubicBezier solves for the parametric t via BINARY SEARCH (not Newton-Raphson) — a fixed 20-iteration loop that bisects [0,1] until sampleBezier x is within epsilon 1e-6 of the input t, then samples the y axis. Iteration count and epsilon are hard-coded magic numbers, so accuracy never adapts to the curve.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "applyMutation sets suppressNotify=true then clears it on the NEXT microtask via queueMicrotask, so the panel re-renders it triggers do not echo back to opts.onDocumentChange. The window is exactly one task: any human edit after the microtask drains resumes normal notification. This is what stops an LLM op from round-tripping through the file-save loop and re-entering the WS bridge as a \"human\" edit (feedback loop).",
       "related": []
     },
-    "easing-endpoint-snap": {
-      "id": "easing-endpoint-snap",
-      "name": "Easing Endpoint Snap",
-      "symbol": "~easing-endpoint-snap",
+    "apply-mutation-preserves-state-and-selection": {
+      "id": "apply-mutation-preserves-state-and-selection",
+      "name": "Apply Mutation Preserves State And Selection",
+      "symbol": "~apply-mutation-preserves-state-and-selection",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Every easing closure short-circuits the endpoints — cubicBezier and step both return exactly 0 for t <= 0 and exactly 1 for t >= 1 before any interpolation, so out-of-range input is clamped to the unit interval rather than extrapolated.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Unlike loadDocument (which resets to the first state and clears selection), applyMutation keeps the current stateName and selectedLayerId when they still exist in the replacement doc, only falling back to first-state / no-selection when the prior value was deleted. This prevents the editor from teleporting on every LLM op while the human is mid-edit.",
       "related": []
     },
-    "css-preset-control-points": {
-      "id": "css-preset-control-points",
-      "name": "Css Preset Control Points",
-      "symbol": "~css-preset-control-points",
+    "llm-op-is-undoable": {
+      "id": "llm-op-is-undoable",
+      "name": "Llm Op Is Undoable",
+      "symbol": "~llm-op-is-undoable",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "The easeIn/easeOut/easeInOut presets are fixed CSS-standard cubic-bezier control points (0.42,0,1,1 / 0,0,0.58,1 / 0.42,0,0.58,1). These exact magic numbers are what make the presets match browser CSS keyword timing.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "applyMutation snapshots the pre-mutation lastSnapshot onto history BEFORE replacing the doc, so an LLM-driven change is a single Cmd-Z away for the human at the keyboard. It deliberately preserves history and originalDoc (loadDocument clears both), keeping the undo timeline continuous across remote ops.",
       "related": []
     },
-    "step-position-asymmetry": {
-      "id": "step-position-asymmetry",
-      "name": "Step Position Asymmetry",
-      "symbol": "~step-position-asymmetry",
+    "keyboard-shortcut-input-passthrough": {
+      "id": "keyboard-shortcut-input-passthrough",
+      "name": "Keyboard Shortcut Input Passthrough",
+      "symbol": "~keyboard-shortcut-input-passthrough",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "step easing is asymmetric at t <= 0 — position \"start\" returns 1/steps (the first riser has already fired) while \"end\" returns 0; mid-range \"start\" floors to (s+1)/steps capped at 1 and \"end\" floors to s/steps. Confusing start vs end shifts the whole staircase by one step.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "handleKeydown lets Cmd/Ctrl-Z and Cmd/Ctrl-Shift-Z through ALWAYS (even while typing in an input), but returns early for Space/arrows/Delete/Backspace when the event target is an input, textarea, or select — so typing a space or deleting text in a field never toggles playback or deletes the selected layer. Order matters: the undo/redo check precedes the input-guard.",
       "related": []
     },
-    "spring-default-config": {
-      "id": "spring-default-config",
-      "name": "Spring Default Config",
-      "symbol": "~spring-default-config",
+    "preview-vs-commit-render-split": {
+      "id": "preview-vs-commit-render-split",
+      "name": "Preview Vs Commit Render Split",
+      "symbol": "~preview-vs-commit-render-split",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "spring() defaults are mass=1, stiffness=100, damping=10, velocity=0 when the corresponding config field is omitted. These defaults define the out-of-the-box underdamped feel (with stiffness=100/damping=10 the damping ratio zeta is 0.5).",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "previewDocChange re-renders the canvas ONLY — it skips history.snapshot/lastSnapshot, the layer+yaml panel refresh, and the host onDocumentChange notification, and short-circuits entirely when suppressNotify is set. The committing onDocChange is the one path that records history and notifies the host exactly once, so a 60Hz slider drag collapses into a single undo entry and a single save.",
       "related": []
     },
-    "spring-closed-form-three-regimes": {
-      "id": "spring-closed-form-three-regimes",
-      "name": "Spring Closed Form Three Regimes",
-      "symbol": "~spring-closed-form-three-regimes",
+    "undo-redo-preserves-state": {
+      "id": "undo-redo-preserves-state",
+      "name": "Undo Redo Preserves State",
+      "symbol": "~undo-redo-preserves-state",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "The spring value is an ANALYTIC closed-form of the damped harmonic oscillator — there is no integration loop or rest-threshold check. It branches on the damping ratio zeta: underdamped (zeta < 1) uses damped sin/cos, critically damped (zeta === 1) uses the (1 + ...)*t form, overdamped (zeta > 1) uses two real exponentials. Misclassifying the regime produces NaN from the sqrt of a negative.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "reloadPanels (the shared undo/redo + state-switch path) keeps the currently-selected stateName across Cmd-Z/Cmd-Shift-Z when that state still exists in the restored doc, only falling back to the first state when the action being undone deleted it — otherwise editing \"hover\" and hitting undo would snap the editor back to \"default\". It also resyncs the toolbar state selector.",
       "related": []
     },
-    "spring-settle-time-heuristic": {
-      "id": "spring-settle-time-heuristic",
-      "name": "Spring Settle Time Heuristic",
-      "symbol": "~spring-settle-time-heuristic",
+    "player-loop-and-clamp": {
+      "id": "player-loop-and-clamp",
+      "name": "Player Loop And Clamp",
+      "symbol": "~player-loop-and-clamp",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "duration is a HEURISTIC settle-time estimate used only to normalize t into seconds, not a runtime rest threshold — overdamped/critical use 10/(zeta*w0) and underdamped uses ln(1000)/(zeta*w0) (the time to decay within ~0.1% of target). Changing these formulas rescales the entire spring timeline.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The Player accumulator advances currentFrame by whole frames of 1000/fps elapsed time; on reaching totalFrames it wraps to 0 when loop, else clamps to totalFrames-1 and pauses. seek clamps to [0, totalFrames-1] and setTotalFrames resets currentFrame to 0 only if it now exceeds the new total. CanvasPanel drives all playback through this.",
       "related": []
     },
-    "spring-endpoint-snap": {
-      "id": "spring-endpoint-snap",
-      "name": "Spring Endpoint Snap",
-      "symbol": "~spring-endpoint-snap",
+    "scrub-pause-resume": {
+      "id": "scrub-pause-resume",
+      "name": "Scrub Pause Resume",
+      "symbol": "~scrub-pause-resume",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "spring forces exact 0 at t <= 0 and exact 1 at t >= 1 before evaluating the oscillator, so even though the underlying physics overshoots, the start and end frames always land precisely on target.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.",
       "related": []
     },
-    "lerp-is-unclamped": {
-      "id": "lerp-is-unclamped",
-      "name": "Lerp Is Unclamped",
-      "symbol": "~lerp-is-unclamped",
+    "image-drop-files-only": {
+      "id": "image-drop-files-only",
+      "name": "Image Drop Files Only",
+      "symbol": "~image-drop-files-only",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerp(a,b,t) = a + (b-a)*t is intentionally UNCLAMPED — t outside [0,1] extrapolates beyond the endpoints. Callers needing bounded output must wrap with clamp(); contrast clamp() which uses Math.min(Math.max(...)).",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Canvas drag handlers respond ONLY to file drags — hasFileTypes checks dataTransfer.types for \"Files\" (populated during dragover, unlike dataTransfer.files which fills only at drop), so in-app layer-reorder drags never trigger the image-drop highlight or pipeline. dragover must preventDefault for the drop event to fire, and dragleave clears the highlight only when the cursor truly leaves the wrap (target === dropTarget).",
       "related": []
     },
-    "lerp-array-no-length-guard": {
-      "id": "lerp-array-no-length-guard",
-      "name": "Lerp Array No Length Guard",
-      "symbol": "~lerp-array-no-length-guard",
+    "image-drop-first-replaces-background": {
+      "id": "image-drop-first-replaces-background",
+      "name": "Image Drop First Replaces Background",
+      "symbol": "~image-drop-first-replaces-background",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpArray maps over a only and reads b[i] with no length check — if b is shorter than a the missing indices read undefined and produce NaN, and extra elements of b are silently ignored. Equal length is an unenforced caller contract.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "On a multi-file drop, only the FIRST image gets replaceBackground:true so it swaps the welcome scaffold placeholder (doc.layers[0].id === \"background\") in place; subsequent images stack. createImageLayerFromFile aspect-fits the image to the canvas (fit to width when wider than canvas, else fit to height, both capped at canvas extents) with a 0.5/0.5 anchor centered, and unshifts onto layers so new images sit BEHIND existing overlays. A file that fails to decode is skipped without aborting the batch.",
       "related": []
     },
-    "remap-divide-by-zero": {
-      "id": "remap-divide-by-zero",
-      "name": "Remap Divide By Zero",
-      "symbol": "~remap-divide-by-zero",
+    "layer-id-collision-free": {
+      "id": "layer-id-collision-free",
+      "name": "Layer Id Collision Free",
+      "symbol": "~layer-id-collision-free",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "remap divides by (inMax - inMin) with no guard, so a degenerate input range where inMin === inMax yields NaN or Infinity for t and therefore for the result. Zero-width input ranges are undefined behavior.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "nextLayerId/nextImageLayerId start the counter at layers.length+1 and increment past any existing `${prefix}-N` id, so re-adding a removed variant never produces a duplicate id even after deletions reshuffle the count. Image creation uses an \"image\" prefix and registers a matching `${id}-asset` entry in doc.assets.",
       "related": []
     },
-    "hex-alpha-defaults-ff": {
-      "id": "hex-alpha-defaults-ff",
-      "name": "Hex Alpha Defaults Ff",
-      "symbol": "~hex-alpha-defaults-ff",
+    "overlay-tagged-presets": {
+      "id": "overlay-tagged-presets",
+      "name": "Overlay Tagged Presets",
+      "symbol": "~overlay-tagged-presets",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "hexToRgba normalizes shorthand and missing alpha to opaque — 3-char #RGB and 6-char #RRGGBB get \"ff\" appended, 4-char #RGBA doubles each nibble, before parsing each channel as base-16. Alpha is divided by 255 to land in 0-1 while r/g/b stay 0-255.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The + Add menu Handle and Page Number variants build text layers carrying tags:[\"overlay\"] (anchored to canvas corners with fixed margins), so downstream overlay-isolation pipelines (caption regen, silence-trim) skip user-edited overlays. Plain Text/Shape variants are untagged. Image variant bails out of the sync switch into the async file-picker path.",
       "related": []
     },
-    "rgba-to-hex-clamp-and-omit-ff": {
-      "id": "rgba-to-hex-clamp-and-omit-ff",
-      "name": "Rgba To Hex Clamp And Omit Ff",
-      "symbol": "~rgba-to-hex-clamp-and-omit-ff",
+    "remove-layer-cascades-deltas": {
+      "id": "remove-layer-cascades-deltas",
+      "name": "Remove Layer Cascades Deltas",
+      "symbol": "~remove-layer-cascades-deltas",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "rgbaToHex rounds and clamps each channel to 0-255, pads each to 2 hex digits, and OMITS the alpha pair entirely when it rounds to \"ff\" — so fully opaque colors serialize to the short #RRGGBB form rather than #RRGGBBff.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "removeLayer deletes the selected layer AND filters every state.deltas array to drop deltas referencing that layer id, then clears the selection — so deleting a layer never leaves orphaned deltas that would resolve against a missing layer. Visibility toggle flips layer.visible between true and an explicit false (undefined treated as visible).",
       "related": []
     },
-    "rgba-interpolation-is-unrounded": {
-      "id": "rgba-interpolation-is-unrounded",
-      "name": "Rgba Interpolation Is Unrounded",
-      "symbol": "~rgba-interpolation-is-unrounded",
+    "layer-reorder-scroll-preserved": {
+      "id": "layer-reorder-scroll-preserved",
+      "name": "Layer Reorder Scroll Preserved",
+      "symbol": "~layer-reorder-scroll-preserved",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpRgba interpolates in RGB space and leaves channels as raw floats (no rounding), unlike hslaToRgba which Math.round-s r/g/b to integers. Chained RGBA interpolations therefore stay precise; rounding only happens at hex serialization.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "render() captures and restores list.scrollTop around the full innerHTML rebuild, so toggling visibility or reordering does not jump the layer list back to the top. reorderLayer splices the moved layer out and back into doc.layers (the array order IS z-order downstream).",
       "related": []
     },
-    "hsla-shortest-hue-path": {
-      "id": "hsla-shortest-hue-path",
-      "name": "Hsla Shortest Hue Path",
-      "symbol": "~hsla-shortest-hue-path",
+    "property-input-vs-change-commit": {
+      "id": "property-input-vs-change-commit",
+      "name": "Property Input Vs Change Commit",
+      "symbol": "~property-input-vs-change-commit",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpHsla interpolates hue along the SHORTEST arc — the raw hue delta is wrapped into -180..180 (subtract/add 360) before lerping, then the result is euclidean-mod normalized via (((x % 360) + 360) % 360) to stay 0-360. Without this, a 350→10 transition would sweep the long way round.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Continuous controls (Opacity, stroke Start/End sliders) wire onInput → preview() (cheap canvas re-render via onPropertyPreview) and onChange → onPropertyChange (the committing path that snapshots undo + notifies host), so one slider drag is one undo entry. preview() degrades to a full commit when onPropertyPreview is absent — never worse than before. Discrete controls (number, color, select) fire only onPropertyChange.",
       "related": []
     },
-    "hsl-zero-saturation-guard": {
-      "id": "hsl-zero-saturation-guard",
-      "name": "Hsl Zero Saturation Guard",
-      "symbol": "~hsl-zero-saturation-guard",
+    "layer-id-rename-rewrites-deltas": {
+      "id": "layer-id-rename-rewrites-deltas",
+      "name": "Layer Id Rename Rewrites Deltas",
+      "symbol": "~layer-id-rename-rewrites-deltas",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Renaming a layer via the ID text input rewrites every delta whose `layer` matches the old id across ALL states before assigning the new id, and updates this.layerId so the still-selected layer stays selected. Skip the rewrite and renamed layers silently lose their animations.",
+      "related": []
+    },
+    "visual-section-discriminated-by-type": {
+      "id": "visual-section-discriminated-by-type",
+      "name": "Visual Section Discriminated By Type",
+      "symbol": "~visual-section-discriminated-by-type",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "addVisualSection branches on visual.type (shape | image | text) and within shape on visual.shape.type (rect cornerRadius, path point editing), narrowing the discriminated union before each control. Optional blocks (fill, stroke, shadow) render only when present, with \"+ Add\"/\"Remove\" buttons to toggle them, so the inspector only shows controls that apply to the selected layer.",
+      "related": []
+    },
+    "delta-view-filtered-by-layer": {
+      "id": "delta-view-filtered-by-layer",
+      "name": "Delta View Filtered By Layer",
+      "symbol": "~delta-view-filtered-by-layer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "DeltaPanel works on a this.deltas VIEW filtered from the shared state.deltas by layerId, but every mutation (add/remove/reorder/sort) edits the flat state.deltas array directly and then re-derives the view. reorderDelta and sortByStartFrame translate view indices to absolute indices in the flat array so other layers' deltas keep their positions — a known sharp edge of the doc-reference-duplicated-across-panels design.",
+      "related": []
+    },
+    "delta-control-matched-to-property": {
+      "id": "delta-control-matched-to-property",
+      "name": "Delta Control Matched To Property",
+      "symbol": "~delta-control-matched-to-property",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "buildControlForProperty dispatches the From/To editor by property: color properties get a ColorPicker, opacity / stroke.start / stroke.end get a 0..1 SliderInput, everything else a NumberInput with per-property step/min/max/suffix from getNumberConfig. Changing the property resets from/to to getDefaultValues for the new property so the values stay type-correct.",
+      "related": []
+    },
+    "range-slider-input-mirror": {
+      "id": "range-slider-input-mirror",
+      "name": "Range Slider Input Mirror",
+      "symbol": "~range-slider-input-mirror",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The dual-thumb RangeSlider and the Start/End NumberInputs are kept in lock-step — RangeSlider.onChangeLow/High write delta.range and call the matching NumberInput.setValue, while the NumberInputs round their value and call rangeSlider.setValue. Either control reflects the other instantly without a full re-render.",
+      "related": []
+    },
+    "delta-minibar-proportional": {
+      "id": "delta-minibar-proportional",
+      "name": "Delta Minibar Proportional",
+      "symbol": "~delta-minibar-proportional",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The collapsed mini-timeline bar positions its fill via percentage left=(range[0]/duration)*100 and right=((duration-range[1])/duration)*100 with duration defaulting to 1 to avoid divide-by-zero, so the bar visually scales to the state duration. The collapsed detail row formats from→to and the easing label.",
+      "related": []
+    },
+    "yaml-clipboard-fallback-select": {
+      "id": "yaml-clipboard-fallback-select",
+      "name": "Yaml Clipboard Fallback Select",
+      "symbol": "~yaml-clipboard-fallback-select",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Copy uses navigator.clipboard.writeText and flashes \"Copied!\" for 1500ms; if the clipboard API rejects (insecure context / permission) it falls back to selecting the pre element's text via a Range so the user can copy manually. The viewer is read-only — it always re-serializes from the live doc on refresh, never edits it.",
+      "related": []
+    },
+    "yaml-highlight-escapes-html": {
+      "id": "yaml-highlight-escapes-html",
+      "name": "Yaml Highlight Escapes Html",
+      "symbol": "~yaml-highlight-escapes-html",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "highlightYaml builds HTML by wrapping tokens in spans, so every raw segment is run through esc() (&/</> entity-escaped) before insertion to prevent document string content from injecting markup into the highlighted view. Lines are classified in order: comment, key:value, bare list-item, else plain.",
+      "related": []
+    },
+    "number-input-fires-on-input": {
+      "id": "number-input-fires-on-input",
+      "name": "Number Input Fires On Input",
+      "symbol": "~number-input-fires-on-input",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "NumberInput emits onChange on every `input` event (not on commit/blur) and guards with !isNaN so a transient empty or partial value (e.g. \"-\" while typing) never pushes NaN into the doc. This means typing into a number field commits continuously — callers that want one undo per edit must rely on the doc-level history, not this control.",
+      "related": []
+    },
+    "color-picker-hex-normalize": {
+      "id": "color-picker-hex-normalize",
+      "name": "Color Picker Hex Normalize",
+      "symbol": "~color-picker-hex-normalize",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "normalizeHex coerces input to the 7-char #RRGGBB form the native color input requires — it expands a 3-digit #RGB shorthand to 6 digits and truncates an 8-digit #RRGGBBAA (alpha) to its opaque RGB, since <input type=color> cannot represent alpha. So round-tripping an #RRGGBBAA color through this picker silently drops the alpha channel.",
+      "related": []
+    },
+    "select-preselect-by-value": {
+      "id": "select-preselect-by-value",
+      "name": "Select Preselect By Value",
+      "symbol": "~select-preselect-by-value",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "SelectInput marks the option whose value equals opts.value as selected while building the list, so the control reflects the current model value on construction rather than defaulting to the first option. onChange fires on the native `change` event (commit), emitting the raw string value for the caller to cast.",
+      "related": []
+    },
+    "slider-input-vs-change": {
+      "id": "slider-input-vs-change",
+      "name": "Slider Input Vs Change",
+      "symbol": "~slider-input-vs-change",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "SliderInput splits the two native range events: `input` (≈60Hz during drag) calls onInput for cheap live preview and updates the value display only, while `change` (pointerup / keyboard step / blur) calls onChange — the path that snapshots undo history and notifies the host. So one drag = one undo entry. onInput is optional; omitting it means a drag previews nothing until commit.",
+      "related": []
+    },
+    "easing-preset-vs-structured": {
+      "id": "easing-preset-vs-structured",
+      "name": "Easing Preset Vs Structured",
+      "symbol": "~easing-preset-vs-structured",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "EasingPicker maps the dropdown to either a string preset (ease-in/out/in-out passed through raw) or a structured object — linear/spring/cubic-bezier/step become typed objects with default params on selection (emitChange), and selecting a parameterized type spawns extra NumberInput/SelectInput config rows. The live curve preview is rebuilt for every type, and the previous EasingCurveEditor is destroyed before a new one is created to avoid leaks.",
+      "related": []
+    },
+    "range-slider-thumb-clamp": {
+      "id": "range-slider-thumb-clamp",
+      "name": "Range Slider Thumb Clamp",
+      "symbol": "~range-slider-thumb-clamp",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The two overlaid range thumbs are prevented from crossing — the low thumb is clamped to ≤ high and the high thumb to ≥ low on every input, snapping the dragged thumb back rather than swapping the bounds. The filled track between thumbs is recomputed as left/right percentages of (max-min), with a ||1 guard against a zero-width range.",
+      "related": []
+    },
+    "drag-reorder-handle-only": {
+      "id": "drag-reorder-handle-only",
+      "name": "Drag Reorder Handle Only",
+      "symbol": "~drag-reorder-handle-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "enableDragReorder makes an item draggable ONLY while a pointer is down on its .atel-drag-handle (pointerdown sets draggable=true, pointerup/cleanup clears it), so a plain click on the row selects rather than drags. A MutationObserver re-binds handles as the list re-renders, and handle.dataset.bound dedupes so re-render does not stack duplicate listeners.",
+      "related": []
+    },
+    "drag-reorder-index-adjust": {
+      "id": "drag-reorder-index-adjust",
+      "name": "Drag Reorder Index Adjust",
+      "symbol": "~drag-reorder-index-adjust",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "On drop the target index is computed from the cursor position relative to the row midpoint (below the midpoint inserts after), then decremented when fromIndex < toIndex to account for the source being spliced out first — the off-by-one fix that makes downward drags land where the indicator showed. No reorder fires when from === to.",
+      "related": []
+    },
+    "drag-reorder-aborts-clean": {
+      "id": "drag-reorder-aborts-clean",
+      "name": "Drag Reorder Aborts Clean",
+      "symbol": "~drag-reorder-aborts-clean",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.",
       "related": []
     },
     "pinned-lottie-version": {
@@ -4738,54 +4837,6 @@
       "category": "components",
       "id": "#svg-properties"
     },
-    "#canvas-panel": {
-      "category": "components",
-      "id": "canvas-panel"
-    },
-    "#layer-panel": {
-      "category": "components",
-      "id": "layer-panel"
-    },
-    "#property-panel": {
-      "category": "components",
-      "id": "property-panel"
-    },
-    "#delta-panel": {
-      "category": "components",
-      "id": "delta-panel"
-    },
-    "#yaml-panel": {
-      "category": "components",
-      "id": "yaml-panel"
-    },
-    "#number-input": {
-      "category": "components",
-      "id": "number-input"
-    },
-    "#color-picker": {
-      "category": "components",
-      "id": "color-picker"
-    },
-    "#select-input": {
-      "category": "components",
-      "id": "select-input"
-    },
-    "#slider-input": {
-      "category": "components",
-      "id": "slider-input"
-    },
-    "#easing-picker": {
-      "category": "components",
-      "id": "easing-picker"
-    },
-    "#range-slider": {
-      "category": "components",
-      "id": "range-slider"
-    },
-    "#drag-reorder": {
-      "category": "components",
-      "id": "drag-reorder"
-    },
     "##document-schema": {
       "category": "components",
       "id": "#document-schema"
@@ -4825,6 +4876,22 @@
     "#animation-player": {
       "category": "components",
       "id": "animation-player"
+    },
+    "##easing-functions": {
+      "category": "components",
+      "id": "#easing-functions"
+    },
+    "##spring-solver": {
+      "category": "components",
+      "id": "#spring-solver"
+    },
+    "##lerp-functions": {
+      "category": "components",
+      "id": "#lerp-functions"
+    },
+    "##color-math": {
+      "category": "components",
+      "id": "#color-math"
     },
     "#mcp-store": {
       "category": "components",
@@ -4906,21 +4973,53 @@
       "category": "components",
       "id": "mcp-import-images"
     },
-    "##easing-functions": {
+    "#canvas-panel": {
       "category": "components",
-      "id": "#easing-functions"
+      "id": "canvas-panel"
     },
-    "##spring-solver": {
+    "#layer-panel": {
       "category": "components",
-      "id": "#spring-solver"
+      "id": "layer-panel"
     },
-    "##lerp-functions": {
+    "#property-panel": {
       "category": "components",
-      "id": "#lerp-functions"
+      "id": "property-panel"
     },
-    "##color-math": {
+    "#delta-panel": {
       "category": "components",
-      "id": "#color-math"
+      "id": "delta-panel"
+    },
+    "#yaml-panel": {
+      "category": "components",
+      "id": "yaml-panel"
+    },
+    "#number-input": {
+      "category": "components",
+      "id": "number-input"
+    },
+    "#color-picker": {
+      "category": "components",
+      "id": "color-picker"
+    },
+    "#select-input": {
+      "category": "components",
+      "id": "select-input"
+    },
+    "#slider-input": {
+      "category": "components",
+      "id": "slider-input"
+    },
+    "#easing-picker": {
+      "category": "components",
+      "id": "easing-picker"
+    },
+    "#range-slider": {
+      "category": "components",
+      "id": "range-slider"
+    },
+    "#drag-reorder": {
+      "category": "components",
+      "id": "drag-reorder"
     },
     "##lottie-exporter": {
       "category": "components",
@@ -5170,6 +5269,50 @@
       "category": "aspects",
       "id": "source-tagged-mutation"
     },
+    "~types-schema-duplication": {
+      "category": "aspects",
+      "id": "types-schema-duplication"
+    },
+    "~math-pure-deterministic": {
+      "category": "aspects",
+      "id": "math-pure-deterministic"
+    },
+    "~schema-validation-boundary": {
+      "category": "aspects",
+      "id": "schema-validation-boundary"
+    },
+    "~core-engine-no-rendering": {
+      "category": "aspects",
+      "id": "core-engine-no-rendering"
+    },
+    "~canvas-renderer-no-dom": {
+      "category": "aspects",
+      "id": "canvas-renderer-no-dom"
+    },
+    "~svg-declarative-emit": {
+      "category": "aspects",
+      "id": "svg-declarative-emit"
+    },
+    "~lottie-lossy-subset": {
+      "category": "aspects",
+      "id": "lottie-lossy-subset"
+    },
+    "~react-imperative-via-ref": {
+      "category": "aspects",
+      "id": "react-imperative-via-ref"
+    },
+    "~studio-embeddable-widget": {
+      "category": "aspects",
+      "id": "studio-embeddable-widget"
+    },
+    "~mcp-shared-store-multi-transport": {
+      "category": "aspects",
+      "id": "mcp-shared-store-multi-transport"
+    },
+    "~cli-thin-over-engine": {
+      "category": "aspects",
+      "id": "cli-thin-over-engine"
+    },
     "~element-one-per-src-reuse": {
       "category": "aspects",
       "id": "element-one-per-src-reuse"
@@ -5378,134 +5521,6 @@
       "category": "aspects",
       "id": "escape-xml-five-entities"
     },
-    "~apply-mutation-one-tick-suppress": {
-      "category": "aspects",
-      "id": "apply-mutation-one-tick-suppress"
-    },
-    "~apply-mutation-preserves-state-and-selection": {
-      "category": "aspects",
-      "id": "apply-mutation-preserves-state-and-selection"
-    },
-    "~llm-op-is-undoable": {
-      "category": "aspects",
-      "id": "llm-op-is-undoable"
-    },
-    "~keyboard-shortcut-input-passthrough": {
-      "category": "aspects",
-      "id": "keyboard-shortcut-input-passthrough"
-    },
-    "~preview-vs-commit-render-split": {
-      "category": "aspects",
-      "id": "preview-vs-commit-render-split"
-    },
-    "~undo-redo-preserves-state": {
-      "category": "aspects",
-      "id": "undo-redo-preserves-state"
-    },
-    "~player-loop-and-clamp": {
-      "category": "aspects",
-      "id": "player-loop-and-clamp"
-    },
-    "~scrub-pause-resume": {
-      "category": "aspects",
-      "id": "scrub-pause-resume"
-    },
-    "~image-drop-files-only": {
-      "category": "aspects",
-      "id": "image-drop-files-only"
-    },
-    "~image-drop-first-replaces-background": {
-      "category": "aspects",
-      "id": "image-drop-first-replaces-background"
-    },
-    "~layer-id-collision-free": {
-      "category": "aspects",
-      "id": "layer-id-collision-free"
-    },
-    "~overlay-tagged-presets": {
-      "category": "aspects",
-      "id": "overlay-tagged-presets"
-    },
-    "~remove-layer-cascades-deltas": {
-      "category": "aspects",
-      "id": "remove-layer-cascades-deltas"
-    },
-    "~layer-reorder-scroll-preserved": {
-      "category": "aspects",
-      "id": "layer-reorder-scroll-preserved"
-    },
-    "~property-input-vs-change-commit": {
-      "category": "aspects",
-      "id": "property-input-vs-change-commit"
-    },
-    "~layer-id-rename-rewrites-deltas": {
-      "category": "aspects",
-      "id": "layer-id-rename-rewrites-deltas"
-    },
-    "~visual-section-discriminated-by-type": {
-      "category": "aspects",
-      "id": "visual-section-discriminated-by-type"
-    },
-    "~delta-view-filtered-by-layer": {
-      "category": "aspects",
-      "id": "delta-view-filtered-by-layer"
-    },
-    "~delta-control-matched-to-property": {
-      "category": "aspects",
-      "id": "delta-control-matched-to-property"
-    },
-    "~range-slider-input-mirror": {
-      "category": "aspects",
-      "id": "range-slider-input-mirror"
-    },
-    "~delta-minibar-proportional": {
-      "category": "aspects",
-      "id": "delta-minibar-proportional"
-    },
-    "~yaml-clipboard-fallback-select": {
-      "category": "aspects",
-      "id": "yaml-clipboard-fallback-select"
-    },
-    "~yaml-highlight-escapes-html": {
-      "category": "aspects",
-      "id": "yaml-highlight-escapes-html"
-    },
-    "~number-input-fires-on-input": {
-      "category": "aspects",
-      "id": "number-input-fires-on-input"
-    },
-    "~color-picker-hex-normalize": {
-      "category": "aspects",
-      "id": "color-picker-hex-normalize"
-    },
-    "~select-preselect-by-value": {
-      "category": "aspects",
-      "id": "select-preselect-by-value"
-    },
-    "~slider-input-vs-change": {
-      "category": "aspects",
-      "id": "slider-input-vs-change"
-    },
-    "~easing-preset-vs-structured": {
-      "category": "aspects",
-      "id": "easing-preset-vs-structured"
-    },
-    "~range-slider-thumb-clamp": {
-      "category": "aspects",
-      "id": "range-slider-thumb-clamp"
-    },
-    "~drag-reorder-handle-only": {
-      "category": "aspects",
-      "id": "drag-reorder-handle-only"
-    },
-    "~drag-reorder-index-adjust": {
-      "category": "aspects",
-      "id": "drag-reorder-index-adjust"
-    },
-    "~drag-reorder-aborts-clean": {
-      "category": "aspects",
-      "id": "drag-reorder-aborts-clean"
-    },
     "~document-shape-asymmetry": {
       "category": "aspects",
       "id": "document-shape-asymmetry"
@@ -5613,6 +5628,70 @@
     "~image-load-triggers-rerender": {
       "category": "aspects",
       "id": "image-load-triggers-rerender"
+    },
+    "~bezier-binary-search-not-newton": {
+      "category": "aspects",
+      "id": "bezier-binary-search-not-newton"
+    },
+    "~easing-endpoint-snap": {
+      "category": "aspects",
+      "id": "easing-endpoint-snap"
+    },
+    "~css-preset-control-points": {
+      "category": "aspects",
+      "id": "css-preset-control-points"
+    },
+    "~step-position-asymmetry": {
+      "category": "aspects",
+      "id": "step-position-asymmetry"
+    },
+    "~spring-default-config": {
+      "category": "aspects",
+      "id": "spring-default-config"
+    },
+    "~spring-closed-form-three-regimes": {
+      "category": "aspects",
+      "id": "spring-closed-form-three-regimes"
+    },
+    "~spring-settle-time-heuristic": {
+      "category": "aspects",
+      "id": "spring-settle-time-heuristic"
+    },
+    "~spring-endpoint-snap": {
+      "category": "aspects",
+      "id": "spring-endpoint-snap"
+    },
+    "~lerp-is-unclamped": {
+      "category": "aspects",
+      "id": "lerp-is-unclamped"
+    },
+    "~lerp-array-no-length-guard": {
+      "category": "aspects",
+      "id": "lerp-array-no-length-guard"
+    },
+    "~remap-divide-by-zero": {
+      "category": "aspects",
+      "id": "remap-divide-by-zero"
+    },
+    "~hex-alpha-defaults-ff": {
+      "category": "aspects",
+      "id": "hex-alpha-defaults-ff"
+    },
+    "~rgba-to-hex-clamp-and-omit-ff": {
+      "category": "aspects",
+      "id": "rgba-to-hex-clamp-and-omit-ff"
+    },
+    "~rgba-interpolation-is-unrounded": {
+      "category": "aspects",
+      "id": "rgba-interpolation-is-unrounded"
+    },
+    "~hsla-shortest-hue-path": {
+      "category": "aspects",
+      "id": "hsla-shortest-hue-path"
+    },
+    "~hsl-zero-saturation-guard": {
+      "category": "aspects",
+      "id": "hsl-zero-saturation-guard"
     },
     "~store-synchronous-registration-order-emit": {
       "category": "aspects",
@@ -5766,69 +5845,133 @@
       "category": "aspects",
       "id": "import-images-glob-and-dedup"
     },
-    "~bezier-binary-search-not-newton": {
+    "~apply-mutation-one-tick-suppress": {
       "category": "aspects",
-      "id": "bezier-binary-search-not-newton"
+      "id": "apply-mutation-one-tick-suppress"
     },
-    "~easing-endpoint-snap": {
+    "~apply-mutation-preserves-state-and-selection": {
       "category": "aspects",
-      "id": "easing-endpoint-snap"
+      "id": "apply-mutation-preserves-state-and-selection"
     },
-    "~css-preset-control-points": {
+    "~llm-op-is-undoable": {
       "category": "aspects",
-      "id": "css-preset-control-points"
+      "id": "llm-op-is-undoable"
     },
-    "~step-position-asymmetry": {
+    "~keyboard-shortcut-input-passthrough": {
       "category": "aspects",
-      "id": "step-position-asymmetry"
+      "id": "keyboard-shortcut-input-passthrough"
     },
-    "~spring-default-config": {
+    "~preview-vs-commit-render-split": {
       "category": "aspects",
-      "id": "spring-default-config"
+      "id": "preview-vs-commit-render-split"
     },
-    "~spring-closed-form-three-regimes": {
+    "~undo-redo-preserves-state": {
       "category": "aspects",
-      "id": "spring-closed-form-three-regimes"
+      "id": "undo-redo-preserves-state"
     },
-    "~spring-settle-time-heuristic": {
+    "~player-loop-and-clamp": {
       "category": "aspects",
-      "id": "spring-settle-time-heuristic"
+      "id": "player-loop-and-clamp"
     },
-    "~spring-endpoint-snap": {
+    "~scrub-pause-resume": {
       "category": "aspects",
-      "id": "spring-endpoint-snap"
+      "id": "scrub-pause-resume"
     },
-    "~lerp-is-unclamped": {
+    "~image-drop-files-only": {
       "category": "aspects",
-      "id": "lerp-is-unclamped"
+      "id": "image-drop-files-only"
     },
-    "~lerp-array-no-length-guard": {
+    "~image-drop-first-replaces-background": {
       "category": "aspects",
-      "id": "lerp-array-no-length-guard"
+      "id": "image-drop-first-replaces-background"
     },
-    "~remap-divide-by-zero": {
+    "~layer-id-collision-free": {
       "category": "aspects",
-      "id": "remap-divide-by-zero"
+      "id": "layer-id-collision-free"
     },
-    "~hex-alpha-defaults-ff": {
+    "~overlay-tagged-presets": {
       "category": "aspects",
-      "id": "hex-alpha-defaults-ff"
+      "id": "overlay-tagged-presets"
     },
-    "~rgba-to-hex-clamp-and-omit-ff": {
+    "~remove-layer-cascades-deltas": {
       "category": "aspects",
-      "id": "rgba-to-hex-clamp-and-omit-ff"
+      "id": "remove-layer-cascades-deltas"
     },
-    "~rgba-interpolation-is-unrounded": {
+    "~layer-reorder-scroll-preserved": {
       "category": "aspects",
-      "id": "rgba-interpolation-is-unrounded"
+      "id": "layer-reorder-scroll-preserved"
     },
-    "~hsla-shortest-hue-path": {
+    "~property-input-vs-change-commit": {
       "category": "aspects",
-      "id": "hsla-shortest-hue-path"
+      "id": "property-input-vs-change-commit"
     },
-    "~hsl-zero-saturation-guard": {
+    "~layer-id-rename-rewrites-deltas": {
       "category": "aspects",
-      "id": "hsl-zero-saturation-guard"
+      "id": "layer-id-rename-rewrites-deltas"
+    },
+    "~visual-section-discriminated-by-type": {
+      "category": "aspects",
+      "id": "visual-section-discriminated-by-type"
+    },
+    "~delta-view-filtered-by-layer": {
+      "category": "aspects",
+      "id": "delta-view-filtered-by-layer"
+    },
+    "~delta-control-matched-to-property": {
+      "category": "aspects",
+      "id": "delta-control-matched-to-property"
+    },
+    "~range-slider-input-mirror": {
+      "category": "aspects",
+      "id": "range-slider-input-mirror"
+    },
+    "~delta-minibar-proportional": {
+      "category": "aspects",
+      "id": "delta-minibar-proportional"
+    },
+    "~yaml-clipboard-fallback-select": {
+      "category": "aspects",
+      "id": "yaml-clipboard-fallback-select"
+    },
+    "~yaml-highlight-escapes-html": {
+      "category": "aspects",
+      "id": "yaml-highlight-escapes-html"
+    },
+    "~number-input-fires-on-input": {
+      "category": "aspects",
+      "id": "number-input-fires-on-input"
+    },
+    "~color-picker-hex-normalize": {
+      "category": "aspects",
+      "id": "color-picker-hex-normalize"
+    },
+    "~select-preselect-by-value": {
+      "category": "aspects",
+      "id": "select-preselect-by-value"
+    },
+    "~slider-input-vs-change": {
+      "category": "aspects",
+      "id": "slider-input-vs-change"
+    },
+    "~easing-preset-vs-structured": {
+      "category": "aspects",
+      "id": "easing-preset-vs-structured"
+    },
+    "~range-slider-thumb-clamp": {
+      "category": "aspects",
+      "id": "range-slider-thumb-clamp"
+    },
+    "~drag-reorder-handle-only": {
+      "category": "aspects",
+      "id": "drag-reorder-handle-only"
+    },
+    "~drag-reorder-index-adjust": {
+      "category": "aspects",
+      "id": "drag-reorder-index-adjust"
+    },
+    "~drag-reorder-aborts-clean": {
+      "category": "aspects",
+      "id": "drag-reorder-aborts-clean"
     },
     "~pinned-lottie-version": {
       "category": "aspects",
