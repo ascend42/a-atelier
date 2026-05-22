@@ -109,3 +109,643 @@ components:
     description: 'Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.'
     file: src/lib/recipe.ts
     tags: [video, recipe, studio-recipe, pure]
+aspects:
+  lint-gate-cascade-short-circuit:
+    description: 'lintFile runs three gates in order, but a failed ^valid-document aborts the rest with an early return — ^valid-delta and ^valid-video-layer cannot run on an unparseable document, so a parse failure reports exactly one gate, not three. ^valid-video-layer only inspects layers whose visual.type is "video".'
+    tags:
+      - gates
+      - ordering
+      - edge-case
+    anchors:
+      - packages/cli/src/commands/lint.ts:51-59
+      - packages/cli/src/commands/lint.ts:80-90
+    enforcement: early-return after document-gate failure
+    appliesTo: ["#cli-lint"]
+  validate-legacy-subset-of-lint:
+    description: 'The legacy validate command checks only schema parse + delta overlap (validateAllDeltas per state) — it deliberately omits the ^valid-video-layer semantic gate that lint runs. validateFile is the strict subset; new code should prefer lint. A document that passes validate can still fail lint on video constraints.'
+    tags:
+      - legacy
+      - validation
+      - gotcha
+    anchors:
+      - packages/cli/src/commands/validate.ts:33-46
+    enforcement: schema + overlap only, no video gate
+    appliesTo: ["#cli-validate"]
+  info-counts-from-live-arrays:
+    description: 'getInfo derives every count straight off the parsed document arrays/maps (layers.length, Object.keys(states).length, deltas.length, presets ?? {}) with no caching or precomputed metadata — so the summary always reflects the file as written. presets count guards the optional field with `doc.presets ? ... : 0`.'
+    tags:
+      - summary
+      - convention
+    anchors:
+      - packages/cli/src/commands/info.ts:46-62
+    enforcement: count off live arrays, guard optionals
+    appliesTo: ["#cli-info"]
+  still-png-via-napi-no-preload:
+    description: 'still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) but — unlike the export-image / render paths — does NOT pre-load image layers, so ImageVisual layers render blank in a still PNG. JSON is the default format; an unknown --format value is rejected before any work.'
+    tags:
+      - png
+      - canvas
+      - gotcha
+      - limitation
+    anchors:
+      - packages/cli/src/commands/still.ts:95-99
+      - packages/cli/src/commands/still.ts:116-126
+    enforcement: validate format then rasterize sans preload
+    appliesTo: ["#cli-still"]
+  render-ffmpeg-preflight:
+    description: 'The render command runs checkFfmpeg() (spawns `ffmpeg -version`) BEFORE reading/parsing the document, so a missing FFmpeg fails with install guidance up front rather than after a parse. Output format is inferred from the -o extension (.gif → gif, else mp4) only when --format is omitted.'
+    tags:
+      - ffmpeg
+      - preflight
+      - cli
+    anchors:
+      - packages/cli/src/commands/render.ts:73-82
+      - packages/cli/src/commands/render.ts:45-50
+    enforcement: ffmpeg probe before document load
+    appliesTo: ["#cli-render"]
+  pipeline-bgra-rawvideo-pipe:
+    description: 'The render pipeline pipes node-canvas frames to FFmpeg as raw `bgra` rawvideo over stdin (pipe:0) at the document fps — canvas.toBuffer("raw") emits BGRA, which is why ffmpeg input pix_fmt is pinned to bgra. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".'
+    tags:
+      - ffmpeg
+      - pixel-format
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/render-pipeline.ts:56-63
+      - packages/cli/src/commands/render-pipeline.ts:242-248
+    enforcement: bgra rawvideo over stdin + drain backpressure
+    appliesTo: ["#render-pipeline"]
+  pipeline-mp4-even-dimensions:
+    description: 'H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.'
+    tags:
+      - ffmpeg
+      - mp4
+      - edge-case
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/render-pipeline.ts:187-192
+      - packages/cli/src/commands/render-pipeline.ts:65-74
+    enforcement: reject odd dimensions for mp4
+    appliesTo: ["#render-pipeline"]
+  pipeline-gif-single-pass-palette:
+    description: 'GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.'
+    tags:
+      - ffmpeg
+      - gif
+      - technique
+    anchors:
+      - packages/cli/src/commands/render-pipeline.ts:77-83
+    enforcement: single-pass split palettegen/paletteuse
+    appliesTo: ["#render-pipeline"]
+  pipeline-image-load-failure-blank:
+    description: 'preloadImages loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.'
+    tags:
+      - tolerance
+      - async
+      - edge-case
+    anchors:
+      - packages/cli/src/commands/render-pipeline.ts:115-123
+      - packages/cli/src/commands/render-pipeline.ts:128-145
+    enforcement: swallow per-image load error, nextTick callbacks
+    appliesTo: ["#render-pipeline"]
+  export-svg-validate-state-before-render:
+    description: 'export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.'
+    tags:
+      - svg
+      - validation
+      - cli
+    anchors:
+      - packages/cli/src/commands/export-svg.ts:54-66
+    enforcement: pre-validate state + frame
+    appliesTo: ["#cli-export-svg"]
+  export-lottie-warnings-to-stderr:
+    description: 'exportToLottie returns { json, warnings } for lossy/unsupported features; the command prints warnings to STDERR and the JSON to stdout (or -o file), so the lossy-conversion notices never contaminate piped JSON output. Lottie export takes a state but no frame — it exports the whole timeline.'
+    tags:
+      - lottie
+      - lossy
+      - output
+    anchors:
+      - packages/cli/src/commands/export-lottie.ts:46-60
+    enforcement: warnings→stderr, json→stdout
+    appliesTo: ["#cli-export-lottie"]
+  export-image-shared-render-path:
+    description: 'export-image is a thin CLI wrapper that delegates all rasterization to renderDocumentToPng (#render-image) and only adds arg parsing + a CanvasUnavailableError branch. resolveExportDimensions is re-exported here so legacy import sites (index.ts, tests) keep resolving after the logic moved into the shared lib.'
+    tags:
+      - export
+      - delegation
+      - compat
+    anchors:
+      - packages/cli/src/commands/export-image.ts:13
+      - packages/cli/src/commands/export-image.ts:84-100
+    enforcement: delegate to render-image, re-export shim
+    appliesTo: ["#cli-export-image"]
+  render-image-napi-canvas-backend:
+    description: 'PNG rasterization is hard-bound to @napi-rs/canvas (statically imported prebuilt platform binaries — no node-gyp, no cairo/pango), distinct from the MP4 path which dynamically imports the native node-canvas. loadCanvasModule is a thin accessor that only throws CanvasUnavailableError if the platform binary is genuinely absent (corrupt install / unsupported platform) — essentially never in practice.'
+    tags:
+      - canvas
+      - architecture
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/render-image.ts:16
+      - packages/cli/src/lib/render-image.ts:90-115
+    enforcement: static @napi-rs/canvas import + typed accessor
+    appliesTo: ["#render-image"]
+  render-image-aspect-preserving-dims:
+    description: 'resolveExportDimensions preserves the document aspect ratio when EXACTLY ONE of width/height is supplied (derives the other, floored at 1 via Math.max(1, round)); when BOTH are supplied it uses them verbatim (allowing intentional non-uniform squash); when NEITHER it falls back to the document canvas size.'
+    tags:
+      - dimensions
+      - aspect-ratio
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/render-image.ts:123-141
+    enforcement: one-set derives, both-set verbatim
+    appliesTo: ["#render-image"]
+  render-image-scale-context-to-output:
+    description: 'renderDocumentToPng renders at document coordinates then ctx.scale(outW/canvasW, outH/canvasH)s the context to the requested output size — the scale is skipped entirely when both factors are 1, so a same-size export incurs no transform. State/frame are validated (state exists, frame is a non-negative integer within state.duration) before any canvas work.'
+    tags:
+      - scaling
+      - validation
+    anchors:
+      - packages/cli/src/lib/render-image.ts:234-251
+      - packages/cli/src/lib/render-image.ts:286-290
+    enforcement: scale context, skip when identity
+    appliesTo: ["#render-image"]
+  render-image-refit-after-decode:
+    description: 'Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer''s bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.'
+    tags:
+      - image
+      - aspect-fit
+      - technique
+    anchors:
+      - packages/cli/src/lib/render-image.ts:258-273
+      - packages/cli/src/lib/render-image.ts:51-80
+    enforcement: refit bounds post-decode
+    appliesTo: ["#render-image"]
+  carousel-no-glob-dependency:
+    description: 'expandInputs deliberately ships NO glob dependency: it supports only a directory (lists images within), a single literal file, or a single-segment *-glob in the FINAL path component — multi-segment / recursive globs are out of scope (point --inputs at a directory). Results are image-extension filtered (.png/.jpg/.jpeg/.webp) and sorted lexicographically so output ordering is stable.'
+    tags:
+      - glob
+      - no-dependency
+      - convention
+    anchors:
+      - packages/cli/src/commands/carousel.ts:28-62
+      - packages/cli/src/commands/carousel.ts:88-92
+    enforcement: hand-rolled single-segment glob, no dep
+    appliesTo: ["#cli-carousel"]
+  carousel-zero-pad-sortable-names:
+    description: 'carouselFileName zero-pads the index to width max(2, digits-in-N) and prefixes the basename (NN-stem.png) so output files sort in carousel order even past 9/99 items. The two-digit floor keeps small batches tidy.'
+    tags:
+      - naming
+      - sorting
+      - magic-number
+    anchors:
+      - packages/cli/src/commands/carousel.ts:144-151
+    enforcement: padStart to max(2, len(N))
+    appliesTo: ["#cli-carousel"]
+  carousel-one-based-index-threading:
+    description: 'The batch loop converts the 0-based array position n to a 1-based index (n+1) and threads currentIndex=i / totalCount=N into composeCarouselFrameDoc → applyRecipeToOverlay so the page-number overlay renders human "i/N" (e.g. 1/7, not 0/7). composeCarouselFrameDoc is pure/canvas-free and testable without node-canvas.'
+    tags:
+      - carousel
+      - indexing
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/carousel.ts:242-252
+      - packages/cli/src/commands/carousel.ts:105-142
+    enforcement: 1-based i/N threaded into overlay ctx
+    appliesTo: ["#cli-carousel"]
+  assets-usage-cross-reference:
+    description: 'getAssets cross-references each registered asset against actual usage — image assets matched to layers by ImageVisual.assetId, audio assets matched to states by state.audio.src — so the listing flags orphaned (declared-but-unused) assets implicitly. Reads the optional assets map with a `?? {}` guard.'
+    tags:
+      - cross-reference
+      - usage
+    anchors:
+      - packages/cli/src/commands/assets.ts:20-40
+    enforcement: match assetId to layers + audio.src to states
+    appliesTo: ["#cli-assets"]
+  variables-undeclared-detection:
+    description: 'getVariables diffs the {{template}} variables actually referenced in the document (findTemplateVariables) against the declared variables map — surfacing BOTH unused declarations (referenced=false) and undeclared references (referenced but absent from variables). The undeclared list is the load-bearing lint signal for broken templates.'
+    tags:
+      - templates
+      - cross-reference
+      - lint
+    anchors:
+      - packages/cli/src/commands/variables.ts:20-34
+    enforcement: diff referenced vs declared both ways
+    appliesTo: ["#cli-variables"]
+  video-project-legacy-migration-on-read:
+    description: 'readCutList and readTranscript migrate legacy on-disk shapes to current on the fly (1.0 cuts {start,end} → 1.1 {rawStart,rawEnd}+zero padding; 1.0 transcript word:string → 1.1 detected+text+flags) using an in-object discriminator ("rawStart" in entry / "detected" in w). Writers ALWAYS emit the current version, so re-saving a migrated file upgrades it.'
+    tags:
+      - migration
+      - versioning
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/video-project.ts:215-225
+      - packages/cli/src/lib/video-project.ts:264-279
+    enforcement: discriminator-keyed read migration
+    appliesTo: ["#video-project"]
+  video-project-version-pinned-writes:
+    description: 'Every writer (writeCutList / writeTranscript) spreads the payload then OVERWRITES version with the module constant (VIDEO_CUTLIST_VERSION 1.1 / VIDEO_TRANSCRIPT_VERSION 1.1) — a caller can never persist a stale or mismatched version string. The disk format version is owned by the writer, not the caller.'
+    tags:
+      - versioning
+      - convention
+    anchors:
+      - packages/cli/src/lib/video-project.ts:235-238
+      - packages/cli/src/lib/video-project.ts:289-292
+    enforcement: writer overwrites version constant
+    appliesTo: ["#video-project"]
+  video-project-idempotent-scaffold:
+    description: 'createVideoProject is re-init safe: every filesystem step is existsSync-guarded (source copy, project.atelier, cuts.json, export/ dir) so re-running on an existing project folder never clobbers user work. effectiveSpan clamps a cut to source bounds — start=max(0, rawStart-padPre), end=min(duration, rawEnd+padPost).'
+    tags:
+      - idempotent
+      - filesystem
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/video-project.ts:76-78
+      - packages/cli/src/lib/video-project.ts:135-147
+      - packages/cli/src/lib/video-project.ts:19-27
+    enforcement: existsSync-guard every write
+    appliesTo: ["#video-project"]
+  video-project-cumulative-clip-frames:
+    description: 'rewriteCutLayers lays trim clips end-to-end: each clip''s startFrame is the running cumulativeFrame, and durationFrames is floored at 1 (Math.max(1, round(...))) so a sub-frame cut still produces a visible clip. sourceOffset/sourceEnd are frame-quantized (floor/ceil ÷ fps) so clip boundaries snap to frame grid. Only "silence-trim"-tagged layers are dropped+rebuilt.'
+    tags:
+      - video
+      - frame-math
+      - pipeline
+    anchors:
+      - packages/cli/src/lib/video-project.ts:319-347
+    enforcement: cumulative startFrame + min-1 duration
+    appliesTo: ["#video-project"]
+  trim-pipeline-ordering:
+    description: 'trimProject runs the cut transforms in a load-bearing order: build defaults → merge-with-existing (preserve user padding, skipped under --reset) → global tighten/loosen → per-cut --cut override → resolveOverlaps → clampBoundaries. Tighten/loosen apply AFTER the merge so they adjust the preserved padding, not the fresh defaults. --reset is what forces a clean re-detect.'
+    tags:
+      - pipeline
+      - ordering
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/trim.ts:88-118
+    enforcement: fixed transform order, merge before adjust
+    appliesTo: ["#cli-trim"]
+  trim-cut-index-bounds:
+    description: 'The single-cut --cut <index> override bounds-checks the index against the current cut count and throws (not clamps) when out of range, so a typo''d index fails loudly rather than silently editing the wrong / no cut. --tighten and --loosen are passed as positive ms and converted to ±seconds when applied.'
+    tags:
+      - bounds
+      - fail-fast
+      - cli
+    anchors:
+      - packages/cli/src/commands/trim.ts:107-115
+      - packages/cli/src/commands/trim.ts:99-104
+    enforcement: throw on out-of-range cut index
+    appliesTo: ["#cli-trim"]
+  silence-detect-filter-preflight:
+    description: 'probeSilencedetect greps `ffmpeg -filters` for the silencedetect filter and throws early if absent — some minimal ffmpeg builds compile filters out, and failing here gives a clear install message instead of an empty silence list later. Run before any detection work.'
+    tags:
+      - ffmpeg
+      - preflight
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/silence-detect.ts:21-29
+    enforcement: filter-availability grep + throw
+    appliesTo: ["#silence-detect"]
+  silence-detect-null-muxer-tolerant-exit:
+    description: 'silencedetect runs to the `-f null -` muxer (filter walks the audio, decodes no frames). The stderr-capture helper resolves on ANY exit code because the null muxer exits non-zero on EOF in some ffmpeg builds — treating that as success is required, where the stdout-capture helper still rejects non-zero. ENOENT is translated to a brew/apt install hint.'
+    tags:
+      - ffmpeg
+      - subprocess
+      - gotcha
+    anchors:
+      - packages/cli/src/lib/silence-detect.ts:128-143
+      - packages/cli/src/lib/silence-detect.ts:66-73
+    enforcement: accept any exit code for null muxer
+    appliesTo: ["#silence-detect"]
+  silence-detect-clamp-negative-start:
+    description: 'parseSilenceDetectStderr pairs silence_start/silence_end lines in order (tolerating interleaved filter chatter) and clamps a negative silence_start to 0 via Math.max(0, ...) — silencedetect emits a sub-zero start when the audio opens already in silence. A start with no matching end is dropped.'
+    tags:
+      - parsing
+      - clamp
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/silence-detect.ts:83-103
+    enforcement: ordered pair + clamp start to 0
+    appliesTo: ["#silence-detect"]
+  cut-model-default-padding-constants:
+    description: 'buildInitialCuts applies asymmetric default padding — DEFAULT_PADDING_PRE 0.08s leading, DEFAULT_PADDING_POST 0.12s trailing — because speech needs a longer tail than head to avoid clipping word-ends. These constants are the recipe-overridable baseline; changing them shifts every fresh cut.'
+    tags:
+      - magic-number
+      - cuts
+      - convention
+    anchors:
+      - packages/cli/src/lib/cut-model.ts:11-12
+      - packages/cli/src/lib/cut-model.ts:57-68
+    enforcement: 0.08 pre / 0.12 post defaults
+    appliesTo: ["#cut-model"]
+  cut-model-match-tolerance:
+    description: 'mergeWithExisting preserves user padding (and label) only when BOTH the fresh raw start AND raw end fall within DEFAULT_MATCH_TOLERANCE 0.5s of an existing cut — a re-detect that nudges a boundary under 0.5s keeps the human override, beyond it the cut is treated as new and gets defaults. Returns a new array; inputs untouched.'
+    tags:
+      - magic-number
+      - re-run
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/cut-model.ts:14-15
+      - packages/cli/src/lib/cut-model.ts:121-141
+    enforcement: 0.5s start+end tolerance match
+    appliesTo: ["#cut-model"]
+  cut-model-overlap-split-at-midpoint:
+    description: 'resolveOverlaps detects when paddingPost[i] + paddingPre[i+1] eats past the silence gap and splits the silence at its MIDPOINT ((rawEnd+nextRawStart)/2) — neither cut "wins", each gets an equal share. Mutates in place. Padding shares are floored at 0 so a cut never gets negative padding.'
+    tags:
+      - cuts
+      - overlap
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/cut-model.ts:77-90
+    enforcement: split silence at midpoint, floor 0
+    appliesTo: ["#cut-model"]
+  cut-model-padding-floor-zero:
+    description: 'applyGlobalPadding (tighten/loosen) and clampBoundaries both floor padding at 0 via Math.max(0, ...) — tightening past zero never produces negative padding, and the first/last cut padding is clamped so the effective span stays inside [0, duration]. The boundary clamp only touches the first cut''s pre and last cut''s post.'
+    tags:
+      - clamp
+      - cuts
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/cut-model.ts:149-154
+      - packages/cli/src/lib/cut-model.ts:98-108
+    enforcement: Math.max(0, ...) padding floor
+    appliesTo: ["#cut-model"]
+  transcribe-backend-gate:
+    description: 'transcribeProject probes the Whisper backend first and gates on it: "none" throws install guidance, and "openai-api" throws a not-yet-implemented error (reserved for the --use-api opt-in) — so only the whisper-cpp path actually transcribes in this milestone. Backend selection happens before any subprocess work.'
+    tags:
+      - whisper
+      - backend
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/transcribe.ts:60-72
+    enforcement: gate on probed backend before run
+    appliesTo: ["#cli-transcribe"]
+  transcribe-merge-unless-reset:
+    description: 'Unless --reset is passed, a fresh transcript is merged with the existing one (mergeTranscriptWithExisting) to preserve user edits across re-runs; --reset and --no-captions are the two destructive/skip switches. The word count reported is summed across all segments after merge.'
+    tags:
+      - re-run
+      - whisper
+      - pipeline
+    anchors:
+      - packages/cli/src/commands/transcribe.ts:80-88
+      - packages/cli/src/commands/transcribe.ts:102-107
+    enforcement: merge with existing unless --reset
+    appliesTo: ["#cli-transcribe"]
+  transcript-edits-set-provenance-flags:
+    description: 'Every transcript edit subcommand routes to a transcript-model transform that stamps the right provenance flag — fix→userEdited, add→userAdded, delete→hidden, merge/split→userEdited — which is exactly what lets a later re-transcribe preserve the human change. Edits regenerate caption layers by default; --no-regenerate (regenerate:false) skips the rewrite.'
+    tags:
+      - provenance
+      - editing
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/transcript.ts:33-45
+      - packages/cli/src/commands/transcript.ts:82-89
+    enforcement: edit sets flag, regenerate unless opted out
+    appliesTo: ["#cli-transcript"]
+  transcript-fix-requires-an-edit:
+    description: 'transcript fix accepts EITHER --replace pairs (batch, repeatable, validated "detected=replacement") OR --word + --text (single), and throws if neither is supplied — there is no no-op fix. A --replace pair missing either side is rejected with a format hint.'
+    tags:
+      - cli
+      - validation
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/transcript.ts:68-87
+    enforcement: require replace-or-word, validate pair shape
+    appliesTo: ["#cli-transcript"]
+  captions-regenerate-without-whisper:
+    description: 'captions regenerate re-derives caption-tagged layers from the EXISTING transcript.json (rewriteCaptionLayers) without re-running Whisper — the styling-only path used when caption_style / grouping changes. It throws if no transcript.json exists yet (pointing at `atelier transcribe`), since there is nothing to render from.'
+    tags:
+      - captions
+      - re-run
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/captions.ts:25-35
+    enforcement: rebuild from transcript, no whisper run
+    appliesTo: ["#cli-captions"]
+  whisper-backend-probe-order:
+    description: 'probeWhisper checks backends in priority order: a `whisper-cli` binary on PATH wins ("whisper-cpp"), else OPENAI_API_KEY in env ("openai-api"), else "none". commandExists short-circuits to existsSync when given an absolute path, otherwise spawns which/where (platform-branched) — the local CLI is always preferred over the API.'
+    tags:
+      - whisper
+      - probe
+      - ordering
+    anchors:
+      - packages/cli/src/lib/whisper.ts:31-35
+      - packages/cli/src/lib/whisper.ts:152-164
+    enforcement: PATH binary first, then env key, then none
+    appliesTo: ["#whisper"]
+  whisper-token-vs-even-split:
+    description: 'parseWhisperCppJson prefers token-level word timing when the segment carries a `tokens` array (--output-json-full), and falls back to EVEN-SPLITTING the segment span across whitespace tokens when only segment boundaries are present (--output-json) — so word timing is always populated, just coarser without per-token detail. Offsets are ms on disk, divided by 1000 to seconds.'
+    tags:
+      - parsing
+      - whisper
+      - fallback
+    anchors:
+      - packages/cli/src/lib/whisper.ts:104-140
+    enforcement: token timing else even-split fallback
+    appliesTo: ["#whisper"]
+  whisper-special-token-filter:
+    description: 'Token-level parsing filters out whisper.cpp special/empty tokens — any token whose text is blank or starts with "[_" (e.g. [_BEG_], [_TT_...]) is dropped so control tokens never leak into the word list as fake words.'
+    tags:
+      - parsing
+      - whisper
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/whisper.ts:112-113
+    enforcement: drop blank / [_-prefixed tokens
+    appliesTo: ["#whisper"]
+  transcript-model-match-tolerance:
+    description: 'mergeTranscriptWithExisting preserves a user edit only when the fresh word matches an existing one within DEFAULT_TRANSCRIPT_MATCH_TOLERANCE 0.3s of start AND the `detected` string is unchanged AND the existing word is not userAdded — a TIGHTER tolerance than the cut model''s 0.5s because word boundaries are denser than speech segments. The detected-text equality guard means correcting then re-transcribing keeps the correction only if Whisper still hears the same raw word.'
+    tags:
+      - magic-number
+      - re-run
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/transcript-model.ts:3-4
+      - packages/cli/src/lib/transcript-model.ts:99-116
+    enforcement: 0.3s start + unchanged detected match
+    appliesTo: ["#transcript-model"]
+  transcript-model-phrase-break-rules:
+    description: 'groupIntoPhrases ends a caption phrase when ANY of three conditions hits: phrase reaches DEFAULT_PHRASE_MAX_WORDS 5, the word ends in . ! ? , ; : (END_PUNCT), or the gap to the next word exceeds DEFAULT_PHRASE_PAUSE_GAP_SECONDS 0.4s. Hidden words are filtered out before grouping, so a deleted word never appears in a caption but stays in the transcript.'
+    tags:
+      - magic-number
+      - captions
+      - phrasing
+    anchors:
+      - packages/cli/src/lib/transcript-model.ts:6-11
+      - packages/cli/src/lib/transcript-model.ts:41-72
+    enforcement: maxWords / punct / pauseGap break, skip hidden
+    appliesTo: ["#transcript-model"]
+  transcript-model-orphan-userAdded-reinsert:
+    description: 'userAdded words have no fresh match by definition, so the merge re-inserts them as ORPHANS into the segment whose [start,end] contains their timing (falling back to the last segment), spliced at the first word with a later start — preserving human-inserted words across a re-transcribe. All edit transforms are immutable (return new transcript) and bounds-check the global word index.'
+    tags:
+      - re-run
+      - immutability
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/transcript-model.ts:120-133
+      - packages/cli/src/lib/transcript-model.ts:314-337
+    enforcement: re-insert orphans by timing, immutable maps
+    appliesTo: ["#transcript-model"]
+  caption-builder-fade-frame-math:
+    description: 'buildPhraseDeltas converts fadeSeconds to frames (Math.max(1, round(fadeSeconds*fps)) — at least 1 frame), emits a fade-in delta ending at the phrase start and a fade-out delta clamped so fadeOutStart >= startFrame+1 (a very short phrase can''t invert its fade window). startFrame floors, endFrame ceils — captions err toward staying on screen a frame longer rather than cutting a word.'
+    tags:
+      - captions
+      - frame-math
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/caption-builder.ts:160-192
+    enforcement: min-1 fade frames, clamp fade-out start
+    appliesTo: ["#caption-builder"]
+  caption-builder-tag-isolated-delta-rewrite:
+    description: 'rewriteCaptionLayers drops only "caption"-tagged layers AND only the deltas on those caption layer ids from the target state — preserving every other layer and every non-caption delta. Deltas are written into the "default" state, or the first state if there is no "default". This is the delta-scoped half of the layer-tag-isolation invariant.'
+    tags:
+      - captions
+      - tag-isolation
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/caption-builder.ts:93-122
+    enforcement: drop caption layers + their deltas only
+    appliesTo: ["#caption-builder"]
+  recipe-new-double-extension-guard:
+    description: 'recipe new guards against double-extension footguns: if the supplied name already carries a recognized extension (.recipe.yaml / .recipe.json / .yaml / .yml / .json) it is treated as a literal filename, else `.recipe.yaml` is appended — so `recipe new foo.recipe.yaml` does NOT produce foo.recipe.yaml.recipe.yaml. The scaffolded recipe name strips any extension so it matches what `recipe validate <bare-name>` resolves.'
+    tags:
+      - cli
+      - filename
+      - gotcha
+    anchors:
+      - packages/cli/src/commands/recipe.ts:30-37
+    enforcement: detect known ext, append only if absent
+    appliesTo: ["#cli-recipe"]
+  recipe-new-refuses-overwrite:
+    description: 'recipe new throws rather than overwrite an existing recipe at the target path — authored recipes are never silently clobbered. recipe validate / show resolve a bare name project-local-first (passing process.cwd() as projectDir) so they agree with where `recipe new` wrote it.'
+    tags:
+      - cli
+      - safety
+    anchors:
+      - packages/cli/src/commands/recipe.ts:33-35
+      - packages/cli/src/commands/recipe.ts:55
+    enforcement: existsSync refuse-to-overwrite
+    appliesTo: ["#cli-recipe"]
+  apply-recipe-trim-then-transcribe-order:
+    description: 'apply-recipe runs trim THEN transcribe THEN overlay against one recipe, because captions are derived after cuts and overlays sit on top of both. --no-trim / --no-transcribe skip a stage; --reset is forwarded to both pipelines and is explicitly destructive (discards user padding + transcript edits). Each stage reuses the same applyRecipeTo* translators the standalone commands use.'
+    tags:
+      - pipeline
+      - ordering
+      - recipe
+    anchors:
+      - packages/cli/src/commands/apply-recipe.ts:41-64
+    enforcement: trim → transcribe → overlay sequence
+    appliesTo: ["#cli-apply-recipe"]
+  apply-recipe-skips-page-number-single-frame:
+    description: 'In the single-frame apply-recipe path there is no carousel currentIndex/totalCount, so applyRecipeToOverlay is called WITHOUT a ctx — page_number overlays are silently skipped (only the handle is applied), keeping apply-recipe safe outside a carousel batch. Overlay rewrite runs only when recipe.overlay_rules is present.'
+    tags:
+      - recipe
+      - overlay
+      - edge-case
+    anchors:
+      - packages/cli/src/commands/apply-recipe.ts:58-64
+    enforcement: no overlay ctx → page_number skipped
+    appliesTo: ["#cli-apply-recipe"]
+  studio-localhost-only-bind:
+    description: '^localhost-only: the Vite dev server is pinned to 127.0.0.1 (HOSTNAME constant, not Vite''s default "localhost") so the editor is unreachable from other machines on the network even if Vite''s default ever changes. The loopback bind is the primary protection; the Origin checks are defense-in-depth.'
+    tags:
+      - security
+      - localhost-only
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/studio.ts:500
+      - packages/cli/src/commands/studio.ts:559-568
+    enforcement: explicit 127.0.0.1 host bind
+    appliesTo: ["#cli-studio"]
+  studio-origin-check-bridge-vs-mcp-split:
+    description: '^localhost-only: mutating /api/* requests AND the /bridge WS upgrade enforce STRICT same-origin (isAllowedOrigin: a present Origin matching the server''s own loopback), but /mcp uses isAllowedMcpOrigin which TOLERATES a missing Origin — non-browser MCP clients (Claude Desktop) send no Origin and would otherwise 403, while a present-but-foreign Origin (a browser tab on evil.com) is still rejected on both.'
+    tags:
+      - security
+      - localhost-only
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/studio.ts:94-112
+      - packages/cli/src/commands/studio.ts:584-594
+    enforcement: strict origin for bridge, tolerant for mcp
+    appliesTo: ["#cli-studio"]
+  studio-ws-upgrade-rechecks-origin:
+    description: '^localhost-only: WebSocket upgrade requests bypass connect middleware (Node fires "upgrade" before connect), so the upgrade handler MUST re-run the Origin check before accepting /bridge or /mcp — without it the bridge would be cross-origin-reachable from any tab. A failed check writes a raw 403 and destroys the socket.'
+    tags:
+      - security
+      - websocket
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/studio.ts:719-736
+    enforcement: re-run origin check on WS upgrade
+    appliesTo: ["#cli-studio"]
+  studio-llm-only-broadcast:
+    description: 'shouldBroadcastMutation returns true ONLY for source "llm": "human" edits (the browser is already current) and "system" edits (GET-hydration of a just-opened file) are NOT broadcast or re-persisted — otherwise a plain file-open would fire a phantom "agent edited document" toast, a bogus undo entry, and a needless rewrite of the just-read bytes. This is the studio half of the source-tagged-mutation invariant.'
+    tags:
+      - live-bridge
+      - attribution
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/studio.ts:122-124
+      - packages/cli/src/commands/studio.ts:538-557
+    enforcement: broadcast/persist only source === llm
+    appliesTo: ["#cli-studio"]
+  studio-contained-path-guard:
+    description: 'isSafePath rejects absolute inputs and any path resolving outside cwd using an exact-or-trailing-separator prefix match (so sibling `/a/project-x` is NOT treated as inside cwd `/a/proj`); it deliberately does NOT reject a literal ".." substring (that would block legit names like my..backup.atelier and adds no real security — the resolved containment check is the actual guard). All file API handlers gate on it.'
+    tags:
+      - security
+      - path-traversal
+      - edge-case
+    anchors:
+      - packages/cli/src/commands/studio.ts:70-75
+    enforcement: resolved-containment prefix check
+    appliesTo: ["#cli-studio"]
+  recipe-lib-resolution-chain:
+    description: 'resolveRecipePath resolves a bare name through a fixed chain — <projectDir>/.atelier/recipes/ first, then ~/.atelier/recipes/ — across extensions [.recipe.yaml, .recipe.json, .yaml, .yml, .json], project-local winning over the user library. A name that is absolute or contains a path separator skips the chain and loads literally. A miss throws listing every path searched.'
+    tags:
+      - resolution
+      - recipe
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/recipe.ts:41-64
+    enforcement: project-local then user dir, ext sweep
+    appliesTo: ["#recipe-lib"]
+  recipe-lib-cli-options-win:
+    description: 'The applyRecipeTo* translators fill TrimOptions/caption options from the recipe ONLY where the CLI did not specify (cliOptions.x ?? policy.x) — CLI flags always win over the recipe per spec §4.1. matchTolerance is recipe-only at the trim layer (no CLI flag yet), so the recipe is its sole source.'
+    tags:
+      - precedence
+      - recipe
+      - convention
+    anchors:
+      - packages/cli/src/lib/recipe.ts:176-193
+      - packages/cli/src/lib/recipe.ts:202-226
+    enforcement: cliOption ?? recipeValue precedence
+    appliesTo: ["#recipe-lib"]
+  recipe-lib-format-token-substitution:
+    description: 'renderPageNumberFormat substitutes {current} / {total} placeholders including zero-pad forms {current:02d} / {total:02d} via a single regex with an optional :0Nd group → padStart(N, "0"). The schema (^valid-recipe) already guarantees >=1 placeholder, so this is render-time substitution only — no placeholder validation here.'
+    tags:
+      - templates
+      - recipe
+      - render-time
+    anchors:
+      - packages/cli/src/lib/recipe.ts:449-466
+    enforcement: regex placeholder + optional zero-pad
+    appliesTo: ["#recipe-lib"]
+  recipe-lib-overlay-copy-on-write-idempotent:
+    description: 'applyRecipeToOverlay returns a NEW document (input never mutated), dropping every "overlay"-tagged layer before re-appending the freshly-derived handle/page_number layers — so re-applying is idempotent. page_number is emitted only when BOTH currentIndex and totalCount are provided (one-shot console.warn + skip otherwise), keeping non-carousel callers safe.'
+    tags:
+      - immutability
+      - tag-isolation
+      - overlay
+    anchors:
+      - packages/cli/src/lib/recipe.ts:329-363
+    enforcement: drop overlay tag, rebuild, new doc
+    appliesTo: ["#recipe-lib"]
+  recipe-lib-defaults-overlay:
+    description: 'renderRecipeWithDefaults overlays a partial recipe on the canonical code defaults (silence_policy / caption_style / caption_grouping spread defaults-first then recipe) so `recipe show --with-defaults` shows the effective values a pipeline would actually use. The default constants here MUST stay in sync with cut-model / caption-builder defaults — they are duplicated, not imported.'
+    tags:
+      - defaults
+      - recipe
+      - gotcha
+    anchors:
+      - packages/cli/src/lib/recipe.ts:249-280
+    enforcement: defaults-first spread, recipe overrides
+    appliesTo: ["#recipe-lib"]

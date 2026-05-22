@@ -68,3 +68,411 @@ components:
   mcp-import-images:
     description: Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)
     file: src/tools/import-images.ts
+aspects:
+  store-synchronous-registration-order-emit:
+    description: 'onChange listeners fire synchronously inside create/set/delete (not on a microtask), in registration order, over a slice() snapshot of the listener array taken at emit time — so a listener that subscribes/unsubscribes mid-emit neither skips nor double-fires its siblings. The unsubscribe closure splices by indexOf, so the same function registered twice only removes one copy.'
+    tags:
+      - core-invariant
+      - event-emitter
+      - ordering
+    anchors:
+      - packages/mcp/src/store.ts:106-127
+    enforcement: snapshot listener list before iterating
+    appliesTo: ["mcp-store"]
+  store-listener-failure-isolation:
+    description: 'emit wraps each listener in its own try/catch and swallows the error, so one buggy subscriber cannot break the mutation chain for the rest — but the failure is also silently lost (no logger is wired into this package yet). A future maintainer debugging a dropped bridge broadcast should suspect a throwing listener here.'
+    tags:
+      - edge-case
+      - gotcha
+      - resilience
+    anchors:
+      - packages/mcp/src/store.ts:118-126
+    enforcement: per-listener try/catch swallow
+    appliesTo: ["mcp-store"]
+  store-default-source-system:
+    description: 'create/set/delete default the MutationSource to "system" when the caller omits it, NOT "human" or "llm". Tools that mutate via store.set without a tag (e.g. the overlay tools) therefore emit source="system", which the studio bridge treats as silent (no re-broadcast) — only explicit source="llm" writes (import-images, recipe apply) round-trip to the browser.'
+    tags:
+      - convention
+      - default
+      - live-bridge
+    anchors:
+      - packages/mcp/src/store.ts:46
+      - packages/mcp/src/store.ts:62
+      - packages/mcp/src/store.ts:68
+    enforcement: default parameter = "system"
+    appliesTo: ["mcp-store"]
+  store-single-instance-shared:
+    description: 'createServer accepts an optional DocumentStore so the CLI can spawn one McpServer per WebSocket connection while sharing ONE store across all of them — every client''s writes surface through the single onChange emitter the live bridge subscribes to. Pass nothing and each server gets an isolated in-memory store instead.'
+    tags:
+      - architecture
+      - core-invariant
+      - live-bridge
+    anchors:
+      - packages/mcp/src/index.ts:73-75
+      - packages/mcp/src/index.ts:64-71
+    enforcement: optional shared-store parameter
+    appliesTo: ["mcp-store"]
+  document-validate-after-construction:
+    description: 'atelier_create runs validateDocument on the freshly-built doc (and atelier_load runs parseAtelier, which validates) BEFORE store.create — the document tools are the ONLY tools that schema-validate. Every other mutating tool (layers, shapes, deltas, effects, etc.) writes unvalidated into the live document, so a malformed mutation is only caught later by atelier_validate or at resolve time. Known inconsistency.'
+    tags:
+      - validation
+      - fail-fast
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/document.ts:50-53
+      - packages/mcp/src/tools/document.ts:102-105
+    enforcement: validateDocument/parseAtelier before create
+    appliesTo: ["mcp-document-tools"]
+  document-export-raw-yaml-result:
+    description: 'atelier_export returns the serialized YAML as a bare text content block (not the JSON {success,...} envelope used by every other tool), so a caller parsing tool output must special-case export — its payload IS the document, not a status wrapper.'
+    tags:
+      - convention
+      - gotcha
+      - serialization
+    anchors:
+      - packages/mcp/src/tools/document.ts:124-125
+    enforcement: raw-text content block
+    appliesTo: ["mcp-document-tools"]
+  layer-mutate-in-place-no-set:
+    description: 'add/edit/remove/reorder mutate the document object returned by store.get directly and never call store.set, relying on store.get handing back the live reference. onChange therefore NEVER fires for layer edits — the studio bridge will not see them until some OTHER tool calls store.set. This diverges from the root ~copy-on-write-doc convention, which only import-images / recipe-apply actually follow.'
+    tags:
+      - gotcha
+      - mutation
+      - live-bridge
+    anchors:
+      - packages/mcp/src/tools/layers.ts:119
+      - packages/mcp/src/tools/layers.ts:153-171
+      - packages/mcp/src/tools/layers.ts:209
+    enforcement: direct in-place mutation, no store.set
+    appliesTo: ["mcp-layer-tools"]
+  layer-reorder-clamps-overshoot:
+    description: 'atelier_reorder clamps the target index with Math.min(position, layers.length - 1), so a position past the end silently lands the layer at the top of the stack rather than erroring. Combined with painters-order rendering, an out-of-range reorder quietly brings a layer fully forward.'
+    tags:
+      - edge-case
+      - clamp
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/layers.ts:263-265
+    enforcement: Math.min clamp to length-1
+    appliesTo: ["mcp-layer-tools"]
+  layer-parent-existence-not-cycle:
+    description: 'add/edit_layer only checks that a parentId refers to an existing layer — it does NOT detect a parent cycle (A→B→A). Transform-inheritance cycle protection lives downstream in the canvas renderer''s visited-Set guard, not at authoring time here.'
+    tags:
+      - edge-case
+      - validation
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/layers.ts:99-101
+      - packages/mcp/src/tools/layers.ts:161-168
+    enforcement: existence check only, no cycle scan
+    appliesTo: ["mcp-layer-tools"]
+  shape-visual-type-guard:
+    description: 'set_shape/set_fill/set_stroke refuse to run unless layer.visual.type === "shape", returning a typed error naming the actual type — they never coerce a text/image/ref layer into a shape. The mutation casts through ShapeVisual after the guard.'
+    tags:
+      - validation
+      - type-guard
+    anchors:
+      - packages/mcp/src/tools/shapes.ts:53
+      - packages/mcp/src/tools/shapes.ts:90
+      - packages/mcp/src/tools/shapes.ts:120
+    enforcement: visual.type === "shape" guard
+    appliesTo: ["mcp-shape-tools"]
+  state-remove-cascades-deltas:
+    description: 'atelier_remove_state deletes the whole state entry including all its deltas and reports deltasRemoved — there is no orphan-delta cleanup elsewhere because deltas live INSIDE the state. add_state rejects a duplicate name; edit_state only patches provided fields.'
+    tags:
+      - cascade
+      - mutation
+    anchors:
+      - packages/mcp/src/tools/states.ts:99-100
+      - packages/mcp/src/tools/states.ts:40-42
+    enforcement: delete state key drops nested deltas
+    appliesTo: ["mcp-state-tools"]
+  delta-add-validates-range-then-overlap:
+    description: 'add_delta fails fast on an inverted range (start > end) BEFORE building the delta, then runs validateNoOverlap against the existing state deltas. edit_delta re-validates by first filtering the edited delta OUT of the list (filter i !== deltaIndex) so a delta never reports overlapping with itself.'
+    tags:
+      - validation
+      - fail-fast
+      - core-invariant
+    anchors:
+      - packages/mcp/src/tools/deltas.ts:62-64
+      - packages/mcp/src/tools/deltas.ts:79-82
+      - packages/mcp/src/tools/deltas.ts:138-142
+    enforcement: range guard + self-excluded overlap check
+    appliesTo: ["mcp-delta-tools"]
+  delta-preset-all-or-nothing:
+    description: 'apply_preset expands the preset to deltas, validates EVERY new delta for overlap, and pushes NONE if any one overlaps (errors accumulated then returned) — the preset application is atomic, never partially applied.'
+    tags:
+      - validation
+      - atomicity
+    anchors:
+      - packages/mcp/src/tools/deltas.ts:218-232
+    enforcement: validate-all-before-push-any
+    appliesTo: ["mcp-delta-tools"]
+  preset-deltas-min-one:
+    description: 'define_preset requires at least one delta (schema .min(1)) and lazily creates doc.presets on first define. It does not validate that the preset properties are animatable beyond the per-delta schema, nor that referenced layers exist — presets are layer-agnostic until expanded by apply_preset.'
+    tags:
+      - validation
+      - convention
+    anchors:
+      - packages/mcp/src/tools/presets.ts:45
+      - packages/mcp/src/tools/presets.ts:53
+    enforcement: schema min(1) + lazy presets init
+    appliesTo: ["mcp-preset-tools"]
+  preview-validate-splits-error-classes:
+    description: 'atelier_validate reports schema errors and delta-overlap errors as SEPARATE arrays (schemaErrors vs overlapErrors, overlaps checked per state) and is only valid when both are empty — overlap is not a schema concern, so a schema-clean doc can still be invalid.'
+    tags:
+      - validation
+      - convention
+    anchors:
+      - packages/mcp/src/tools/preview.ts:39-51
+    enforcement: dual-array error split
+    appliesTo: ["mcp-preview-tools"]
+  preview-returns-base-and-computed:
+    description: 'atelier_preview returns BOTH each layer''s base frame/bounds/opacity/rotation AND its computedProperties for the frame, so the AI can see the static authored values layered against the animated overrides rather than only the resolved result. Resolution errors are caught and returned as an error result, not thrown.'
+    tags:
+      - convention
+      - introspection
+    anchors:
+      - packages/mcp/src/tools/preview.ts:86-94
+      - packages/mcp/src/tools/preview.ts:102-104
+    enforcement: emit base + computed per layer
+    appliesTo: ["mcp-preview-tools"]
+  template-instantiate-creates-new-doc:
+    description: 'atelier_instantiate_template creates a brand-NEW store entry from the instantiation result and leaves the source template document untouched — it does not mutate or replace the template in place. The core instantiateTemplate strips the variables block, so the new doc is no longer a template.'
+    tags:
+      - immutability
+      - templates
+    anchors:
+      - packages/mcp/src/tools/templates.ts:38-44
+    enforcement: store.create new doc, template preserved
+    appliesTo: ["mcp-template-tools"]
+  template-find-vars-classifies:
+    description: 'atelier_find_variables cross-references discovered {{var}} references against declared doc.variables to return undeclared (referenced-but-missing) and unused (declared-but-unreferenced) sets — a lint-style report, not a mutation.'
+    tags:
+      - introspection
+      - templates
+    anchors:
+      - packages/mcp/src/tools/templates.ts:66-74
+    enforcement: set-difference of referenced vs declared
+    appliesTo: ["mcp-template-tools"]
+  effect-null-clears-property:
+    description: 'set_blend_mode / set_shadow / set_tint / set_motion_path / set_clip_path all treat an explicit null argument as "remove" (delete layer.<prop>) versus an object as "set". null is the documented clear signal — omitting the field is not the same as passing null.'
+    tags:
+      - convention
+      - api
+    anchors:
+      - packages/mcp/src/tools/layer-effects.ts:50-55
+      - packages/mcp/src/tools/layer-effects.ts:83-88
+      - packages/mcp/src/tools/layer-effects.ts:152-157
+    enforcement: null → delete, object → assign
+    appliesTo: ["mcp-layer-effect-tools"]
+  effect-edit-visual-type-gated-fields:
+    description: 'edit_visual gates each field group by visual type — content/style only on text, src/assetId/sourceRect/spritesheet/frameIndex only on image, shape/fill/stroke only on shape — erroring per-field on a mismatch. style is a PARTIAL merge (Object.assign over the existing style, only provided keys overwritten); sourceRect/spritesheet accept null to remove. Empty update set is an error.'
+    tags:
+      - validation
+      - type-guard
+      - merge
+    anchors:
+      - packages/mcp/src/tools/layer-effects.ts:258-267
+      - packages/mcp/src/tools/layer-effects.ts:281-300
+      - packages/mcp/src/tools/layer-effects.ts:324-326
+    enforcement: per-field type guard + partial style merge
+    appliesTo: ["mcp-layer-effect-tools"]
+  state-config-own-cycle-detector:
+    description: 'set_state_parent walks the parent chain with its own visited-Set cycle detector (seeded with the state being edited) and rejects a parent assignment that would close a loop — a deliberate re-implementation of core''s resolveAncestorChain guard, kept here because the mcp package does not reach into core for authoring-time validation.'
+    tags:
+      - edge-case
+      - validation
+      - core-invariant
+    anchors:
+      - packages/mcp/src/tools/state-config.ts:158-167
+    enforcement: visited-set walk + reject cycle
+    appliesTo: ["mcp-state-config-tools"]
+  state-config-transition-self-and-prune:
+    description: 'configure_transition refuses a self-transition (stateName === targetState) and requires the target state to exist; removing a transition deletes the target key and, when the transitions map empties, deletes the whole transitions object so an empty map never lingers.'
+    tags:
+      - validation
+      - cleanup
+      - edge-case
+    anchors:
+      - packages/mcp/src/tools/state-config.ts:100-115
+    enforcement: self-guard + empty-map prune
+    appliesTo: ["mcp-state-config-tools"]
+  export-defaults-first-state-frame-zero:
+    description: 'export_svg and export_lottie default the state to the FIRST key of doc.states (Object.keys insertion order) and the frame to 0 when omitted — so which frame/state you get is order-sensitive on the states map. Both wrap the renderer call in try/catch and return any failure as an error result.'
+    tags:
+      - default
+      - ordering
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/export.ts:43-51
+      - packages/mcp/src/tools/export.ts:60-62
+    enforcement: first-key default + frame 0
+    appliesTo: ["mcp-export-tools"]
+  asset-usage-tracked-not-enforced:
+    description: 'remove_asset deletes the asset even when layers (ImageVisual.assetId) or state audio (audio.src === assetId) still reference it — it only WARNS, never blocks. add_asset rejects a duplicate id and lazily creates doc.assets. Usage is reported, dangling references are the caller''s problem.'
+    tags:
+      - convention
+      - referential-integrity
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/assets.ts:113-134
+      - packages/mcp/src/tools/assets.ts:47-48
+    enforcement: warn-on-dangling, never block
+    appliesTo: ["mcp-asset-tools"]
+  variable-remove-warns-and-prunes:
+    description: 'remove_variable deletes a declared variable even if {{references}} still exist (warning only), and when the last variable is removed it sets doc.variables = undefined rather than leaving an empty object — so "has variables" stays a truthy check downstream. add_variable rejects duplicates and lazily inits the map.'
+    tags:
+      - convention
+      - cleanup
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/variables.ts:101-108
+      - packages/mcp/src/tools/variables.ts:41-42
+    enforcement: warn-on-referenced + undefined-on-empty
+    appliesTo: ["mcp-variable-tools"]
+  interaction-trigger-action-field-validation:
+    description: 'add_interaction validates trigger- and action-specific required fields beyond the schema — timer needs delay, signal needs a signal name, go-to-state needs an existing target state, set-variable needs both variable and value, toggle-visibility''s optional targetLayer must exist. Duplicate interaction ids per layer are rejected, and the interactions array is pruned to undefined when emptied.'
+    tags:
+      - validation
+      - fail-fast
+      - cleanup
+    anchors:
+      - packages/mcp/src/tools/interactions.ts:60-84
+      - packages/mcp/src/tools/interactions.ts:56-58
+      - packages/mcp/src/tools/interactions.ts:158-160
+    enforcement: per-trigger/per-action required-field checks
+    appliesTo: ["mcp-interaction-tools"]
+  ref-self-only-not-transitive:
+    description: 'set_ref rejects ONLY a direct self-reference (src === id) — it does not detect a transitive ref cycle (A→B→A). resolve_refs is read-only and reports per-ref in-memory resolution status (target name/layer/state counts) without resolving the referenced content.'
+    tags:
+      - edge-case
+      - validation
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/refs.ts:43
+      - packages/mcp/src/tools/refs.ts:66-83
+    enforcement: src === id guard only
+    appliesTo: ["mcp-ref-tools"]
+  performance-diff-strict-inequality:
+    description: 'diff_frames flags a property as changed using strict !== over the union of both frames'' computed-property keys — so object-valued properties differ by IDENTITY, not deep equality, and two structurally-equal objects can be reported as a (false) change. profile/batch_preview round performance.now() ms to 3 decimals; batch_preview caps frames at 60 via schema.'
+    tags:
+      - edge-case
+      - gotcha
+      - magic-number
+    anchors:
+      - packages/mcp/src/tools/performance.ts:117-123
+      - packages/mcp/src/tools/performance.ts:70
+      - packages/mcp/src/tools/performance.ts:143
+    enforcement: strict !== compare + frame cap 60
+    appliesTo: ["mcp-performance-tools"]
+  performance-complexity-depth-guard:
+    description: 'complexity computes max state-hierarchy depth by walking each state''s parent chain with a per-walk visited Set, so a (mis-authored) parent cycle terminates the walk instead of looping forever. Expression count is detected by the {expr} shape on a delta''s from/to value.'
+    tags:
+      - edge-case
+      - introspection
+    anchors:
+      - packages/mcp/src/tools/performance.ts:242-253
+      - packages/mcp/src/tools/performance.ts:218-221
+    enforcement: visited-set bounded chain walk
+    appliesTo: ["mcp-performance-tools"]
+  overlay-tag-isolation-but-mutates-in-place:
+    description: 'add_handle / add_page_number tag emitted layers "overlay" so the recipe pipeline''s applyRecipeToOverlay drops only overlay-tagged layers on re-run — but unlike import-images/recipe-apply these tools mutate via doc.layers.push and then call store.set(id, doc) on the SAME reference (no copy-on-write, default source="system"). They reject a duplicate layer id before pushing.'
+    tags:
+      - convention
+      - mutation
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/overlays.ts:140-141
+      - packages/mcp/src/tools/overlays.ts:125-127
+    enforcement: tag "overlay" + in-place push + set
+    appliesTo: ["mcp-overlay-tools"]
+  overlay-anchor-corner-math:
+    description: 'anchorToFrame maps the four corners to a frame position inset by margin AND a matching normalized anchorPoint (e.g. top-right → x = canvas.width - margin, anchorPoint {1,0}) so the text box hugs the corner regardless of its own size. The default margin is 24px and default text style is Inter/24/600/#F5F5F7.'
+    tags:
+      - geometry
+      - convention
+      - magic-number
+    anchors:
+      - packages/mcp/src/tools/overlays.ts:55-73
+      - packages/mcp/src/tools/overlays.ts:39-45
+    enforcement: corner → frame + anchorPoint pair
+    appliesTo: ["mcp-overlay-tools"]
+  overlay-page-format-regex-duplicated:
+    description: 'renderPageNumberFormat substitutes {current}/{total} plus zero-pad forms {current:02d}/{total:02d} via the regex \{(current|total)(?::0(\d+)d)?\} — an INTENTIONAL byte-for-byte duplicate of recipes.ts''s same function, kept duplicated to avoid a cli↔mcp dependency cycle. Edit one, edit the other.'
+    tags:
+      - duplication
+      - convention
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/overlays.ts:90-103
+    enforcement: regex substitution (mirror of recipes.ts)
+    appliesTo: ["mcp-overlay-tools"]
+  recipe-save-refuses-invalid:
+    description: 'recipe_save validates the recipe (object or YAML text) BEFORE writing and REFUSES to persist an invalid one, returning the validation errors and creating parent dirs only on the success path — invalid recipes never touch disk. recipe_validate accepts either a path or inline yaml and reports parse failures as validation errors rather than throwing.'
+    tags:
+      - validation
+      - fail-fast
+      - core-invariant
+    anchors:
+      - packages/mcp/src/tools/recipes.ts:392-405
+      - packages/mcp/src/tools/recipes.ts:347-355
+    enforcement: validate-before-write, refuse invalid
+    appliesTo: ["mcp-recipe-tools"]
+  recipe-apply-overlay-only-copy-on-write:
+    description: 'recipe_apply applies ONLY overlay_rules (handle + page-number) — silence-trim / transcribe / caption sections are silently ignored (CLI-only). It is tag-isolated (drops prior "overlay" layers, re-adds fresh) and copy-on-write (builds a new doc, never mutates in place) then store.set with source="llm". page_number requires currentIndex+totalCount or the layer is skipped with a warning.'
+    tags:
+      - scoping
+      - convention
+      - gotcha
+    anchors:
+      - packages/mcp/src/tools/recipes.ts:143-169
+      - packages/mcp/src/tools/recipes.ts:452-456
+    enforcement: overlay_rules-only, tag-isolated, copy-on-write
+    appliesTo: ["mcp-recipe-tools"]
+  recipe-path-resolution-precedence:
+    description: 'resolveRecipePath loads absolute/slash-bearing references literally, but a bare name is resolved against <projectDir>/.atelier/recipes/ FIRST, then ~/.atelier/recipes/, trying extensions in a fixed order (.recipe.yaml/.recipe.json/.yaml/.yml/.json). recipe_list de-dupes by basename with project recipes winning over user recipes. Mirrors the CLI''s resolveRecipePath (re-implemented to avoid the cli↔mcp cycle).'
+    tags:
+      - convention
+      - precedence
+      - duplication
+    anchors:
+      - packages/mcp/src/tools/recipes.ts:64-84
+      - packages/mcp/src/tools/recipes.ts:290-292
+    enforcement: project-then-user dir, fixed ext order
+    appliesTo: ["mcp-recipe-tools"]
+  import-images-natural-dimension-fallback:
+    description: 'import_images deliberately does NOT add an image-dimension dependency, so without measured natural dimensions each created layer''s bounds default to a centered min(canvas.width, canvas.height) square at canvas center with anchorPoint {0.5,0.5}. The limitation is surfaced both in the tool description and the response note.'
+    tags:
+      - gotcha
+      - convention
+      - default
+    anchors:
+      - packages/mcp/src/tools/import-images.ts:128
+      - packages/mcp/src/tools/import-images.ts:158-165
+      - packages/mcp/src/tools/import-images.ts:187-189
+    enforcement: centered min-dimension square fallback
+    appliesTo: ["mcp-import-images"]
+  import-images-background-swap-and-zstack:
+    description: 'A single-image import whose doc layer[0].id === "background" replaces that welcome placeholder IN PLACE; otherwise each new layer is unshift-ed to index 0 so it paints at the BACK of the z-stack (renderer paints index 0 first), behind existing overlays — matching the Studio drop convention. The whole import is copy-on-write (new assets+layers, one store.set source="llm").'
+    tags:
+      - convention
+      - ordering
+      - edge-case
+    anchors:
+      - packages/mcp/src/tools/import-images.ts:132
+      - packages/mcp/src/tools/import-images.ts:167-180
+    enforcement: bg-swap guard + unshift-to-back
+    appliesTo: ["mcp-import-images"]
+  import-images-glob-and-dedup:
+    description: 'matchesGlob is a single-segment matcher (no path separators) translating * → .* and ? → . over a regex-escaped pattern, case-insensitive, matching all when the glob is empty. deriveAssetId slugifies the filename stem and de-dupes collisions as `${base}-${n}` starting at n=2; layer ids follow the same `image-${n}` scheme. Results are sorted by localeCompare.'
+    tags:
+      - convention
+      - dedup
+      - edge-case
+    anchors:
+      - packages/mcp/src/tools/import-images.ts:51-56
+      - packages/mcp/src/tools/import-images.ts:62-76
+      - packages/mcp/src/tools/import-images.ts:118-120
+    enforcement: glob→regex + slug dedup -N
+    appliesTo: ["mcp-import-images"]
