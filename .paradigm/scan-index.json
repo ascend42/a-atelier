@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-22T18:02:40.029Z",
+    "generatedAt": "2026-05-22T18:39:44.128Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 13,
@@ -261,176 +261,6 @@
       "visualTags": [],
       "related": []
     },
-    "#unit-types": {
-      "id": "#unit-types",
-      "name": "#unit Types",
-      "symbol": "##unit-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Pixel, Percentage, and UnitValue type definitions",
-      "visualTags": [],
-      "related": []
-    },
-    "#coordinate-types": {
-      "id": "#coordinate-types",
-      "name": "#coordinate Types",
-      "symbol": "##coordinate-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Frame, Bounds, AnchorPoint spatial types",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-types": {
-      "id": "#color-types",
-      "name": "#color Types",
-      "symbol": "##color-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
-      "visualTags": [],
-      "related": []
-    },
-    "#shape-types": {
-      "id": "#shape-types",
-      "name": "#shape Types",
-      "symbol": "##shape-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
-      "visualTags": [],
-      "related": []
-    },
-    "#layer-types": {
-      "id": "#layer-types",
-      "name": "#layer Types",
-      "symbol": "##layer-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
-      "visualTags": [],
-      "related": []
-    },
-    "#easing-types": {
-      "id": "#easing-types",
-      "name": "#easing Types",
-      "symbol": "##easing-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-types": {
-      "id": "#delta-types",
-      "name": "#delta Types",
-      "symbol": "##delta-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
-      "visualTags": [],
-      "related": []
-    },
-    "#state-types": {
-      "id": "#state-types",
-      "name": "#state Types",
-      "symbol": "##state-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "State (named choreography with duration and deltas)",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-types": {
-      "id": "#document-types",
-      "name": "#document Types",
-      "symbol": "##document-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AtelierDocument root type, Canvas config",
-      "visualTags": [],
-      "related": []
-    },
-    "#shadow-types": {
-      "id": "#shadow-types",
-      "name": "#shadow Types",
-      "symbol": "##shadow-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
-      "visualTags": [],
-      "related": []
-    },
-    "#audio-types": {
-      "id": "#audio-types",
-      "name": "#audio Types",
-      "symbol": "##audio-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
-      "visualTags": [],
-      "related": []
-    },
-    "#asset-types": {
-      "id": "#asset-types",
-      "name": "#asset Types",
-      "symbol": "##asset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata",
-      "visualTags": [],
-      "related": []
-    },
-    "#variable-types": {
-      "id": "#variable-types",
-      "name": "#variable Types",
-      "symbol": "##variable-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
-      "visualTags": [],
-      "related": []
-    },
-    "#interaction-types": {
-      "id": "#interaction-types",
-      "name": "#interaction Types",
-      "symbol": "##interaction-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-types": {
-      "id": "#preset-types",
-      "name": "#preset Types",
-      "symbol": "##preset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "PresetDelta, Preset — reusable animation delta templates",
-      "visualTags": [],
-      "related": []
-    },
-    "#video-project-types": {
-      "id": "#video-project-types",
-      "name": "#video Project Types",
-      "symbol": "##video-project-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing",
-      "visualTags": [],
-      "related": []
-    },
-    "#recipe-types": {
-      "id": "#recipe-types",
-      "name": "#recipe Types",
-      "symbol": "##recipe-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.",
-      "visualTags": [],
-      "related": []
-    },
     "#svg-renderer": {
       "id": "#svg-renderer",
       "name": "#svg Renderer",
@@ -651,6 +481,466 @@
       "visualTags": [],
       "related": []
     },
+    "#unit-types": {
+      "id": "#unit-types",
+      "name": "#unit Types",
+      "symbol": "##unit-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Pixel, Percentage, and UnitValue type definitions",
+      "visualTags": [],
+      "related": []
+    },
+    "#coordinate-types": {
+      "id": "#coordinate-types",
+      "name": "#coordinate Types",
+      "symbol": "##coordinate-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Frame, Bounds, AnchorPoint spatial types",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-types": {
+      "id": "#color-types",
+      "name": "#color Types",
+      "symbol": "##color-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+      "visualTags": [],
+      "related": []
+    },
+    "#shape-types": {
+      "id": "#shape-types",
+      "name": "#shape Types",
+      "symbol": "##shape-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+      "visualTags": [],
+      "related": []
+    },
+    "#layer-types": {
+      "id": "#layer-types",
+      "name": "#layer Types",
+      "symbol": "##layer-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-types": {
+      "id": "#easing-types",
+      "name": "#easing Types",
+      "symbol": "##easing-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-types": {
+      "id": "#delta-types",
+      "name": "#delta Types",
+      "symbol": "##delta-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
+      "visualTags": [],
+      "related": []
+    },
+    "#state-types": {
+      "id": "#state-types",
+      "name": "#state Types",
+      "symbol": "##state-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "State (named choreography with duration and deltas)",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-types": {
+      "id": "#document-types",
+      "name": "#document Types",
+      "symbol": "##document-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDocument root type, Canvas config",
+      "visualTags": [],
+      "related": []
+    },
+    "#shadow-types": {
+      "id": "#shadow-types",
+      "name": "#shadow Types",
+      "symbol": "##shadow-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
+      "visualTags": [],
+      "related": []
+    },
+    "#audio-types": {
+      "id": "#audio-types",
+      "name": "#audio Types",
+      "symbol": "##audio-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Audio type — audio track config (src, offset, volume, loop, startFrame)",
+      "visualTags": [],
+      "related": []
+    },
+    "#asset-types": {
+      "id": "#asset-types",
+      "name": "#asset Types",
+      "symbol": "##asset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata",
+      "visualTags": [],
+      "related": []
+    },
+    "#variable-types": {
+      "id": "#variable-types",
+      "name": "#variable Types",
+      "symbol": "##variable-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
+      "visualTags": [],
+      "related": []
+    },
+    "#interaction-types": {
+      "id": "#interaction-types",
+      "name": "#interaction Types",
+      "symbol": "##interaction-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-types": {
+      "id": "#preset-types",
+      "name": "#preset Types",
+      "symbol": "##preset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "PresetDelta, Preset — reusable animation delta templates",
+      "visualTags": [],
+      "related": []
+    },
+    "#video-project-types": {
+      "id": "#video-project-types",
+      "name": "#video Project Types",
+      "symbol": "##video-project-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing",
+      "visualTags": [],
+      "related": []
+    },
+    "#recipe-types": {
+      "id": "#recipe-types",
+      "name": "#recipe Types",
+      "symbol": "##recipe-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.",
+      "visualTags": [],
+      "related": []
+    },
+    "animation": {
+      "id": "animation",
+      "name": "Animation",
+      "symbol": "#animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "React component that mounts an AnimationPlayer and manages its lifecycle",
+      "visualTags": [],
+      "related": [],
+      "componentType": "component"
+    },
+    "use-animation": {
+      "id": "use-animation",
+      "name": "Use Animation",
+      "symbol": "#use-animation",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that drives animation playback state — play, pause, seek, loop controls",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "use-animation-state": {
+      "id": "use-animation-state",
+      "name": "Use Animation State",
+      "symbol": "#use-animation-state",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Hook that exposes frame-level resolved state for reactive rendering",
+      "visualTags": [],
+      "related": [],
+      "componentType": "hook"
+    },
+    "animation-player": {
+      "id": "animation-player",
+      "name": "Animation Player",
+      "symbol": "#animation-player",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "Low-level player class for advanced usage — direct frame control outside the React component model",
+      "visualTags": [],
+      "related": [],
+      "componentType": "service"
+    },
+    "mcp-store": {
+      "id": "mcp-store",
+      "name": "Mcp Store",
+      "symbol": "#mcp-store",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls, with onChange event emitter for the LLM↔human live-mutation bridge (task",
+      "visualTags": [],
+      "related": [
+        "!doc-change"
+      ]
+    },
+    "mcp-document-tools": {
+      "id": "mcp-document-tools",
+      "name": "Mcp Document Tools",
+      "symbol": "#mcp-document-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-layer-tools": {
+      "id": "mcp-layer-tools",
+      "name": "Mcp Layer Tools",
+      "symbol": "#mcp-layer-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer management tools — add, edit, remove, list, reorder",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-shape-tools": {
+      "id": "mcp-shape-tools",
+      "name": "Mcp Shape Tools",
+      "symbol": "#mcp-shape-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-state-tools": {
+      "id": "mcp-state-tools",
+      "name": "Mcp State Tools",
+      "symbol": "#mcp-state-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State management tools — add, edit, remove, list animation states",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-delta-tools": {
+      "id": "mcp-delta-tools",
+      "name": "Mcp Delta Tools",
+      "symbol": "#mcp-delta-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preset-tools": {
+      "id": "mcp-preset-tools",
+      "name": "Mcp Preset Tools",
+      "symbol": "#mcp-preset-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preset tools — define reusable animation presets, list available presets",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-preview-tools": {
+      "id": "mcp-preview-tools",
+      "name": "Mcp Preview Tools",
+      "symbol": "#mcp-preview-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-template-tools": {
+      "id": "mcp-template-tools",
+      "name": "Mcp Template Tools",
+      "symbol": "#mcp-template-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Template MCP tools — instantiate_template, find_variables",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-layer-effect-tools": {
+      "id": "mcp-layer-effect-tools",
+      "name": "Mcp Layer Effect Tools",
+      "symbol": "#mcp-layer-effect-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Layer effect tools — set_blend_mode, set_shadow, set_tint, set_motion_path, set_clip_path, edit_visual (supports sourceRect, spritesheet, frameIndex)",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-state-config-tools": {
+      "id": "mcp-state-config-tools",
+      "name": "Mcp State Config Tools",
+      "symbol": "#mcp-state-config-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-export-tools": {
+      "id": "mcp-export-tools",
+      "name": "Mcp Export Tools",
+      "symbol": "#mcp-export-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-asset-tools": {
+      "id": "mcp-asset-tools",
+      "name": "Mcp Asset Tools",
+      "symbol": "#mcp-asset-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Asset management tools — add_asset, list_assets, remove_asset with usage tracking",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-variable-tools": {
+      "id": "mcp-variable-tools",
+      "name": "Mcp Variable Tools",
+      "symbol": "#mcp-variable-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Variable management tools — add_variable, list_variables, remove_variable with usage tracking",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-interaction-tools": {
+      "id": "mcp-interaction-tools",
+      "name": "Mcp Interaction Tools",
+      "symbol": "#mcp-interaction-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-ref-tools": {
+      "id": "mcp-ref-tools",
+      "name": "Mcp Ref Tools",
+      "symbol": "#mcp-ref-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-performance-tools": {
+      "id": "mcp-performance-tools",
+      "name": "Mcp Performance Tools",
+      "symbol": "#mcp-performance-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)",
+      "visualTags": [
+        "form"
+      ],
+      "related": []
+    },
+    "mcp-overlay-tools": {
+      "id": "mcp-overlay-tools",
+      "name": "Mcp Overlay Tools",
+      "symbol": "#mcp-overlay-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Overlay layer tools — add_handle, add_page_number; tag-isolated TextVisual overlays for social-feed compositions",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-recipe-tools": {
+      "id": "mcp-recipe-tools",
+      "name": "Mcp Recipe Tools",
+      "symbol": "#mcp-recipe-tools",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Studio Recipe tools — recipe_list/get/validate/save/apply. Wraps the recipe load/validate/serialize/applyRecipeToOverlay pipeline (re-implemented locally on @a-company/atelier-schema + yaml to avoid a cli↔mcp dependency cycle). save refuses invalid recipes; apply wires overlay_rules only (trim/transcribe/caption application stays CLI-only)",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-import-images": {
+      "id": "mcp-import-images",
+      "name": "Mcp Import Images",
+      "symbol": "#mcp-import-images",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)",
+      "visualTags": [
+        "image"
+      ],
+      "related": []
+    },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
     "#document-schema": {
       "id": "#document-schema",
       "name": "#document Schema",
@@ -713,90 +1003,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
       "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
-      "visualTags": [],
-      "related": []
-    },
-    "animation": {
-      "id": "animation",
-      "name": "Animation",
-      "symbol": "#animation",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "React component that mounts an AnimationPlayer and manages its lifecycle",
-      "visualTags": [],
-      "related": [],
-      "componentType": "component"
-    },
-    "use-animation": {
-      "id": "use-animation",
-      "name": "Use Animation",
-      "symbol": "#use-animation",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Hook that drives animation playback state — play, pause, seek, loop controls",
-      "visualTags": [],
-      "related": [],
-      "componentType": "hook"
-    },
-    "use-animation-state": {
-      "id": "use-animation-state",
-      "name": "Use Animation State",
-      "symbol": "#use-animation-state",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Hook that exposes frame-level resolved state for reactive rendering",
-      "visualTags": [],
-      "related": [],
-      "componentType": "hook"
-    },
-    "animation-player": {
-      "id": "animation-player",
-      "name": "Animation Player",
-      "symbol": "#animation-player",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
-      "description": "Low-level player class for advanced usage — direct frame control outside the React component model",
-      "visualTags": [],
-      "related": [],
-      "componentType": "service"
-    },
-    "#easing-functions": {
-      "id": "#easing-functions",
-      "name": "#easing Functions",
-      "symbol": "##easing-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
-      "visualTags": [],
-      "related": []
-    },
-    "#spring-solver": {
-      "id": "#spring-solver",
-      "name": "#spring Solver",
-      "symbol": "##spring-solver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
-      "visualTags": [],
-      "related": []
-    },
-    "#lerp-functions": {
-      "id": "#lerp-functions",
-      "name": "#lerp Functions",
-      "symbol": "##lerp-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-math": {
-      "id": "#color-math",
-      "name": "#color Math",
-      "symbol": "##color-math",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
       "visualTags": [],
       "related": []
     },
@@ -888,113 +1094,69 @@
       "visualTags": [],
       "related": []
     },
-    "#frame-resolver": {
-      "id": "#frame-resolver",
-      "name": "#frame Resolver",
-      "symbol": "##frame-resolver",
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Given document + frame number, computes resolved state of all layers; computes videoSourceTime (seconds into source video) for VideoVisual layers",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer",
+        "#video-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
       "visualTags": [],
       "related": []
     },
-    "#delta-resolver": {
-      "id": "#delta-resolver",
-      "name": "#delta Resolver",
-      "symbol": "##delta-resolver",
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Per-property interpolation — resolves delta value at a given frame",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
       "visualTags": [],
       "related": []
     },
-    "#easing-resolver": {
-      "id": "#easing-resolver",
-      "name": "#easing Resolver",
-      "symbol": "##easing-resolver",
+    "video-renderer": {
+      "id": "video-renderer",
+      "name": "Video Renderer",
+      "symbol": "#video-renderer",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Bridges Easing type definitions to executable math functions",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)",
       "visualTags": [],
       "related": []
     },
-    "#document-builder": {
-      "id": "#document-builder",
-      "name": "#document Builder",
-      "symbol": "##document-builder",
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Fluent API for constructing AtelierDocument objects with validation",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
       "visualTags": [],
       "related": []
     },
-    "#overlap-validator": {
-      "id": "#overlap-validator",
-      "name": "#overlap Validator",
-      "symbol": "##overlap-validator",
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Validates no overlapping deltas exist on same layer+property",
-      "visualTags": [],
-      "related": []
-    },
-    "#unit-resolver": {
-      "id": "#unit-resolver",
-      "name": "#unit Resolver",
-      "symbol": "##unit-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-resolver": {
-      "id": "#preset-resolver",
-      "name": "#preset Resolver",
-      "symbol": "##preset-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Expands preset definitions into concrete deltas for a layer",
-      "visualTags": [],
-      "related": []
-    },
-    "#state-machine": {
-      "id": "#state-machine",
-      "name": "#state Machine",
-      "symbol": "##state-machine",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
-      "visualTags": [],
-      "related": []
-    },
-    "#template-resolver": {
-      "id": "#template-resolver",
-      "name": "#template Resolver",
-      "symbol": "##template-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
-      "visualTags": [],
-      "related": []
-    },
-    "#expression-evaluator": {
-      "id": "#expression-evaluator",
-      "name": "#expression Evaluator",
-      "symbol": "##expression-evaluator",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Safe recursive descent expression evaluator — supports math functions, context variables (t, frame, duration, progress), ternary, no eval()",
-      "visualTags": [],
-      "related": []
-    },
-    "#audio-timing": {
-      "id": "#audio-timing",
-      "name": "#audio Timing",
-      "symbol": "##audio-timing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "visualTags": [],
       "related": []
     },
@@ -1284,275 +1446,113 @@
       "visualTags": [],
       "related": []
     },
-    "mcp-store": {
-      "id": "mcp-store",
-      "name": "Mcp Store",
-      "symbol": "#mcp-store",
+    "#frame-resolver": {
+      "id": "#frame-resolver",
+      "name": "#frame Resolver",
+      "symbol": "##frame-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "In-memory document store — Map-based CRUD for AtelierDocument instances across tool calls, with onChange event emitter for the LLM↔human live-mutation bridge (task",
-      "visualTags": [],
-      "related": [
-        "!doc-change"
-      ]
-    },
-    "mcp-document-tools": {
-      "id": "mcp-document-tools",
-      "name": "Mcp Document Tools",
-      "symbol": "#mcp-document-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Document lifecycle tools — create, info, load (YAML), export (YAML), list",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Given document + frame number, computes resolved state of all layers; computes videoSourceTime (seconds into source video) for VideoVisual layers",
       "visualTags": [],
       "related": []
     },
-    "mcp-layer-tools": {
-      "id": "mcp-layer-tools",
-      "name": "Mcp Layer Tools",
-      "symbol": "#mcp-layer-tools",
+    "#delta-resolver": {
+      "id": "#delta-resolver",
+      "name": "#delta Resolver",
+      "symbol": "##delta-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Layer management tools — add, edit, remove, list, reorder",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Per-property interpolation — resolves delta value at a given frame",
       "visualTags": [],
       "related": []
     },
-    "mcp-shape-tools": {
-      "id": "mcp-shape-tools",
-      "name": "Mcp Shape Tools",
-      "symbol": "#mcp-shape-tools",
+    "#easing-resolver": {
+      "id": "#easing-resolver",
+      "name": "#easing Resolver",
+      "symbol": "##easing-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Shape visual tools — set_shape, set_fill, set_stroke on shape-type layers",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Bridges Easing type definitions to executable math functions",
       "visualTags": [],
       "related": []
     },
-    "mcp-state-tools": {
-      "id": "mcp-state-tools",
-      "name": "Mcp State Tools",
-      "symbol": "#mcp-state-tools",
+    "#document-builder": {
+      "id": "#document-builder",
+      "name": "#document Builder",
+      "symbol": "##document-builder",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "State management tools — add, edit, remove, list animation states",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Fluent API for constructing AtelierDocument objects with validation",
       "visualTags": [],
       "related": []
     },
-    "mcp-delta-tools": {
-      "id": "mcp-delta-tools",
-      "name": "Mcp Delta Tools",
-      "symbol": "#mcp-delta-tools",
+    "#overlap-validator": {
+      "id": "#overlap-validator",
+      "name": "#overlap Validator",
+      "symbol": "##overlap-validator",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Delta animation tools — add, edit, remove deltas with overlap validation, apply presets",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Validates no overlapping deltas exist on same layer+property",
       "visualTags": [],
       "related": []
     },
-    "mcp-preset-tools": {
-      "id": "mcp-preset-tools",
-      "name": "Mcp Preset Tools",
-      "symbol": "#mcp-preset-tools",
+    "#unit-resolver": {
+      "id": "#unit-resolver",
+      "name": "#unit Resolver",
+      "symbol": "##unit-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preset tools — define reusable animation presets, list available presets",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Resolves percentage UnitValues to pixel values given reference dimensions",
       "visualTags": [],
       "related": []
     },
-    "mcp-preview-tools": {
-      "id": "mcp-preview-tools",
-      "name": "Mcp Preview Tools",
-      "symbol": "#mcp-preview-tools",
+    "#preset-resolver": {
+      "id": "#preset-resolver",
+      "name": "#preset Resolver",
+      "symbol": "##preset-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Preview tools — validate document schema + overlaps, preview resolved frame data",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Expands preset definitions into concrete deltas for a layer",
       "visualTags": [],
       "related": []
     },
-    "mcp-template-tools": {
-      "id": "mcp-template-tools",
-      "name": "Mcp Template Tools",
-      "symbol": "#mcp-template-tools",
+    "#state-machine": {
+      "id": "#state-machine",
+      "name": "#state Machine",
+      "symbol": "##state-machine",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Template MCP tools — instantiate_template, find_variables",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "StateMachine class — manages state transitions, tick-based playback, transition history",
       "visualTags": [],
       "related": []
     },
-    "mcp-layer-effect-tools": {
-      "id": "mcp-layer-effect-tools",
-      "name": "Mcp Layer Effect Tools",
-      "symbol": "#mcp-layer-effect-tools",
+    "#template-resolver": {
+      "id": "#template-resolver",
+      "name": "#template Resolver",
+      "symbol": "##template-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Layer effect tools — set_blend_mode, set_shadow, set_tint, set_motion_path, set_clip_path, edit_visual (supports sourceRect, spritesheet, frameIndex)",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Template variable substitution — instantiateTemplate, findTemplateVariables for {{var}} patterns",
       "visualTags": [],
       "related": []
     },
-    "mcp-state-config-tools": {
-      "id": "mcp-state-config-tools",
-      "name": "Mcp State Config Tools",
-      "symbol": "#mcp-state-config-tools",
+    "#expression-evaluator": {
+      "id": "#expression-evaluator",
+      "name": "#expression Evaluator",
+      "symbol": "##expression-evaluator",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "State configuration tools — set_audio, configure_transition, set_state_parent with cycle detection",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Safe recursive descent expression evaluator — supports math functions, context variables (t, frame, duration, progress), ternary, no eval()",
       "visualTags": [],
       "related": []
     },
-    "mcp-export-tools": {
-      "id": "mcp-export-tools",
-      "name": "Mcp Export Tools",
-      "symbol": "#mcp-export-tools",
+    "#audio-timing": {
+      "id": "#audio-timing",
+      "name": "#audio Timing",
+      "symbol": "##audio-timing",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Export tools — export_svg (via @atelier/svg) and export_lottie (via @atelier/lottie)",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-asset-tools": {
-      "id": "mcp-asset-tools",
-      "name": "Mcp Asset Tools",
-      "symbol": "#mcp-asset-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Asset management tools — add_asset, list_assets, remove_asset with usage tracking",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-variable-tools": {
-      "id": "mcp-variable-tools",
-      "name": "Mcp Variable Tools",
-      "symbol": "#mcp-variable-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Variable management tools — add_variable, list_variables, remove_variable with usage tracking",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-interaction-tools": {
-      "id": "mcp-interaction-tools",
-      "name": "Mcp Interaction Tools",
-      "symbol": "#mcp-interaction-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Interaction tools — add_interaction, list_interactions, remove_interaction for trigger-action bindings",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-ref-tools": {
-      "id": "mcp-ref-tools",
-      "name": "Mcp Ref Tools",
-      "symbol": "#mcp-ref-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Ref layer tools — set_ref (source reference with self-reference prevention), resolve_refs (check in-memory resolution status)",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-performance-tools": {
-      "id": "mcp-performance-tools",
-      "name": "Mcp Performance Tools",
-      "symbol": "#mcp-performance-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Performance tools — profile (frame timing), diff_frames (change detection), batch_preview (multi-frame), complexity (document analysis)",
-      "visualTags": [
-        "form"
-      ],
-      "related": []
-    },
-    "mcp-overlay-tools": {
-      "id": "mcp-overlay-tools",
-      "name": "Mcp Overlay Tools",
-      "symbol": "#mcp-overlay-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Overlay layer tools — add_handle, add_page_number; tag-isolated TextVisual overlays for social-feed compositions",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-recipe-tools": {
-      "id": "mcp-recipe-tools",
-      "name": "Mcp Recipe Tools",
-      "symbol": "#mcp-recipe-tools",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Studio Recipe tools — recipe_list/get/validate/save/apply. Wraps the recipe load/validate/serialize/applyRecipeToOverlay pipeline (re-implemented locally on @a-company/atelier-schema + yaml to avoid a cli↔mcp dependency cycle). save refuses invalid recipes; apply wires overlay_rules only (trim/transcribe/caption application stays CLI-only)",
-      "visualTags": [],
-      "related": []
-    },
-    "mcp-import-images": {
-      "id": "mcp-import-images",
-      "name": "Mcp Import Images",
-      "symbol": "#mcp-import-images",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)",
-      "visualTags": [
-        "image"
-      ],
-      "related": []
-    },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer",
-      "visualTags": [],
-      "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer",
-        "#video-renderer"
-      ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "video-renderer": {
-      "id": "video-renderer",
-      "name": "Video Renderer",
-      "symbol": "#video-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
       "visualTags": [],
       "related": []
     },
@@ -1696,6 +1696,18 @@
         "#lottie-map-layers"
       ]
     },
+    "frame-resolver": {
+      "id": "frame-resolver",
+      "name": "Frame Resolver",
+      "symbol": "#frame-resolver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Referenced from #render-frame",
+      "visualTags": [],
+      "related": [
+        "#render-frame"
+      ]
+    },
     "render-image": {
       "id": "render-image",
       "name": "Render Image",
@@ -1708,18 +1720,6 @@
       ],
       "related": [
         "#cli-export-image"
-      ]
-    },
-    "frame-resolver": {
-      "id": "frame-resolver",
-      "name": "Frame Resolver",
-      "symbol": "#frame-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Referenced from #render-frame",
-      "visualTags": [],
-      "related": [
-        "#render-frame"
       ]
     }
   },
@@ -1915,6 +1915,258 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/.purpose",
       "description": "DocumentStore mutations carry a source tag (human | llm | system). The studio WebSocket bridge re-broadcasts a change to the browser ONLY when source is llm; human-sourced changes (the browser is already current) and system-sourced changes (file-read hydration) stay silent. Prevents echo loops and false \"agent edited\" attribution on the live human↔LLM editing loop.",
+      "related": []
+    },
+    "element-one-per-src-reuse": {
+      "id": "element-one-per-src-reuse",
+      "name": "Element One Per Src Reuse",
+      "symbol": "~element-one-per-src-reuse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "ElementVideoProvider keeps a Map<src, HTMLVideoElement> so every layer referencing the same clip URL shares ONE decoder-backed element rather than spawning one per layer. dispose() must blank src to \"\" and call load() on each element to release the underlying decoder before clearing the map — drop that and the video decoders leak.",
+      "related": []
+    },
+    "element-seek-tolerance-one-frame": {
+      "id": "element-seek-tolerance-one-frame",
+      "name": "Element Seek Tolerance One Frame",
+      "symbol": "~element-seek-tolerance-one-frame",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "A re-seek only fires when Math.abs(el.currentTime - sourceTime) > 1/60 and no seek is already in flight — the 1/60s tolerance (~one frame at 60fps) absorbs sub-frame jitter so the provider does not thrash currentTime every render tick. Tighten this and seeking never settles; loosen it and preview scrubbing visibly lags the requested time.",
+      "related": []
+    },
+    "element-null-while-not-ready": {
+      "id": "element-null-while-not-ready",
+      "name": "Element Null While Not Ready",
+      "symbol": "~element-null-while-not-ready",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "getFrame returns null on three distinct not-ready paths — a freshly created element before its first seek, readyState < 2 (HAVE_CURRENT_DATA) with too little buffered, and any in-flight seek — which is the producer side of canvas video-null-provider-retry (caller re-renders next tick). The seeked event handler clears the seeking flag and fires the onFrame callback so the host render loop is woken event-driven, never polled.",
+      "related": []
+    },
+    "webcodecs-nearest-by-abs-delta": {
+      "id": "webcodecs-nearest-by-abs-delta",
+      "name": "Webcodecs Nearest By Abs Delta",
+      "symbol": "~webcodecs-nearest-by-abs-delta",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "Frame matching minimizes Math.abs(timestampMs - targetMs) over all decoded frames — a bidirectional NEAREST match, even though the inline comment says \"at or before sourceTime\". sourceTime is quantized to integer ms via Math.round(sourceTime * 1000) and timestamps are keyed in ms, so matching is integer-ms. Treat this as the observed contract (nearest, with a comment/code drift noted), not a defect.",
+      "related": []
+    },
+    "webcodecs-async-load-on-miss": {
+      "id": "webcodecs-async-load-on-miss",
+      "name": "Webcodecs Async Load On Miss",
+      "symbol": "~webcodecs-async-load-on-miss",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "getFrame returns null immediately on a cache miss while kicking off load(src).catch(() => {}) in the background — the same null-means-not-ready retry contract as element-provider. Concurrent load() calls for one src are de-duplicated through the loading Map (return the in-flight promise), and a src already present in frames short-circuits, so a clip is decoded at most once.",
+      "related": []
+    },
+    "webcodecs-imagebitmap-explicit-close": {
+      "id": "webcodecs-imagebitmap-explicit-close",
+      "name": "Webcodecs Imagebitmap Explicit Close",
+      "symbol": "~webcodecs-imagebitmap-explicit-close",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "dispose walks the nested src→(timestamp→ImageBitmap) maps and calls bitmap.close() on every frame before clearing — ImageBitmaps hold GPU/decoder memory that is NOT reclaimed by GC, so skipping dispose after an export leaks every decoded frame.",
+      "related": []
+    },
+    "webcodecs-feature-detect-and-stub": {
+      "id": "webcodecs-feature-detect-and-stub",
+      "name": "Webcodecs Feature Detect And Stub",
+      "symbol": "~webcodecs-feature-detect-and-stub",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "isSupported() typeof-guards the global VideoDecoder (Chrome/Chromium only as of 2026) so callers can fall back to ElementVideoProvider; decode() re-checks and throws when unsupported. The actual demux/decode (decodeWithFallback) currently throws \"Mediabunny integration pending (T-002b)\" — the class is a stable interface with no real decode path until T-002b lands.",
+      "related": []
+    },
+    "ffmpeg-stable-interface-throws": {
+      "id": "ffmpeg-stable-interface-throws",
+      "name": "Ffmpeg Stable Interface Throws",
+      "symbol": "~ffmpeg-stable-interface-throws",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "init/writeFrame/finalize are deliberate stubs that throw \"T-003 implementation pending\" — only the type surface (EncodeOptions, EncodeProgress, EncodeFormat, method signatures) is load-bearing today, letting callers be written against the encoder before its WASM body exists. dispose is the only inert no-op.",
+      "related": []
+    },
+    "ffmpeg-defaults-then-spread": {
+      "id": "ffmpeg-defaults-then-spread",
+      "name": "Ffmpeg Defaults Then Spread",
+      "symbol": "~ffmpeg-defaults-then-spread",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
+      "description": "The constructor seeds filename = `export.${format}` and crf = 18 FIRST, then spreads ...options last, so any caller-supplied filename/crf overrides the defaults (spread wins on conflict) while the default filename is always derived from the chosen format. Reverse the spread order and caller overrides would be silently discarded.",
+      "related": []
+    },
+    "declarative-string-vs-imperative-ctx": {
+      "id": "declarative-string-vs-imperative-ctx",
+      "name": "Declarative String Vs Imperative Ctx",
+      "symbol": "~declarative-string-vs-imperative-ctx",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "The SVG renderer accumulates content as STRINGS — sub-renderers return markup, defs and layer elements collect into arrays, and the whole document is assembled with lines.join(\"\\n\") at the end. There is no imperative draw context like the canvas renderer's ctx.fill/ctx.stroke; output is a single self-contained SVG string with all <defs> emitted before the layer <g> elements, so refs resolve regardless of layer order.",
+      "related": []
+    },
+    "id-counter-reset-determinism": {
+      "id": "id-counter-reset-determinism",
+      "name": "Id Counter Reset Determinism",
+      "symbol": "~id-counter-reset-determinism",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "All three id counters (gradient, filter, clip) are reset at the very top of renderFrameSVG before anything is resolved or emitted, so a given frame always produces identical grad-/filter-/clip- ids. Skip the reset and ids drift upward across successive renders, defeating snapshot stability and risking duplicate ids if two renders are concatenated.",
+      "related": []
+    },
+    "early-skip-and-asset-mutation": {
+      "id": "early-skip-and-asset-mutation",
+      "name": "Early Skip And Asset Mutation",
+      "symbol": "~early-skip-and-asset-mutation",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "A layer is skipped before any markup when !eff.visible OR eff.opacity <= 0, matching the canvas guard. For image layers the resolver MUTATES the asset src onto eff.visual in place (assetId → doc.assets[assetId].src) — eff.visual is the buildEffectiveLayer copy, but this is still in-place mutation of the effective visual rather than a pure return.",
+      "related": []
+    },
+    "combined-shadow-tint-drops-tint": {
+      "id": "combined-shadow-tint-drops-tint",
+      "name": "Combined Shadow Tint Drops Tint",
+      "symbol": "~combined-shadow-tint-drops-tint",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "When a layer has BOTH a shadow filter and a tint filter, only the shadow filterRef is actually applied to the group — the tint is silently dropped (the comment promises a nested-group wrap that is never emitted). Shadow-only or tint-only layers apply correctly. This is a known incomplete branch, not a coincidence; a maintainer adding combined filters must implement the nested wrap here.",
+      "related": []
+    },
+    "image-crop-via-nested-svg-viewbox": {
+      "id": "image-crop-via-nested-svg-viewbox",
+      "name": "Image Crop Via Nested Svg Viewbox",
+      "symbol": "~image-crop-via-nested-svg-viewbox",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Unlike the canvas renderer's 5-arg/9-arg drawImage cropping, sourceRect and spritesheet crops are emitted as a nested <svg viewBox=\"sx sy w h\"> wrapping a full-size <image> — the viewBox windows the visible region declaratively. Spritesheet frameIndex is floored and clamped to maxFrames-1 (frameCount ?? columns*rows), with col=idx%columns and row=floor(idx/columns).",
+      "related": []
+    },
+    "ref-cycle-and-depth-guards": {
+      "id": "ref-cycle-and-depth-guards",
+      "name": "Ref Cycle And Depth Guards",
+      "symbol": "~ref-cycle-and-depth-guards",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderRefSVG guards recursion two ways — a depth counter capped at maxRefDepth (default 4) emits a MAX DEPTH placeholder, and a visitedRefs Set keyed by visual.src emits a CYCLE placeholder before recursing into an already-visited doc. The src is added to the set before recursing and deleted after, so sibling refs to the same doc are allowed while true cycles are blocked. Missing resolver / not-found / empty-states each fall back to a distinct dashed placeholder rect.",
+      "related": []
+    },
+    "bezier-only-with-handle-pair": {
+      "id": "bezier-only-with-handle-pair",
+      "name": "Bezier Only With Handle Pair",
+      "symbol": "~bezier-only-with-handle-pair",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "A path segment is emitted as a cubic C command only when prev.out AND curr.in both exist (handles are relative offsets added to the anchor: prev.x+prev.out.x etc.); otherwise it degrades to a straight L lineTo. The path returns an empty string entirely when fewer than 2 points, and Z is appended only when shape.closed.",
+      "related": []
+    },
+    "corner-radius-array-first-only": {
+      "id": "corner-radius-array-first-only",
+      "name": "Corner Radius Array First Only",
+      "symbol": "~corner-radius-array-first-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "rect rounding emits a single rx/ry pair using only index [0] of a cornerRadius array (or the scalar when not an array) — per-corner radii are NOT supported in SVG output, so a four-value cornerRadius silently collapses to uniform corners. Stroke attrs are space-joined and appended only when present.",
+      "related": []
+    },
+    "text-align-to-text-anchor": {
+      "id": "text-align-to-text-anchor",
+      "name": "Text Align To Text Anchor",
+      "symbol": "~text-align-to-text-anchor",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Canvas textAlign maps to SVG text-anchor declaratively — left→start (x=0), center→middle (x=width/2), right→end (x=width). The X offset keeps text inside the layer box exactly like the canvas renderer's offset, but here the anchor attribute does the work instead of an imperative align call. fontFamily and content are both run through escapeXml.",
+      "related": []
+    },
+    "hanging-baseline-for-top-edge": {
+      "id": "hanging-baseline-for-top-edge",
+      "name": "Hanging Baseline For Top Edge",
+      "symbol": "~hanging-baseline-for-top-edge",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "dominant-baseline=\"hanging\" is always emitted so y=0 is the TOP edge of the text box, matching the layer coordinate system — the SVG analog of the canvas renderer forcing textBaseline=\"top\" against SVG's default alphabetic baseline. font-weight/font-style are only emitted when not \"normal\".",
+      "related": []
+    },
+    "gradient-id-uniqueness-per-render": {
+      "id": "gradient-id-uniqueness-per-render",
+      "name": "Gradient Id Uniqueness Per Render",
+      "symbol": "~gradient-id-uniqueness-per-render",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Every gradient def gets a fresh id via grad-${++gradientIdCounter}, so two gradients in one frame never collide — but uniqueness ACROSS frames depends entirely on resetGradientCounter() at render entry. Reuse the same id across two concatenated SVGs and the second gradient inherits the first's stops. Linear and radial share the same counter.",
+      "related": []
+    },
+    "gradient-coordinate-spaces-differ": {
+      "id": "gradient-coordinate-spaces-differ",
+      "name": "Gradient Coordinate Spaces Differ",
+      "symbol": "~gradient-coordinate-spaces-differ",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Linear gradients map fill.angle to x1/y1/x2/y2 in 0..1 objectBoundingBox unit space (0.5 ± cos/sin * 0.5), so they auto-scale to any layer size. Radial gradients instead use gradientUnits=\"userSpaceOnUse\" with center/radius resolved to pixels (percent radius against max(width,height)). Mixing the two coordinate models is intentional and must not be unified.",
+      "related": []
+    },
+    "color-css-dispatch-black-fallback": {
+      "id": "color-css-dispatch-black-fallback",
+      "name": "Color Css Dispatch Black Fallback",
+      "symbol": "~color-css-dispatch-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "colorToCSS dispatches on shape — a string passes through literally, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything unrecognized falls back to #000000 rather than throwing, so a malformed color renders black.",
+      "related": []
+    },
+    "shadow-filter-region-and-blur-map": {
+      "id": "shadow-filter-region-and-blur-map",
+      "name": "Shadow Filter Region And Blur Map",
+      "symbol": "~shadow-filter-region-and-blur-map",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "The shadow filter region is expanded to x/y=-50% width/height=200% so the drop shadow can bleed OUTSIDE the layer bounds without being clipped (the SVG default filter region is only -10%..110%). stdDeviation is set to blur/2 to roughly match the canvas renderer's shadowBlur appearance — a deliberate approximation, not an exact equivalence.",
+      "related": []
+    },
+    "filters-share-one-counter": {
+      "id": "filters-share-one-counter",
+      "name": "Filters Share One Counter",
+      "symbol": "~filters-share-one-counter",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Both buildShadowFilter and buildTintFilter draw ids from the SAME filterIdCounter, so shadow and tint filters are never assigned the same id within a render. Tint is skipped entirely when amount <= 0; tint is implemented as feFlood (color at flood-opacity=amount) blended over SourceGraphic with mode=\"multiply\".",
+      "related": []
+    },
+    "clip-counter-isolated-and-path-dup": {
+      "id": "clip-counter-isolated-and-path-dup",
+      "name": "Clip Counter Isolated And Path Dup",
+      "symbol": "~clip-counter-isolated-and-path-dup",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "clipIdCounter is a SEPARATE counter from gradient/filter ids, so clip ids never collide with them and have their own reset. The path-shape branch DUPLICATES the moveTo/cubic/lineTo/close emission logic from svg-shapes (handle-pair → C else L, Z on closed) rather than sharing it — keep both copies in sync when path emission changes. A path with fewer than 2 points returns empty defs and empty clipRef, so the caller skips the clip-path attribute.",
+      "related": []
+    },
+    "transform-anchor-order-as-string": {
+      "id": "transform-anchor-order-as-string",
+      "name": "Transform Anchor Order As String",
+      "symbol": "~transform-anchor-order-as-string",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Transform parts are emitted as a string in the order translate(pos) → translate(anchor) → rotate → scale → translate(-anchor), so rotation/scale pivot around the anchor point (anchorX*width, anchorY*height) — the same composition as the canvas transform stack but serialized to an SVG transform attribute. The rotate/scale block is skipped entirely when totalRotation (rotation+motionPathAngle) is 0 AND both scales are 1, and translate(pos) is skipped when x and y are both 0.",
+      "related": []
+    },
+    "style-attrs-conditional-and-blend-inline": {
+      "id": "style-attrs-conditional-and-blend-inline",
+      "name": "Style Attrs Conditional And Blend Inline",
+      "symbol": "~style-attrs-conditional-and-blend-inline",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "opacity is emitted as an attribute only when eff.opacity < 1, and blendMode is emitted only when not \"normal\" — and crucially as an inline style=\"mix-blend-mode: ...\" rather than a presentation attribute, because mix-blend-mode has no attribute form in SVG. Both omitted means buildStyleAttrs returns an empty string and the <g> carries no style.",
+      "related": []
+    },
+    "escape-xml-five-entities": {
+      "id": "escape-xml-five-entities",
+      "name": "Escape Xml Five Entities",
+      "symbol": "~escape-xml-five-entities",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "escapeXml replaces exactly five entities — & < > \" ' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.",
       "related": []
     },
     "unit-value-pixel-or-percent-string": {
@@ -2135,141 +2387,112 @@
       "description": "Recipe fields use snake_case (not the camelCase of the core types), and units differ by block — SilencePolicy paddings/min_silence/match_tolerance are SECONDS, CaptionStyle y_ratio/width_ratio are 0-1 ratios of canvas, fade_seconds is seconds, CaptionGrouping pause_gap is seconds. OverlayRules use anchor (corner enum) + margin (px), NOT y_ratio.",
       "related": []
     },
-    "document-shape-asymmetry": {
-      "id": "document-shape-asymmetry",
-      "name": "Document Shape Asymmetry",
-      "symbol": "~document-shape-asymmetry",
+    "canvas-intrinsic-not-css-size": {
+      "id": "canvas-intrinsic-not-css-size",
+      "name": "Canvas Intrinsic Not Css Size",
+      "symbol": "~canvas-intrinsic-not-css-size",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "width/height are passed as canvas ELEMENT attributes (the intrinsic drawing-buffer resolution), not CSS style — they default to doc.canvas.width/height and are separate from the style prop, which only sets display size. Pass a CSS width via style and the bitmap still renders at the document resolution.",
       "related": []
     },
-    "visual-discriminated-union": {
-      "id": "visual-discriminated-union",
-      "name": "Visual Discriminated Union",
-      "symbol": "~visual-discriminated-union",
+    "initial-state-effect-deps-narrow": {
+      "id": "initial-state-effect-deps-narrow",
+      "name": "Initial State Effect Deps Narrow",
+      "symbol": "~initial-state-effect-deps-narrow",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The initialState effect intentionally depends only on [initialState] (exhaustive-deps disabled), so onStateChange is read but NOT in the dep array — a changing onStateChange identity will not re-fire the callback, only an actual initialState change does. Widening the deps would re-notify on every render that passes a new closure.",
       "related": []
     },
-    "video-bound-asymmetry": {
-      "id": "video-bound-asymmetry",
-      "name": "Video Bound Asymmetry",
-      "symbol": "~video-bound-asymmetry",
+    "player-lifecycle-keyed-on-doc": {
+      "id": "player-lifecycle-keyed-on-doc",
+      "name": "Player Lifecycle Keyed On Doc",
+      "symbol": "~player-lifecycle-keyed-on-doc",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The create/destroy effect keys ONLY on [doc] (exhaustive-deps disabled), so a new AnimationPlayer is built and the old one destroyed exactly when the document changes — NOT when canvasRef or option callbacks change. The canvas ref is read inside the effect (not a dep), so the player binds whatever canvas is mounted at that point and is not re-created on ref churn.",
       "related": []
     },
-    "layer-clamps-and-min-points": {
-      "id": "layer-clamps-and-min-points",
-      "name": "Layer Clamps And Min Points",
-      "symbol": "~layer-clamps-and-min-points",
+    "player-teardown-on-unmount": {
+      "id": "player-teardown-on-unmount",
+      "name": "Player Teardown On Unmount",
+      "symbol": "~player-teardown-on-unmount",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The effect cleanup calls player.destroy() (which cancels the requestAnimationFrame loop) and nulls playerRef on unmount or doc change — this is the rAF leak guard. Skip the cleanup and the previous document's animation loop keeps ticking against a stale canvas after remount.",
       "related": []
     },
-    "animatable-property-canonical-enum": {
-      "id": "animatable-property-canonical-enum",
-      "name": "Animatable Property Canonical Enum",
-      "symbol": "~animatable-property-canonical-enum",
+    "imperative-controls-via-ref": {
+      "id": "imperative-controls-via-ref",
+      "name": "Imperative Controls Via Ref",
+      "symbol": "~imperative-controls-via-ref",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "play/pause/seek are useCallback-memoized with EMPTY dep arrays and reach the live player through playerRef.current rather than closing over it — so the returned control identities are stable across renders while still driving the current player. They optimistically mirror React state (setIsPlaying/setCurrentFrame) alongside the imperative call.",
       "related": []
     },
-    "frame-range-ordering-refinement": {
-      "id": "frame-range-ordering-refinement",
-      "name": "Frame Range Ordering Refinement",
-      "symbol": "~frame-range-ordering-refinement",
+    "duration-from-first-state-only": {
+      "id": "duration-from-first-state-only",
+      "name": "Duration From First State Only",
+      "symbol": "~duration-from-first-state-only",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The hook's exposed duration is read from the FIRST state (Object.values(doc.states)[0]) and falls back to 0 — it does not track the player's currentState. A multi-state document reports only its first state's duration through this hook, by design distinct from AnimationPlayer.duration which follows currentState.",
       "related": []
     },
-    "delta-values-unvalidated-at-parse": {
-      "id": "delta-values-unvalidated-at-parse",
-      "name": "Delta Values Unvalidated At Parse",
-      "symbol": "~delta-values-unvalidated-at-parse",
+    "states-memoized-current-lazy-init": {
+      "id": "states-memoized-current-lazy-init",
+      "name": "States Memoized Current Lazy Init",
+      "symbol": "~states-memoized-current-lazy-init",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The states array is useMemo'd on [doc] so the list identity is stable until the document changes, and currentState uses lazy useState initialization (states[0] ?? \"\") so the default state is computed exactly once at mount, not recomputed every render. Empty/absent doc yields [] and \"\".",
       "related": []
     },
-    "flat-ai-readable-error-shape": {
-      "id": "flat-ai-readable-error-shape",
-      "name": "Flat Ai Readable Error Shape",
-      "symbol": "~flat-ai-readable-error-shape",
+    "transition-validates-and-seeks-zero": {
+      "id": "transition-validates-and-seeks-zero",
+      "name": "Transition Validates And Seeks Zero",
+      "symbol": "~transition-validates-and-seeks-zero",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "transitionTo throws on an unknown state name (fail-fast, no silent no-op) and on success both sets currentState AND calls playerControls?.seek(0) so every state change rewinds playback to frame 0. The playerControls arg is optional, so the hook works standalone but only resets the frame when wired to a player.",
       "related": []
     },
-    "video-semantic-checks-beyond-zod": {
-      "id": "video-semantic-checks-beyond-zod",
-      "name": "Video Semantic Checks Beyond Zod",
-      "symbol": "~video-semantic-checks-beyond-zod",
+    "raf-fixed-timestep-accumulator": {
+      "id": "raf-fixed-timestep-accumulator",
+      "name": "Raf Fixed Timestep Accumulator",
+      "symbol": "~raf-fixed-timestep-accumulator",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
-      "related": [
-        "^valid-video-layer"
-      ]
-    },
-    "recipe-warnings-side-channel": {
-      "id": "recipe-warnings-side-channel",
-      "name": "Recipe Warnings Side Channel",
-      "symbol": "~recipe-warnings-side-channel",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "tick advances at most ONE frame per qualifying rAF callback (frame++ only when elapsed >= frameDuration = 1000/fps), and corrects drift by setting lastTimestamp = timestamp - (elapsed % frameDuration) rather than to timestamp — so the animation plays at the document fps independent of display refresh rate and never fast-forwards multiple frames in one tick.",
       "related": []
     },
-    "recipe-strict-no-unknown-keys": {
-      "id": "recipe-strict-no-unknown-keys",
-      "name": "Recipe Strict No Unknown Keys",
-      "symbol": "~recipe-strict-no-unknown-keys",
+    "play-idempotent-pause-cancels-raf": {
+      "id": "play-idempotent-pause-cancels-raf",
+      "name": "Play Idempotent Pause Cancels Raf",
+      "symbol": "~play-idempotent-pause-cancels-raf",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "play() early-returns if already playing so it never schedules a second concurrent rAF loop, and pause()/destroy() cancelAnimationFrame and null rafId so no orphan loop survives. destroy() is just pause() — the single teardown path that the React cleanup relies on for leak safety.",
       "related": []
     },
-    "page-number-format-template-syntax": {
-      "id": "page-number-format-template-syntax",
-      "name": "Page Number Format Template Syntax",
-      "symbol": "~page-number-format-template-syntax",
+    "seek-clamped-to-state-bounds": {
+      "id": "seek-clamped-to-state-bounds",
+      "name": "Seek Clamped To State Bounds",
+      "symbol": "~seek-clamped-to-state-bounds",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "seek clamps the target to [0, duration-1] via Math.max(0, Math.min(frame, maxFrame)) where duration follows currentState, so scrubbing can never address a frame outside the active state. Both seek and setState force an immediate renderCurrentFrame so the canvas updates even while paused.",
       "related": []
     },
-    "recipe-phase-split-strict-vs-opaque": {
-      "id": "recipe-phase-split-strict-vs-opaque",
-      "name": "Recipe Phase Split Strict Vs Opaque",
-      "symbol": "~recipe-phase-split-strict-vs-opaque",
+    "image-load-triggers-rerender": {
+      "id": "image-load-triggers-rerender",
+      "name": "Image Load Triggers Rerender",
+      "symbol": "~image-load-triggers-rerender",
       "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
-      "related": []
-    },
-    "yaml-parse-never-throws": {
-      "id": "yaml-parse-never-throws",
-      "name": "Yaml Parse Never Throws",
-      "symbol": "~yaml-parse-never-throws",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
-      "related": []
-    },
-    "yaml-safe-by-default-data-only": {
-      "id": "yaml-safe-by-default-data-only",
-      "name": "Yaml Safe By Default Data Only",
-      "symbol": "~yaml-safe-by-default-data-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
+      "description": "The ImageCache onLoad callback re-invokes renderCurrentFrame, so async-loaded images repaint the current frame once decoded even when playback is paused — without this, a paused first frame referencing a not-yet-loaded image would stay blank. renderCurrentFrame also silently returns if getContext(\"2d\") yields null.",
       "related": []
     },
     "bezier-binary-search-not-newton": {
@@ -2414,6 +2637,503 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
       "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
+      "related": []
+    },
+    "document-shape-asymmetry": {
+      "id": "document-shape-asymmetry",
+      "name": "Document Shape Asymmetry",
+      "symbol": "~document-shape-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
+      "related": []
+    },
+    "visual-discriminated-union": {
+      "id": "visual-discriminated-union",
+      "name": "Visual Discriminated Union",
+      "symbol": "~visual-discriminated-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
+      "related": []
+    },
+    "video-bound-asymmetry": {
+      "id": "video-bound-asymmetry",
+      "name": "Video Bound Asymmetry",
+      "symbol": "~video-bound-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
+      "related": []
+    },
+    "layer-clamps-and-min-points": {
+      "id": "layer-clamps-and-min-points",
+      "name": "Layer Clamps And Min Points",
+      "symbol": "~layer-clamps-and-min-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
+      "related": []
+    },
+    "animatable-property-canonical-enum": {
+      "id": "animatable-property-canonical-enum",
+      "name": "Animatable Property Canonical Enum",
+      "symbol": "~animatable-property-canonical-enum",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
+      "related": []
+    },
+    "frame-range-ordering-refinement": {
+      "id": "frame-range-ordering-refinement",
+      "name": "Frame Range Ordering Refinement",
+      "symbol": "~frame-range-ordering-refinement",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
+      "related": []
+    },
+    "delta-values-unvalidated-at-parse": {
+      "id": "delta-values-unvalidated-at-parse",
+      "name": "Delta Values Unvalidated At Parse",
+      "symbol": "~delta-values-unvalidated-at-parse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
+      "related": []
+    },
+    "flat-ai-readable-error-shape": {
+      "id": "flat-ai-readable-error-shape",
+      "name": "Flat Ai Readable Error Shape",
+      "symbol": "~flat-ai-readable-error-shape",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
+      "related": []
+    },
+    "video-semantic-checks-beyond-zod": {
+      "id": "video-semantic-checks-beyond-zod",
+      "name": "Video Semantic Checks Beyond Zod",
+      "symbol": "~video-semantic-checks-beyond-zod",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
+      "related": [
+        "^valid-video-layer"
+      ]
+    },
+    "recipe-warnings-side-channel": {
+      "id": "recipe-warnings-side-channel",
+      "name": "Recipe Warnings Side Channel",
+      "symbol": "~recipe-warnings-side-channel",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
+      "related": []
+    },
+    "recipe-strict-no-unknown-keys": {
+      "id": "recipe-strict-no-unknown-keys",
+      "name": "Recipe Strict No Unknown Keys",
+      "symbol": "~recipe-strict-no-unknown-keys",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
+      "related": []
+    },
+    "page-number-format-template-syntax": {
+      "id": "page-number-format-template-syntax",
+      "name": "Page Number Format Template Syntax",
+      "symbol": "~page-number-format-template-syntax",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
+      "related": []
+    },
+    "recipe-phase-split-strict-vs-opaque": {
+      "id": "recipe-phase-split-strict-vs-opaque",
+      "name": "Recipe Phase Split Strict Vs Opaque",
+      "symbol": "~recipe-phase-split-strict-vs-opaque",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
+      "related": []
+    },
+    "yaml-parse-never-throws": {
+      "id": "yaml-parse-never-throws",
+      "name": "Yaml Parse Never Throws",
+      "symbol": "~yaml-parse-never-throws",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
+      "related": []
+    },
+    "yaml-safe-by-default-data-only": {
+      "id": "yaml-safe-by-default-data-only",
+      "name": "Yaml Safe By Default Data Only",
+      "symbol": "~yaml-safe-by-default-data-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
+      "related": []
+    },
+    "pinned-lottie-version": {
+      "id": "pinned-lottie-version",
+      "name": "Pinned Lottie Version",
+      "symbol": "~pinned-lottie-version",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
+      "related": []
+    },
+    "default-first-state": {
+      "id": "default-first-state",
+      "name": "Default First State",
+      "symbol": "~default-first-state",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
+      "related": []
+    },
+    "warning-dedup-collapse": {
+      "id": "warning-dedup-collapse",
+      "name": "Warning Dedup Collapse",
+      "symbol": "~warning-dedup-collapse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
+      "related": []
+    },
+    "image-asset-fixed-dimensions": {
+      "id": "image-asset-fixed-dimensions",
+      "name": "Image Asset Fixed Dimensions",
+      "symbol": "~image-asset-fixed-dimensions",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
+      "related": []
+    },
+    "numeric-layer-type-discriminant": {
+      "id": "numeric-layer-type-discriminant",
+      "name": "Numeric Layer Type Discriminant",
+      "symbol": "~numeric-layer-type-discriminant",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
+      "related": []
+    },
+    "bezier-handles-as-xy-objects": {
+      "id": "bezier-handles-as-xy-objects",
+      "name": "Bezier Handles As Xy Objects",
+      "symbol": "~bezier-handles-as-xy-objects",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
+      "related": []
+    },
+    "percentage-units-collapse-to-zero": {
+      "id": "percentage-units-collapse-to-zero",
+      "name": "Percentage Units Collapse To Zero",
+      "symbol": "~percentage-units-collapse-to-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
+      "related": []
+    },
+    "layer-index-is-parent-pointer": {
+      "id": "layer-index-is-parent-pointer",
+      "name": "Layer Index Is Parent Pointer",
+      "symbol": "~layer-index-is-parent-pointer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
+      "related": []
+    },
+    "opacity-and-scale-percent-rescale": {
+      "id": "opacity-and-scale-percent-rescale",
+      "name": "Opacity And Scale Percent Rescale",
+      "symbol": "~opacity-and-scale-percent-rescale",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
+      "related": []
+    },
+    "max-frame-fallback-sixty": {
+      "id": "max-frame-fallback-sixty",
+      "name": "Max Frame Fallback Sixty",
+      "symbol": "~max-frame-fallback-sixty",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
+      "related": []
+    },
+    "rect-centered-radial-fixed": {
+      "id": "rect-centered-radial-fixed",
+      "name": "Rect Centered Radial Fixed",
+      "symbol": "~rect-centered-radial-fixed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
+      "related": []
+    },
+    "gradient-stop-stride-no-alpha": {
+      "id": "gradient-stop-stride-no-alpha",
+      "name": "Gradient Stop Stride No Alpha",
+      "symbol": "~gradient-stop-stride-no-alpha",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
+      "related": []
+    },
+    "unknown-fill-black-fallback": {
+      "id": "unknown-fill-black-fallback",
+      "name": "Unknown Fill Black Fallback",
+      "symbol": "~unknown-fill-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
+      "related": []
+    },
+    "expression-short-circuits-static-zero": {
+      "id": "expression-short-circuits-static-zero",
+      "name": "Expression Short Circuits Static Zero",
+      "symbol": "~expression-short-circuits-static-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
+      "related": []
+    },
+    "position-z-zero-easing-from-x": {
+      "id": "position-z-zero-easing-from-x",
+      "name": "Position Z Zero Easing From X",
+      "symbol": "~position-z-zero-easing-from-x",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
+      "related": []
+    },
+    "keyframe-hold-last-completed": {
+      "id": "keyframe-hold-last-completed",
+      "name": "Keyframe Hold Last Completed",
+      "symbol": "~keyframe-hold-last-completed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
+      "related": []
+    },
+    "rgb-normalize-255-to-unit": {
+      "id": "rgb-normalize-255-to-unit",
+      "name": "Rgb Normalize 255 To Unit",
+      "symbol": "~rgb-normalize-255-to-unit",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
+      "related": []
+    },
+    "hex-shorthand-and-black-fallback": {
+      "id": "hex-shorthand-and-black-fallback",
+      "name": "Hex Shorthand And Black Fallback",
+      "symbol": "~hex-shorthand-and-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
+      "related": []
+    },
+    "easing-handles-swapped-and-inverted": {
+      "id": "easing-handles-swapped-and-inverted",
+      "name": "Easing Handles Swapped And Inverted",
+      "symbol": "~easing-handles-swapped-and-inverted",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
+      "related": []
+    },
+    "lossy-easing-approximations": {
+      "id": "lossy-easing-approximations",
+      "name": "Lossy Easing Approximations",
+      "symbol": "~lossy-easing-approximations",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
+      "related": []
+    },
+    "unsupported-feature-catalog": {
+      "id": "unsupported-feature-catalog",
+      "name": "Unsupported Feature Catalog",
+      "symbol": "~unsupported-feature-catalog",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
+      "related": []
+    },
+    "painters-algorithm-order": {
+      "id": "painters-algorithm-order",
+      "name": "Painters Algorithm Order",
+      "symbol": "~painters-algorithm-order",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Layers render in effList order — first element is drawn first and ends up at the back, last on top. The list is built by iterating resolvedFrame.layers in order, so resolution order IS z-order. There is no separate sort or z-index.",
+      "related": []
+    },
+    "save-restore-per-layer": {
+      "id": "save-restore-per-layer",
+      "name": "Save Restore Per Layer",
+      "symbol": "~save-restore-per-layer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.",
+      "related": []
+    },
+    "transform-stack-anchor-order": {
+      "id": "transform-stack-anchor-order",
+      "name": "Transform Stack Anchor Order",
+      "symbol": "~transform-stack-anchor-order",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.",
+      "related": []
+    },
+    "ancestor-transforms-root-first": {
+      "id": "ancestor-transforms-root-first",
+      "name": "Ancestor Transforms Root First",
+      "symbol": "~ancestor-transforms-root-first",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.",
+      "related": []
+    },
+    "tint-offscreen-multiply-mask": {
+      "id": "tint-offscreen-multiply-mask",
+      "name": "Tint Offscreen Multiply Mask",
+      "symbol": "~tint-offscreen-multiply-mask",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.",
+      "related": []
+    },
+    "early-skip-invisible-layers": {
+      "id": "early-skip-invisible-layers",
+      "name": "Early Skip Invisible Layers",
+      "symbol": "~early-skip-invisible-layers",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.",
+      "related": []
+    },
+    "render-context-no-dom-dependency": {
+      "id": "render-context-no-dom-dependency",
+      "name": "Render Context No Dom Dependency",
+      "symbol": "~render-context-no-dom-dependency",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.",
+      "related": []
+    },
+    "perimeter-from-shape-type": {
+      "id": "perimeter-from-shape-type",
+      "name": "Perimeter From Shape Type",
+      "symbol": "~perimeter-from-shape-type",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Stroke trim (strokeStart/strokeEnd dash math) needs a path length, so each shape computes its own perimeter — rect via 2*(w+h), ellipse via the Ramanujan approximation, path by summing segment chord distances with bezier segments fudged at chord * 1.2. Wrong perimeter desyncs the dash offset and the trim animation drifts.",
+      "related": []
+    },
+    "rounded-rect-feature-detect": {
+      "id": "rounded-rect-feature-detect",
+      "name": "Rounded Rect Feature Detect",
+      "symbol": "~rounded-rect-feature-detect",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "roundRect is feature-detected (cornerRadius && ctx.roundRect) — when a cornerRadius is set but the context lacks roundRect, rect rendering falls back to plain fillRect/strokeRect (square corners) rather than throwing. clipPath has its own manual moveTo/lineTo fallback for the same reason.",
+      "related": []
+    },
+    "path-needs-two-points": {
+      "id": "path-needs-two-points",
+      "name": "Path Needs Two Points",
+      "symbol": "~path-needs-two-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.",
+      "related": []
+    },
+    "text-align-offset-baseline": {
+      "id": "text-align-offset-baseline",
+      "name": "Text Align Offset Baseline",
+      "symbol": "~text-align-offset-baseline",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Canvas textAlign anchors at the draw point, so the X draw position is offset to keep text inside the layer bounds — left=0, center=width/2, right=width. textBaseline is forced to \"top\" so y=0 is the top edge of the box, matching the layer coordinate system rather than the canvas alphabetic default.",
+      "related": []
+    },
+    "font-string-assembly": {
+      "id": "font-string-assembly",
+      "name": "Font String Assembly",
+      "symbol": "~font-string-assembly",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "The CSS font shorthand is assembled in strict order \"<fontStyle> <fontWeight> <fontSizepx> <fontFamily>\" with fontStyle/fontWeight defaulting to \"normal\"; fontSize is always emitted in px. Reorder the tokens and the canvas silently ignores the malformed font string.",
+      "related": []
+    },
+    "video-null-provider-retry": {
+      "id": "video-null-provider-retry",
+      "name": "Video Null Provider Retry",
+      "symbol": "~video-null-provider-retry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "renderVideo draws nothing (silent return) when visual.src is missing OR the provider returns null — null means the frame is not decoded yet, and the contract is that the caller re-renders on a later tick until the provider yields a frame. No placeholder is drawn, so the previous frame content remains visible.",
+      "related": []
+    },
+    "effective-property-override-defaults": {
+      "id": "effective-property-override-defaults",
+      "name": "Effective Property Override Defaults",
+      "symbol": "~effective-property-override-defaults",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "buildEffectiveLayer merges computedProperties (animated values) over layer defaults using ?? chains — cp value first, then the static layer field, then a hard default. shadow and tint blocks are only constructed when either the static layer has them OR a relevant computed key is present, otherwise they stay undefined to skip that work downstream.",
+      "related": []
+    },
+    "percentage-resolved-at-render": {
+      "id": "percentage-resolved-at-render",
+      "name": "Percentage Resolved At Render",
+      "symbol": "~percentage-resolved-at-render",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "resolveUnit converts a percentage string to pixels (parseFloat/100 * reference) at render time, with x/width measured against parentWidth and y/height against parentHeight. Raw numbers pass through unchanged. The correct reference axis must be supplied per field — using the wrong dimension skews percentage layouts.",
+      "related": []
+    },
+    "visual-override-copy-on-write": {
+      "id": "visual-override-copy-on-write",
+      "name": "Visual Override Copy On Write",
+      "symbol": "~visual-override-copy-on-write",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "buildEffectiveVisual returns the ORIGINAL visual untouched when no visual/image computed keys are present, and otherwise shallow-clones before mutating fill/stroke/style/sourceRect — so the source document visual is never mutated. frameIndex is floored to an integer when animated.",
+      "related": []
+    },
+    "stroke-trim-via-dash": {
+      "id": "stroke-trim-via-dash",
+      "name": "Stroke Trim Via Dash",
+      "symbol": "~stroke-trim-via-dash",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "strokeStart/strokeEnd trim is implemented with the line-dash trick — a dash of [visible, pathLength+1] plus lineDashOffset = -start*pathLength reveals only the (end-start)*pathLength segment of the perimeter. The +1 guarantees the gap exceeds the path so only one dash shows; visible is clamped to >= 0. Plain stroke.dash applies only when no trim is set.",
+      "related": []
+    },
+    "color-css-type-dispatch": {
+      "id": "color-css-type-dispatch",
+      "name": "Color Css Type Dispatch",
+      "symbol": "~color-css-type-dispatch",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS dispatches on shape — a string passes through as a hex literal, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything else falls back to #000000. The fallback means malformed color objects render black rather than throwing.",
+      "related": []
+    },
+    "gradient-geometry-from-bounds": {
+      "id": "gradient-geometry-from-bounds",
+      "name": "Gradient Geometry From Bounds",
+      "symbol": "~gradient-geometry-from-bounds",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
       "related": []
     },
     "frame-resolution-determinism": {
@@ -2633,177 +3353,6 @@
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
       "description": "Before startFrame computeAudioState returns shouldPlay false with currentTime 0 (volume still reported), and shouldPlay is gated on frame < stateDuration so audio is silent outside its active window. Looping with non-positive segment duration also returns silent.",
       "related": []
-    },
-    "painters-algorithm-order": {
-      "id": "painters-algorithm-order",
-      "name": "Painters Algorithm Order",
-      "symbol": "~painters-algorithm-order",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Layers render in effList order — first element is drawn first and ends up at the back, last on top. The list is built by iterating resolvedFrame.layers in order, so resolution order IS z-order. There is no separate sort or z-index.",
-      "related": []
-    },
-    "save-restore-per-layer": {
-      "id": "save-restore-per-layer",
-      "name": "Save Restore Per Layer",
-      "symbol": "~save-restore-per-layer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.",
-      "related": []
-    },
-    "transform-stack-anchor-order": {
-      "id": "transform-stack-anchor-order",
-      "name": "Transform Stack Anchor Order",
-      "symbol": "~transform-stack-anchor-order",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.",
-      "related": []
-    },
-    "ancestor-transforms-root-first": {
-      "id": "ancestor-transforms-root-first",
-      "name": "Ancestor Transforms Root First",
-      "symbol": "~ancestor-transforms-root-first",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.",
-      "related": []
-    },
-    "tint-offscreen-multiply-mask": {
-      "id": "tint-offscreen-multiply-mask",
-      "name": "Tint Offscreen Multiply Mask",
-      "symbol": "~tint-offscreen-multiply-mask",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.",
-      "related": []
-    },
-    "early-skip-invisible-layers": {
-      "id": "early-skip-invisible-layers",
-      "name": "Early Skip Invisible Layers",
-      "symbol": "~early-skip-invisible-layers",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.",
-      "related": []
-    },
-    "render-context-no-dom-dependency": {
-      "id": "render-context-no-dom-dependency",
-      "name": "Render Context No Dom Dependency",
-      "symbol": "~render-context-no-dom-dependency",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.",
-      "related": []
-    },
-    "perimeter-from-shape-type": {
-      "id": "perimeter-from-shape-type",
-      "name": "Perimeter From Shape Type",
-      "symbol": "~perimeter-from-shape-type",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Stroke trim (strokeStart/strokeEnd dash math) needs a path length, so each shape computes its own perimeter — rect via 2*(w+h), ellipse via the Ramanujan approximation, path by summing segment chord distances with bezier segments fudged at chord * 1.2. Wrong perimeter desyncs the dash offset and the trim animation drifts.",
-      "related": []
-    },
-    "rounded-rect-feature-detect": {
-      "id": "rounded-rect-feature-detect",
-      "name": "Rounded Rect Feature Detect",
-      "symbol": "~rounded-rect-feature-detect",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "roundRect is feature-detected (cornerRadius && ctx.roundRect) — when a cornerRadius is set but the context lacks roundRect, rect rendering falls back to plain fillRect/strokeRect (square corners) rather than throwing. clipPath has its own manual moveTo/lineTo fallback for the same reason.",
-      "related": []
-    },
-    "path-needs-two-points": {
-      "id": "path-needs-two-points",
-      "name": "Path Needs Two Points",
-      "symbol": "~path-needs-two-points",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.",
-      "related": []
-    },
-    "text-align-offset-baseline": {
-      "id": "text-align-offset-baseline",
-      "name": "Text Align Offset Baseline",
-      "symbol": "~text-align-offset-baseline",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Canvas textAlign anchors at the draw point, so the X draw position is offset to keep text inside the layer bounds — left=0, center=width/2, right=width. textBaseline is forced to \"top\" so y=0 is the top edge of the box, matching the layer coordinate system rather than the canvas alphabetic default.",
-      "related": []
-    },
-    "font-string-assembly": {
-      "id": "font-string-assembly",
-      "name": "Font String Assembly",
-      "symbol": "~font-string-assembly",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "The CSS font shorthand is assembled in strict order \"<fontStyle> <fontWeight> <fontSizepx> <fontFamily>\" with fontStyle/fontWeight defaulting to \"normal\"; fontSize is always emitted in px. Reorder the tokens and the canvas silently ignores the malformed font string.",
-      "related": []
-    },
-    "video-null-provider-retry": {
-      "id": "video-null-provider-retry",
-      "name": "Video Null Provider Retry",
-      "symbol": "~video-null-provider-retry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "renderVideo draws nothing (silent return) when visual.src is missing OR the provider returns null — null means the frame is not decoded yet, and the contract is that the caller re-renders on a later tick until the provider yields a frame. No placeholder is drawn, so the previous frame content remains visible.",
-      "related": []
-    },
-    "effective-property-override-defaults": {
-      "id": "effective-property-override-defaults",
-      "name": "Effective Property Override Defaults",
-      "symbol": "~effective-property-override-defaults",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "buildEffectiveLayer merges computedProperties (animated values) over layer defaults using ?? chains — cp value first, then the static layer field, then a hard default. shadow and tint blocks are only constructed when either the static layer has them OR a relevant computed key is present, otherwise they stay undefined to skip that work downstream.",
-      "related": []
-    },
-    "percentage-resolved-at-render": {
-      "id": "percentage-resolved-at-render",
-      "name": "Percentage Resolved At Render",
-      "symbol": "~percentage-resolved-at-render",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "resolveUnit converts a percentage string to pixels (parseFloat/100 * reference) at render time, with x/width measured against parentWidth and y/height against parentHeight. Raw numbers pass through unchanged. The correct reference axis must be supplied per field — using the wrong dimension skews percentage layouts.",
-      "related": []
-    },
-    "visual-override-copy-on-write": {
-      "id": "visual-override-copy-on-write",
-      "name": "Visual Override Copy On Write",
-      "symbol": "~visual-override-copy-on-write",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "buildEffectiveVisual returns the ORIGINAL visual untouched when no visual/image computed keys are present, and otherwise shallow-clones before mutating fill/stroke/style/sourceRect — so the source document visual is never mutated. frameIndex is floored to an integer when animated.",
-      "related": []
-    },
-    "stroke-trim-via-dash": {
-      "id": "stroke-trim-via-dash",
-      "name": "Stroke Trim Via Dash",
-      "symbol": "~stroke-trim-via-dash",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "strokeStart/strokeEnd trim is implemented with the line-dash trick — a dash of [visible, pathLength+1] plus lineDashOffset = -start*pathLength reveals only the (end-start)*pathLength segment of the perimeter. The +1 guarantees the gap exceeds the path so only one dash shows; visible is clamped to >= 0. Plain stroke.dash applies only when no trim is set.",
-      "related": []
-    },
-    "color-css-type-dispatch": {
-      "id": "color-css-type-dispatch",
-      "name": "Color Css Type Dispatch",
-      "symbol": "~color-css-type-dispatch",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS dispatches on shape — a string passes through as a hex literal, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything else falls back to #000000. The fallback means malformed color objects render black rather than throwing.",
-      "related": []
-    },
-    "gradient-geometry-from-bounds": {
-      "id": "gradient-geometry-from-bounds",
-      "name": "Gradient Geometry From Bounds",
-      "symbol": "~gradient-geometry-from-bounds",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
-      "related": []
     }
   },
   "screens": {},
@@ -2896,74 +3445,6 @@
       "category": "components",
       "id": "#ffmpeg-encoder"
     },
-    "##unit-types": {
-      "category": "components",
-      "id": "#unit-types"
-    },
-    "##coordinate-types": {
-      "category": "components",
-      "id": "#coordinate-types"
-    },
-    "##color-types": {
-      "category": "components",
-      "id": "#color-types"
-    },
-    "##shape-types": {
-      "category": "components",
-      "id": "#shape-types"
-    },
-    "##layer-types": {
-      "category": "components",
-      "id": "#layer-types"
-    },
-    "##easing-types": {
-      "category": "components",
-      "id": "#easing-types"
-    },
-    "##delta-types": {
-      "category": "components",
-      "id": "#delta-types"
-    },
-    "##state-types": {
-      "category": "components",
-      "id": "#state-types"
-    },
-    "##document-types": {
-      "category": "components",
-      "id": "#document-types"
-    },
-    "##shadow-types": {
-      "category": "components",
-      "id": "#shadow-types"
-    },
-    "##audio-types": {
-      "category": "components",
-      "id": "#audio-types"
-    },
-    "##asset-types": {
-      "category": "components",
-      "id": "#asset-types"
-    },
-    "##variable-types": {
-      "category": "components",
-      "id": "#variable-types"
-    },
-    "##interaction-types": {
-      "category": "components",
-      "id": "#interaction-types"
-    },
-    "##preset-types": {
-      "category": "components",
-      "id": "#preset-types"
-    },
-    "##video-project-types": {
-      "category": "components",
-      "id": "#video-project-types"
-    },
-    "##recipe-types": {
-      "category": "components",
-      "id": "#recipe-types"
-    },
     "##svg-renderer": {
       "category": "components",
       "id": "#svg-renderer"
@@ -3040,6 +3521,186 @@
       "category": "components",
       "id": "drag-reorder"
     },
+    "##unit-types": {
+      "category": "components",
+      "id": "#unit-types"
+    },
+    "##coordinate-types": {
+      "category": "components",
+      "id": "#coordinate-types"
+    },
+    "##color-types": {
+      "category": "components",
+      "id": "#color-types"
+    },
+    "##shape-types": {
+      "category": "components",
+      "id": "#shape-types"
+    },
+    "##layer-types": {
+      "category": "components",
+      "id": "#layer-types"
+    },
+    "##easing-types": {
+      "category": "components",
+      "id": "#easing-types"
+    },
+    "##delta-types": {
+      "category": "components",
+      "id": "#delta-types"
+    },
+    "##state-types": {
+      "category": "components",
+      "id": "#state-types"
+    },
+    "##document-types": {
+      "category": "components",
+      "id": "#document-types"
+    },
+    "##shadow-types": {
+      "category": "components",
+      "id": "#shadow-types"
+    },
+    "##audio-types": {
+      "category": "components",
+      "id": "#audio-types"
+    },
+    "##asset-types": {
+      "category": "components",
+      "id": "#asset-types"
+    },
+    "##variable-types": {
+      "category": "components",
+      "id": "#variable-types"
+    },
+    "##interaction-types": {
+      "category": "components",
+      "id": "#interaction-types"
+    },
+    "##preset-types": {
+      "category": "components",
+      "id": "#preset-types"
+    },
+    "##video-project-types": {
+      "category": "components",
+      "id": "#video-project-types"
+    },
+    "##recipe-types": {
+      "category": "components",
+      "id": "#recipe-types"
+    },
+    "#animation": {
+      "category": "components",
+      "id": "animation"
+    },
+    "#use-animation": {
+      "category": "components",
+      "id": "use-animation"
+    },
+    "#use-animation-state": {
+      "category": "components",
+      "id": "use-animation-state"
+    },
+    "#animation-player": {
+      "category": "components",
+      "id": "animation-player"
+    },
+    "#mcp-store": {
+      "category": "components",
+      "id": "mcp-store"
+    },
+    "#mcp-document-tools": {
+      "category": "components",
+      "id": "mcp-document-tools"
+    },
+    "#mcp-layer-tools": {
+      "category": "components",
+      "id": "mcp-layer-tools"
+    },
+    "#mcp-shape-tools": {
+      "category": "components",
+      "id": "mcp-shape-tools"
+    },
+    "#mcp-state-tools": {
+      "category": "components",
+      "id": "mcp-state-tools"
+    },
+    "#mcp-delta-tools": {
+      "category": "components",
+      "id": "mcp-delta-tools"
+    },
+    "#mcp-preset-tools": {
+      "category": "components",
+      "id": "mcp-preset-tools"
+    },
+    "#mcp-preview-tools": {
+      "category": "components",
+      "id": "mcp-preview-tools"
+    },
+    "#mcp-template-tools": {
+      "category": "components",
+      "id": "mcp-template-tools"
+    },
+    "#mcp-layer-effect-tools": {
+      "category": "components",
+      "id": "mcp-layer-effect-tools"
+    },
+    "#mcp-state-config-tools": {
+      "category": "components",
+      "id": "mcp-state-config-tools"
+    },
+    "#mcp-export-tools": {
+      "category": "components",
+      "id": "mcp-export-tools"
+    },
+    "#mcp-asset-tools": {
+      "category": "components",
+      "id": "mcp-asset-tools"
+    },
+    "#mcp-variable-tools": {
+      "category": "components",
+      "id": "mcp-variable-tools"
+    },
+    "#mcp-interaction-tools": {
+      "category": "components",
+      "id": "mcp-interaction-tools"
+    },
+    "#mcp-ref-tools": {
+      "category": "components",
+      "id": "mcp-ref-tools"
+    },
+    "#mcp-performance-tools": {
+      "category": "components",
+      "id": "mcp-performance-tools"
+    },
+    "#mcp-overlay-tools": {
+      "category": "components",
+      "id": "mcp-overlay-tools"
+    },
+    "#mcp-recipe-tools": {
+      "category": "components",
+      "id": "mcp-recipe-tools"
+    },
+    "#mcp-import-images": {
+      "category": "components",
+      "id": "mcp-import-images"
+    },
+    "##easing-functions": {
+      "category": "components",
+      "id": "#easing-functions"
+    },
+    "##spring-solver": {
+      "category": "components",
+      "id": "#spring-solver"
+    },
+    "##lerp-functions": {
+      "category": "components",
+      "id": "#lerp-functions"
+    },
+    "##color-math": {
+      "category": "components",
+      "id": "#color-math"
+    },
     "##document-schema": {
       "category": "components",
       "id": "#document-schema"
@@ -3063,38 +3724,6 @@
     "##yaml-parser": {
       "category": "components",
       "id": "#yaml-parser"
-    },
-    "#animation": {
-      "category": "components",
-      "id": "animation"
-    },
-    "#use-animation": {
-      "category": "components",
-      "id": "use-animation"
-    },
-    "#use-animation-state": {
-      "category": "components",
-      "id": "use-animation-state"
-    },
-    "#animation-player": {
-      "category": "components",
-      "id": "animation-player"
-    },
-    "##easing-functions": {
-      "category": "components",
-      "id": "#easing-functions"
-    },
-    "##spring-solver": {
-      "category": "components",
-      "id": "#spring-solver"
-    },
-    "##lerp-functions": {
-      "category": "components",
-      "id": "#lerp-functions"
-    },
-    "##color-math": {
-      "category": "components",
-      "id": "#color-math"
     },
     "##lottie-exporter": {
       "category": "components",
@@ -3128,49 +3757,29 @@
       "category": "components",
       "id": "#lottie-warnings"
     },
-    "##frame-resolver": {
+    "#render-frame": {
       "category": "components",
-      "id": "#frame-resolver"
+      "id": "render-frame"
     },
-    "##delta-resolver": {
+    "#shape-renderer": {
       "category": "components",
-      "id": "#delta-resolver"
+      "id": "shape-renderer"
     },
-    "##easing-resolver": {
+    "#text-renderer": {
       "category": "components",
-      "id": "#easing-resolver"
+      "id": "text-renderer"
     },
-    "##document-builder": {
+    "#video-renderer": {
       "category": "components",
-      "id": "#document-builder"
+      "id": "video-renderer"
     },
-    "##overlap-validator": {
+    "#apply-properties": {
       "category": "components",
-      "id": "#overlap-validator"
+      "id": "apply-properties"
     },
-    "##unit-resolver": {
+    "#canvas-styles": {
       "category": "components",
-      "id": "#unit-resolver"
-    },
-    "##preset-resolver": {
-      "category": "components",
-      "id": "#preset-resolver"
-    },
-    "##state-machine": {
-      "category": "components",
-      "id": "#state-machine"
-    },
-    "##template-resolver": {
-      "category": "components",
-      "id": "#template-resolver"
-    },
-    "##expression-evaluator": {
-      "category": "components",
-      "id": "#expression-evaluator"
-    },
-    "##audio-timing": {
-      "category": "components",
-      "id": "#audio-timing"
+      "id": "canvas-styles"
     },
     "#cli-lint": {
       "category": "components",
@@ -3280,109 +3889,49 @@
       "category": "components",
       "id": "#recipe-lib"
     },
-    "#mcp-store": {
+    "##frame-resolver": {
       "category": "components",
-      "id": "mcp-store"
+      "id": "#frame-resolver"
     },
-    "#mcp-document-tools": {
+    "##delta-resolver": {
       "category": "components",
-      "id": "mcp-document-tools"
+      "id": "#delta-resolver"
     },
-    "#mcp-layer-tools": {
+    "##easing-resolver": {
       "category": "components",
-      "id": "mcp-layer-tools"
+      "id": "#easing-resolver"
     },
-    "#mcp-shape-tools": {
+    "##document-builder": {
       "category": "components",
-      "id": "mcp-shape-tools"
+      "id": "#document-builder"
     },
-    "#mcp-state-tools": {
+    "##overlap-validator": {
       "category": "components",
-      "id": "mcp-state-tools"
+      "id": "#overlap-validator"
     },
-    "#mcp-delta-tools": {
+    "##unit-resolver": {
       "category": "components",
-      "id": "mcp-delta-tools"
+      "id": "#unit-resolver"
     },
-    "#mcp-preset-tools": {
+    "##preset-resolver": {
       "category": "components",
-      "id": "mcp-preset-tools"
+      "id": "#preset-resolver"
     },
-    "#mcp-preview-tools": {
+    "##state-machine": {
       "category": "components",
-      "id": "mcp-preview-tools"
+      "id": "#state-machine"
     },
-    "#mcp-template-tools": {
+    "##template-resolver": {
       "category": "components",
-      "id": "mcp-template-tools"
+      "id": "#template-resolver"
     },
-    "#mcp-layer-effect-tools": {
+    "##expression-evaluator": {
       "category": "components",
-      "id": "mcp-layer-effect-tools"
+      "id": "#expression-evaluator"
     },
-    "#mcp-state-config-tools": {
+    "##audio-timing": {
       "category": "components",
-      "id": "mcp-state-config-tools"
-    },
-    "#mcp-export-tools": {
-      "category": "components",
-      "id": "mcp-export-tools"
-    },
-    "#mcp-asset-tools": {
-      "category": "components",
-      "id": "mcp-asset-tools"
-    },
-    "#mcp-variable-tools": {
-      "category": "components",
-      "id": "mcp-variable-tools"
-    },
-    "#mcp-interaction-tools": {
-      "category": "components",
-      "id": "mcp-interaction-tools"
-    },
-    "#mcp-ref-tools": {
-      "category": "components",
-      "id": "mcp-ref-tools"
-    },
-    "#mcp-performance-tools": {
-      "category": "components",
-      "id": "mcp-performance-tools"
-    },
-    "#mcp-overlay-tools": {
-      "category": "components",
-      "id": "mcp-overlay-tools"
-    },
-    "#mcp-recipe-tools": {
-      "category": "components",
-      "id": "mcp-recipe-tools"
-    },
-    "#mcp-import-images": {
-      "category": "components",
-      "id": "mcp-import-images"
-    },
-    "#render-frame": {
-      "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#video-renderer": {
-      "category": "components",
-      "id": "video-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
+      "id": "#audio-timing"
     },
     "^^valid-document": {
       "category": "gates",
@@ -3423,6 +3972,118 @@
     "~source-tagged-mutation": {
       "category": "aspects",
       "id": "source-tagged-mutation"
+    },
+    "~element-one-per-src-reuse": {
+      "category": "aspects",
+      "id": "element-one-per-src-reuse"
+    },
+    "~element-seek-tolerance-one-frame": {
+      "category": "aspects",
+      "id": "element-seek-tolerance-one-frame"
+    },
+    "~element-null-while-not-ready": {
+      "category": "aspects",
+      "id": "element-null-while-not-ready"
+    },
+    "~webcodecs-nearest-by-abs-delta": {
+      "category": "aspects",
+      "id": "webcodecs-nearest-by-abs-delta"
+    },
+    "~webcodecs-async-load-on-miss": {
+      "category": "aspects",
+      "id": "webcodecs-async-load-on-miss"
+    },
+    "~webcodecs-imagebitmap-explicit-close": {
+      "category": "aspects",
+      "id": "webcodecs-imagebitmap-explicit-close"
+    },
+    "~webcodecs-feature-detect-and-stub": {
+      "category": "aspects",
+      "id": "webcodecs-feature-detect-and-stub"
+    },
+    "~ffmpeg-stable-interface-throws": {
+      "category": "aspects",
+      "id": "ffmpeg-stable-interface-throws"
+    },
+    "~ffmpeg-defaults-then-spread": {
+      "category": "aspects",
+      "id": "ffmpeg-defaults-then-spread"
+    },
+    "~declarative-string-vs-imperative-ctx": {
+      "category": "aspects",
+      "id": "declarative-string-vs-imperative-ctx"
+    },
+    "~id-counter-reset-determinism": {
+      "category": "aspects",
+      "id": "id-counter-reset-determinism"
+    },
+    "~early-skip-and-asset-mutation": {
+      "category": "aspects",
+      "id": "early-skip-and-asset-mutation"
+    },
+    "~combined-shadow-tint-drops-tint": {
+      "category": "aspects",
+      "id": "combined-shadow-tint-drops-tint"
+    },
+    "~image-crop-via-nested-svg-viewbox": {
+      "category": "aspects",
+      "id": "image-crop-via-nested-svg-viewbox"
+    },
+    "~ref-cycle-and-depth-guards": {
+      "category": "aspects",
+      "id": "ref-cycle-and-depth-guards"
+    },
+    "~bezier-only-with-handle-pair": {
+      "category": "aspects",
+      "id": "bezier-only-with-handle-pair"
+    },
+    "~corner-radius-array-first-only": {
+      "category": "aspects",
+      "id": "corner-radius-array-first-only"
+    },
+    "~text-align-to-text-anchor": {
+      "category": "aspects",
+      "id": "text-align-to-text-anchor"
+    },
+    "~hanging-baseline-for-top-edge": {
+      "category": "aspects",
+      "id": "hanging-baseline-for-top-edge"
+    },
+    "~gradient-id-uniqueness-per-render": {
+      "category": "aspects",
+      "id": "gradient-id-uniqueness-per-render"
+    },
+    "~gradient-coordinate-spaces-differ": {
+      "category": "aspects",
+      "id": "gradient-coordinate-spaces-differ"
+    },
+    "~color-css-dispatch-black-fallback": {
+      "category": "aspects",
+      "id": "color-css-dispatch-black-fallback"
+    },
+    "~shadow-filter-region-and-blur-map": {
+      "category": "aspects",
+      "id": "shadow-filter-region-and-blur-map"
+    },
+    "~filters-share-one-counter": {
+      "category": "aspects",
+      "id": "filters-share-one-counter"
+    },
+    "~clip-counter-isolated-and-path-dup": {
+      "category": "aspects",
+      "id": "clip-counter-isolated-and-path-dup"
+    },
+    "~transform-anchor-order-as-string": {
+      "category": "aspects",
+      "id": "transform-anchor-order-as-string"
+    },
+    "~style-attrs-conditional-and-blend-inline": {
+      "category": "aspects",
+      "id": "style-attrs-conditional-and-blend-inline"
+    },
+    "~escape-xml-five-entities": {
+      "category": "aspects",
+      "id": "escape-xml-five-entities"
     },
     "~unit-value-pixel-or-percent-string": {
       "category": "aspects",
@@ -3520,65 +4181,53 @@
       "category": "aspects",
       "id": "recipe-snakecase-and-unit-conventions"
     },
-    "~document-shape-asymmetry": {
+    "~canvas-intrinsic-not-css-size": {
       "category": "aspects",
-      "id": "document-shape-asymmetry"
+      "id": "canvas-intrinsic-not-css-size"
     },
-    "~visual-discriminated-union": {
+    "~initial-state-effect-deps-narrow": {
       "category": "aspects",
-      "id": "visual-discriminated-union"
+      "id": "initial-state-effect-deps-narrow"
     },
-    "~video-bound-asymmetry": {
+    "~player-lifecycle-keyed-on-doc": {
       "category": "aspects",
-      "id": "video-bound-asymmetry"
+      "id": "player-lifecycle-keyed-on-doc"
     },
-    "~layer-clamps-and-min-points": {
+    "~player-teardown-on-unmount": {
       "category": "aspects",
-      "id": "layer-clamps-and-min-points"
+      "id": "player-teardown-on-unmount"
     },
-    "~animatable-property-canonical-enum": {
+    "~imperative-controls-via-ref": {
       "category": "aspects",
-      "id": "animatable-property-canonical-enum"
+      "id": "imperative-controls-via-ref"
     },
-    "~frame-range-ordering-refinement": {
+    "~duration-from-first-state-only": {
       "category": "aspects",
-      "id": "frame-range-ordering-refinement"
+      "id": "duration-from-first-state-only"
     },
-    "~delta-values-unvalidated-at-parse": {
+    "~states-memoized-current-lazy-init": {
       "category": "aspects",
-      "id": "delta-values-unvalidated-at-parse"
+      "id": "states-memoized-current-lazy-init"
     },
-    "~flat-ai-readable-error-shape": {
+    "~transition-validates-and-seeks-zero": {
       "category": "aspects",
-      "id": "flat-ai-readable-error-shape"
+      "id": "transition-validates-and-seeks-zero"
     },
-    "~video-semantic-checks-beyond-zod": {
+    "~raf-fixed-timestep-accumulator": {
       "category": "aspects",
-      "id": "video-semantic-checks-beyond-zod"
+      "id": "raf-fixed-timestep-accumulator"
     },
-    "~recipe-warnings-side-channel": {
+    "~play-idempotent-pause-cancels-raf": {
       "category": "aspects",
-      "id": "recipe-warnings-side-channel"
+      "id": "play-idempotent-pause-cancels-raf"
     },
-    "~recipe-strict-no-unknown-keys": {
+    "~seek-clamped-to-state-bounds": {
       "category": "aspects",
-      "id": "recipe-strict-no-unknown-keys"
+      "id": "seek-clamped-to-state-bounds"
     },
-    "~page-number-format-template-syntax": {
+    "~image-load-triggers-rerender": {
       "category": "aspects",
-      "id": "page-number-format-template-syntax"
-    },
-    "~recipe-phase-split-strict-vs-opaque": {
-      "category": "aspects",
-      "id": "recipe-phase-split-strict-vs-opaque"
-    },
-    "~yaml-parse-never-throws": {
-      "category": "aspects",
-      "id": "yaml-parse-never-throws"
-    },
-    "~yaml-safe-by-default-data-only": {
-      "category": "aspects",
-      "id": "yaml-safe-by-default-data-only"
+      "id": "image-load-triggers-rerender"
     },
     "~bezier-binary-search-not-newton": {
       "category": "aspects",
@@ -3643,6 +4292,226 @@
     "~hsl-zero-saturation-guard": {
       "category": "aspects",
       "id": "hsl-zero-saturation-guard"
+    },
+    "~document-shape-asymmetry": {
+      "category": "aspects",
+      "id": "document-shape-asymmetry"
+    },
+    "~visual-discriminated-union": {
+      "category": "aspects",
+      "id": "visual-discriminated-union"
+    },
+    "~video-bound-asymmetry": {
+      "category": "aspects",
+      "id": "video-bound-asymmetry"
+    },
+    "~layer-clamps-and-min-points": {
+      "category": "aspects",
+      "id": "layer-clamps-and-min-points"
+    },
+    "~animatable-property-canonical-enum": {
+      "category": "aspects",
+      "id": "animatable-property-canonical-enum"
+    },
+    "~frame-range-ordering-refinement": {
+      "category": "aspects",
+      "id": "frame-range-ordering-refinement"
+    },
+    "~delta-values-unvalidated-at-parse": {
+      "category": "aspects",
+      "id": "delta-values-unvalidated-at-parse"
+    },
+    "~flat-ai-readable-error-shape": {
+      "category": "aspects",
+      "id": "flat-ai-readable-error-shape"
+    },
+    "~video-semantic-checks-beyond-zod": {
+      "category": "aspects",
+      "id": "video-semantic-checks-beyond-zod"
+    },
+    "~recipe-warnings-side-channel": {
+      "category": "aspects",
+      "id": "recipe-warnings-side-channel"
+    },
+    "~recipe-strict-no-unknown-keys": {
+      "category": "aspects",
+      "id": "recipe-strict-no-unknown-keys"
+    },
+    "~page-number-format-template-syntax": {
+      "category": "aspects",
+      "id": "page-number-format-template-syntax"
+    },
+    "~recipe-phase-split-strict-vs-opaque": {
+      "category": "aspects",
+      "id": "recipe-phase-split-strict-vs-opaque"
+    },
+    "~yaml-parse-never-throws": {
+      "category": "aspects",
+      "id": "yaml-parse-never-throws"
+    },
+    "~yaml-safe-by-default-data-only": {
+      "category": "aspects",
+      "id": "yaml-safe-by-default-data-only"
+    },
+    "~pinned-lottie-version": {
+      "category": "aspects",
+      "id": "pinned-lottie-version"
+    },
+    "~default-first-state": {
+      "category": "aspects",
+      "id": "default-first-state"
+    },
+    "~warning-dedup-collapse": {
+      "category": "aspects",
+      "id": "warning-dedup-collapse"
+    },
+    "~image-asset-fixed-dimensions": {
+      "category": "aspects",
+      "id": "image-asset-fixed-dimensions"
+    },
+    "~numeric-layer-type-discriminant": {
+      "category": "aspects",
+      "id": "numeric-layer-type-discriminant"
+    },
+    "~bezier-handles-as-xy-objects": {
+      "category": "aspects",
+      "id": "bezier-handles-as-xy-objects"
+    },
+    "~percentage-units-collapse-to-zero": {
+      "category": "aspects",
+      "id": "percentage-units-collapse-to-zero"
+    },
+    "~layer-index-is-parent-pointer": {
+      "category": "aspects",
+      "id": "layer-index-is-parent-pointer"
+    },
+    "~opacity-and-scale-percent-rescale": {
+      "category": "aspects",
+      "id": "opacity-and-scale-percent-rescale"
+    },
+    "~max-frame-fallback-sixty": {
+      "category": "aspects",
+      "id": "max-frame-fallback-sixty"
+    },
+    "~rect-centered-radial-fixed": {
+      "category": "aspects",
+      "id": "rect-centered-radial-fixed"
+    },
+    "~gradient-stop-stride-no-alpha": {
+      "category": "aspects",
+      "id": "gradient-stop-stride-no-alpha"
+    },
+    "~unknown-fill-black-fallback": {
+      "category": "aspects",
+      "id": "unknown-fill-black-fallback"
+    },
+    "~expression-short-circuits-static-zero": {
+      "category": "aspects",
+      "id": "expression-short-circuits-static-zero"
+    },
+    "~position-z-zero-easing-from-x": {
+      "category": "aspects",
+      "id": "position-z-zero-easing-from-x"
+    },
+    "~keyframe-hold-last-completed": {
+      "category": "aspects",
+      "id": "keyframe-hold-last-completed"
+    },
+    "~rgb-normalize-255-to-unit": {
+      "category": "aspects",
+      "id": "rgb-normalize-255-to-unit"
+    },
+    "~hex-shorthand-and-black-fallback": {
+      "category": "aspects",
+      "id": "hex-shorthand-and-black-fallback"
+    },
+    "~easing-handles-swapped-and-inverted": {
+      "category": "aspects",
+      "id": "easing-handles-swapped-and-inverted"
+    },
+    "~lossy-easing-approximations": {
+      "category": "aspects",
+      "id": "lossy-easing-approximations"
+    },
+    "~unsupported-feature-catalog": {
+      "category": "aspects",
+      "id": "unsupported-feature-catalog"
+    },
+    "~painters-algorithm-order": {
+      "category": "aspects",
+      "id": "painters-algorithm-order"
+    },
+    "~save-restore-per-layer": {
+      "category": "aspects",
+      "id": "save-restore-per-layer"
+    },
+    "~transform-stack-anchor-order": {
+      "category": "aspects",
+      "id": "transform-stack-anchor-order"
+    },
+    "~ancestor-transforms-root-first": {
+      "category": "aspects",
+      "id": "ancestor-transforms-root-first"
+    },
+    "~tint-offscreen-multiply-mask": {
+      "category": "aspects",
+      "id": "tint-offscreen-multiply-mask"
+    },
+    "~early-skip-invisible-layers": {
+      "category": "aspects",
+      "id": "early-skip-invisible-layers"
+    },
+    "~render-context-no-dom-dependency": {
+      "category": "aspects",
+      "id": "render-context-no-dom-dependency"
+    },
+    "~perimeter-from-shape-type": {
+      "category": "aspects",
+      "id": "perimeter-from-shape-type"
+    },
+    "~rounded-rect-feature-detect": {
+      "category": "aspects",
+      "id": "rounded-rect-feature-detect"
+    },
+    "~path-needs-two-points": {
+      "category": "aspects",
+      "id": "path-needs-two-points"
+    },
+    "~text-align-offset-baseline": {
+      "category": "aspects",
+      "id": "text-align-offset-baseline"
+    },
+    "~font-string-assembly": {
+      "category": "aspects",
+      "id": "font-string-assembly"
+    },
+    "~video-null-provider-retry": {
+      "category": "aspects",
+      "id": "video-null-provider-retry"
+    },
+    "~effective-property-override-defaults": {
+      "category": "aspects",
+      "id": "effective-property-override-defaults"
+    },
+    "~percentage-resolved-at-render": {
+      "category": "aspects",
+      "id": "percentage-resolved-at-render"
+    },
+    "~visual-override-copy-on-write": {
+      "category": "aspects",
+      "id": "visual-override-copy-on-write"
+    },
+    "~stroke-trim-via-dash": {
+      "category": "aspects",
+      "id": "stroke-trim-via-dash"
+    },
+    "~color-css-type-dispatch": {
+      "category": "aspects",
+      "id": "color-css-type-dispatch"
+    },
+    "~gradient-geometry-from-bounds": {
+      "category": "aspects",
+      "id": "gradient-geometry-from-bounds"
     },
     "~frame-resolution-determinism": {
       "category": "aspects",
@@ -3740,82 +4609,6 @@
       "category": "aspects",
       "id": "audio-before-start-silent"
     },
-    "~painters-algorithm-order": {
-      "category": "aspects",
-      "id": "painters-algorithm-order"
-    },
-    "~save-restore-per-layer": {
-      "category": "aspects",
-      "id": "save-restore-per-layer"
-    },
-    "~transform-stack-anchor-order": {
-      "category": "aspects",
-      "id": "transform-stack-anchor-order"
-    },
-    "~ancestor-transforms-root-first": {
-      "category": "aspects",
-      "id": "ancestor-transforms-root-first"
-    },
-    "~tint-offscreen-multiply-mask": {
-      "category": "aspects",
-      "id": "tint-offscreen-multiply-mask"
-    },
-    "~early-skip-invisible-layers": {
-      "category": "aspects",
-      "id": "early-skip-invisible-layers"
-    },
-    "~render-context-no-dom-dependency": {
-      "category": "aspects",
-      "id": "render-context-no-dom-dependency"
-    },
-    "~perimeter-from-shape-type": {
-      "category": "aspects",
-      "id": "perimeter-from-shape-type"
-    },
-    "~rounded-rect-feature-detect": {
-      "category": "aspects",
-      "id": "rounded-rect-feature-detect"
-    },
-    "~path-needs-two-points": {
-      "category": "aspects",
-      "id": "path-needs-two-points"
-    },
-    "~text-align-offset-baseline": {
-      "category": "aspects",
-      "id": "text-align-offset-baseline"
-    },
-    "~font-string-assembly": {
-      "category": "aspects",
-      "id": "font-string-assembly"
-    },
-    "~video-null-provider-retry": {
-      "category": "aspects",
-      "id": "video-null-provider-retry"
-    },
-    "~effective-property-override-defaults": {
-      "category": "aspects",
-      "id": "effective-property-override-defaults"
-    },
-    "~percentage-resolved-at-render": {
-      "category": "aspects",
-      "id": "percentage-resolved-at-render"
-    },
-    "~visual-override-copy-on-write": {
-      "category": "aspects",
-      "id": "visual-override-copy-on-write"
-    },
-    "~stroke-trim-via-dash": {
-      "category": "aspects",
-      "id": "stroke-trim-via-dash"
-    },
-    "~color-css-type-dispatch": {
-      "category": "aspects",
-      "id": "color-css-type-dispatch"
-    },
-    "~gradient-geometry-from-bounds": {
-      "category": "aspects",
-      "id": "gradient-geometry-from-bounds"
-    },
     "#svg-shapes": {
       "category": "components",
       "id": "svg-shapes"
@@ -3839,6 +4632,10 @@
     "#svg-properties": {
       "category": "components",
       "id": "svg-properties"
+    },
+    "!doc-change": {
+      "category": "signals",
+      "id": "doc-change"
     },
     "^valid-video-layer": {
       "category": "gates",
@@ -3872,6 +4669,10 @@
       "category": "components",
       "id": "lottie-map-easing"
     },
+    "#frame-resolver": {
+      "category": "components",
+      "id": "frame-resolver"
+    },
     "^valid-document": {
       "category": "gates",
       "id": "valid-document"
@@ -3887,14 +4688,6 @@
     "^localhost-only": {
       "category": "gates",
       "id": "localhost-only"
-    },
-    "!doc-change": {
-      "category": "signals",
-      "id": "doc-change"
-    },
-    "#frame-resolver": {
-      "category": "components",
-      "id": "frame-resolver"
     },
     "^no-overlap": {
       "category": "gates",

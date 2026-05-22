@@ -42,3 +42,218 @@ components:
     description: collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings
     file: src/warnings.ts
     tags: [validation, warnings]
+aspects:
+  pinned-lottie-version:
+    description: 'Exported animations hardcode Lottie schema version "5.7.4" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.'
+    tags:
+      - convention
+      - magic-number
+      - lottie
+    anchors:
+      - packages/lottie/src/export-lottie.ts:61-71
+    enforcement: literal version string + ip=0/op=duration
+    appliesTo: ["#lottie-exporter"]
+  default-first-state:
+    description: 'When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named "default" or "initial" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.'
+    tags:
+      - edge-case
+      - convention
+    anchors:
+      - packages/lottie/src/export-lottie.ts:26-35
+    enforcement: first-key default + throw on missing
+    appliesTo: ["#lottie-exporter"]
+  warning-dedup-collapse:
+    description: 'Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.'
+    tags:
+      - gotcha
+      - warnings
+    anchors:
+      - packages/lottie/src/export-lottie.ts:73-76
+    enforcement: Set dedup before return
+    appliesTo: ["#lottie-exporter"]
+  image-asset-fixed-dimensions:
+    description: 'Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.'
+    tags:
+      - lossy
+      - magic-number
+      - gotcha
+    anchors:
+      - packages/lottie/src/export-lottie.ts:47-58
+    enforcement: literal w/h/e on asset push
+    appliesTo: ["#lottie-exporter"]
+  numeric-layer-type-discriminant:
+    description: 'LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.'
+    tags:
+      - architecture
+      - convention
+      - lottie
+    anchors:
+      - packages/lottie/src/lottie-types.ts:15-30
+    enforcement: numeric ty discriminant
+    appliesTo: ["#lottie-types"]
+  bezier-handles-as-xy-objects:
+    description: 'Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.'
+    tags:
+      - architecture
+      - lottie
+      - interpolation
+    anchors:
+      - packages/lottie/src/lottie-types.ts:50-66
+    enforcement: i/o {x[],y[]} tangent objects + h flag
+    appliesTo: ["#lottie-types"]
+  percentage-units-collapse-to-zero:
+    description: 'toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.'
+    tags:
+      - lossy
+      - units
+      - gotcha
+    anchors:
+      - packages/lottie/src/map-layers.ts:7-10
+      - packages/lottie/src/map-layers.ts:184-185
+    enforcement: non-number UnitValue → 0
+    appliesTo: ["#lottie-map-layers"]
+  layer-index-is-parent-pointer:
+    description: 'A layer''s position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer''s numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.'
+    tags:
+      - core-invariant
+      - ordering
+      - lottie
+    anchors:
+      - packages/lottie/src/map-layers.ts:18-24
+      - packages/lottie/src/map-layers.ts:48-53
+    enforcement: array index = ind + index-map parent lookup
+    appliesTo: ["#lottie-map-layers"]
+  opacity-and-scale-percent-rescale:
+    description: 'Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie''s 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a "Scale animation partially mapped" warning. Position z is always 0.'
+    tags:
+      - lossy
+      - units
+      - gotcha
+    anchors:
+      - packages/lottie/src/map-layers.ts:145-181
+    enforcement: x100 rescale + static-scale fallback warning
+    appliesTo: ["#lottie-map-layers"]
+  max-frame-fallback-sixty:
+    description: 'getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.'
+    tags:
+      - edge-case
+      - magic-number
+    anchors:
+      - packages/lottie/src/map-layers.ts:196-205
+    enforcement: max(state durations, delta ends) || 60
+    appliesTo: ["#lottie-map-layers"]
+  rect-centered-radial-fixed:
+    description: 'Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.'
+    tags:
+      - lossy
+      - geometry
+      - magic-number
+    anchors:
+      - packages/lottie/src/map-shapes.ts:16-32
+      - packages/lottie/src/map-shapes.ts:98-113
+    enforcement: w/2,h/2 center + fixed radial endpoints
+    appliesTo: ["#lottie-map-shapes"]
+  gradient-stop-stride-no-alpha:
+    description: 'Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.'
+    tags:
+      - lossy
+      - color
+      - gradient
+    anchors:
+      - packages/lottie/src/map-shapes.ts:80-95
+      - packages/lottie/src/map-shapes.ts:98-113
+    enforcement: push offset+rgb only, drop alpha
+    appliesTo: ["#lottie-map-shapes"]
+  unknown-fill-black-fallback:
+    description: 'mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.'
+    tags:
+      - edge-case
+      - color
+      - dispatch
+    anchors:
+      - packages/lottie/src/map-shapes.ts:68-116
+    enforcement: type dispatch + black-solid fallback
+    appliesTo: ["#lottie-map-shapes"]
+  expression-short-circuits-static-zero:
+    description: 'If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.'
+    tags:
+      - lossy
+      - edge-case
+      - keyframes
+    anchors:
+      - packages/lottie/src/map-keyframes.ts:21-37
+    enforcement: any-expression → static value + warn
+    appliesTo: ["#lottie-map-keyframes"]
+  position-z-zero-easing-from-x:
+    description: 'Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.'
+    tags:
+      - core-invariant
+      - keyframes
+      - lossy
+    anchors:
+      - packages/lottie/src/map-keyframes.ts:84-128
+    enforcement: z=0 + X-priority easing merge
+    appliesTo: ["#lottie-map-keyframes"]
+  keyframe-hold-last-completed:
+    description: 'resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core''s hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.'
+    tags:
+      - core-invariant
+      - edge-case
+      - keyframes
+    anchors:
+      - packages/lottie/src/map-keyframes.ts:139-159
+    enforcement: latest-completed to + instantaneous guard
+    appliesTo: ["#lottie-map-keyframes"]
+  rgb-normalize-255-to-unit:
+    description: 'Atelier''s native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.'
+    tags:
+      - convention
+      - color
+      - lottie
+    anchors:
+      - packages/lottie/src/map-colors.ts:9-21
+      - packages/lottie/src/map-colors.ts:39-48
+    enforcement: channel/255 normalize, alpha pass-through
+    appliesTo: ["#lottie-map-colors"]
+  hex-shorthand-and-black-fallback:
+    description: '3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has "r", nor has "h" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.'
+    tags:
+      - edge-case
+      - color
+      - dispatch
+    anchors:
+      - packages/lottie/src/map-colors.ts:4-20
+      - packages/lottie/src/map-colors.ts:23-37
+    enforcement: nibble-double shorthand + black fallback
+    appliesTo: ["#lottie-map-colors"]
+  easing-handles-swapped-and-inverted:
+    description: 'Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier''s (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named "linear" easing is Lottie''s default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.'
+    tags:
+      - core-invariant
+      - easing
+      - gotcha
+    anchors:
+      - packages/lottie/src/map-easing.ts:41-53
+    enforcement: i=(x2,y2) o=(x1,y1) handle assignment
+    appliesTo: ["#lottie-map-easing"]
+  lossy-easing-approximations:
+    description: 'Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.'
+    tags:
+      - lossy
+      - easing
+      - edge-case
+    anchors:
+      - packages/lottie/src/map-easing.ts:25-39
+      - packages/lottie/src/map-easing.ts:55-61
+    enforcement: fixed spring bezier + step hold + lossy flag
+    appliesTo: ["#lottie-map-easing"]
+  unsupported-feature-catalog:
+    description: 'This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.'
+    tags:
+      - core-invariant
+      - warnings
+      - lossy
+    anchors:
+      - packages/lottie/src/warnings.ts:4-46
+    enforcement: per-feature presence check → warning
+    appliesTo: ["#lottie-warnings"]

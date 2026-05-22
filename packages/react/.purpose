@@ -21,3 +21,127 @@ components:
     description: Low-level player class for advanced usage — direct frame control outside the React component model
     file: src/player.ts
     type: service
+aspects:
+  canvas-intrinsic-not-css-size:
+    description: 'width/height are passed as canvas ELEMENT attributes (the intrinsic drawing-buffer resolution), not CSS style — they default to doc.canvas.width/height and are separate from the style prop, which only sets display size. Pass a CSS width via style and the bitmap still renders at the document resolution.'
+    tags:
+      - core-invariant
+      - gotcha
+      - dom
+    anchors:
+      - packages/react/src/Animation.tsx:39-40
+      - packages/react/src/Animation.tsx:57-64
+    enforcement: width/height as element attrs, style separate
+    appliesTo: ["#animation"]
+  initial-state-effect-deps-narrow:
+    description: 'The initialState effect intentionally depends only on [initialState] (exhaustive-deps disabled), so onStateChange is read but NOT in the dep array — a changing onStateChange identity will not re-fire the callback, only an actual initialState change does. Widening the deps would re-notify on every render that passes a new closure.'
+    tags:
+      - hook-lifecycle
+      - dependency-array
+      - gotcha
+    anchors:
+      - packages/react/src/Animation.tsx:50-55
+    enforcement: deps pinned to [initialState] only
+    appliesTo: ["#animation"]
+  player-lifecycle-keyed-on-doc:
+    description: 'The create/destroy effect keys ONLY on [doc] (exhaustive-deps disabled), so a new AnimationPlayer is built and the old one destroyed exactly when the document changes — NOT when canvasRef or option callbacks change. The canvas ref is read inside the effect (not a dep), so the player binds whatever canvas is mounted at that point and is not re-created on ref churn.'
+    tags:
+      - hook-lifecycle
+      - dependency-array
+      - core-invariant
+    anchors:
+      - packages/react/src/useAnimation.ts:35-59
+    enforcement: effect dep array is [doc] only
+    appliesTo: ["#use-animation"]
+  player-teardown-on-unmount:
+    description: 'The effect cleanup calls player.destroy() (which cancels the requestAnimationFrame loop) and nulls playerRef on unmount or doc change — this is the rAF leak guard. Skip the cleanup and the previous document''s animation loop keeps ticking against a stale canvas after remount.'
+    tags:
+      - hook-lifecycle
+      - cleanup
+      - leak-prevention
+    anchors:
+      - packages/react/src/useAnimation.ts:54-57
+      - packages/react/src/player.ts:79-104
+    enforcement: cleanup destroy() + null ref
+    appliesTo: ["#use-animation"]
+  imperative-controls-via-ref:
+    description: 'play/pause/seek are useCallback-memoized with EMPTY dep arrays and reach the live player through playerRef.current rather than closing over it — so the returned control identities are stable across renders while still driving the current player. They optimistically mirror React state (setIsPlaying/setCurrentFrame) alongside the imperative call.'
+    tags:
+      - imperative-api
+      - memoization
+      - ref
+    anchors:
+      - packages/react/src/useAnimation.ts:61-74
+    enforcement: empty-deps callbacks read playerRef.current
+    appliesTo: ["#use-animation"]
+  duration-from-first-state-only:
+    description: 'The hook''s exposed duration is read from the FIRST state (Object.values(doc.states)[0]) and falls back to 0 — it does not track the player''s currentState. A multi-state document reports only its first state''s duration through this hook, by design distinct from AnimationPlayer.duration which follows currentState.'
+    tags:
+      - gotcha
+      - convention
+    anchors:
+      - packages/react/src/useAnimation.ts:76
+    enforcement: first-state lookup with 0 default
+    appliesTo: ["#use-animation"]
+  states-memoized-current-lazy-init:
+    description: 'The states array is useMemo''d on [doc] so the list identity is stable until the document changes, and currentState uses lazy useState initialization (states[0] ?? "") so the default state is computed exactly once at mount, not recomputed every render. Empty/absent doc yields [] and "".'
+    tags:
+      - memoization
+      - hook-lifecycle
+    anchors:
+      - packages/react/src/useAnimationState.ts:18-23
+    enforcement: useMemo on doc + lazy useState initializer
+    appliesTo: ["#use-animation-state"]
+  transition-validates-and-seeks-zero:
+    description: 'transitionTo throws on an unknown state name (fail-fast, no silent no-op) and on success both sets currentState AND calls playerControls?.seek(0) so every state change rewinds playback to frame 0. The playerControls arg is optional, so the hook works standalone but only resets the frame when wired to a player.'
+    tags:
+      - validation
+      - fail-fast
+      - imperative-api
+    anchors:
+      - packages/react/src/useAnimationState.ts:25-31
+    enforcement: throw on unknown + seek(0) on change
+    appliesTo: ["#use-animation-state"]
+  raf-fixed-timestep-accumulator:
+    description: 'tick advances at most ONE frame per qualifying rAF callback (frame++ only when elapsed >= frameDuration = 1000/fps), and corrects drift by setting lastTimestamp = timestamp - (elapsed % frameDuration) rather than to timestamp — so the animation plays at the document fps independent of display refresh rate and never fast-forwards multiple frames in one tick.'
+    tags:
+      - core-invariant
+      - timing
+      - raf
+    anchors:
+      - packages/react/src/player.ts:115-148
+      - packages/react/src/player.ts:126-128
+    enforcement: elapsed>=frameDuration gate + modulo drift correction
+    appliesTo: ["#animation-player"]
+  play-idempotent-pause-cancels-raf:
+    description: 'play() early-returns if already playing so it never schedules a second concurrent rAF loop, and pause()/destroy() cancelAnimationFrame and null rafId so no orphan loop survives. destroy() is just pause() — the single teardown path that the React cleanup relies on for leak safety.'
+    tags:
+      - raf
+      - idempotency
+      - cleanup
+    anchors:
+      - packages/react/src/player.ts:72-85
+      - packages/react/src/player.ts:102-104
+    enforcement: isPlaying guard + cancelAnimationFrame + null rafId
+    appliesTo: ["#animation-player"]
+  seek-clamped-to-state-bounds:
+    description: 'seek clamps the target to [0, duration-1] via Math.max(0, Math.min(frame, maxFrame)) where duration follows currentState, so scrubbing can never address a frame outside the active state. Both seek and setState force an immediate renderCurrentFrame so the canvas updates even while paused.'
+    tags:
+      - clamp
+      - playback
+      - edge-case
+    anchors:
+      - packages/react/src/player.ts:87-100
+    enforcement: clamp to [0, duration-1] + force render
+    appliesTo: ["#animation-player"]
+  image-load-triggers-rerender:
+    description: 'The ImageCache onLoad callback re-invokes renderCurrentFrame, so async-loaded images repaint the current frame once decoded even when playback is paused — without this, a paused first frame referencing a not-yet-loaded image would stay blank. renderCurrentFrame also silently returns if getContext("2d") yields null.'
+    tags:
+      - async
+      - edge-case
+      - rendering
+    anchors:
+      - packages/react/src/player.ts:35-44
+      - packages/react/src/player.ts:107-113
+    enforcement: onLoad → renderCurrentFrame + null-ctx guard
+    appliesTo: ["#animation-player"]

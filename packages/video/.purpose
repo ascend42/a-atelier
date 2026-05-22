@@ -22,3 +22,101 @@ components:
     description: FFmpeg WASM encoding pipeline skeleton — stable interface for MP4/WebM export from canvas frame sequence; full implementation in T-003
     file: src/encoding/ffmpeg-encoder.ts
     tags: [video, encoding, ffmpeg, export]
+aspects:
+  element-one-per-src-reuse:
+    description: 'ElementVideoProvider keeps a Map<src, HTMLVideoElement> so every layer referencing the same clip URL shares ONE decoder-backed element rather than spawning one per layer. dispose() must blank src to "" and call load() on each element to release the underlying decoder before clearing the map — drop that and the video decoders leak.'
+    tags:
+      - resource
+      - reuse
+      - core-invariant
+    anchors:
+      - packages/video/src/providers/element-provider.ts:10-11
+      - packages/video/src/providers/element-provider.ts:73-80
+    enforcement: src-keyed element map + blank-and-load on dispose
+    appliesTo: ["#element-provider"]
+  element-seek-tolerance-one-frame:
+    description: 'A re-seek only fires when Math.abs(el.currentTime - sourceTime) > 1/60 and no seek is already in flight — the 1/60s tolerance (~one frame at 60fps) absorbs sub-frame jitter so the provider does not thrash currentTime every render tick. Tighten this and seeking never settles; loosen it and preview scrubbing visibly lags the requested time.'
+    tags:
+      - magic-number
+      - edge-case
+      - preview
+    anchors:
+      - packages/video/src/providers/element-provider.ts:37-40
+    enforcement: tolerance compare + in-flight seek guard
+    appliesTo: ["#element-provider"]
+  element-null-while-not-ready:
+    description: 'getFrame returns null on three distinct not-ready paths — a freshly created element before its first seek, readyState < 2 (HAVE_CURRENT_DATA) with too little buffered, and any in-flight seek — which is the producer side of canvas video-null-provider-retry (caller re-renders next tick). The seeked event handler clears the seeking flag and fires the onFrame callback so the host render loop is woken event-driven, never polled.'
+    tags:
+      - video
+      - async
+      - core-invariant
+    anchors:
+      - packages/video/src/providers/element-provider.ts:30-48
+      - packages/video/src/providers/element-provider.ts:61-70
+    enforcement: null on each not-ready path + seeked-event wake
+    appliesTo: ["#element-provider"]
+  webcodecs-nearest-by-abs-delta:
+    description: 'Frame matching minimizes Math.abs(timestampMs - targetMs) over all decoded frames — a bidirectional NEAREST match, even though the inline comment says "at or before sourceTime". sourceTime is quantized to integer ms via Math.round(sourceTime * 1000) and timestamps are keyed in ms, so matching is integer-ms. Treat this as the observed contract (nearest, with a comment/code drift noted), not a defect.'
+    tags:
+      - edge-case
+      - gotcha
+      - timestamp
+    anchors:
+      - packages/video/src/providers/webcodecs-provider.ts:53-66
+    enforcement: argmin absolute ms delta
+    appliesTo: ["#webcodecs-provider"]
+  webcodecs-async-load-on-miss:
+    description: 'getFrame returns null immediately on a cache miss while kicking off load(src).catch(() => {}) in the background — the same null-means-not-ready retry contract as element-provider. Concurrent load() calls for one src are de-duplicated through the loading Map (return the in-flight promise), and a src already present in frames short-circuits, so a clip is decoded at most once.'
+    tags:
+      - async
+      - dedup
+      - video
+    anchors:
+      - packages/video/src/providers/webcodecs-provider.ts:35-43
+      - packages/video/src/providers/webcodecs-provider.ts:45-51
+    enforcement: background load + promise-dedup map
+    appliesTo: ["#webcodecs-provider"]
+  webcodecs-imagebitmap-explicit-close:
+    description: 'dispose walks the nested src→(timestamp→ImageBitmap) maps and calls bitmap.close() on every frame before clearing — ImageBitmaps hold GPU/decoder memory that is NOT reclaimed by GC, so skipping dispose after an export leaks every decoded frame.'
+    tags:
+      - resource
+      - gotcha
+      - cleanup
+    anchors:
+      - packages/video/src/providers/webcodecs-provider.ts:107-115
+    enforcement: explicit close per bitmap on dispose
+    appliesTo: ["#webcodecs-provider"]
+  webcodecs-feature-detect-and-stub:
+    description: 'isSupported() typeof-guards the global VideoDecoder (Chrome/Chromium only as of 2026) so callers can fall back to ElementVideoProvider; decode() re-checks and throws when unsupported. The actual demux/decode (decodeWithFallback) currently throws "Mediabunny integration pending (T-002b)" — the class is a stable interface with no real decode path until T-002b lands.'
+    tags:
+      - feature-detection
+      - skeleton
+      - export
+    anchors:
+      - packages/video/src/providers/webcodecs-provider.ts:21-23
+      - packages/video/src/providers/webcodecs-provider.ts:69-72
+      - packages/video/src/providers/webcodecs-provider.ts:94-104
+    enforcement: typeof VideoDecoder guard + pending-throw stub
+    appliesTo: ["#webcodecs-provider"]
+  ffmpeg-stable-interface-throws:
+    description: 'init/writeFrame/finalize are deliberate stubs that throw "T-003 implementation pending" — only the type surface (EncodeOptions, EncodeProgress, EncodeFormat, method signatures) is load-bearing today, letting callers be written against the encoder before its WASM body exists. dispose is the only inert no-op.'
+    tags:
+      - skeleton
+      - interface
+      - encoding
+    anchors:
+      - packages/video/src/encoding/ffmpeg-encoder.ts:57-60
+      - packages/video/src/encoding/ffmpeg-encoder.ts:67-69
+      - packages/video/src/encoding/ffmpeg-encoder.ts:75-77
+    enforcement: pending-throw stubs over stable signatures
+    appliesTo: ["#ffmpeg-encoder"]
+  ffmpeg-defaults-then-spread:
+    description: 'The constructor seeds filename = `export.${format}` and crf = 18 FIRST, then spreads ...options last, so any caller-supplied filename/crf overrides the defaults (spread wins on conflict) while the default filename is always derived from the chosen format. Reverse the spread order and caller overrides would be silently discarded.'
+    tags:
+      - ordering
+      - defaults
+      - gotcha
+    anchors:
+      - packages/video/src/encoding/ffmpeg-encoder.ts:45-51
+    enforcement: defaults before spread so options win
+    appliesTo: ["#ffmpeg-encoder"]

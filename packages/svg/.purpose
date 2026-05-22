@@ -37,3 +37,203 @@ components:
     description: buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping
     file: src/svg-properties.ts
     tags: [renderer, utilities]
+aspects:
+  declarative-string-vs-imperative-ctx:
+    description: 'The SVG renderer accumulates content as STRINGS — sub-renderers return markup, defs and layer elements collect into arrays, and the whole document is assembled with lines.join("\n") at the end. There is no imperative draw context like the canvas renderer''s ctx.fill/ctx.stroke; output is a single self-contained SVG string with all <defs> emitted before the layer <g> elements, so refs resolve regardless of layer order.'
+    tags:
+      - architecture
+      - core-invariant
+      - svg-vs-canvas
+    anchors:
+      - packages/svg/src/render-svg.ts:56-58
+      - packages/svg/src/render-svg.ts:189-204
+    enforcement: collect strings then join; defs before layers
+    appliesTo: ["#svg-renderer"]
+  id-counter-reset-determinism:
+    description: 'All three id counters (gradient, filter, clip) are reset at the very top of renderFrameSVG before anything is resolved or emitted, so a given frame always produces identical grad-/filter-/clip- ids. Skip the reset and ids drift upward across successive renders, defeating snapshot stability and risking duplicate ids if two renders are concatenated.'
+    tags:
+      - determinism
+      - core-invariant
+      - svg-vs-canvas
+    anchors:
+      - packages/svg/src/render-svg.ts:35-38
+    enforcement: reset all three counters at render entry
+    appliesTo: ["#svg-renderer"]
+  early-skip-and-asset-mutation:
+    description: 'A layer is skipped before any markup when !eff.visible OR eff.opacity <= 0, matching the canvas guard. For image layers the resolver MUTATES the asset src onto eff.visual in place (assetId → doc.assets[assetId].src) — eff.visual is the buildEffectiveLayer copy, but this is still in-place mutation of the effective visual rather than a pure return.'
+    tags:
+      - edge-case
+      - merge
+      - gotcha
+    anchors:
+      - packages/svg/src/render-svg.ts:64-66
+      - packages/svg/src/render-svg.ts:69-74
+    enforcement: guard clauses before emit; in-place src patch
+    appliesTo: ["#svg-renderer"]
+  combined-shadow-tint-drops-tint:
+    description: 'When a layer has BOTH a shadow filter and a tint filter, only the shadow filterRef is actually applied to the group — the tint is silently dropped (the comment promises a nested-group wrap that is never emitted). Shadow-only or tint-only layers apply correctly. This is a known incomplete branch, not a coincidence; a maintainer adding combined filters must implement the nested wrap here.'
+    tags:
+      - gotcha
+      - incomplete
+      - filters
+    anchors:
+      - packages/svg/src/render-svg.ts:103-112
+    enforcement: combined branch applies shadow only — known gap
+    appliesTo: ["#svg-renderer"]
+  image-crop-via-nested-svg-viewbox:
+    description: 'Unlike the canvas renderer''s 5-arg/9-arg drawImage cropping, sourceRect and spritesheet crops are emitted as a nested <svg viewBox="sx sy w h"> wrapping a full-size <image> — the viewBox windows the visible region declaratively. Spritesheet frameIndex is floored and clamped to maxFrames-1 (frameCount ?? columns*rows), with col=idx%columns and row=floor(idx/columns).'
+    tags:
+      - svg-vs-canvas
+      - technique
+      - image
+    anchors:
+      - packages/svg/src/render-svg.ts:132-154
+    enforcement: nested svg viewBox windows the image
+    appliesTo: ["#svg-renderer"]
+  ref-cycle-and-depth-guards:
+    description: 'renderRefSVG guards recursion two ways — a depth counter capped at maxRefDepth (default 4) emits a MAX DEPTH placeholder, and a visitedRefs Set keyed by visual.src emits a CYCLE placeholder before recursing into an already-visited doc. The src is added to the set before recursing and deleted after, so sibling refs to the same doc are allowed while true cycles are blocked. Missing resolver / not-found / empty-states each fall back to a distinct dashed placeholder rect.'
+    tags:
+      - edge-case
+      - failure-mode
+      - recursion
+    anchors:
+      - packages/svg/src/render-svg.ts:231-237
+      - packages/svg/src/render-svg.ts:259-315
+    enforcement: depth cap + visited-set add/delete around recursion
+    appliesTo: ["#svg-renderer"]
+  bezier-only-with-handle-pair:
+    description: 'A path segment is emitted as a cubic C command only when prev.out AND curr.in both exist (handles are relative offsets added to the anchor: prev.x+prev.out.x etc.); otherwise it degrades to a straight L lineTo. The path returns an empty string entirely when fewer than 2 points, and Z is appended only when shape.closed.'
+    tags:
+      - geometry
+      - edge-case
+    anchors:
+      - packages/svg/src/svg-shapes.ts:79-95
+    enforcement: handle-pair check selects C vs L
+    appliesTo: ["#svg-shapes"]
+  corner-radius-array-first-only:
+    description: 'rect rounding emits a single rx/ry pair using only index [0] of a cornerRadius array (or the scalar when not an array) — per-corner radii are NOT supported in SVG output, so a four-value cornerRadius silently collapses to uniform corners. Stroke attrs are space-joined and appended only when present.'
+    tags:
+      - edge-case
+      - gotcha
+      - shapes
+    anchors:
+      - packages/svg/src/svg-shapes.ts:53-58
+    enforcement: take cornerRadius[0] for uniform rx/ry
+    appliesTo: ["#svg-shapes"]
+  text-align-to-text-anchor:
+    description: 'Canvas textAlign maps to SVG text-anchor declaratively — left→start (x=0), center→middle (x=width/2), right→end (x=width). The X offset keeps text inside the layer box exactly like the canvas renderer''s offset, but here the anchor attribute does the work instead of an imperative align call. fontFamily and content are both run through escapeXml.'
+    tags:
+      - text
+      - svg-vs-canvas
+      - core-invariant
+    anchors:
+      - packages/svg/src/svg-text.ts:26-37
+      - packages/svg/src/svg-text.ts:13-13
+    enforcement: align→text-anchor + X offset mapping
+    appliesTo: ["#svg-text"]
+  hanging-baseline-for-top-edge:
+    description: 'dominant-baseline="hanging" is always emitted so y=0 is the TOP edge of the text box, matching the layer coordinate system — the SVG analog of the canvas renderer forcing textBaseline="top" against SVG''s default alphabetic baseline. font-weight/font-style are only emitted when not "normal".'
+    tags:
+      - text
+      - gotcha
+      - svg-vs-canvas
+    anchors:
+      - packages/svg/src/svg-text.ts:44-45
+      - packages/svg/src/svg-text.ts:16-21
+    enforcement: always emit hanging baseline
+    appliesTo: ["#svg-text"]
+  gradient-id-uniqueness-per-render:
+    description: 'Every gradient def gets a fresh id via grad-${++gradientIdCounter}, so two gradients in one frame never collide — but uniqueness ACROSS frames depends entirely on resetGradientCounter() at render entry. Reuse the same id across two concatenated SVGs and the second gradient inherits the first''s stops. Linear and radial share the same counter.'
+    tags:
+      - core-invariant
+      - gradients
+      - gotcha
+    anchors:
+      - packages/svg/src/svg-gradients.ts:41-41
+      - packages/svg/src/svg-gradients.ts:61-61
+    enforcement: monotonic counter id + render-entry reset
+    appliesTo: ["#svg-gradients"]
+  gradient-coordinate-spaces-differ:
+    description: 'Linear gradients map fill.angle to x1/y1/x2/y2 in 0..1 objectBoundingBox unit space (0.5 ± cos/sin * 0.5), so they auto-scale to any layer size. Radial gradients instead use gradientUnits="userSpaceOnUse" with center/radius resolved to pixels (percent radius against max(width,height)). Mixing the two coordinate models is intentional and must not be unified.'
+    tags:
+      - gradients
+      - geometry
+      - units
+    anchors:
+      - packages/svg/src/svg-gradients.ts:42-57
+      - packages/svg/src/svg-gradients.ts:60-72
+    enforcement: linear unit-space vs radial userSpaceOnUse
+    appliesTo: ["#svg-gradients"]
+  color-css-dispatch-black-fallback:
+    description: 'colorToCSS dispatches on shape — a string passes through literally, an object with "r" becomes rgba() with r/g/b rounded, an object with "h" becomes hsla(); anything unrecognized falls back to #000000 rather than throwing, so a malformed color renders black.'
+    tags:
+      - dispatch
+      - edge-case
+      - color
+    anchors:
+      - packages/svg/src/svg-gradients.ts:10-21
+    enforcement: shape-based dispatch + black fallback
+    appliesTo: ["#svg-gradients"]
+  shadow-filter-region-and-blur-map:
+    description: 'The shadow filter region is expanded to x/y=-50% width/height=200% so the drop shadow can bleed OUTSIDE the layer bounds without being clipped (the SVG default filter region is only -10%..110%). stdDeviation is set to blur/2 to roughly match the canvas renderer''s shadowBlur appearance — a deliberate approximation, not an exact equivalence.'
+    tags:
+      - filters
+      - svg-vs-canvas
+      - approximation
+    anchors:
+      - packages/svg/src/svg-filters.ts:16-20
+    enforcement: -50%/200% region + stdDeviation=blur/2
+    appliesTo: ["#svg-filters"]
+  filters-share-one-counter:
+    description: 'Both buildShadowFilter and buildTintFilter draw ids from the SAME filterIdCounter, so shadow and tint filters are never assigned the same id within a render. Tint is skipped entirely when amount <= 0; tint is implemented as feFlood (color at flood-opacity=amount) blended over SourceGraphic with mode="multiply".'
+    tags:
+      - filters
+      - core-invariant
+    anchors:
+      - packages/svg/src/svg-filters.ts:3-3
+      - packages/svg/src/svg-filters.ts:13-13
+      - packages/svg/src/svg-filters.ts:26-39
+    enforcement: single shared filterIdCounter
+    appliesTo: ["#svg-filters"]
+  clip-counter-isolated-and-path-dup:
+    description: 'clipIdCounter is a SEPARATE counter from gradient/filter ids, so clip ids never collide with them and have their own reset. The path-shape branch DUPLICATES the moveTo/cubic/lineTo/close emission logic from svg-shapes (handle-pair → C else L, Z on closed) rather than sharing it — keep both copies in sync when path emission changes. A path with fewer than 2 points returns empty defs and empty clipRef, so the caller skips the clip-path attribute.'
+    tags:
+      - clip-path
+      - code-duplication
+      - edge-case
+    anchors:
+      - packages/svg/src/svg-clip.ts:3-7
+      - packages/svg/src/svg-clip.ts:26-42
+    enforcement: dedicated counter; mirror svg-shapes path logic
+    appliesTo: ["#svg-clip"]
+  transform-anchor-order-as-string:
+    description: 'Transform parts are emitted as a string in the order translate(pos) → translate(anchor) → rotate → scale → translate(-anchor), so rotation/scale pivot around the anchor point (anchorX*width, anchorY*height) — the same composition as the canvas transform stack but serialized to an SVG transform attribute. The rotate/scale block is skipped entirely when totalRotation (rotation+motionPathAngle) is 0 AND both scales are 1, and translate(pos) is skipped when x and y are both 0.'
+    tags:
+      - core-invariant
+      - transform
+      - ordering
+      - svg-vs-canvas
+    anchors:
+      - packages/svg/src/svg-properties.ts:4-33
+    enforcement: fixed translate/rotate/scale string order
+    appliesTo: ["#svg-properties"]
+  style-attrs-conditional-and-blend-inline:
+    description: 'opacity is emitted as an attribute only when eff.opacity < 1, and blendMode is emitted only when not "normal" — and crucially as an inline style="mix-blend-mode: ..." rather than a presentation attribute, because mix-blend-mode has no attribute form in SVG. Both omitted means buildStyleAttrs returns an empty string and the <g> carries no style.'
+    tags:
+      - svg-vs-canvas
+      - gotcha
+      - utilities
+    anchors:
+      - packages/svg/src/svg-properties.ts:36-48
+    enforcement: opacity attr <1; blend via inline style
+    appliesTo: ["#svg-properties"]
+  escape-xml-five-entities:
+    description: 'escapeXml replaces exactly five entities — & < > " '' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.'
+    tags:
+      - security
+      - escaping
+      - ordering
+    anchors:
+      - packages/svg/src/svg-properties.ts:51-58
+    enforcement: ampersand-first five-entity replace
+    appliesTo: ["#svg-properties"]
