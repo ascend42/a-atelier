@@ -74,11 +74,36 @@ export interface TranscriptSegment {
 }
 
 /**
+ * Provenance stamp left on an effective transcript — the derivation of a
+ * raw transcript through a cuts.json. Pure-functional and purely descriptive:
+ * agents reading an effective transcript know it has already had cuts applied
+ * (so they shouldn't apply them again) and can trace which cuts.json was used
+ * by hashing the source on disk and comparing against `cutsHash`.
+ */
+export interface TranscriptDerivedFrom {
+  /** Source raw transcript filename (e.g. "transcript.json") */
+  transcriptName: string;
+  /** Stable hash of the cuts.json payload that produced this derivation */
+  cutsHash: string;
+  /** ISO 8601 timestamp of derivation */
+  derivedAt: string;
+  /** Number of cut entries that were applied */
+  cutsApplied: number;
+  /** Total seconds dropped from the timeline by applied cuts */
+  totalCutDurationS: number;
+}
+
+/**
  * Full transcript for a VideoProject source file.
  *
  * Format version 1.1 stores editable words (detected + text + flags).
  * Loaders migrate 1.0 transcripts (flat `word: string`) on read; writers
  * always emit 1.1.
+ *
+ * `derived_from` is present ONLY on transcripts produced by `applyCuts` —
+ * the in-memory effective transcript handed to agents post-cut. The on-disk
+ * `transcript.json` never carries this field (cuts apply at read time via
+ * `loadEffectiveTranscript`, never persist into the raw transcript).
  */
 export interface VideoTranscript {
   /** Transcript format version — current is "1.1" */
@@ -86,6 +111,11 @@ export interface VideoTranscript {
   /** BCP-47 language code detected by Whisper */
   language?: string;
   segments: TranscriptSegment[];
+  /**
+   * Provenance for effective (post-cut) transcripts. Absent on raw transcripts.
+   * Producers: `applyCuts` (pure) and `loadEffectiveTranscript` (loader).
+   */
+  derived_from?: TranscriptDerivedFrom;
 }
 
 /** Filesystem layout description for a VideoProject folder */

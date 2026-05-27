@@ -4,6 +4,70 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [Unreleased] — pre-v1 creator-flow foundation
+
+The **pre-v1 arc**: twelve strategic decisions, three Paradigm-native content-generation agents (Quill the Showrunner, Lux the Cinematographer, Iris the Composer) shipped as Claude Code agents, workspace concept above Project, Paradigm + Atelier symbiosis, front-of-pipeline artifact schemas + parsers + validators + CLI surface, expanded animation technique library, mind-map stub, effective transcript derivation, media folder + sidecar notes convention. v1 publish is explicitly gated on the studio-UI-as-creator-interface bundle (Phase 2 frontend) landing + full end-to-end validation.
+
+### Added — front-of-pipeline artifacts (Hyperframes-style discipline, Atelier-native)
+- **Artifact schemas** (`@a-company/atelier-schema`) — `DesignArtifactSchema` / `ScriptArtifactSchema` / `StoryboardArtifactSchema`, typed `SlotKind` reference (`<kind>.<category>.<specifier>` with closed kind enum), `TechniqueLibrarySchema`, hand-rolled YAML+Markdown parser, cross-artifact validator (`validateArtifactSet`) for beat-id coverage + slot validation + duration warnings. Pre-Zod spec at `docs/keynote/paradigm/atelier-front-of-pipeline-artifacts.md`.
+- **`atelier artifacts validate <project-dir>`** — reads the three artifacts, runs the validator, exits non-zero on errors. Pure helper `loadArtifactsFromProject(dir)` exported for agent-side reuse.
+- **`atelier artifacts scaffold <project-dir>`** — emits canonical templates (with `--only`, `--force`, `--json`). Freshly-scaffolded triple validates clean by construction; pre-flight refuse-to-overwrite is atomic.
+
+### Added — the agent team
+- **Quill / Lux / Iris** instantiated at `.paradigm/personas/<id>/` with full system prompts, starter skills, canonical notebook seeds, mode-awareness contract, privacy contract. Wired as Claude Code agents (`.claude/agents/atelier-<name>.md`) using `mcp__atelier__<tool>` convention. Tool names reconciled against the actual MCP surface (see `docs/keynote/paradigm/phase-3-reconciliation-notes.md`).
+- **Canonical skill bundles** —
+  - Quill: `write-30s-hook-script`, `draft-design-brief`, `reconstruct-script-from-transcript` (the last subsumes transcript-distillation: reads Whisper word-timing, writes SCRIPT.md with `bind_to_transcript: true` on every beat).
+  - Lux: `decompose-script-to-storyboard`, `resolve-asset-slot`.
+  - Iris: `apply-recipe-to-document`, `run-silence-trim-and-caption`, `compose-animation-from-primitives`, `save-custom-animation-as-preset`.
+- **Mode-aware behavior** — every persona reads `<workspace>/.atelier/learning-mode.yaml` at session start; respects Ambient (silent capture + threshold-surfacing) vs Explicit (ask-before-locking). System never auto-prompts to switch modes.
+- **Active project awareness** — every persona reads `<workspace>/.atelier/active.yaml` before writing; when cwd is a specific project, that overrides.
+
+### Added — workspace concept
+- **`workspace.atelier`** YAML manifest declaring a dir as an Atelier workspace (the layer above Project that holds multiple content Projects with shared creator-level config: learning mode, mind-map, recipes).
+- **Context-aware `atelier studio`** — detects whether cwd is a workspace / project / empty and dispatches. `--new [name]` creates a workspace explicitly; `--mode <ambient|explicit>` skips the interactive prompt; `--no-paradigm-integration` skips augmentation.
+- **`atelier init <project-dir>`** — first-run setup for a creator Project. Inside a workspace, inherits learning mode (skips the prompt) and writes the project at workspace-relative path. Scaffolds the artifact triple + mind-map dir + minimal `project.atelier`. Idempotent on re-run.
+- **HTTP endpoints** on the studio server: `GET /api/workspace`, `GET/POST/DELETE /api/workspace/active`, `POST /api/workspace/projects` — drive workspace-aware UI from the same backend as the existing file API. All localhost-only, origin-checked, safe-path-guarded.
+
+### Added — Paradigm + Atelier symbiosis
+- **`atelier studio --new` detects Paradigm-initialized directories** and runs four idempotent augmentations: sentinel-bracketed Atelier section appended to `CLAUDE.md`, three agent files dropped into `.claude/agents/`, `atelier` MCP server merged into `.mcp.json` alongside `paradigm`, three persona entries added to `.paradigm/personas/index.yaml`. No Paradigm files outside the augmentation contract are touched.
+- **`packages/cli/src/lib/paradigm-augment.ts`** — `detectParadigm`, `augmentClaudeMd`, `augmentMcpJson`, `augmentPersonasIndex`, `augmentClaudeAgents`, `augmentParadigmWithAtelier`. All idempotent (sentinel-replace for markdown, set-merge for JSON/YAML, canonical sync for agent files).
+
+### Added — media pipeline
+- **`media/` folder convention** — canonical place for any source file (video / image / audio / font / other). `atelier media ingest <file>` copies + auto-transcribes (video only, local whisper-cpp) + scaffolds sidecar notes. `atelier media list`, `atelier media note` round out the surface.
+- **Effective transcript derivation** — `applyCuts(raw, cuts) → effective` in `transcript-model.ts`. Pure function: drops word entries inside cut ranges, shifts surviving timestamps. Agents read the *effective* transcript (what's currently in the cut) via the new MCP tool — they reason about the trimmed timeline, not the raw recording.
+- **Sidecar notes convention** — `<filename>.notes.md` next to each media file. Structured YAML frontmatter (file, added, added_by, tags, constraints { do_not, prefer_for }) + per-author Markdown sections (Lux/Quill/Iris/Creator). Read/write via new MCP tools. Idempotent scaffolding on ingest.
+
+### Added — animation craft
+- **Technique library v2** — expanded from 4 starter techniques to ~15 named ones covering text reveals (split-reveal, typewriter, kinetic-keyword-emphasis), image moves (ken-burns, zoom-in, parallax-pan, cross-dissolve), transitions (whip-pan, match-cut, morph-cut, fade-through-color), supers (scale-in-spring, drop-in-staggered), and audio dynamics (fade-under-vo). Each technique decomposes to layers + states + deltas + presets.
+- **Iris's animation skills** — `compose-animation-from-primitives` (translate a named technique into MCP calls) + `save-custom-animation-as-preset` (when Iris invents a new animation and the creator likes it, save as a reusable preset; preset gets its own notes sidecar).
+
+### Added — MCP tools
+- **`atelier_mind_map_query`** — local-only directory walker returning asset paths matching a slot `kind`, with optional hint filtering, mtime-sorted. ~50-line read-only tool; Phase 4 mind-map stub. Portal gate `^valid-mind-map-query`.
+- **`atelier_get_effective_transcript`** — exposes `applyCuts` derivation to agents.
+- **`atelier_get_media_notes`** + **`atelier_write_media_note`** — sidecar notes IO. Author-scoped writes (per-section idempotent).
+
+### Decisions (recorded as `TD-2026-05-*`)
+Twelve strategic decisions ground the architecture. Highlights:
+- **TD-088** image generation stays external (Higgsfield via agents); stable seam for later wrapping.
+- **TD-363** agents ship WITH Atelier as a Claude Code skill (not in `a-paradigm`).
+- **TD-275** standalone surface + Paradigm-native engine (dual citizenship; no hard Paradigm dep at install).
+- **TD-684** open-source. No paid marketplace, no subscriptions, no premium gating.
+- **TD-540** local-first wins. No hosted Studio tier. nevr.land scope is only inert public artifacts (supersedes TD-720).
+- **TD-271** personal notebooks + mind-map are creator-owned, local-only, never uploaded.
+- **TD-229** recipes/skills/asset-packs are inert; assets stay local; recipe install binds slots locally via the mind-map.
+- **TD-902** extracted recipes default to `personal-use: true` — not publishable until creator explicitly flips.
+- **TD-646** creator picks Ambient or Explicit at workspace setup; system never auto-prompts to switch.
+- **TD-210** shared Paradigm-published personas + per-creator notebooks.
+- **TD-2026-05-27-723** local-only by default. All third-party integrations are opt-in; online providers are never the silent fallback.
+
+### Testing
+- Workspace tests across 12 packages — types 6 / math 29 / schema 88 / core 118 / lottie 37 / canvas 26 / video 8 / svg 32 / react 15 / studio 46 / mcp 175 / cli 302 — **all passing**. Compliance check clean across 496 anchors.
+
+### Known follow-ups (pre-v1)
+- **Studio-UI-as-creator-interface bundle** (Phase 2 frontend) — drag-and-drop ingest in the browser, project sidebar + switcher, new-project modal. The creator experience; replaces every "type this CLI command" instruction.
+- **Whisper model auto-resolve + auto-download** — short name `large-v3-turbo` resolves to `~/.cache/whisper.cpp/models/ggml-large-v3-turbo.bin`; missing model auto-downloads on first use. Folds in with the studio-UI bundle per TD-2026-05-27-723.
+- **End-to-end validation** — record → drag into studio → agents do the rest. v1 publish gated on this working cleanly.
+
 ## [0.37.0] — 2026-05-22
 
 ### Added

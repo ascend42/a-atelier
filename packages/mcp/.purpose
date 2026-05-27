@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 61 tools
+description: MCP server — AI authoring interface for Atelier animations with 62 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -68,6 +68,11 @@ components:
   mcp-import-images:
     description: Folder image ingestion — atelier_import_images lists images in a directory, registers assets, and optionally creates centered ImageVisual layers (mirrors the Studio image-drop layer-building + welcome-background-swap convention; defers natural-dimension measurement so bounds default to a centered min(canvas.w, canvas.h) square)
     file: src/tools/import-images.ts
+  mcp-mind-map:
+    description: Mind-map query stub — atelier_mind_map_query walks <projectDir>/.atelier/mind-map/ (preferred), assets/, or projectDir itself and returns local file paths whose extension matches a slot kind (image/video/audio/font/voice/logo; text returns empty with a note). Optional hints narrow by filename or ancestor dir name within the search root, OR'd. Sorted by mtime, depth-capped at 4, pure read against local disk. Phase 4 builds the indexed/curated version.
+    file: src/tools/mind-map.ts
+    gates:
+      - ^valid-mind-map-query
 aspects:
   store-synchronous-registration-order-emit:
     description: 'onChange listeners fire synchronously inside create/set/delete (not on a microtask), in registration order, over a slice() snapshot of the listener array taken at emit time — so a listener that subscribes/unsubscribes mid-emit neither skips nor double-fires its siblings. The unsubscribe closure splices by indexOf, so the same function registered twice only removes one copy.'
@@ -108,8 +113,8 @@ aspects:
       - core-invariant
       - live-bridge
     anchors:
-      - packages/mcp/src/index.ts:73-75
-      - packages/mcp/src/index.ts:64-71
+      - packages/mcp/src/index.ts:75-77
+      - packages/mcp/src/index.ts:65-74
     enforcement: optional shared-store parameter
     appliesTo: ["mcp-store"]
   document-validate-after-construction:
@@ -476,3 +481,25 @@ aspects:
       - packages/mcp/src/tools/import-images.ts:118-120
     enforcement: glob→regex + slug dedup -N
     appliesTo: ["mcp-import-images"]
+  mind-map-query-local-only:
+    description: 'atelier_mind_map_query is a pure read against local disk — no network surface, no external fetches, no store mutations. Per TD-271/TD-540 the creator''s mind-map never leaves their machine; the walk is rooted at the resolved projectDir and confined to its subtree. The DocumentStore parameter is accepted for register-function signature symmetry but is intentionally unused (a leading underscore on the parameter name documents this).'
+    tags:
+      - core-invariant
+      - privacy
+      - convention
+    anchors:
+      - packages/mcp/src/tools/mind-map.ts:170-172
+      - packages/mcp/src/tools/mind-map.ts:148-160
+    enforcement: pure read against local disk, _store unused
+    appliesTo: ["mcp-mind-map"]
+  mind-map-stub-no-ingestion:
+    description: 'This is the Phase 3 STUB form of the mind-map. Every call re-walks the directory tree from scratch — there is no persistent index, no SQLite, no caching, no semantic search, no ingestion of arbitrary external dirs, and no `atelier mind-map reindex` CLI verb. Recency is approximated by mtime sort only. Phase 4 builds the indexed/curated version (TD-229/TD-271/TD-540). Walk order is first-existing-wins: .atelier/mind-map/ → assets/ → projectDir; depth capped at 4 levels below the chosen root to bound pathological recursion (deep nests, symlink loops).'
+    tags:
+      - scoping
+      - convention
+      - stub
+    anchors:
+      - packages/mcp/src/tools/mind-map.ts:85-94
+      - packages/mcp/src/tools/mind-map.ts:106-141
+    enforcement: walk-on-each-call, depth-capped at 4, no index
+    appliesTo: ["mcp-mind-map"]

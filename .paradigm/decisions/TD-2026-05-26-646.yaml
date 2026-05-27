@@ -1,0 +1,34 @@
+id: TD-2026-05-26-646
+timestamp: '2026-05-26T06:04:09.805Z'
+title: 'Creator agent-team learning protocol: ask at setup, two modes, creator chooses'
+decision: >-
+  At creator-team setup the system asks the creator which learning mode they want and respects the choice. Two modes:
+  Ambient (silent capture + soft-surfacing of patterns when confident, never blocks) and Explicit (nothing promotes to
+  notebook/recipe without explicit creator confirmation). Mode is changeable by the creator anytime, but the system
+  never auto-prompts to switch — autonomy over paternalism.
+rationale: >-
+  Owner is hands-on with agent teaching and prefers Explicit personally, but recognizes other creators have different
+  tastes. Forcing a single default would mis-serve half the audience. Asking once at setup is one-time friction that
+  pays for itself across the life of the team. 'If it fails them, it's on them' — autonomy-first stance.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Ambient-by-default with soft-surface threshold (no setup choice)
+    rejected_because: Imposes a single default that mis-serves hands-on creators; owner explicitly prefers Explicit for himself
+  - option: Explicit-by-default
+    rejected_because: Mis-serves creators who want zero friction and trust the team to infer
+  - option: Auto-prompt to switch modes when correction patterns suggest a mismatch
+    rejected_because: Paternalistic; violates the autonomy-first stance the owner chose
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - agents
+  - learning
+  - onboarding

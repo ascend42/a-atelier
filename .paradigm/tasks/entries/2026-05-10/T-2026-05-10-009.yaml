@@ -1,0 +1,13 @@
+id: T-2026-05-10-009
+blurb: Caption track in timeline UI — display timed caption layers as a separate track above video clips, editable in place
+priority: medium
+status: open
+tags:
+  - phase-2
+  - '#timeline-ui'
+  - '#caption-pipeline'
+  - studio
+  - ux
+created: '2026-05-10T18:23:26.246Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

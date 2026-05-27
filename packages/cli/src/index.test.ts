@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { writeFileSync, mkdirSync, rmSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { tmpdir } from "node:os";
+import { execFileSync as execFileSyncForTest } from "node:child_process";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { serializeAtelier, parseAtelier } from "@a-company/atelier-schema";
 import { fileURLToPath } from "node:url";
@@ -61,6 +62,43 @@ import { exportToLottie } from "@a-company/atelier-lottie";
 import { Command } from "commander";
 import { exportImageCommand, resolveExportDimensions } from "./commands/export-image.js";
 import { recipeCommand } from "./commands/recipe.js";
+import { runInit, isInsideGitRepo, parseModeAnswer, initCommand } from "./commands/init.js";
+import {
+  runReconstruct,
+  reconstructCommand,
+  type ReconstructResult,
+} from "./commands/reconstruct.js";
+import type { TranscribeResult } from "./commands/transcribe.js";
+import {
+  readLearningMode,
+  writeLearningMode,
+  learningModePath,
+  renderLearningModeYaml,
+  resolveLearningMode,
+} from "./lib/learning-mode.js";
+import {
+  ACTIVE_PROJECT_FILENAME,
+  activeProjectPath,
+  clearActiveProject,
+  createWorkspace,
+  findWorkspace,
+  isProjectDir,
+  isValidProjectName,
+  listProjects,
+  readActiveProject,
+  readWorkspace,
+  setActiveProject,
+  WORKSPACE_MANIFEST_FILENAME,
+} from "./lib/workspace.js";
+import {
+  buildActiveProject,
+  buildWorkspaceInfo,
+  handleClearActiveProject,
+  handleCreateProject,
+  handleSetActiveProject,
+  studioContext,
+} from "./commands/studio.js";
+import { createProjectInWorkspace } from "./commands/init.js";
 import {
   carouselCommand,
   composeCarouselFrameDoc,
@@ -2884,3 +2922,1987 @@ overlay_rules:
     },
   );
 });
+
+// ─── Artifacts command ─────────────────────────────────────────
+// `atelier artifacts validate <project-dir>` — first user-facing
+// surface over the Phase 2 front-of-pipeline artifact schemas.
+// Reuses the runRecipe-style command harness pattern (cwd-pinned,
+// stdout/stderr/exit captured).
+
+import { artifactsCommand } from "./commands/artifacts.js";
+import { loadArtifactsFromProject } from "./lib/artifact-project.js";
+
+async function runArtifacts(
+  argv: string[],
+  cwd: string,
+): Promise<{ code?: number; stdout: string; stderr: string }> {
+  const program = new Command();
+  program.exitOverride();
+  artifactsCommand(program);
+
+  const origExit = process.exit;
+  const origLog = console.log;
+  const origErr = console.error;
+  const origCwd = process.cwd;
+  let exitCode: number | undefined;
+  let stdout = "";
+  let stderr = "";
+
+  process.cwd = () => cwd;
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.log = (msg?: unknown) => { stdout += String(msg) + "\n"; };
+  console.error = (msg?: unknown) => { stderr += String(msg) + "\n"; };
+
+  try {
+    await program.parseAsync(["node", "atelier", "artifacts", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code?.startsWith("commander.")) {
+        exitCode = cErr.exitCode ?? 1;
+      } else {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.log = origLog;
+    console.error = origErr;
+    process.cwd = origCwd;
+  }
+  return { code: exitCode, stdout, stderr };
+}
+
+/**
+ * Locate the schema package's canonical artifact fixtures
+ * (packages/schema/src/artifacts/__fixtures__/) so we can copy them
+ * into a per-test tmp project dir. Copying (not symlinking) keeps the
+ * test stable on CI runners that disallow symlinks.
+ */
+function schemaArtifactFixturesDir(): string {
+  // packages/cli/src/index.test.ts → ../../schema/src/artifacts/__fixtures__
+  const here = dirname(fileURLToPath(import.meta.url));
+  return resolve(here, "..", "..", "schema", "src", "artifacts", "__fixtures__");
+}
+
+function copyFixture(srcDir: string, dstDir: string, name: string): void {
+  writeFileSync(join(dstDir, name), readFileSync(join(srcDir, name), "utf-8"), "utf-8");
+}
+
+describe("loadArtifactsFromProject", () => {
+  it("loads all three artifacts when present (schema fixtures round-trip)", () => {
+    const projectDir = join(tmpDir, "artifacts-load-all");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    copyFixture(fx, projectDir, "STORYBOARD.md");
+
+    const loaded = loadArtifactsFromProject(projectDir);
+    expect(loaded.parseErrors).toEqual([]);
+    expect(loaded.missing).toEqual([]);
+    expect(loaded.design).toBeDefined();
+    expect(loaded.script).toBeDefined();
+    expect(loaded.storyboard).toBeDefined();
+  });
+
+  it("reports missing files via `missing` (not as errors)", () => {
+    const projectDir = join(tmpDir, "artifacts-load-partial");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+
+    const loaded = loadArtifactsFromProject(projectDir);
+    expect(loaded.design).toBeDefined();
+    expect(loaded.script).toBeUndefined();
+    expect(loaded.storyboard).toBeUndefined();
+    expect(loaded.missing).toEqual(["SCRIPT.md", "STORYBOARD.md"]);
+    expect(loaded.parseErrors).toEqual([]);
+  });
+
+  it("captures per-file parse errors without aborting the rest", () => {
+    const projectDir = join(tmpDir, "artifacts-load-bad-design");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    // Bad DESIGN — frontmatter that won't satisfy the schema.
+    writeFileSync(
+      join(projectDir, "DESIGN.md"),
+      "---\naudience: not-a-mapping\n---\n",
+      "utf-8",
+    );
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    copyFixture(fx, projectDir, "STORYBOARD.md");
+
+    const loaded = loadArtifactsFromProject(projectDir);
+    expect(loaded.parseErrors.length).toBe(1);
+    expect(loaded.parseErrors[0].artifact).toBe("design");
+    expect(loaded.design).toBeUndefined();
+    expect(loaded.script).toBeDefined();
+    expect(loaded.storyboard).toBeDefined();
+  });
+
+  it("throws when the project-dir does not exist", () => {
+    expect(() => loadArtifactsFromProject(join(tmpDir, "nope-does-not-exist")))
+      .toThrow(/does not exist/);
+  });
+});
+
+describe("atelier artifacts validate (CLI)", () => {
+  it("exits 0 and prints PASS when all three valid fixtures are present", async () => {
+    const projectDir = join(tmpDir, "artifacts-cli-all-ok");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    copyFixture(fx, projectDir, "STORYBOARD.md");
+
+    const res = await runArtifacts(["validate", projectDir], projectDir);
+    expect(res.code).toBeUndefined(); // no exit → success
+    expect(res.stdout).toMatch(/DESIGN\.md\s+OK/);
+    expect(res.stdout).toMatch(/SCRIPT\.md\s+OK/);
+    expect(res.stdout).toMatch(/STORYBOARD\.md\s+OK/);
+    expect(res.stdout).toMatch(/Result: PASS/);
+  });
+
+  it("exits 0 and notes [not present] when only DESIGN.md is on disk", async () => {
+    const projectDir = join(tmpDir, "artifacts-cli-only-design");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+
+    const res = await runArtifacts(["validate", projectDir], projectDir);
+    expect(res.code).toBeUndefined();
+    expect(res.stdout).toMatch(/DESIGN\.md\s+OK/);
+    expect(res.stdout).toMatch(/SCRIPT\.md\s+\[not present\]/);
+    expect(res.stdout).toMatch(/STORYBOARD\.md\s+\[not present\]/);
+    expect(res.stdout).toMatch(/Result: PASS/);
+  });
+
+  it("exits 1 when STORYBOARD references a beat id that is not in SCRIPT", async () => {
+    const projectDir = join(tmpDir, "artifacts-cli-bad-beat");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    // Inject a STORYBOARD with a beat id that has no SCRIPT counterpart.
+    writeFileSync(
+      join(projectDir, "STORYBOARD.md"),
+      `---
+technique_library_version: 1
+aspect_ratio: "9:16"
+---
+
+## not-a-script-beat
+window: { start_s: 0.0, end_s: 2.0 }
+mood: [clinical]
+camera: { kind: static }
+slots:
+  - text.super.from-script
+techniques:
+  - text.split-reveal
+transition_out: { kind: cut }
+`,
+      "utf-8",
+    );
+
+    const res = await runArtifacts(["validate", projectDir], projectDir);
+    expect(res.code).toBe(1);
+    expect(res.stdout).toMatch(/Result: FAIL/);
+    expect(res.stdout).toMatch(/not-a-script-beat/);
+    expect(res.stdout).toMatch(/no matching SCRIPT beat/);
+  });
+
+  it("--json emits parseable JSON with ok flag and validation block", async () => {
+    const projectDir = join(tmpDir, "artifacts-cli-json");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "DESIGN.md");
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    copyFixture(fx, projectDir, "STORYBOARD.md");
+
+    const res = await runArtifacts(["validate", projectDir, "--json"], projectDir);
+    expect(res.code).toBeUndefined();
+    const parsed = JSON.parse(res.stdout);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.present).toEqual({ design: true, script: true, storyboard: true });
+    expect(parsed.missing).toEqual([]);
+    expect(parsed.parseErrors).toEqual([]);
+    expect(parsed.validation.ok).toBe(true);
+    expect(parsed.validation.errors).toEqual([]);
+  });
+
+  it("--json reports ok:false and emits the errors array on a bad beat id", async () => {
+    const projectDir = join(tmpDir, "artifacts-cli-json-fail");
+    mkdirSync(projectDir, { recursive: true });
+    const fx = schemaArtifactFixturesDir();
+    copyFixture(fx, projectDir, "SCRIPT.md");
+    writeFileSync(
+      join(projectDir, "STORYBOARD.md"),
+      `---
+technique_library_version: 1
+aspect_ratio: "9:16"
+---
+
+## ghost-beat
+window: { start_s: 0.0, end_s: 2.0 }
+mood: [clinical]
+camera: { kind: static }
+slots:
+  - text.super.from-script
+techniques:
+  - text.split-reveal
+transition_out: { kind: cut }
+`,
+      "utf-8",
+    );
+
+    const res = await runArtifacts(["validate", projectDir, "--json"], projectDir);
+    expect(res.code).toBe(1);
+    const parsed = JSON.parse(res.stdout);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.validation.ok).toBe(false);
+    expect(parsed.validation.errors.some((e: string) => e.includes("ghost-beat"))).toBe(true);
+  });
+
+  it("exits 1 on a missing project-dir with a clear message", async () => {
+    const missing = join(tmpDir, "artifacts-cli-missing-dir");
+    const res = await runArtifacts(["validate", missing], tmpDir);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/does not exist/);
+  });
+});
+
+// ─── Artifacts scaffold ─────────────────────────────────────────
+// `atelier artifacts scaffold <project-dir>` — write canonical empty
+// DESIGN.md / SCRIPT.md / STORYBOARD.md templates so a creator can
+// start authoring then validate with the sibling `validate` verb.
+
+import {
+  ARTIFACT_TEMPLATES,
+  ARTIFACT_SLOTS,
+} from "./lib/artifact-templates.js";
+import {
+  parseDesign,
+  parseScript,
+  parseStoryboard,
+  validateArtifactSet,
+} from "@a-company/atelier-schema";
+
+describe("artifact-templates self-validate", () => {
+  // Direct schema-level check that the shipped template strings parse and
+  // cross-validate clean — the load-bearing invariant the templates exist
+  // to honor (artifact-templates-self-validate aspect).
+
+  it("DESIGN_TEMPLATE parses cleanly via parseDesign", () => {
+    const design = parseDesign(ARTIFACT_TEMPLATES.design.content);
+    expect(design.audience.primary).toBeTruthy();
+    expect(design.voice.descriptors.length).toBeGreaterThanOrEqual(3);
+    expect(design.visual_register.palette.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("SCRIPT_TEMPLATE parses cleanly via parseScript and is narrated mode", () => {
+    const script = parseScript(ARTIFACT_TEMPLATES.script.content);
+    expect(script.mode).toBe("narrated");
+    if (script.mode !== "narrated") return; // type guard
+    expect(script.blocks.hook.length).toBeGreaterThanOrEqual(1);
+    expect(script.blocks.hook[0].id).toBe("hook-1");
+    expect(script.blocks.cta[0].id).toBe("cta-1");
+  });
+
+  it("STORYBOARD_TEMPLATE parses cleanly via parseStoryboard with matching beat ids", () => {
+    const sb = parseStoryboard(ARTIFACT_TEMPLATES.storyboard.content);
+    const ids = sb.beats.map((b) => b.id);
+    expect(ids).toContain("hook-1");
+    expect(ids).toContain("cta-1");
+  });
+
+  it("the triple validateArtifactSet's clean (ok:true, no errors)", () => {
+    const design = parseDesign(ARTIFACT_TEMPLATES.design.content);
+    const script = parseScript(ARTIFACT_TEMPLATES.script.content);
+    const storyboard = parseStoryboard(ARTIFACT_TEMPLATES.storyboard.content);
+    const result = validateArtifactSet({ design, script, storyboard });
+    expect(result.errors).toEqual([]);
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("atelier artifacts scaffold (CLI)", () => {
+  it("writes all three templates into a freshly created project dir", async () => {
+    // Note: dir does NOT exist yet — scaffold should mkdir it.
+    const projectDir = join(tmpDir, "artifacts-scaffold-fresh");
+    const res = await runArtifacts(["scaffold", projectDir], tmpDir);
+    expect(res.code).toBeUndefined();
+    expect(existsSync(projectDir)).toBe(true);
+    for (const slot of ARTIFACT_SLOTS) {
+      const f = join(projectDir, ARTIFACT_TEMPLATES[slot].filename);
+      expect(existsSync(f)).toBe(true);
+    }
+    // The freshly-written triple must validate clean via the schema-level
+    // validator — this is the contract that closes the author loop.
+    const design = parseDesign(readFileSync(join(projectDir, "DESIGN.md"), "utf-8"));
+    const script = parseScript(readFileSync(join(projectDir, "SCRIPT.md"), "utf-8"));
+    const storyboard = parseStoryboard(readFileSync(join(projectDir, "STORYBOARD.md"), "utf-8"));
+    const v = validateArtifactSet({ design, script, storyboard });
+    expect(v.errors).toEqual([]);
+    expect(v.ok).toBe(true);
+  });
+
+  it("--only design writes only DESIGN.md", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-only-design");
+    mkdirSync(projectDir, { recursive: true });
+    const res = await runArtifacts(["scaffold", projectDir, "--only", "design"], tmpDir);
+    expect(res.code).toBeUndefined();
+    expect(existsSync(join(projectDir, "DESIGN.md"))).toBe(true);
+    expect(existsSync(join(projectDir, "SCRIPT.md"))).toBe(false);
+    expect(existsSync(join(projectDir, "STORYBOARD.md"))).toBe(false);
+  });
+
+  it("--only design,storyboard writes both via comma-split", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-only-pair");
+    mkdirSync(projectDir, { recursive: true });
+    const res = await runArtifacts(
+      ["scaffold", projectDir, "--only", "design,storyboard"],
+      tmpDir,
+    );
+    expect(res.code).toBeUndefined();
+    expect(existsSync(join(projectDir, "DESIGN.md"))).toBe(true);
+    expect(existsSync(join(projectDir, "SCRIPT.md"))).toBe(false);
+    expect(existsSync(join(projectDir, "STORYBOARD.md"))).toBe(true);
+  });
+
+  it("refuses to overwrite existing files without --force (exit 1, files unchanged)", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-no-force");
+    mkdirSync(projectDir, { recursive: true });
+    const original = "ORIGINAL CONTENT — must survive a non-force scaffold.\n";
+    writeFileSync(join(projectDir, "DESIGN.md"), original, "utf-8");
+
+    const res = await runArtifacts(["scaffold", projectDir], tmpDir);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/refusing to overwrite/);
+    // Existing file untouched.
+    expect(readFileSync(join(projectDir, "DESIGN.md"), "utf-8")).toBe(original);
+    // The other two slots also must NOT have been written — the pre-flight
+    // overwrite check aborts the whole op atomically (advisor's point: list
+    // every clobber, write none).
+    expect(existsSync(join(projectDir, "SCRIPT.md"))).toBe(false);
+    expect(existsSync(join(projectDir, "STORYBOARD.md"))).toBe(false);
+  });
+
+  it("--force overwrites existing files", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-force");
+    mkdirSync(projectDir, { recursive: true });
+    writeFileSync(join(projectDir, "DESIGN.md"), "OLD\n", "utf-8");
+
+    const res = await runArtifacts(["scaffold", projectDir, "--force"], tmpDir);
+    expect(res.code).toBeUndefined();
+    // The new file is the template — verify by parsing it.
+    const design = parseDesign(readFileSync(join(projectDir, "DESIGN.md"), "utf-8"));
+    expect(design.audience).toBeDefined();
+  });
+
+  it("exits 1 when project-dir is a file rather than a directory", async () => {
+    const filePath = join(tmpDir, "artifacts-scaffold-is-file.txt");
+    writeFileSync(filePath, "not a dir\n", "utf-8");
+    const res = await runArtifacts(["scaffold", filePath], tmpDir);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/not a directory/);
+  });
+
+  it("--json emits { ok, created, skipped } on success", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-json");
+    const res = await runArtifacts(["scaffold", projectDir, "--json"], tmpDir);
+    expect(res.code).toBeUndefined();
+    const parsed = JSON.parse(res.stdout);
+    expect(parsed.ok).toBe(true);
+    expect(Array.isArray(parsed.created)).toBe(true);
+    expect(parsed.created.length).toBe(3);
+    expect(parsed.skipped).toEqual([]);
+  });
+
+  it("rejects unknown --only tokens with a clear message", async () => {
+    const projectDir = join(tmpDir, "artifacts-scaffold-bad-only");
+    const res = await runArtifacts(["scaffold", projectDir, "--only", "nope"], tmpDir);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/unknown --only value/);
+  });
+});
+
+// ─── learning-mode I/O ─────────────────────────────────────────────
+// Round-trip checks for the tiny YAML shape that `atelier init` writes.
+
+describe("learning-mode I/O", () => {
+  it("writeLearningMode → readLearningMode round-trips ambient", () => {
+    const dir = join(tmpDir, "learning-mode-ambient");
+    mkdirSync(dir, { recursive: true });
+    const path = writeLearningMode(dir, "ambient", {
+      chosenAt: new Date("2026-05-26T12:00:00.000Z"),
+    });
+    expect(path).toBe(learningModePath(dir));
+    const loaded = readLearningMode(dir);
+    expect(loaded?.mode).toBe("ambient");
+    expect(loaded?.chosen_at).toBe("2026-05-26T12:00:00.000Z");
+    expect(loaded?.version).toBe("1.0");
+  });
+
+  it("readLearningMode returns undefined when the file is absent", () => {
+    const dir = join(tmpDir, "learning-mode-absent");
+    mkdirSync(dir, { recursive: true });
+    expect(readLearningMode(dir)).toBeUndefined();
+  });
+
+  it("readLearningMode throws on an invalid mode value", () => {
+    const dir = join(tmpDir, "learning-mode-bad-mode");
+    mkdirSync(join(dir, ".atelier"), { recursive: true });
+    writeFileSync(
+      learningModePath(dir),
+      renderLearningModeYaml({
+        version: "1.0",
+        mode: "wat" as never,
+        chosen_at: "2026-05-26T00:00:00.000Z",
+      }),
+      "utf-8",
+    );
+    expect(() => readLearningMode(dir)).toThrow(/invalid mode/);
+  });
+});
+
+// ─── atelier init (CLI + runInit) ──────────────────────────────────
+// The top-level first-run setup — picks learning mode, writes
+// .atelier/learning-mode.yaml, creates the mind-map dir, scaffolds the
+// three artifacts, optionally git inits. Tests drive `runInit` directly
+// (no readline) and the Commander wrapper for one end-to-end smoke.
+
+function detectGit(): boolean {
+  try {
+    execFileSyncForTest("git", ["--version"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function runInitViaCli(
+  argv: string[],
+  cwd: string,
+): Promise<{ code?: number; stdout: string; stderr: string }> {
+  const program = new Command();
+  program.exitOverride();
+  initCommand(program);
+
+  const origExit = process.exit;
+  const origLog = console.log;
+  const origErr = console.error;
+  const origCwd = process.cwd;
+  let exitCode: number | undefined;
+  let stdout = "";
+  let stderr = "";
+
+  process.cwd = () => cwd;
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.log = (msg?: unknown) => { stdout += String(msg) + "\n"; };
+  console.error = (msg?: unknown) => { stderr += String(msg) + "\n"; };
+
+  try {
+    await program.parseAsync(["node", "atelier", "init", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code?.startsWith("commander.")) {
+        exitCode = cErr.exitCode ?? 1;
+      } else {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.log = origLog;
+    console.error = origErr;
+    process.cwd = origCwd;
+  }
+  return { code: exitCode, stdout, stderr };
+}
+
+describe("parseModeAnswer", () => {
+  it("accepts 1 / 2 / ambient / explicit, case-insensitive", () => {
+    expect(parseModeAnswer("1")).toBe("ambient");
+    expect(parseModeAnswer("2")).toBe("explicit");
+    expect(parseModeAnswer("ambient")).toBe("ambient");
+    expect(parseModeAnswer("AMBIENT")).toBe("ambient");
+    expect(parseModeAnswer(" explicit ")).toBe("explicit");
+  });
+
+  it("returns undefined for anything else", () => {
+    expect(parseModeAnswer("")).toBeUndefined();
+    expect(parseModeAnswer("yes")).toBeUndefined();
+    expect(parseModeAnswer("3")).toBeUndefined();
+  });
+});
+
+describe("atelier init (runInit)", () => {
+  it("writes learning-mode + mind-map + artifacts in a fresh dir (ambient, --no-git)", async () => {
+    const dir = join(tmpDir, "init-fresh-ambient");
+    const res = await runInit({
+      projectDir: dir,
+      mode: "ambient",
+      git: false,
+      scaffold: true,
+      force: false,
+      json: false,
+    });
+    expect(res.ok).toBe(true);
+    expect(res.mode).toBe("ambient");
+    expect(existsSync(dir)).toBe(true);
+    // learning-mode.yaml
+    expect(existsSync(res.learningModeFile)).toBe(true);
+    const lm = readLearningMode(dir);
+    expect(lm?.mode).toBe("ambient");
+    // mind-map dir + README
+    expect(existsSync(res.mindMapDir)).toBe(true);
+    expect(existsSync(join(res.mindMapDir, "README.md"))).toBe(true);
+    // Artifacts
+    expect(existsSync(join(dir, "DESIGN.md"))).toBe(true);
+    expect(existsSync(join(dir, "SCRIPT.md"))).toBe(true);
+    expect(existsSync(join(dir, "STORYBOARD.md"))).toBe(true);
+    expect(res.scaffolded.length).toBe(3);
+    expect(res.gitInitialized).toBe(false);
+    expect(res.alreadyInRepo).toBe(false);
+  });
+
+  it("--mode explicit lands mode=explicit on disk", async () => {
+    const dir = join(tmpDir, "init-explicit");
+    const res = await runInit({
+      projectDir: dir,
+      mode: "explicit",
+      git: false,
+      scaffold: true,
+      force: false,
+      json: false,
+    });
+    expect(res.mode).toBe("explicit");
+    expect(readLearningMode(dir)?.mode).toBe("explicit");
+  });
+
+  it("--no-scaffold skips DESIGN/SCRIPT/STORYBOARD but still writes learning-mode + mind-map", async () => {
+    const dir = join(tmpDir, "init-no-scaffold");
+    const res = await runInit({
+      projectDir: dir,
+      mode: "ambient",
+      git: false,
+      scaffold: false,
+      force: false,
+      json: false,
+    });
+    expect(res.scaffolded).toEqual([]);
+    expect(existsSync(join(dir, "DESIGN.md"))).toBe(false);
+    expect(existsSync(join(dir, "SCRIPT.md"))).toBe(false);
+    expect(existsSync(join(dir, "STORYBOARD.md"))).toBe(false);
+    expect(existsSync(res.learningModeFile)).toBe(true);
+    expect(existsSync(join(res.mindMapDir, "README.md"))).toBe(true);
+  });
+
+  it("exits with a file-not-dir error when project-dir is a file", async () => {
+    const filePath = join(tmpDir, "init-not-a-dir.txt");
+    writeFileSync(filePath, "not a dir\n", "utf-8");
+    await expect(
+      runInit({
+        projectDir: filePath,
+        mode: "ambient",
+        git: false,
+        scaffold: false,
+        force: false,
+        json: false,
+      }),
+    ).rejects.toThrow(/not a directory/);
+  });
+
+  it("rejects bad --mode before any fs writes", async () => {
+    const dir = join(tmpDir, "init-bad-mode");
+    await expect(
+      runInit({
+        projectDir: dir,
+        mode: "loose",
+        git: false,
+        scaffold: false,
+        force: false,
+        json: false,
+      }),
+    ).rejects.toThrow(/invalid --mode/);
+    // Critically: NO directory was created — validation runs first.
+    expect(existsSync(dir)).toBe(false);
+  });
+
+  it("re-running init on an already-initialized dir succeeds (idempotent)", async () => {
+    const dir = join(tmpDir, "init-rerun");
+    // First pass.
+    const r1 = await runInit({
+      projectDir: dir,
+      mode: "ambient",
+      git: false,
+      scaffold: true,
+      force: false,
+      json: false,
+    });
+    expect(r1.scaffolded.length).toBe(3);
+    const firstReadme = readFileSync(join(r1.mindMapDir, "README.md"), "utf-8");
+    const firstTimestamp = readLearningMode(dir)!.chosen_at;
+    // Hand-edit the README — should survive the re-init.
+    const editedReadme = "# CUSTOM README\nDo not clobber.\n";
+    writeFileSync(join(r1.mindMapDir, "README.md"), editedReadme, "utf-8");
+    // Hand-edit DESIGN.md — refuse-to-overwrite path means it survives too.
+    writeFileSync(join(dir, "DESIGN.md"), "EDITED\n", "utf-8");
+
+    // Force a different timestamp on re-run.
+    await new Promise((r) => setTimeout(r, 10));
+    const r2 = await runInit({
+      projectDir: dir,
+      mode: "explicit",
+      git: false,
+      scaffold: true,
+      force: false,
+      json: false,
+    });
+    expect(r2.ok).toBe(true);
+    expect(r2.mode).toBe("explicit");
+    // learning-mode was refreshed with the new mode + a new timestamp.
+    const secondTimestamp = readLearningMode(dir)!.chosen_at;
+    expect(secondTimestamp).not.toBe(firstTimestamp);
+    expect(readLearningMode(dir)?.mode).toBe("explicit");
+    // Mind-map README survives.
+    expect(readFileSync(join(r2.mindMapDir, "README.md"), "utf-8")).toBe(editedReadme);
+    // DESIGN.md edit survives — scaffold step was a soft-skip.
+    expect(readFileSync(join(dir, "DESIGN.md"), "utf-8")).toBe("EDITED\n");
+    expect(r2.scaffolded).toEqual([]);
+    expect(r2.notes.some((n) => /artifacts already present/i.test(n))).toBe(true);
+    // unused — keeps the assignment from being flagged as dead.
+    expect(firstReadme.length).toBeGreaterThan(0);
+  });
+
+  it("CLI --json emits the documented payload shape", async () => {
+    const dir = join(tmpDir, "init-json");
+    const res = await runInitViaCli(
+      [dir, "--mode", "ambient", "--no-git", "--json"],
+      tmpDir,
+    );
+    expect(res.code).toBeUndefined();
+    const parsed = JSON.parse(res.stdout);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.projectDir).toBe(resolve(dir));
+    expect(parsed.mode).toBe("ambient");
+    expect(parsed.learningModeFile).toBe(resolve(dir, ".atelier/learning-mode.yaml"));
+    expect(parsed.mindMapDir).toBe(resolve(dir, ".atelier/mind-map"));
+    expect(Array.isArray(parsed.scaffolded)).toBe(true);
+    expect(parsed.scaffolded.length).toBe(3);
+    expect(parsed.gitInitialized).toBe(false);
+    expect(parsed.alreadyInRepo).toBe(false);
+  });
+
+  it("CLI exits 1 on bad --mode and reports the error", async () => {
+    const dir = join(tmpDir, "init-cli-bad-mode");
+    const res = await runInitViaCli([dir, "--mode", "loose", "--no-git"], tmpDir);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/invalid --mode/);
+    expect(existsSync(dir)).toBe(false);
+  });
+
+  it("CLI exits 1 when --json is set without --mode (no-prompt scripted invariant)", async () => {
+    const dir = join(tmpDir, "init-cli-json-no-mode");
+    const res = await runInitViaCli([dir, "--json", "--no-git", "--no-scaffold"], tmpDir);
+    expect(res.code).toBe(1);
+  });
+
+  it.runIf(detectGit())(
+    "runs `git init` in a fresh dir when --no-git is absent (gated on system git)",
+    async () => {
+      const dir = join(tmpDir, "init-git");
+      const res = await runInit({
+        projectDir: dir,
+        mode: "ambient",
+        git: true,
+        scaffold: false,
+        force: false,
+        json: false,
+      });
+      expect(res.gitInitialized).toBe(true);
+      expect(res.alreadyInRepo).toBe(false);
+      expect(existsSync(join(dir, ".git"))).toBe(true);
+      expect(existsSync(join(dir, ".gitignore"))).toBe(true);
+      // Re-running detects "already in repo" instead of re-initing.
+      const res2 = await runInit({
+        projectDir: dir,
+        mode: "ambient",
+        git: true,
+        scaffold: false,
+        force: false,
+        json: false,
+      });
+      expect(res2.gitInitialized).toBe(false);
+      expect(res2.alreadyInRepo).toBe(true);
+      expect(isInsideGitRepo(dir)).toBe(true);
+    },
+  );
+});
+
+// ─── Workspace IO ───────────────────────────────────────────────────
+// Tests for createWorkspace + findWorkspace + listProjects + read/write +
+// resolveLearningMode + studioContext. Workspace is the post-core-build
+// ergonomics layer — a directory holding multiple Projects + shared
+// creator-level state.
+
+describe("createWorkspace", () => {
+  it("creates workspace.atelier + .atelier/ tree with learning-mode + mind-map + recipes", () => {
+    const dir = join(tmpDir, "ws-create-fresh");
+    const { manifest } = createWorkspace(dir, {
+      mode: "ambient",
+      createdAt: new Date("2026-05-26T12:00:00.000Z"),
+    });
+    expect(manifest.version).toBe("1.0");
+    expect(manifest.default_mode).toBe("ambient");
+    expect(manifest.name).toBe("ws-create-fresh");
+    expect(manifest.created).toBe("2026-05-26T12:00:00.000Z");
+    // Files on disk.
+    expect(existsSync(join(dir, WORKSPACE_MANIFEST_FILENAME))).toBe(true);
+    expect(existsSync(join(dir, ".atelier", "learning-mode.yaml"))).toBe(true);
+    expect(existsSync(join(dir, ".atelier", "mind-map"))).toBe(true);
+    expect(existsSync(join(dir, ".atelier", "mind-map", "README.md"))).toBe(true);
+    expect(existsSync(join(dir, ".atelier", "recipes"))).toBe(true);
+    // Manifest round-trips via reader.
+    const read = readWorkspace(dir);
+    expect(read.name).toBe(manifest.name);
+    expect(read.default_mode).toBe("ambient");
+  });
+
+  it("honors name + description options", () => {
+    const dir = join(tmpDir, "ws-create-named");
+    const { manifest } = createWorkspace(dir, {
+      mode: "explicit",
+      name: "Pretty Name",
+      description: "a creator studio",
+    });
+    expect(manifest.name).toBe("Pretty Name");
+    expect(manifest.description).toBe("a creator studio");
+    const read = readWorkspace(dir);
+    expect(read.name).toBe("Pretty Name");
+    expect(read.description).toBe("a creator studio");
+  });
+
+  it("refuses to overwrite an existing workspace without force", () => {
+    const dir = join(tmpDir, "ws-create-no-clobber");
+    createWorkspace(dir, { mode: "ambient" });
+    expect(() => createWorkspace(dir, { mode: "explicit" })).toThrow(/refusing to overwrite/);
+  });
+
+  it("force overwrites an existing workspace", () => {
+    const dir = join(tmpDir, "ws-create-forced");
+    createWorkspace(dir, { mode: "ambient" });
+    const { manifest: m2 } = createWorkspace(dir, { mode: "explicit", force: true });
+    expect(m2.default_mode).toBe("explicit");
+    expect(readWorkspace(dir).default_mode).toBe("explicit");
+  });
+});
+
+describe("findWorkspace", () => {
+  it("returns null when no workspace.atelier is found up to the filesystem root", () => {
+    // Use a deeply-nested fresh tmp dir that we know has no workspace
+    // anywhere above it (tmpdir-based testing).
+    const dir = join(tmpDir, "ws-find-none", "deep", "deeper");
+    mkdirSync(dir, { recursive: true });
+    const found = findWorkspace(dir);
+    expect(found).toBeNull();
+  });
+
+  it("finds a workspace from a deeply-nested cwd", () => {
+    const wsDir = join(tmpDir, "ws-find-deep");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const nested = join(wsDir, "a", "b", "c");
+    mkdirSync(nested, { recursive: true });
+    const found = findWorkspace(nested);
+    expect(found).not.toBeNull();
+    expect(found?.workspaceDir).toBe(resolve(wsDir));
+    expect(found?.manifest.name).toBe("ws-find-deep");
+  });
+
+  it("finds the workspace from the workspace root itself", () => {
+    const wsDir = join(tmpDir, "ws-find-root");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const found = findWorkspace(wsDir);
+    expect(found?.workspaceDir).toBe(resolve(wsDir));
+  });
+});
+
+describe("listProjects", () => {
+  it("returns sorted basenames of dirs containing project.atelier", () => {
+    const wsDir = join(tmpDir, "ws-list-projects");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "beta-clip"), { recursive: true });
+    writeFileSync(join(wsDir, "beta-clip", "project.atelier"), "{}\n", "utf-8");
+    mkdirSync(join(wsDir, "alpha-clip"), { recursive: true });
+    writeFileSync(join(wsDir, "alpha-clip", "project.atelier"), "{}\n", "utf-8");
+    // A bare dir without project.atelier — should NOT show up.
+    mkdirSync(join(wsDir, "scratch"), { recursive: true });
+    const projects = listProjects(wsDir);
+    expect(projects).toEqual(["alpha-clip", "beta-clip"]);
+  });
+
+  it("returns an empty list when the workspace has no projects", () => {
+    const wsDir = join(tmpDir, "ws-list-empty");
+    createWorkspace(wsDir, { mode: "ambient" });
+    expect(listProjects(wsDir)).toEqual([]);
+  });
+});
+
+describe("isProjectDir", () => {
+  it("is true iff project.atelier exists at the dir root", () => {
+    const dir = join(tmpDir, "is-project");
+    mkdirSync(dir, { recursive: true });
+    expect(isProjectDir(dir)).toBe(false);
+    writeFileSync(join(dir, "project.atelier"), "{}\n", "utf-8");
+    expect(isProjectDir(dir)).toBe(true);
+  });
+});
+
+describe("resolveLearningMode", () => {
+  it("returns source=default + ambient when no workspace and no project", () => {
+    const dir = join(tmpDir, "resolve-mode-default");
+    mkdirSync(dir, { recursive: true });
+    const r = resolveLearningMode(dir);
+    expect(r.mode).toBe("ambient");
+    expect(r.source).toBe("default");
+  });
+
+  it("returns source=workspace from the workspace's .atelier/learning-mode.yaml", () => {
+    const wsDir = join(tmpDir, "resolve-mode-ws");
+    createWorkspace(wsDir, { mode: "explicit" });
+    expect(resolveLearningMode(wsDir).source).toBe("workspace");
+    expect(resolveLearningMode(wsDir).mode).toBe("explicit");
+    // Nested cwd also resolves to workspace mode.
+    const nested = join(wsDir, "a-project");
+    mkdirSync(nested, { recursive: true });
+    const r = resolveLearningMode(nested);
+    expect(r.source).toBe("workspace");
+    expect(r.mode).toBe("explicit");
+  });
+
+  it("returns source=project when cwd is in a project dir outside any workspace", () => {
+    const projDir = join(tmpDir, "resolve-mode-project");
+    mkdirSync(projDir, { recursive: true });
+    writeLearningMode(projDir, "explicit");
+    const r = resolveLearningMode(projDir);
+    expect(r.source).toBe("project");
+    expect(r.mode).toBe("explicit");
+  });
+});
+
+describe("studioContext", () => {
+  it("returns kind=empty for a fresh dir outside any workspace or project", () => {
+    const dir = join(tmpDir, "studio-ctx-empty");
+    mkdirSync(dir, { recursive: true });
+    const ctx = studioContext(dir);
+    expect(ctx.kind).toBe("empty");
+  });
+
+  it("returns kind=workspace at a workspace root", () => {
+    const wsDir = join(tmpDir, "studio-ctx-ws");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const ctx = studioContext(wsDir);
+    expect(ctx.kind).toBe("workspace");
+    expect(ctx.workspaceDir).toBe(resolve(wsDir));
+    expect(ctx.projects).toEqual([]);
+  });
+
+  it("returns kind=project when cwd is a project subdir of a workspace", () => {
+    const wsDir = join(tmpDir, "studio-ctx-ws-proj");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const projDir = join(wsDir, "clip-1");
+    mkdirSync(projDir, { recursive: true });
+    writeFileSync(join(projDir, "project.atelier"), "{}\n", "utf-8");
+    const ctx = studioContext(projDir);
+    expect(ctx.kind).toBe("project");
+    expect(ctx.projectDir).toBe(resolve(projDir));
+    expect(ctx.workspaceDir).toBe(resolve(wsDir));
+  });
+
+  it("returns kind=project for a standalone project (legacy, no workspace)", () => {
+    const projDir = join(tmpDir, "studio-ctx-legacy-proj");
+    mkdirSync(projDir, { recursive: true });
+    writeFileSync(join(projDir, "project.atelier"), "{}\n", "utf-8");
+    const ctx = studioContext(projDir);
+    expect(ctx.kind).toBe("project");
+    expect(ctx.projectDir).toBe(resolve(projDir));
+    expect(ctx.workspaceDir).toBeUndefined();
+  });
+
+  it("returns kind=workspace with the project list when projects exist", () => {
+    const wsDir = join(tmpDir, "studio-ctx-ws-multi");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "p1"), { recursive: true });
+    writeFileSync(join(wsDir, "p1", "project.atelier"), "{}\n", "utf-8");
+    mkdirSync(join(wsDir, "p2"), { recursive: true });
+    writeFileSync(join(wsDir, "p2", "project.atelier"), "{}\n", "utf-8");
+    const ctx = studioContext(wsDir);
+    expect(ctx.kind).toBe("workspace");
+    expect(ctx.projects).toEqual(["p1", "p2"]);
+  });
+});
+
+// ─── atelier init inside a workspace ────────────────────────────────
+// The wrapper does workspace-relative path resolution AND mode inheritance
+// when cwd is inside a workspace. runInit itself is workspace-unaware;
+// we drive the Commander wrapper for these tests.
+
+describe("atelier init (workspace-aware via CLI)", () => {
+  it("resolves <project-dir> relative to the workspace root when cwd is inside the workspace", async () => {
+    const wsDir = join(tmpDir, "init-ws-relative");
+    createWorkspace(wsDir, { mode: "explicit" });
+    const nested = join(wsDir, "scratch");
+    mkdirSync(nested, { recursive: true });
+    // Provide --mode so the prompt isn't reached; relative path should
+    // resolve under wsDir, not under nested cwd.
+    const res = await runInitViaCli(
+      ["my-clip", "--mode", "ambient", "--no-git", "--no-scaffold"],
+      nested,
+    );
+    expect(res.code).toBeUndefined();
+    expect(existsSync(join(wsDir, "my-clip"))).toBe(true);
+    expect(existsSync(join(nested, "my-clip"))).toBe(false);
+    expect(existsSync(join(wsDir, "my-clip", ".atelier", "learning-mode.yaml"))).toBe(true);
+  });
+
+  it("--no-workspace-relative resolves relative to cwd instead of workspace root", async () => {
+    const wsDir = join(tmpDir, "init-ws-relative-opt-out");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const nested = join(wsDir, "scratch2");
+    mkdirSync(nested, { recursive: true });
+    const res = await runInitViaCli(
+      ["other-clip", "--mode", "ambient", "--no-git", "--no-scaffold", "--no-workspace-relative"],
+      nested,
+    );
+    expect(res.code).toBeUndefined();
+    expect(existsSync(join(nested, "other-clip"))).toBe(true);
+    expect(existsSync(join(wsDir, "other-clip"))).toBe(false);
+  });
+
+  it("inherits the workspace's default_mode when --mode is absent", async () => {
+    const wsDir = join(tmpDir, "init-ws-inherit-mode");
+    createWorkspace(wsDir, { mode: "explicit" });
+    // No --mode flag — wrapper should inherit explicit from workspace.
+    const res = await runInitViaCli(
+      ["clip-a", "--no-git", "--no-scaffold", "--json"],
+      wsDir,
+    );
+    expect(res.code).toBeUndefined();
+    const payload = JSON.parse(res.stdout);
+    expect(payload.mode).toBe("explicit");
+    expect(payload.projectDir).toBe(resolve(join(wsDir, "clip-a")));
+    // Inheritance note surfaced.
+    expect(payload.notes.some((n: string) => /inherited from workspace/i.test(n))).toBe(true);
+  });
+
+  it("refreshes the workspace manifest's projects[] from on-disk truth after init", async () => {
+    const wsDir = join(tmpDir, "init-ws-manifest-refresh");
+    createWorkspace(wsDir, { mode: "ambient" });
+    // Pre-seed a project (project.atelier is the manifest's discovery
+    // signal; atelier init doesn't drop one itself today). After running
+    // init on a NEW project, the manifest's projects[] should reflect the
+    // pre-existing one — i.e. the refresh ran.
+    mkdirSync(join(wsDir, "pre-existing"), { recursive: true });
+    writeFileSync(join(wsDir, "pre-existing", "project.atelier"), "{}\n", "utf-8");
+    const res = await runInitViaCli(
+      ["new-clip", "--no-git", "--no-scaffold"],
+      wsDir,
+    );
+    expect(res.code).toBeUndefined();
+    const m = readWorkspace(wsDir);
+    expect(m.projects ?? []).toContain("pre-existing");
+  });
+
+  it("explicit --mode wins over the workspace's default_mode", async () => {
+    const wsDir = join(tmpDir, "init-ws-explicit-override");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const res = await runInitViaCli(
+      ["override-clip", "--mode", "explicit", "--no-git", "--no-scaffold", "--json"],
+      wsDir,
+    );
+    expect(res.code).toBeUndefined();
+    const payload = JSON.parse(res.stdout);
+    expect(payload.mode).toBe("explicit");
+    // Inheritance note absent — creator explicitly chose.
+    expect(payload.notes.some((n: string) => /inherited from workspace/i.test(n))).toBe(false);
+  });
+
+  it("outside a workspace, --mode is still required for --json (current behavior unchanged)", async () => {
+    const dir = join(tmpDir, "init-outside-ws-json");
+    mkdirSync(dir, { recursive: true });
+    // No workspace anywhere above tmpDir.
+    const res = await runInitViaCli(
+      ["clip", "--json", "--no-git", "--no-scaffold"],
+      dir,
+    );
+    expect(res.code).toBe(1);
+  });
+});
+
+// ─── Phase 1: workspace-level active project ────────────────────────
+//
+// Active-project IO is the file-source-of-truth for "which Project does
+// a workspace-scoped operation target". Both the studio UI and the agent
+// team read + write the same file (no in-memory state to drift from).
+// These tests exercise the pure helpers AND the HTTP endpoint handlers
+// (the handlers are extracted as pure functions so we don't need to boot
+// a Vite dev server to verify them).
+
+describe("isValidProjectName", () => {
+  it("accepts single-segment alphanumeric / dash / underscore names", () => {
+    expect(isValidProjectName("clip-1")).toBe(true);
+    expect(isValidProjectName("clip_1")).toBe(true);
+    expect(isValidProjectName("ClipA")).toBe(true);
+    expect(isValidProjectName("my-project.draft")).toBe(true); // trailing-dot segment OK
+  });
+
+  it("rejects empty / whitespace / non-string", () => {
+    expect(isValidProjectName("")).toBe(false);
+    expect(isValidProjectName(" ")).toBe(false);
+    expect(isValidProjectName("  foo  ")).toBe(false);
+    expect(isValidProjectName(undefined)).toBe(false);
+    expect(isValidProjectName(null)).toBe(false);
+    expect(isValidProjectName(42)).toBe(false);
+  });
+
+  it("rejects path separators in either direction", () => {
+    expect(isValidProjectName("a/b")).toBe(false);
+    expect(isValidProjectName("a\\b")).toBe(false);
+    expect(isValidProjectName("../escape")).toBe(false);
+  });
+
+  it("rejects leading-dot names (dotdirs reserved for .atelier etc.)", () => {
+    expect(isValidProjectName(".hidden")).toBe(false);
+    expect(isValidProjectName(".")).toBe(false);
+    expect(isValidProjectName("..")).toBe(false);
+  });
+});
+
+describe("active-project IO (read / set / clear)", () => {
+  it("readActiveProject returns null when the file is missing", () => {
+    const wsDir = join(tmpDir, "active-missing");
+    createWorkspace(wsDir, { mode: "ambient" });
+    expect(readActiveProject(wsDir)).toBeNull();
+  });
+
+  it("setActiveProject + readActiveProject round-trip", () => {
+    const wsDir = join(tmpDir, "active-roundtrip");
+    createWorkspace(wsDir, { mode: "ambient" });
+    // Seed a project so the existence-check passes.
+    mkdirSync(join(wsDir, "clip-1"), { recursive: true });
+    writeFileSync(join(wsDir, "clip-1", "project.atelier"), "{}\n", "utf-8");
+
+    const setAt = new Date("2026-05-27T10:00:00.000Z");
+    const written = setActiveProject(wsDir, "clip-1", { setAt });
+    expect(written.name).toBe("clip-1");
+    expect(written.set_at).toBe("2026-05-27T10:00:00.000Z");
+
+    // File on disk at the canonical path.
+    const path = activeProjectPath(wsDir);
+    expect(path).toBe(join(resolve(wsDir), ".atelier", ACTIVE_PROJECT_FILENAME));
+    expect(existsSync(path)).toBe(true);
+
+    const read = readActiveProject(wsDir);
+    expect(read).not.toBeNull();
+    expect(read!.name).toBe("clip-1");
+    expect(read!.set_at).toBe("2026-05-27T10:00:00.000Z");
+  });
+
+  it("setActiveProject throws when the named project doesn't exist", () => {
+    const wsDir = join(tmpDir, "active-no-project");
+    createWorkspace(wsDir, { mode: "ambient" });
+    expect(() => setActiveProject(wsDir, "missing")).toThrow(/does not exist/);
+  });
+
+  it("setActiveProject throws on an invalid name BEFORE any path join", () => {
+    const wsDir = join(tmpDir, "active-bad-name");
+    createWorkspace(wsDir, { mode: "ambient" });
+    expect(() => setActiveProject(wsDir, "../escape")).toThrow(/invalid project name/);
+    expect(() => setActiveProject(wsDir, ".hidden")).toThrow(/invalid project name/);
+    expect(() => setActiveProject(wsDir, "")).toThrow(/invalid project name/);
+  });
+
+  it("readActiveProject returns null for a malformed file (missing required fields)", () => {
+    const wsDir = join(tmpDir, "active-malformed");
+    createWorkspace(wsDir, { mode: "ambient" });
+    // Hand-write a broken pointer — no `name` field.
+    const path = activeProjectPath(wsDir);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, `version: '1.0'\nset_at: '2026-05-27T10:00:00.000Z'\n`, "utf-8");
+    expect(readActiveProject(wsDir)).toBeNull();
+  });
+
+  it("readActiveProject still returns the entry when the pointed-at project no longer exists (stale)", () => {
+    const wsDir = join(tmpDir, "active-stale");
+    createWorkspace(wsDir, { mode: "ambient" });
+    // Seed + point at a project, then delete it from disk.
+    mkdirSync(join(wsDir, "ghost"), { recursive: true });
+    writeFileSync(join(wsDir, "ghost", "project.atelier"), "{}\n", "utf-8");
+    setActiveProject(wsDir, "ghost");
+    rmSync(join(wsDir, "ghost"), { recursive: true, force: true });
+
+    // The pure read still returns the entry — staleness detection lives
+    // at the HTTP endpoint layer (separate concern).
+    const read = readActiveProject(wsDir);
+    expect(read).not.toBeNull();
+    expect(read!.name).toBe("ghost");
+  });
+
+  it("clearActiveProject removes the file when present", () => {
+    const wsDir = join(tmpDir, "active-clear-present");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "clip"), { recursive: true });
+    writeFileSync(join(wsDir, "clip", "project.atelier"), "{}\n", "utf-8");
+    setActiveProject(wsDir, "clip");
+    expect(existsSync(activeProjectPath(wsDir))).toBe(true);
+    expect(clearActiveProject(wsDir)).toBe(true);
+    expect(existsSync(activeProjectPath(wsDir))).toBe(false);
+  });
+
+  it("clearActiveProject is a no-op when the file is absent", () => {
+    const wsDir = join(tmpDir, "active-clear-absent");
+    createWorkspace(wsDir, { mode: "ambient" });
+    expect(clearActiveProject(wsDir)).toBe(false);
+  });
+});
+
+describe("buildWorkspaceInfo (GET /api/workspace)", () => {
+  it("returns 404 when cwd is outside any workspace", () => {
+    const dir = join(tmpDir, "ws-info-empty", "deep");
+    mkdirSync(dir, { recursive: true });
+    const r = buildWorkspaceInfo(dir);
+    expect(r.status).toBe(404);
+  });
+
+  it("returns workspace info + projects[] with feature flags", () => {
+    const wsDir = join(tmpDir, "ws-info-populated");
+    createWorkspace(wsDir, { mode: "ambient", name: "ws-info" });
+    mkdirSync(join(wsDir, "clip-a"), { recursive: true });
+    writeFileSync(join(wsDir, "clip-a", "project.atelier"), "{}\n", "utf-8");
+    writeFileSync(join(wsDir, "clip-a", "DESIGN.md"), "# d\n", "utf-8");
+    // Add a sibling .atelier doc so hasOtherAtelierDocs flips true.
+    writeFileSync(join(wsDir, "clip-a", "scene.atelier"), "x\n", "utf-8");
+
+    const r = buildWorkspaceInfo(wsDir);
+    expect(r.status).toBe(200);
+    const body = r.body as { name: string; default_mode: string; workspaceDir: string; projects: Array<Record<string, unknown>> };
+    expect(body.name).toBe("ws-info");
+    expect(body.default_mode).toBe("ambient");
+    expect(body.workspaceDir).toBe(resolve(wsDir));
+    expect(body.projects).toHaveLength(1);
+    expect(body.projects[0].name).toBe("clip-a");
+    expect(body.projects[0].hasAtelierDoc).toBe(true);
+    expect(body.projects[0].hasDesign).toBe(true);
+    expect(body.projects[0].hasScript).toBe(false);
+    expect(body.projects[0].hasStoryboard).toBe(false);
+    expect(body.projects[0].hasOtherAtelierDocs).toBe(true);
+  });
+});
+
+describe("buildActiveProject (GET /api/workspace/active)", () => {
+  it("returns 404 outside a workspace", () => {
+    const dir = join(tmpDir, "active-info-empty", "deep");
+    mkdirSync(dir, { recursive: true });
+    expect(buildActiveProject(dir).status).toBe(404);
+  });
+
+  it("returns null body when no active.yaml exists", () => {
+    const wsDir = join(tmpDir, "active-info-none");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = buildActiveProject(wsDir);
+    expect(r.status).toBe(200);
+    expect(r.body).toBeNull();
+  });
+
+  it("returns the entry when set and project still exists", () => {
+    const wsDir = join(tmpDir, "active-info-fresh");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "p"), { recursive: true });
+    writeFileSync(join(wsDir, "p", "project.atelier"), "{}\n", "utf-8");
+    setActiveProject(wsDir, "p");
+    const r = buildActiveProject(wsDir);
+    expect(r.status).toBe(200);
+    const body = r.body as { name: string; stale?: boolean };
+    expect(body.name).toBe("p");
+    expect(body.stale).toBeUndefined();
+  });
+
+  it("marks the entry stale when the project has been deleted", () => {
+    const wsDir = join(tmpDir, "active-info-stale");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "doomed"), { recursive: true });
+    writeFileSync(join(wsDir, "doomed", "project.atelier"), "{}\n", "utf-8");
+    setActiveProject(wsDir, "doomed");
+    rmSync(join(wsDir, "doomed"), { recursive: true, force: true });
+    const r = buildActiveProject(wsDir);
+    expect(r.status).toBe(200);
+    const body = r.body as { name: string; stale?: boolean };
+    expect(body.name).toBe("doomed");
+    expect(body.stale).toBe(true);
+  });
+});
+
+describe("handleSetActiveProject (POST /api/workspace/active)", () => {
+  it("400s on invalid name", () => {
+    const wsDir = join(tmpDir, "active-set-bad-name");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = handleSetActiveProject(wsDir, { name: "../escape" });
+    expect(r.status).toBe(400);
+  });
+
+  it("400s when the project doesn't exist", () => {
+    const wsDir = join(tmpDir, "active-set-missing");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = handleSetActiveProject(wsDir, { name: "ghost" });
+    expect(r.status).toBe(400);
+    const body = r.body as { error: string };
+    expect(body.error).toMatch(/does not exist/);
+  });
+
+  it("200s and persists the pointer on a valid name + extant project", () => {
+    const wsDir = join(tmpDir, "active-set-ok");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "p"), { recursive: true });
+    writeFileSync(join(wsDir, "p", "project.atelier"), "{}\n", "utf-8");
+    const r = handleSetActiveProject(wsDir, { name: "p" });
+    expect(r.status).toBe(200);
+    expect(readActiveProject(wsDir)?.name).toBe("p");
+  });
+});
+
+describe("handleClearActiveProject (DELETE /api/workspace/active)", () => {
+  it("returns ok=true regardless of whether a file was actually removed", () => {
+    const wsDir = join(tmpDir, "active-clear");
+    createWorkspace(wsDir, { mode: "ambient" });
+    // First clear — nothing to remove.
+    let r = handleClearActiveProject(wsDir);
+    expect(r.status).toBe(200);
+    expect((r.body as { ok: boolean; removed: boolean }).ok).toBe(true);
+    expect((r.body as { removed: boolean }).removed).toBe(false);
+    // Now seed + set + clear.
+    mkdirSync(join(wsDir, "p"), { recursive: true });
+    writeFileSync(join(wsDir, "p", "project.atelier"), "{}\n", "utf-8");
+    setActiveProject(wsDir, "p");
+    r = handleClearActiveProject(wsDir);
+    expect((r.body as { removed: boolean }).removed).toBe(true);
+    expect(existsSync(activeProjectPath(wsDir))).toBe(false);
+  });
+});
+
+describe("handleCreateProject (POST /api/workspace/projects)", () => {
+  it("400s on invalid name", async () => {
+    const wsDir = join(tmpDir, "create-bad-name");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = await handleCreateProject(wsDir, { name: "../escape" });
+    expect(r.status).toBe(400);
+  });
+
+  it("400s on invalid mode", async () => {
+    const wsDir = join(tmpDir, "create-bad-mode");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = await handleCreateProject(wsDir, { name: "ok", mode: "nope" });
+    expect(r.status).toBe(400);
+  });
+
+  it("creates a project (in-process, no subprocess) and returns 201 with the entry", async () => {
+    const wsDir = join(tmpDir, "create-ok");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = await handleCreateProject(wsDir, { name: "new-clip" });
+    expect(r.status).toBe(201);
+    const body = r.body as { project: { name: string; hasDesign: boolean; hasScript: boolean; hasStoryboard: boolean }; active: unknown };
+    expect(body.project.name).toBe("new-clip");
+    // Scaffolded by default — DESIGN/SCRIPT/STORYBOARD should be present.
+    expect(body.project.hasDesign).toBe(true);
+    expect(body.project.hasScript).toBe(true);
+    expect(body.project.hasStoryboard).toBe(true);
+    // active.yaml NOT set unless activate: true.
+    expect(body.active).toBeNull();
+    expect(readActiveProject(wsDir)).toBeNull();
+  });
+
+  it("activates the new project when { activate: true }", async () => {
+    const wsDir = join(tmpDir, "create-activate");
+    createWorkspace(wsDir, { mode: "ambient" });
+    const r = await handleCreateProject(wsDir, { name: "auto-active", activate: true });
+    expect(r.status).toBe(201);
+    const body = r.body as { active: { name: string } | null };
+    expect(body.active?.name).toBe("auto-active");
+    expect(readActiveProject(wsDir)?.name).toBe("auto-active");
+  });
+
+  it("400s when a project with the same name already exists", async () => {
+    const wsDir = join(tmpDir, "create-dup");
+    createWorkspace(wsDir, { mode: "ambient" });
+    mkdirSync(join(wsDir, "dup"), { recursive: true });
+    writeFileSync(join(wsDir, "dup", "project.atelier"), "{}\n", "utf-8");
+    const r = await handleCreateProject(wsDir, { name: "dup" });
+    expect(r.status).toBe(400);
+  });
+
+  it("refreshes the workspace manifest's projects[] after creation", async () => {
+    const wsDir = join(tmpDir, "create-refresh-manifest");
+    createWorkspace(wsDir, { mode: "ambient" });
+    await handleCreateProject(wsDir, { name: "fresh" });
+    const m = readWorkspace(wsDir);
+    expect(m.projects ?? []).toContain("fresh");
+  });
+});
+
+describe("createProjectInWorkspace (direct lib export)", () => {
+  it("rejects an invalid name before any fs work", async () => {
+    const wsDir = join(tmpDir, "cp-bad-name");
+    createWorkspace(wsDir, { mode: "ambient" });
+    await expect(
+      createProjectInWorkspace(wsDir, { name: "../escape" }),
+    ).rejects.toThrow(/invalid project name/);
+  });
+
+  it("inherits the workspace default_mode when mode is omitted", async () => {
+    const wsDir = join(tmpDir, "cp-inherit");
+    createWorkspace(wsDir, { mode: "explicit" });
+    const result = await createProjectInWorkspace(wsDir, { name: "inh", scaffold: false });
+    expect(result.mode).toBe("explicit");
+    expect(result.notes.some((n) => /inherited from workspace/i.test(n))).toBe(true);
+  });
+});
+
+// ─── Paradigm + Atelier symbiosis ───────────────────────────────────────
+// Detection + four idempotent augmentations (CLAUDE.md sentinel section,
+// .claude/agents/ drop, .mcp.json merge, .paradigm/personas/index.yaml
+// merge). The contract is: Atelier never touches anything Paradigm owns
+// outside its sentinel-bracketed / namespaced surface; every augmentation
+// is replay-safe.
+
+import {
+  augmentClaudeAgents,
+  augmentClaudeMd,
+  augmentMcpJson,
+  augmentParadigmWithAtelier,
+  augmentPersonasIndex,
+  ATELIER_CLAUDE_MD_SECTION_BEGIN,
+  ATELIER_CLAUDE_MD_SECTION_END,
+  buildAtelierClaudeMdSection,
+  detectParadigm,
+} from "./lib/paradigm-augment.js";
+import { ATELIER_AGENT_TEMPLATES } from "./lib/atelier-agent-templates.js";
+
+/**
+ * Write the minimum on-disk shape a `paradigm shift` would have produced:
+ * CLAUDE.md, .mcp.json (with the paradigm server + permissions block),
+ * .paradigm/config.yaml, .paradigm/personas/index.yaml. Returns the absolute
+ * directory path.
+ */
+function fakeParadigmShifted(rootDir: string, opts: {
+  withPersonasSibling?: boolean;
+  withExistingPersona?: boolean;
+} = {}): string {
+  mkdirSync(rootDir, { recursive: true });
+  writeFileSync(
+    join(rootDir, "CLAUDE.md"),
+    `# ${rootDir} - Claude Context\n\n> Paradigm v2.0\n\n## Paradigm preamble\n\nThis is the paradigm-owned preamble. Atelier must never touch it.\n`,
+    "utf-8",
+  );
+  writeFileSync(
+    join(rootDir, ".mcp.json"),
+    JSON.stringify(
+      {
+        mcpServers: {
+          paradigm: {
+            command: "paradigm-mcp",
+            args: ["."],
+            cwd: rootDir,
+          },
+        },
+        permissions: {
+          allow: ["Bash(paradigm *)"],
+        },
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf-8",
+  );
+  mkdirSync(join(rootDir, ".paradigm"), { recursive: true });
+  writeFileSync(join(rootDir, ".paradigm", "config.yaml"), `version: '1.0'\n`, "utf-8");
+
+  mkdirSync(join(rootDir, ".paradigm", "personas"), { recursive: true });
+  const personasLines: string[] = [
+    `version: '1.0'`,
+    `generated: '2026-05-27T00:00:00.000Z'`,
+  ];
+  if (opts.withExistingPersona) {
+    personasLines.push(`personas:`);
+    personasLines.push(`  custom-author:`);
+    personasLines.push(`    name: Custom`);
+    personasLines.push(`    role: Author`);
+  } else if (opts.withPersonasSibling) {
+    personasLines.push(`personas: {}`);
+  } else {
+    personasLines.push(`personas: {}`);
+  }
+  personasLines.push(`chains: {}`);
+  personasLines.push(`gate_coverage: {}`);
+  personasLines.push(`route_coverage: {}`);
+  personasLines.push(`uncovered_routes: []`);
+  writeFileSync(
+    join(rootDir, ".paradigm", "personas", "index.yaml"),
+    personasLines.join("\n") + "\n",
+    "utf-8",
+  );
+  return rootDir;
+}
+
+describe("detectParadigm", () => {
+  it("returns present=true when both CLAUDE.md and .paradigm/config.yaml exist", () => {
+    const dir = join(tmpDir, "detect-present");
+    fakeParadigmShifted(dir);
+    const det = detectParadigm(dir);
+    expect(det.present).toBe(true);
+    expect(det.claudeMdPath).toBe(join(resolve(dir), "CLAUDE.md"));
+    expect(det.mcpJsonPath).toBe(join(resolve(dir), ".mcp.json"));
+    expect(det.configYamlPath).toBe(join(resolve(dir), ".paradigm", "config.yaml"));
+    expect(det.personasIndexPath).toBe(join(resolve(dir), ".paradigm", "personas", "index.yaml"));
+    expect(det.agentsDirPath).toBe(join(resolve(dir), ".claude", "agents"));
+  });
+
+  it("returns present=false when CLAUDE.md exists but no .paradigm/config.yaml", () => {
+    const dir = join(tmpDir, "detect-no-config");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "CLAUDE.md"), "x", "utf-8");
+    expect(detectParadigm(dir).present).toBe(false);
+  });
+
+  it("returns present=false when .paradigm/config.yaml exists but no CLAUDE.md", () => {
+    const dir = join(tmpDir, "detect-no-claudemd");
+    mkdirSync(join(dir, ".paradigm"), { recursive: true });
+    writeFileSync(join(dir, ".paradigm", "config.yaml"), "x", "utf-8");
+    expect(detectParadigm(dir).present).toBe(false);
+  });
+
+  it("returns present=false for an empty dir", () => {
+    const dir = join(tmpDir, "detect-empty");
+    mkdirSync(dir, { recursive: true });
+    expect(detectParadigm(dir).present).toBe(false);
+  });
+});
+
+describe("augmentClaudeMd", () => {
+  it("appends the section when no sentinels are present", () => {
+    const dir = join(tmpDir, "claudemd-append");
+    mkdirSync(dir, { recursive: true });
+    const cmPath = join(dir, "CLAUDE.md");
+    writeFileSync(cmPath, "# Paradigm preamble\n\nhello.\n", "utf-8");
+    const section = buildAtelierClaudeMdSection({ workspaceName: "w", learningMode: "ambient" });
+    const r = augmentClaudeMd(cmPath, section);
+    expect(r.action).toBe("appended");
+    const raw = readFileSync(cmPath, "utf-8");
+    expect(raw).toContain("# Paradigm preamble");
+    expect(raw).toContain(ATELIER_CLAUDE_MD_SECTION_BEGIN);
+    expect(raw).toContain(ATELIER_CLAUDE_MD_SECTION_END);
+    expect(raw).toContain("## Atelier Creator Workspace");
+  });
+
+  it("replaces the section on re-run (idempotent)", () => {
+    const dir = join(tmpDir, "claudemd-replace");
+    mkdirSync(dir, { recursive: true });
+    const cmPath = join(dir, "CLAUDE.md");
+    writeFileSync(cmPath, "# preamble\n", "utf-8");
+    const s1 = buildAtelierClaudeMdSection({ workspaceName: "w1", learningMode: "ambient" });
+    expect(augmentClaudeMd(cmPath, s1).action).toBe("appended");
+    const s2 = buildAtelierClaudeMdSection({ workspaceName: "w2", learningMode: "explicit" });
+    const r = augmentClaudeMd(cmPath, s2);
+    expect(r.action).toBe("replaced");
+    const raw = readFileSync(cmPath, "utf-8");
+    // Only ONE pair of sentinels in the file after replacement.
+    const openCount = (raw.match(new RegExp(ATELIER_CLAUDE_MD_SECTION_BEGIN.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "g")) || []).length;
+    expect(openCount).toBe(1);
+    expect(raw).toContain("`w2`");
+    expect(raw).toContain("**explicit**");
+    expect(raw).not.toContain("`w1`");
+    // Preamble still intact.
+    expect(raw).toContain("# preamble");
+  });
+
+  it("preserves bytes outside the sentinels byte-for-byte", () => {
+    const dir = join(tmpDir, "claudemd-preserve");
+    mkdirSync(dir, { recursive: true });
+    const cmPath = join(dir, "CLAUDE.md");
+    const before = "# preamble line\n\nbody body body\n";
+    const after = "\n\n## trailing paradigm section\n\nmore body.\n";
+    const section = buildAtelierClaudeMdSection({ workspaceName: "w", learningMode: "ambient" });
+    writeFileSync(cmPath, before + section + "\n" + after, "utf-8");
+    // Replace with a different section; trailing content must survive.
+    const s2 = buildAtelierClaudeMdSection({ workspaceName: "w2", learningMode: "explicit" });
+    augmentClaudeMd(cmPath, s2);
+    const raw = readFileSync(cmPath, "utf-8");
+    expect(raw.startsWith(before)).toBe(true);
+    expect(raw.endsWith(after)).toBe(true);
+  });
+
+  it("throws when the file is absent", () => {
+    expect(() => augmentClaudeMd(join(tmpDir, "nope.md"), "x")).toThrow(/does not exist/);
+  });
+});
+
+describe("augmentMcpJson", () => {
+  it("adds the atelier server without disturbing paradigm or permissions", () => {
+    const dir = join(tmpDir, "mcp-add");
+    fakeParadigmShifted(dir);
+    const r = augmentMcpJson(join(dir, ".mcp.json"), { atelierMcpCwd: dir });
+    expect(r.action).toBe("added");
+    const parsed = JSON.parse(readFileSync(join(dir, ".mcp.json"), "utf-8"));
+    expect(parsed.mcpServers.paradigm).toEqual({
+      command: "paradigm-mcp",
+      args: ["."],
+      cwd: dir,
+    });
+    expect(parsed.mcpServers.atelier).toEqual({
+      command: "atelier-mcp",
+      args: ["."],
+      cwd: dir,
+    });
+    expect(parsed.permissions).toEqual({ allow: ["Bash(paradigm *)"] });
+  });
+
+  it("returns skipped on a no-op re-run", () => {
+    const dir = join(tmpDir, "mcp-skip");
+    fakeParadigmShifted(dir);
+    augmentMcpJson(join(dir, ".mcp.json"), { atelierMcpCwd: dir });
+    const r = augmentMcpJson(join(dir, ".mcp.json"), { atelierMcpCwd: dir });
+    expect(r.action).toBe("skipped");
+  });
+
+  it("returns updated when cwd changes", () => {
+    const dir = join(tmpDir, "mcp-update");
+    fakeParadigmShifted(dir);
+    augmentMcpJson(join(dir, ".mcp.json"), { atelierMcpCwd: dir });
+    const r = augmentMcpJson(join(dir, ".mcp.json"), { atelierMcpCwd: "/elsewhere" });
+    expect(r.action).toBe("updated");
+    const parsed = JSON.parse(readFileSync(join(dir, ".mcp.json"), "utf-8"));
+    expect(parsed.mcpServers.atelier.cwd).toBe("/elsewhere");
+    // Paradigm + permissions still intact.
+    expect(parsed.mcpServers.paradigm.command).toBe("paradigm-mcp");
+    expect(parsed.permissions.allow).toEqual(["Bash(paradigm *)"]);
+  });
+
+  it("throws when the file is absent", () => {
+    expect(() => augmentMcpJson(join(tmpDir, "nope.json"), {})).toThrow(/does not exist/);
+  });
+});
+
+describe("augmentPersonasIndex", () => {
+  it("adds Quill / Lux / Iris entries to an empty personas map", () => {
+    const dir = join(tmpDir, "personas-empty");
+    fakeParadigmShifted(dir);
+    const r = augmentPersonasIndex(join(dir, ".paradigm", "personas", "index.yaml"));
+    expect(r.action).toBe("added");
+    expect(r.added.sort()).toEqual(["iris-composer", "lux-cinematographer", "quill-showrunner"]);
+    const raw = readFileSync(join(dir, ".paradigm", "personas", "index.yaml"), "utf-8");
+    expect(raw).toContain("quill-showrunner:");
+    expect(raw).toContain("lux-cinematographer:");
+    expect(raw).toContain("iris-composer:");
+    // Sibling top-level keys preserved.
+    expect(raw).toContain("chains:");
+    expect(raw).toContain("gate_coverage:");
+    expect(raw).toContain("uncovered_routes:");
+    expect(raw).toContain("ships_with: a-atelier");
+  });
+
+  it("preserves a pre-existing custom persona and adds ours alongside", () => {
+    const dir = join(tmpDir, "personas-coexist");
+    fakeParadigmShifted(dir, { withExistingPersona: true });
+    const r = augmentPersonasIndex(join(dir, ".paradigm", "personas", "index.yaml"));
+    expect(r.action).toBe("added");
+    expect(r.added).toContain("quill-showrunner");
+    const raw = readFileSync(join(dir, ".paradigm", "personas", "index.yaml"), "utf-8");
+    expect(raw).toContain("custom-author:");
+    expect(raw).toContain("quill-showrunner:");
+    expect(raw).toContain("lux-cinematographer:");
+    expect(raw).toContain("iris-composer:");
+  });
+
+  it("is idempotent: a second pass returns skipped (no added ids)", () => {
+    const dir = join(tmpDir, "personas-idem");
+    fakeParadigmShifted(dir);
+    augmentPersonasIndex(join(dir, ".paradigm", "personas", "index.yaml"));
+    const r = augmentPersonasIndex(join(dir, ".paradigm", "personas", "index.yaml"));
+    expect(r.added).toEqual([]);
+    expect(r.action).toBe("skipped");
+  });
+
+  it("creates the file when missing entirely", () => {
+    const dir = join(tmpDir, "personas-missing");
+    mkdirSync(join(dir, ".paradigm", "personas"), { recursive: true });
+    const path = join(dir, ".paradigm", "personas", "index.yaml");
+    const r = augmentPersonasIndex(path);
+    expect(r.action).toBe("added");
+    expect(existsSync(path)).toBe(true);
+    const raw = readFileSync(path, "utf-8");
+    expect(raw).toContain("quill-showrunner:");
+  });
+});
+
+describe("augmentClaudeAgents", () => {
+  it("creates the agents dir and writes all three files when absent", () => {
+    const dir = join(tmpDir, "agents-fresh");
+    mkdirSync(dir, { recursive: true });
+    const agentsDir = join(dir, ".claude", "agents");
+    const r = augmentClaudeAgents(agentsDir);
+    expect(r.added.sort()).toEqual(["atelier-iris.md", "atelier-lux.md", "atelier-quill.md"]);
+    expect(r.updated).toEqual([]);
+    for (const f of Object.keys(ATELIER_AGENT_TEMPLATES)) {
+      expect(existsSync(join(agentsDir, f))).toBe(true);
+    }
+    // Content matches the embedded snapshot.
+    expect(readFileSync(join(agentsDir, "atelier-quill.md"), "utf-8"))
+      .toBe(ATELIER_AGENT_TEMPLATES["atelier-quill.md"]);
+  });
+
+  it("overwrites existing files on re-run (canonical sync)", () => {
+    const dir = join(tmpDir, "agents-overwrite");
+    const agentsDir = join(dir, ".claude", "agents");
+    mkdirSync(agentsDir, { recursive: true });
+    writeFileSync(join(agentsDir, "atelier-quill.md"), "stale\n", "utf-8");
+    const r = augmentClaudeAgents(agentsDir);
+    expect(r.added.sort()).toEqual(["atelier-iris.md", "atelier-lux.md"]);
+    expect(r.updated).toEqual(["atelier-quill.md"]);
+    expect(readFileSync(join(agentsDir, "atelier-quill.md"), "utf-8")).not.toBe("stale\n");
+    expect(readFileSync(join(agentsDir, "atelier-quill.md"), "utf-8"))
+      .toBe(ATELIER_AGENT_TEMPLATES["atelier-quill.md"]);
+  });
+});
+
+describe("augmentParadigmWithAtelier (integration)", () => {
+  it("runs all four augmentations when paradigm is present", () => {
+    const dir = join(tmpDir, "augment-integration");
+    fakeParadigmShifted(dir);
+    const r = augmentParadigmWithAtelier(dir, {
+      workspaceName: "integration-ws",
+      learningMode: "explicit",
+    });
+    expect(r.claudeMd.action).toBe("appended");
+    expect(r.mcpJson.action).toBe("added");
+    expect(r.personas.action).toBe("added");
+    expect(r.agents.added.length).toBe(3);
+    // All four sites carry the expected content.
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf-8")).toContain("`integration-ws`");
+    const mcp = JSON.parse(readFileSync(join(dir, ".mcp.json"), "utf-8"));
+    expect(mcp.mcpServers.paradigm).toBeDefined();
+    expect(mcp.mcpServers.atelier).toBeDefined();
+    expect(readFileSync(join(dir, ".paradigm", "personas", "index.yaml"), "utf-8"))
+      .toContain("quill-showrunner:");
+    expect(existsSync(join(dir, ".claude", "agents", "atelier-quill.md"))).toBe(true);
+  });
+
+  it("is idempotent across two runs", () => {
+    const dir = join(tmpDir, "augment-idem");
+    fakeParadigmShifted(dir);
+    augmentParadigmWithAtelier(dir, {
+      workspaceName: "w",
+      learningMode: "ambient",
+    });
+    const r2 = augmentParadigmWithAtelier(dir, {
+      workspaceName: "w",
+      learningMode: "ambient",
+    });
+    expect(r2.claudeMd.action).toBe("replaced");
+    expect(r2.mcpJson.action).toBe("skipped");
+    expect(r2.personas.action).toBe("skipped");
+    expect(r2.agents.updated.length).toBe(3);
+    expect(r2.agents.added.length).toBe(0);
+  });
+});
+
+describe("createWorkspace + paradigm symbiosis", () => {
+  it("augments a Paradigm-shifted dir end-to-end", () => {
+    const dir = join(tmpDir, "ws-augment-end-to-end");
+    fakeParadigmShifted(dir);
+    const result = createWorkspace(dir, {
+      mode: "explicit",
+      createdAt: new Date("2026-05-27T00:00:00.000Z"),
+      force: true,
+    });
+    expect(result.paradigmAugmentation).toBeDefined();
+    expect(result.paradigmAugmentation!.claudeMd.action).toBe("appended");
+    expect(result.paradigmAugmentation!.agents.added.length).toBe(3);
+    // All four sites present.
+    expect(existsSync(join(dir, "workspace.atelier"))).toBe(true);
+    expect(existsSync(join(dir, ".atelier", "learning-mode.yaml"))).toBe(true);
+    expect(existsSync(join(dir, ".claude", "agents", "atelier-quill.md"))).toBe(true);
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf-8")).toContain(ATELIER_CLAUDE_MD_SECTION_BEGIN);
+    const mcp = JSON.parse(readFileSync(join(dir, ".mcp.json"), "utf-8"));
+    expect(mcp.mcpServers.atelier).toBeDefined();
+  });
+
+  it("skips augmentation when skipParadigmIntegration:true even with paradigm present", () => {
+    const dir = join(tmpDir, "ws-augment-skip");
+    fakeParadigmShifted(dir);
+    const result = createWorkspace(dir, {
+      mode: "ambient",
+      skipParadigmIntegration: true,
+      force: true,
+    });
+    expect(result.paradigmAugmentation).toBeUndefined();
+    // Workspace files were still written.
+    expect(existsSync(join(dir, "workspace.atelier"))).toBe(true);
+    // But Paradigm-side files are unchanged (no agents dir, no atelier MCP entry).
+    expect(existsSync(join(dir, ".claude", "agents", "atelier-quill.md"))).toBe(false);
+    const mcp = JSON.parse(readFileSync(join(dir, ".mcp.json"), "utf-8"));
+    expect(mcp.mcpServers.atelier).toBeUndefined();
+    expect(readFileSync(join(dir, "CLAUDE.md"), "utf-8")).not.toContain(ATELIER_CLAUDE_MD_SECTION_BEGIN);
+  });
+
+  it("returns paradigmAugmentation: undefined when paradigm is absent", () => {
+    const dir = join(tmpDir, "ws-augment-no-paradigm");
+    const result = createWorkspace(dir, { mode: "ambient" });
+    expect(result.paradigmAugmentation).toBeUndefined();
+    expect(result.manifest.name).toBe("ws-augment-no-paradigm");
+  });
+});
+
+// ─── atelier reconstruct (CLI + runReconstruct) ──────────────────────
+// The Veteran hero path's first CLI move: prime a project for Quill to
+// reconstruct SCRIPT.md from a Whisper transcript. Tests inject a
+// transcribeFn stub so we never spawn whisper-cpp in CI.
+
+function writeMinimalProject(dir: string): void {
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(
+    join(dir, "project.atelier"),
+    JSON.stringify({
+      version: "1.0",
+      name: "reconstruct-test",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [],
+      states: {},
+    }, null, 2),
+    "utf-8",
+  );
+}
+
+function writeFakeTranscript(dir: string, name = "transcript.json"): string {
+  const path = join(dir, name);
+  const fixture: VideoTranscript = {
+    version: "1.1",
+    language: "en",
+    segments: [
+      {
+        text: "hello world",
+        start: 0,
+        end: 1.5,
+        words: [
+          { detected: "hello", text: "hello", start: 0, end: 0.7 },
+          { detected: "world", text: "world", start: 0.8, end: 1.5 },
+        ],
+      },
+    ],
+  };
+  writeFileSync(path, JSON.stringify(fixture, null, 2), "utf-8");
+  return path;
+}
+
+function fakeTranscribeFn(): (dir: string) => Promise<TranscribeResult> {
+  return async (dir: string) => {
+    const transcriptPath = writeFakeTranscript(dir);
+    return {
+      projectDir: dir,
+      backend: "stub",
+      transcript: JSON.parse(readFileSync(transcriptPath, "utf-8")) as VideoTranscript,
+      wordCount: 2,
+      captionsGenerated: false,
+    };
+  };
+}
+
+async function runReconstructViaCli(
+  argv: string[],
+): Promise<{ code?: number; stdout: string; stderr: string }> {
+  const program = new Command();
+  program.exitOverride();
+  reconstructCommand(program);
+
+  const origExit = process.exit;
+  const origLog = console.log;
+  const origErr = console.error;
+  let exitCode: number | undefined;
+  let stdout = "";
+  let stderr = "";
+
+  (process.exit as unknown as (c?: number) => void) = ((c?: number) => {
+    exitCode = c;
+    throw new Error(`__exit_${c ?? 0}__`);
+  }) as never;
+  console.log = (msg?: unknown) => { stdout += String(msg) + "\n"; };
+  console.error = (msg?: unknown) => { stderr += String(msg) + "\n"; };
+
+  try {
+    await program.parseAsync(["node", "atelier", "reconstruct", ...argv]);
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.startsWith("__exit_")) {
+      const cErr = err as { code?: string; exitCode?: number };
+      if (cErr?.code?.startsWith("commander.")) {
+        exitCode = cErr.exitCode ?? 1;
+      } else {
+        throw err;
+      }
+    }
+  } finally {
+    process.exit = origExit;
+    console.log = origLog;
+    console.error = origErr;
+  }
+  return { code: exitCode, stdout, stderr };
+}
+
+describe("atelier reconstruct (runReconstruct)", () => {
+  it("reuses an existing transcript.json (does not re-transcribe) and prints the hint", async () => {
+    const dir = join(tmpDir, "reconstruct-existing");
+    writeMinimalProject(dir);
+    const transcriptPath = writeFakeTranscript(dir);
+
+    // Sentinel: pass a stub that would throw if called. Reuse path must
+    // never invoke it.
+    const result: ReconstructResult = await runReconstruct({
+      projectDir: dir,
+      json: false,
+      transcribeFn: async () => {
+        throw new Error("transcribeFn should NOT be called when transcript.json already exists");
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.transcribed).toBe(false);
+    expect(result.transcriptPath).toBe(transcriptPath);
+    expect(result.ready).toBe(true);
+    expect(result.scriptPath).toBeNull();
+    expect(result.notes.some((n) => n.includes("transcript already present"))).toBe(true);
+  });
+
+  it("transcribes when no transcript yet but source video is present", async () => {
+    const dir = join(tmpDir, "reconstruct-needs-transcribe");
+    writeMinimalProject(dir);
+    // Source video MUST be present for transcribe to be invoked.
+    writeFileSync(join(dir, "source.mp4"), "not-real-mp4-bytes", "utf-8");
+
+    let calls = 0;
+    const stub = async (d: string) => {
+      calls += 1;
+      writeFakeTranscript(d);
+      return {
+        projectDir: d,
+        backend: "stub",
+        transcript: {} as VideoTranscript,
+        wordCount: 2,
+        captionsGenerated: false,
+      };
+    };
+
+    const result = await runReconstruct({
+      projectDir: dir,
+      json: false,
+      transcribeFn: stub,
+    });
+
+    expect(calls).toBe(1);
+    expect(result.ok).toBe(true);
+    expect(result.transcribed).toBe(true);
+    expect(result.transcriptPath).toBe(join(dir, "transcript.json"));
+    expect(existsSync(result.transcriptPath)).toBe(true);
+  });
+
+  it("notes existing SCRIPT.md as `scriptPath: existing` so Quill preserves edits", async () => {
+    const dir = join(tmpDir, "reconstruct-existing-script");
+    writeMinimalProject(dir);
+    writeFakeTranscript(dir);
+    writeFileSync(join(dir, "SCRIPT.md"), "---\nmode: narrated\n---\n# Hook\n", "utf-8");
+
+    const result = await runReconstruct({
+      projectDir: dir,
+      json: false,
+      transcribeFn: fakeTranscribeFn(),
+    });
+
+    expect(result.scriptPath).toBe("existing");
+  });
+
+  it("exits 1 with a clear error when no source video and no transcript", async () => {
+    const dir = join(tmpDir, "reconstruct-no-source");
+    writeMinimalProject(dir);
+    // No source.* AND no transcript.json — nothing to do.
+
+    const res = await runReconstructViaCli([dir]);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/no source video found/i);
+  });
+
+  it("exits 1 when the path is not an Atelier Project (missing project.atelier)", async () => {
+    const dir = join(tmpDir, "reconstruct-bare-dir");
+    mkdirSync(dir, { recursive: true });
+    // No project.atelier scaffolded.
+
+    const res = await runReconstructViaCli([dir]);
+    expect(res.code).toBe(1);
+    expect(res.stderr).toMatch(/not an Atelier Project/);
+  });
+
+  it("--json emits { transcriptPath, scriptPath: null|\"existing\", ready: true }", async () => {
+    const dir = join(tmpDir, "reconstruct-json");
+    writeMinimalProject(dir);
+    writeFakeTranscript(dir);
+
+    const res = await runReconstructViaCli(["--json", dir]);
+    expect(res.code).toBeUndefined();
+    const payload = JSON.parse(res.stdout) as ReconstructResult;
+    expect(payload.ok).toBe(true);
+    expect(payload.ready).toBe(true);
+    expect(payload.scriptPath).toBeNull();
+    expect(payload.transcriptPath.endsWith("transcript.json")).toBe(true);
+    expect(payload.transcribed).toBe(false);
+  });
+
+  it("falls back to cwd when no project-dir argument is supplied", async () => {
+    const dir = join(tmpDir, "reconstruct-cwd-default");
+    writeMinimalProject(dir);
+    writeFakeTranscript(dir);
+
+    const origCwd = process.cwd;
+    process.cwd = () => dir;
+    try {
+      const result = await runReconstruct({
+        projectDir: process.cwd(),
+        json: false,
+        transcribeFn: fakeTranscribeFn(),
+      });
+      expect(result.projectDir).toBe(dir);
+    } finally {
+      process.cwd = origCwd;
+    }
+  });
+
+  it("picks up a transcripts/<name>.json secondary location when canonical transcript.json is absent", async () => {
+    const dir = join(tmpDir, "reconstruct-transcripts-dir");
+    writeMinimalProject(dir);
+    // No transcript.json at root. Forward-compat shape from the spec doc:
+    mkdirSync(join(dir, "transcripts"), { recursive: true });
+    writeFakeTranscript(join(dir, "transcripts"), "clip1.json");
+
+    const result = await runReconstruct({
+      projectDir: dir,
+      json: false,
+      transcribeFn: async () => {
+        throw new Error("transcribeFn should NOT be called when a transcripts/*.json exists");
+      },
+    });
+    expect(result.transcribed).toBe(false);
+    expect(result.transcriptPath.endsWith("clip1.json")).toBe(true);
+  });
+});
+

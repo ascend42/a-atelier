@@ -12,12 +12,27 @@
  *   atelier studio --no-open                → don't auto-open browser
  */
 
-import { resolve, join, relative, dirname, sep } from "node:path";
+import { resolve, join, relative, dirname, basename, sep } from "node:path";
 import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
+import { createInterface } from "node:readline";
 import type { Command } from "commander";
+import {
+  clearActiveProject,
+  createWorkspace,
+  findWorkspace,
+  isProjectDir,
+  isValidProjectName,
+  listProjects,
+  readActiveProject,
+  setActiveProject,
+  type ActiveProjectFile,
+  type CreateWorkspaceOptions,
+} from "../lib/workspace.js";
+import { createProjectInWorkspace } from "./init.js";
+import { LEARNING_MODES, type LearningMode } from "../lib/learning-mode.js";
 import {
   DocumentStore,
   WebSocketServerTransport,
@@ -297,6 +312,265 @@ export function broadcastToBridge(
   }
 }
 
+// ─── /api/workspace/* pure handlers ─────────────────────────────────────
+//
+// The endpoint surface lives behind the same `^localhost-only` posture as
+// /api/file and /api/export — bound to 127.0.0.1, Origin-checked on
+// mutating methods, name-validated through `isValidProjectName` BEFORE any
+// path joins. We deliberately extract the HANDLER logic into pure
+// functions that take a `cwd` parameter and return a structured response;
+// the middleware below just wires HTTP plumbing in. Tests exercise the
+// pure handlers directly without booting Vite.
+//
+// Response shape: `{ status: number, body: unknown }`. The middleware
+// turns `body` into a JSON response with `Content-Type: application/json`
+// when the value is non-string, and a plain text response otherwise (used
+// for error strings that match the existing /api endpoints' shape).
+
+/** Result of any /api/workspace/* handler. */
+export interface WorkspaceApiResult {
+  status: number;
+  /** JSON-serializable body, or null for "no body". */
+  body: unknown;
+}
+
+/** Project entry returned by GET /api/workspace. */
+export interface WorkspaceProjectEntry {
+  name: string;
+  dir: string;
+  /** Always true for entries derived from `listProjects` (project.atelier
+   *  is the discovery signal). Surfaced for symmetry with the other flags. */
+  hasAtelierDoc: boolean;
+  /** True iff the project contains any other `*.atelier` files beyond the
+   *  manifest (helpful for the UI to show "has content"). */
+  hasOtherAtelierDocs: boolean;
+  hasDesign: boolean;
+  hasScript: boolean;
+  hasStoryboard: boolean;
+}
+
+/** Build the GET /api/workspace response. */
+export function buildWorkspaceInfo(cwd: string): WorkspaceApiResult {
+  const ws = findWorkspace(cwd);
+  if (!ws) {
+    return {
+      status: 404,
+      body: { error: "no workspace found at or above cwd" },
+    };
+  }
+  const projects = listProjects(ws.workspaceDir).map((name): WorkspaceProjectEntry => {
+    const dir = join(ws.workspaceDir, name);
+    return {
+      name,
+      dir,
+      hasAtelierDoc: existsSync(join(dir, "project.atelier")),
+      hasOtherAtelierDocs: hasNonManifestAtelierDoc(dir),
+      hasDesign: existsSync(join(dir, "DESIGN.md")),
+      hasScript: existsSync(join(dir, "SCRIPT.md")),
+      hasStoryboard: existsSync(join(dir, "STORYBOARD.md")),
+    };
+  });
+  return {
+    status: 200,
+    body: {
+      name: ws.manifest.name,
+      default_mode: ws.manifest.default_mode,
+      workspaceDir: ws.workspaceDir,
+      projects,
+    },
+  };
+}
+
+/** True iff `dir` contains any *.atelier file other than `project.atelier`.
+ *  One-level scan — matches the project-as-flat-folder convention. */
+function hasNonManifestAtelierDoc(dir: string): boolean {
+  let entries: string[];
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return false;
+  }
+  for (const e of entries) {
+    if (e === "project.atelier") continue;
+    if (e.endsWith(".atelier")) return true;
+  }
+  return false;
+}
+
+/**
+ * Build the GET /api/workspace/active response. Marks the entry `stale`
+ * when the file points at a project that no longer exists on disk — the
+ * UI shows the pointer differently in that case (typically "the active
+ * project was deleted; pick another"). Returns 200 with `body: null` when
+ * no active project is set.
+ */
+export function buildActiveProject(cwd: string): WorkspaceApiResult {
+  const ws = findWorkspace(cwd);
+  if (!ws) {
+    return { status: 404, body: { error: "no workspace found at or above cwd" } };
+  }
+  const active = readActiveProject(ws.workspaceDir);
+  if (!active) {
+    return { status: 200, body: null };
+  }
+  const stale = !existsSync(join(ws.workspaceDir, active.name, "project.atelier"));
+  return {
+    status: 200,
+    body: stale ? { ...active, stale: true } : active,
+  };
+}
+
+/** Build the POST /api/workspace/active response. `name` is the body's `name`
+ *  field; any other body fields are ignored. */
+export function handleSetActiveProject(
+  cwd: string,
+  body: unknown,
+): WorkspaceApiResult {
+  const ws = findWorkspace(cwd);
+  if (!ws) {
+    return { status: 404, body: { error: "no workspace found at or above cwd" } };
+  }
+  const name = (body as { name?: unknown })?.name;
+  if (!isValidProjectName(name)) {
+    return {
+      status: 400,
+      body: { error: `invalid project name (must be single-segment basename, no leading dot, no separators)` },
+    };
+  }
+  try {
+    const file = setActiveProject(ws.workspaceDir, name);
+    return { status: 200, body: file satisfies ActiveProjectFile };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { status: 400, body: { error: msg } };
+  }
+}
+
+/** Build the DELETE /api/workspace/active response. */
+export function handleClearActiveProject(cwd: string): WorkspaceApiResult {
+  const ws = findWorkspace(cwd);
+  if (!ws) {
+    return { status: 404, body: { error: "no workspace found at or above cwd" } };
+  }
+  const removed = clearActiveProject(ws.workspaceDir);
+  return { status: 200, body: { ok: true, removed } };
+}
+
+/**
+ * Build the POST /api/workspace/projects response. Accepts:
+ *
+ *   { name, mode?, activate? }
+ *
+ * Creates the project via the extracted `createProjectInWorkspace`
+ * (no subprocess — runs in-process), and when `activate: true` also
+ * writes the active.yaml pointer at the new project. The response
+ * surfaces the created project's manifest entry shape (same fields as
+ * GET /api/workspace's `projects[]` element) so the UI can splice it
+ * into its list without a refetch.
+ */
+export async function handleCreateProject(
+  cwd: string,
+  body: unknown,
+): Promise<WorkspaceApiResult> {
+  const ws = findWorkspace(cwd);
+  if (!ws) {
+    return { status: 404, body: { error: "no workspace found at or above cwd" } };
+  }
+  const b = (body ?? {}) as { name?: unknown; mode?: unknown; activate?: unknown };
+  if (!isValidProjectName(b.name)) {
+    return {
+      status: 400,
+      body: { error: `invalid project name (must be single-segment basename, no leading dot, no separators)` },
+    };
+  }
+  let mode: LearningMode | undefined;
+  if (b.mode !== undefined) {
+    if (b.mode !== "ambient" && b.mode !== "explicit") {
+      return {
+        status: 400,
+        body: { error: `invalid mode "${String(b.mode)}" — expected one of ${LEARNING_MODES.join(", ")}` },
+      };
+    }
+    mode = b.mode;
+  }
+  try {
+    await createProjectInWorkspace(ws.workspaceDir, {
+      name: b.name,
+      ...(mode !== undefined ? { mode } : {}),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { status: 400, body: { error: msg } };
+  }
+  // Optionally flip active.yaml. Failure here is reported but does NOT
+  // roll back the create — the project exists on disk and a stale active
+  // is a recoverable UI state.
+  let active: ActiveProjectFile | null = null;
+  let activateError: string | null = null;
+  if (b.activate === true) {
+    try {
+      active = setActiveProject(ws.workspaceDir, b.name);
+    } catch (err) {
+      activateError = err instanceof Error ? err.message : String(err);
+    }
+  }
+  const dir = join(ws.workspaceDir, b.name);
+  const entry: WorkspaceProjectEntry = {
+    name: b.name,
+    dir,
+    hasAtelierDoc: existsSync(join(dir, "project.atelier")),
+    hasOtherAtelierDocs: hasNonManifestAtelierDoc(dir),
+    hasDesign: existsSync(join(dir, "DESIGN.md")),
+    hasScript: existsSync(join(dir, "SCRIPT.md")),
+    hasStoryboard: existsSync(join(dir, "STORYBOARD.md")),
+  };
+  return {
+    status: 201,
+    body: {
+      project: entry,
+      active,
+      ...(activateError ? { activateError } : {}),
+    },
+  };
+}
+
+/**
+ * Read an incoming request body as a UTF-8 string, then JSON-parse it.
+ * Returns `undefined` on empty body, throws on invalid JSON. Used by the
+ * middleware to feed the pure handlers above.
+ */
+function readJsonBody(req: import("node:http").IncomingMessage): Promise<unknown> {
+  return new Promise((resolveBody, reject) => {
+    const chunks: Buffer[] = [];
+    req.on("data", (c: Buffer) => chunks.push(c));
+    req.on("end", () => {
+      const raw = Buffer.concat(chunks).toString("utf-8");
+      if (raw.length === 0) return resolveBody(undefined);
+      try {
+        resolveBody(JSON.parse(raw));
+      } catch (e) {
+        reject(e);
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
+/**
+ * Write a `WorkspaceApiResult` to an HTTP response. Object bodies emit
+ * JSON; null bodies emit `null` JSON (the documented "no active project"
+ * shape); string bodies emit text (used nowhere yet, kept for symmetry
+ * with the surrounding /api handlers).
+ */
+function writeJsonResult(
+  res: import("node:http").ServerResponse,
+  result: WorkspaceApiResult,
+): void {
+  res.statusCode = result.status;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(result.body));
+}
+
 function getInlineHTML(): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -423,17 +697,176 @@ function readCliVersion(cliPackageDir: string): string {
   }
 }
 
+/**
+ * Pure cwd-context classifier for `atelier studio`. Inspects the filesystem
+ * around `cwd` and returns one of three shapes:
+ *
+ *   - `workspace`: `cwd` is inside a workspace (a dir containing
+ *     `workspace.atelier`), and `cwd` itself is NOT a Project subdir. The
+ *     result carries `workspaceDir` and a `projects[]` list (scanned via
+ *     `listProjects`, so it reflects on-disk truth, not the manifest's
+ *     advisory list).
+ *   - `project`: either `cwd` is a Project subdir of a workspace, OR no
+ *     workspace was found and `cwd` itself looks like a Project (has a
+ *     `project.atelier` OR contains `.atelier` files — preserving the
+ *     legacy single-project studio behavior). The result carries
+ *     `projectDir`, and `workspaceDir` when applicable.
+ *   - `empty`: neither a workspace nor a project context exists at or
+ *     above `cwd`. The CLI surface prompts the user to create a workspace.
+ *
+ * Note: a project dir found INSIDE a workspace but NOT listed in the
+ * workspace's `projects[]` manifest field still classifies as `project`
+ * — on-disk truth wins; the manifest's list is advisory. (See deliverable
+ * #4 design resolution.)
+ */
+export function studioContext(cwd: string): {
+  kind: "workspace" | "project" | "empty";
+  workspaceDir?: string;
+  projectDir?: string;
+  projects?: string[];
+} {
+  const absCwd = resolve(cwd);
+  const ws = findWorkspace(absCwd);
+
+  if (ws) {
+    // Inside a workspace. If cwd IS the workspace root, workspace mode.
+    if (absCwd === ws.workspaceDir) {
+      return {
+        kind: "workspace",
+        workspaceDir: ws.workspaceDir,
+        projects: listProjects(ws.workspaceDir),
+      };
+    }
+    // If cwd is a project subdir (direct child with project.atelier), project mode.
+    if (isProjectDir(absCwd)) {
+      return {
+        kind: "project",
+        workspaceDir: ws.workspaceDir,
+        projectDir: absCwd,
+      };
+    }
+    // Inside the workspace but not at root and not a project — still
+    // workspace mode (the user is somewhere intermediate; treat as the
+    // workspace itself).
+    return {
+      kind: "workspace",
+      workspaceDir: ws.workspaceDir,
+      projects: listProjects(ws.workspaceDir),
+    };
+  }
+
+  // No workspace. Fall back to legacy project detection: project.atelier
+  // OR any *.atelier file present in cwd → project mode.
+  if (isProjectDir(absCwd) || findAtelierFiles(absCwd).length > 0) {
+    return {
+      kind: "project",
+      projectDir: absCwd,
+    };
+  }
+
+  return { kind: "empty" };
+}
+
+/** Promisified one-shot readline question (matches init.ts pattern). */
+async function question(prompt: string): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return await new Promise<string>((resolveP) => {
+      rl.question(prompt, (answer) => resolveP(answer));
+    });
+  } finally {
+    rl.close();
+  }
+}
+
+/** Parse a mode string (CLI --mode or interactive). Throws on bad input. */
+function parseModeFlag(raw: string | undefined): LearningMode | undefined {
+  if (raw === undefined) return undefined;
+  const normalized = raw.toLowerCase();
+  if (normalized !== "ambient" && normalized !== "explicit") {
+    throw new Error(
+      `invalid --mode "${raw}" — expected one of ${LEARNING_MODES.join(", ")}`,
+    );
+  }
+  return normalized;
+}
+
+/**
+ * Interactive workspace-mode prompt. Lets the creator pick Ambient or
+ * Explicit at workspace-creation time (same two-option shape `atelier init`
+ * uses), capped at 3 attempts to mirror the existing pattern.
+ */
+async function promptForWorkspaceMode(): Promise<LearningMode> {
+  process.stdout.write(
+    `How should your agent team learn? (workspace default — inherited by every project here)\n` +
+    `\n` +
+    `  1) Ambient — the team captures corrections silently and surfaces patterns when confident.\n` +
+    `  2) Explicit — nothing locks in without your "yes"; high-control, more friction.\n` +
+    `\n`,
+  );
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const answer = (await question(`Choose [1/2]: `)).trim().toLowerCase();
+    if (answer === "1" || answer === "ambient") return "ambient";
+    if (answer === "2" || answer === "explicit") return "explicit";
+    process.stdout.write(`Please enter 1, 2, ambient, or explicit.\n`);
+  }
+  throw new Error(
+    `couldn't determine learning mode after 3 attempts ` +
+    `(hint: re-run with --mode ambient or --mode explicit)`,
+  );
+}
+
+/**
+ * Yes/no prompt with a default. Returns true on yes; case-insensitive.
+ * Empty input maps to the default.
+ */
+async function promptYesNo(promptText: string, defaultYes: boolean): Promise<boolean> {
+  const suffix = defaultYes ? "[Y/n]" : "[y/N]";
+  const raw = (await question(`${promptText} ${suffix}: `)).trim().toLowerCase();
+  if (raw === "") return defaultYes;
+  return raw === "y" || raw === "yes";
+}
+
 /** Register the `studio` subcommand on the Commander program. */
 export function studioCommand(program: Command): void {
   program
-    .command("studio [file]")
-    .description("Launch the browser-based Atelier editor")
+    .command("studio [target]")
+    .description(
+      "Launch the browser-based Atelier editor. Context-aware: opens a project " +
+      "directly when run inside one, or lets you pick from a workspace's projects. " +
+      "Pass --new to create a workspace.",
+    )
     .option("-p, --port <number>", "Port to serve on", "4321")
     .option("--no-open", "Don't auto-open browser")
+    .option(
+      "--new [name]",
+      "Create a new workspace. With a name, creates `<cwd>/<name>/`; without, " +
+      "creates a workspace at cwd (named after the cwd basename).",
+    )
+    .option(
+      "--mode <ambient|explicit>",
+      "Set the workspace's default learning mode (used with --new; skips the prompt).",
+    )
+    .option(
+      "--force",
+      "Allow `--new` to overwrite an existing workspace.atelier (no-op otherwise).",
+    )
+    .option(
+      "--no-paradigm-integration",
+      "Skip the Paradigm + Atelier symbiosis pass even when the target dir is " +
+      "Paradigm-initialized. Default: integrate when present.",
+    )
     .action(
       async (
-        file: string | undefined,
-        options: { port: string; open: boolean },
+        target: string | undefined,
+        options: {
+          port: string;
+          open: boolean;
+          new?: string | boolean;
+          mode?: string;
+          force?: boolean;
+          paradigmIntegration?: boolean;
+        },
       ) => {
         const port = parseInt(options.port, 10);
         if (isNaN(port) || port < 1 || port > 65535) {
@@ -441,7 +874,237 @@ export function studioCommand(program: Command): void {
           process.exit(1);
         }
 
-        const cwd = process.cwd();
+        const startCwd = process.cwd();
+
+        // ─── --new: create a workspace ──────────────────────────────────
+        // Accepts an optional NAME (sub-dir) or absent (use cwd itself).
+        let workspaceCreated = false;
+        let workspaceLaunchDir: string | undefined;
+        if (options.new !== undefined && options.new !== false) {
+          const nameArg = typeof options.new === "string" ? options.new : undefined;
+          const targetDir = nameArg ? resolve(startCwd, nameArg) : startCwd;
+          let mode: LearningMode;
+          try {
+            const parsed = parseModeFlag(options.mode);
+            mode = parsed ?? (await promptForWorkspaceMode());
+          } catch (err) {
+            console.error(`atelier studio: ${err instanceof Error ? err.message : String(err)}`);
+            process.exit(1);
+            return;
+          }
+          const wsOpts: CreateWorkspaceOptions = {
+            mode,
+            name: nameArg ? basename(targetDir) : basename(targetDir),
+            force: options.force === true,
+            skipParadigmIntegration: options.paradigmIntegration === false,
+          };
+          try {
+            const { manifest, paradigmAugmentation } = createWorkspace(targetDir, wsOpts);
+            workspaceCreated = true;
+            workspaceLaunchDir = targetDir;
+            console.log("");
+            console.log(`  Atelier Workspace: ${manifest.name}`);
+            console.log(`  Created at: ${targetDir}`);
+            console.log(`  Default learning mode: ${manifest.default_mode}`);
+            // Paradigm + Atelier symbiosis report. Banner content matches
+            // the spec — informative-but-not-overwhelming summary of which
+            // augmentations actually ran. When Paradigm is absent, point
+            // the creator at `paradigm shift` for the augmented path.
+            if (paradigmAugmentation) {
+              console.log(`  Paradigm: detected — augmented`);
+              console.log(
+                `    • CLAUDE.md: section ${paradigmAugmentation.claudeMd.action} (sentinel-bracketed)`,
+              );
+              const agentList = [
+                ...paradigmAugmentation.agents.added,
+                ...paradigmAugmentation.agents.updated,
+              ]
+                .map((f) => f.replace(/\.md$/, ""))
+                .join(", ");
+              const agentCount =
+                paradigmAugmentation.agents.added.length +
+                paradigmAugmentation.agents.updated.length;
+              console.log(
+                `    • .claude/agents/: ${agentCount} file(s) (${agentList})`,
+              );
+              console.log(`    • .mcp.json: atelier server ${paradigmAugmentation.mcpJson.action}`);
+              const personaSummary =
+                paradigmAugmentation.personas.added.length > 0
+                  ? `${paradigmAugmentation.personas.added.length} entries added (${paradigmAugmentation.personas.added.join(", ")})`
+                  : `entries ${paradigmAugmentation.personas.action}`;
+              console.log(`    • .paradigm/personas/: ${personaSummary}`);
+            } else if (options.paradigmIntegration === false) {
+              console.log(`  Paradigm: integration skipped (--no-paradigm-integration)`);
+            } else {
+              console.log(
+                `  Paradigm: not detected (run \`paradigm shift\` first for lore tracking + augmentation)`,
+              );
+            }
+            console.log(`  Next: run \`atelier init <project>\` from inside the workspace.`);
+            console.log("");
+          } catch (err) {
+            console.error(`atelier studio --new: ${err instanceof Error ? err.message : String(err)}`);
+            process.exit(1);
+            return;
+          }
+        }
+
+        // ─── Detect context (after potential --new creation) ────────────
+        const contextCwd = workspaceLaunchDir ?? startCwd;
+        const ctx = studioContext(contextCwd);
+
+        // Resolve the directory the studio dev-server should serve.
+        let serveDir: string;
+        let projectLabel: string | undefined;
+        let workspaceName: string | undefined;
+
+        if (ctx.kind === "workspace") {
+          const projects = ctx.projects ?? [];
+          const wsDir = ctx.workspaceDir!;
+          try {
+            const manifest = findWorkspace(wsDir)?.manifest;
+            workspaceName = manifest?.name ?? basename(wsDir);
+          } catch {
+            workspaceName = basename(wsDir);
+          }
+
+          // Positional `target` lets the caller pick a project by name.
+          let pick: string | undefined;
+          if (target) {
+            if (projects.includes(target)) {
+              pick = target;
+            } else {
+              console.error(
+                `atelier studio: project "${target}" not found in workspace ` +
+                `"${workspaceName}". Known: ${projects.length > 0 ? projects.join(", ") : "(none)"}`,
+              );
+              process.exit(1);
+              return;
+            }
+          } else if (projects.length === 0) {
+            // Just-created workspace, or empty one — no projects to open.
+            console.log(`  Workspace "${workspaceName}" has no projects yet.`);
+            console.log(`  Run \`atelier init <name>\` from inside the workspace to create one.`);
+            return;
+          } else if (projects.length === 1) {
+            pick = projects[0];
+          } else {
+            // Multiple projects: interactive picker.
+            console.log("");
+            console.log(`  Workspace: ${workspaceName}`);
+            console.log(`  Projects:`);
+            projects.forEach((p, i) => console.log(`    ${i + 1}) ${p}`));
+            console.log("");
+            const raw = (await question(`Open which? [1-${projects.length}]: `)).trim();
+            const idx = parseInt(raw, 10);
+            if (!isFinite(idx) || idx < 1 || idx > projects.length) {
+              console.error(`atelier studio: invalid selection "${raw}"`);
+              process.exit(1);
+              return;
+            }
+            pick = projects[idx - 1];
+          }
+
+          serveDir = resolve(wsDir, pick);
+          projectLabel = pick;
+        } else if (ctx.kind === "project") {
+          serveDir = ctx.projectDir!;
+          projectLabel = basename(serveDir);
+          if (ctx.workspaceDir) {
+            try {
+              workspaceName =
+                findWorkspace(ctx.workspaceDir)?.manifest.name ?? basename(ctx.workspaceDir);
+            } catch {
+              workspaceName = basename(ctx.workspaceDir);
+            }
+          }
+        } else {
+          // empty
+          if (workspaceCreated) {
+            // Workspace was just created (--new with no project yet). Already
+            // handled above by the projects.length===0 path? No — the --new
+            // path falls through to ctx detection. Re-detect:
+            console.log(`  Created workspace; nothing to open yet.`);
+            return;
+          }
+          // Prompt the creator to make a workspace.
+          console.log("");
+          console.log(`  No workspace or project found at ${startCwd}.`);
+          const wantWorkspace = await promptYesNo("Create a workspace here?", true);
+          if (!wantWorkspace) {
+            console.log(`  Tip: run \`atelier studio --new <name>\` to create one.`);
+            return;
+          }
+          // Re-dispatch as if --new had been supplied. Inherit --mode if set.
+          let mode: LearningMode;
+          try {
+            mode = parseModeFlag(options.mode) ?? (await promptForWorkspaceMode());
+          } catch (err) {
+            console.error(`atelier studio: ${err instanceof Error ? err.message : String(err)}`);
+            process.exit(1);
+            return;
+          }
+          try {
+            const { manifest } = createWorkspace(startCwd, {
+              mode,
+              name: basename(resolve(startCwd)),
+              force: options.force === true,
+              skipParadigmIntegration: options.paradigmIntegration === false,
+            });
+            console.log(`  Created workspace "${manifest.name}" at ${startCwd}.`);
+            console.log(`  Run \`atelier init <project>\` to create your first project.`);
+          } catch (err) {
+            console.error(`atelier studio: ${err instanceof Error ? err.message : String(err)}`);
+            process.exit(1);
+            return;
+          }
+          return;
+        }
+
+        // The historical studio launch logic, refactored to serve `serveDir`.
+        await launchStudioServer({
+          cwd: serveDir,
+          port,
+          autoOpen: options.open,
+          initialFile: ctx.kind === "project" && target && existsSync(resolve(serveDir, target))
+            ? target
+            : undefined,
+          projectLabel,
+          workspaceName,
+        });
+      },
+    );
+}
+
+/**
+ * Vite + WS bridge launcher — the historical studio body, parameterized.
+ *
+ * Splitting this out lets the context-aware dispatcher (`studioCommand`)
+ * decide WHICH directory to serve before any server is spawned. The body
+ * itself is unchanged in behavior: 127.0.0.1 bind, /api file ops with
+ * Origin checks on mutating endpoints, /bridge + /mcp WS upgrades with
+ * re-checked Origin, llm-only mutation broadcasts. See aspects
+ * #studio-localhost-only-bind, #studio-origin-check-bridge-vs-mcp-split,
+ * #studio-ws-upgrade-rechecks-origin, #studio-llm-only-broadcast.
+ */
+interface LaunchStudioOptions {
+  /** Directory the dev server treats as cwd. */
+  cwd: string;
+  port: number;
+  autoOpen: boolean;
+  /** Optional initial file path (relative to `cwd`). */
+  initialFile?: string;
+  /** Display label for the served project (banner only). */
+  projectLabel?: string;
+  /** Display label for the containing workspace, if any. */
+  workspaceName?: string;
+}
+
+async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
+  const { cwd, port, autoOpen, initialFile, projectLabel, workspaceName } = opts;
+  // The rest of this function is the historical action body, lightly
+  // edited so `cwd` is the parameter instead of `process.cwd()`.
+  {
 
         // Find the CLI package directory (where node_modules + templates live).
         const cliPackageDir = resolveCliPackageDir();
@@ -453,6 +1116,11 @@ export function studioCommand(program: Command): void {
 
         console.log("");
         console.log(`  Atelier Studio · v${version}`);
+        if (workspaceName && projectLabel) {
+          console.log(`  Workspace: ${workspaceName} · Project: ${projectLabel}`);
+        } else if (projectLabel) {
+          console.log(`  Project: ${projectLabel}`);
+        }
         if (scaffolded) {
           console.log(`   Scaffolded ${scaffolded} — opening…`);
         }
@@ -466,7 +1134,7 @@ export function studioCommand(program: Command): void {
         const tmpDir = realpathSync(tmpDirRaw);
 
         writeFileSync(join(tmpDir, "index.html"), getInlineHTML());
-        writeFileSync(join(tmpDir, "main.ts"), getInlineApp(file ?? null, cliPackageDir));
+        writeFileSync(join(tmpDir, "main.ts"), getInlineApp(initialFile ?? null, cliPackageDir));
 
         // Symlink node_modules into temp dir so Vite can resolve @a-company/* packages.
         // Works for both monorepo (pnpm workspace links) and npm global install.
@@ -696,6 +1364,58 @@ export function studioCommand(program: Command): void {
                     return;
                   }
 
+                  // ── /api/workspace/* — Phase 1 backend wiring ────────
+                  // All endpoints flow through the same loopback bind and
+                  // Origin check that gate /api/file above (the MUTATING
+                  // check earlier in this middleware covers POST/DELETE).
+                  // Handlers themselves are pure functions in this module
+                  // so unit tests exercise them without booting Vite.
+                  if (url.pathname === "/api/workspace" && (req.method === "GET" || !req.method)) {
+                    writeJsonResult(res, buildWorkspaceInfo(cwd));
+                    return;
+                  }
+
+                  if (url.pathname === "/api/workspace/active") {
+                    if (req.method === "GET" || !req.method) {
+                      writeJsonResult(res, buildActiveProject(cwd));
+                      return;
+                    }
+                    if (req.method === "POST") {
+                      readJsonBody(req).then(
+                        (body) => writeJsonResult(res, handleSetActiveProject(cwd, body)),
+                        (err) => {
+                          res.statusCode = 400;
+                          res.setHeader("Content-Type", "application/json");
+                          res.end(JSON.stringify({ error: `invalid JSON: ${err instanceof Error ? err.message : String(err)}` }));
+                        },
+                      );
+                      return;
+                    }
+                    if (req.method === "DELETE") {
+                      writeJsonResult(res, handleClearActiveProject(cwd));
+                      return;
+                    }
+                    res.statusCode = 405;
+                    res.end("Method not allowed");
+                    return;
+                  }
+
+                  if (url.pathname === "/api/workspace/projects" && req.method === "POST") {
+                    readJsonBody(req).then(
+                      async (body) => writeJsonResult(res, await handleCreateProject(cwd, body)),
+                      (err) => {
+                        res.statusCode = 400;
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(JSON.stringify({ error: `invalid JSON: ${err instanceof Error ? err.message : String(err)}` }));
+                      },
+                    ).catch((err) => {
+                      res.statusCode = 500;
+                      res.setHeader("Content-Type", "application/json");
+                      res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+                    });
+                    return;
+                  }
+
                   next();
                 });
               },
@@ -781,13 +1501,13 @@ export function studioCommand(program: Command): void {
         const atelierFiles = findAtelierFiles(cwd);
         console.log(`  Found ${atelierFiles.length} .atelier file(s)`);
 
-        if (file) {
-          console.log(`  Opening: ${file}`);
+        if (initialFile) {
+          console.log(`  Opening: ${initialFile}`);
         }
 
         console.log(`  Press Ctrl+C to stop\n`);
 
-        if (options.open) {
+        if (autoOpen) {
           exec(`open "${url}"`);
         }
 
@@ -805,6 +1525,5 @@ export function studioCommand(program: Command): void {
 
         process.on("SIGINT", cleanup);
         process.on("SIGTERM", cleanup);
-      },
-    );
+  }
 }

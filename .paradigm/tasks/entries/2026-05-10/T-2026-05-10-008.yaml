@@ -1,0 +1,12 @@
+id: T-2026-05-10-008
+blurb: Basic timeline UI in studio — horizontal clip blocks, drag to reorder, drag edges to trim sourceOffset/sourceEnd, scrubable playhead
+priority: high
+status: open
+tags:
+  - phase-2
+  - '#timeline-ui'
+  - studio
+  - ux
+created: '2026-05-10T18:23:26.238Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

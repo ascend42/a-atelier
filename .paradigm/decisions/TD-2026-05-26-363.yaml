@@ -1,0 +1,30 @@
+id: TD-2026-05-26-363
+timestamp: '2026-05-26T01:09:25.856Z'
+title: Content-gen agents Quill/Lux/Iris ship with Atelier as a Claude Code skill
+decision: >-
+  Instantiate Quill (Showrunner), Lux (Cinematographer), and Iris (Composer) as concrete personas living with Atelier
+  and packaged as a self-contained Atelier Claude Code skill/plugin — not in a-paradigm. Populate the empty
+  .paradigm/personas/index.yaml; keep their design lineage in lore but make their home Atelier.
+rationale: >-
+  This is the load-bearing decision for the 'edit nothing, just talk' experience. Mirrors how Hyperframes distributes (a
+  Claude Code skill), gives a UGC creator one install, and puts the orchestrating agents next to the engine they drive.
+  Atelier University already teaches this flow (ATEL-501/601/701/801).
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Keep agents in a-paradigm consuming Atelier MCP as a library
+    rejected_because: Forces a UGC creator to adopt a-paradigm to get the experience — too heavy an on-ramp for 'just talk and ship'
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - agents
+  - skill
+  - load-bearing
+  - phase-1

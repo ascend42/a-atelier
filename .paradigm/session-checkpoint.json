@@ -1,88 +1,107 @@
 {
   "phase": "complete",
-  "context": "Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, added # prefix to 2 core components, created svg + lottie .purpose files, added 6 missing type definitions, 2 missing core components, updated root .purpose with accurate counts (52 tools, 9 commands, 60+ types).",
-  "timestamp": 1771718013012,
-  "sessionId": "smlwywrdn",
+  "context": "Atelier is shipped and current at v0.37.0 on npm with the University pack bundled into the @a-company/atelier tarball (verified live: 55 university files + paradigm.universityPack pointer). Paradigm symbols now carry FULL per-component aspect coverage — 305 aspects across all 137 components (was 0), every component has >=1, drift clean on 485 anchors, all compliance passing. Working tree clean, 0 unpushed commits. Nothing outstanding; this is a natural stopping point.",
+  "timestamp": 1779745345527,
+  "sessionId": "smpdn6yyh",
+  "plan": "Complete. Releases v0.34.0–v0.37.0 published to npm (atelier 0.37.0, -mcp 0.27.2, -studio 0.28.0, -schema 0.28.0, -types 0.31.0, -video 0.1.0). Claude plugin (ascend42/a-atelier-plugin) live with corrected launch + 61 tools. Future content edits: author in .paradigm/university/, bump CLI version, pnpm release (prepublish auto-bundles). Deferred/optional follow-ups: Playwright e2e (spec in .paradigm/specs/v1-testing-strategy.md), pixel-snapshot tests, the @a-company/atelier-mcp peerDependency cleanup, extract-inline-app already done.",
   "modifiedFiles": [
-    "packages/schema/.purpose",
-    "packages/types/.purpose",
-    "packages/math/.purpose",
+    ".paradigm/university/",
+    "packages/cli/package.json",
+    "packages/cli/scripts/bundle-university.mjs",
+    "packages/mcp/tsup.config.ts",
+    ".purpose",
     "packages/core/.purpose",
-    "packages/svg/.purpose",
-    "packages/lottie/.purpose",
-    ".purpose"
+    "packages/types/.purpose",
+    "packages/cli/.purpose",
+    "packages/mcp/.purpose",
+    "packages/studio/.purpose",
+    "CHANGELOG.md",
+    "README.md"
   ],
   "symbolsTouched": [
-    "#atelier-types",
-    "#atelier-core",
-    "#atelier-mcp",
-    "#atelier-cli",
-    "#atelier-svg",
-    "#atelier-lottie",
-    "#expression-evaluator",
-    "#audio-timing",
-    "#shadow-types",
-    "#audio-types",
-    "#asset-types",
-    "#variable-types",
-    "#interaction-types",
-    "#preset-types"
+    "#cli-studio",
+    "#studio-bridge",
+    "#ws-transport",
+    "#cli-carousel",
+    "#cli-export-image",
+    "#render-image",
+    "#mcp-recipe-tools",
+    "#mcp-import-images",
+    "#atelier-university",
+    "~layer-tag-isolation",
+    "~detected-vs-user-edited",
+    "~copy-on-write-doc",
+    "~source-tagged-mutation",
+    "^localhost-only"
+  ],
+  "decisions": [
+    "Studio v1 = promote the existing atelier studio CLI app to creator-grade, not build a new app (cold review found the app already existed)",
+    "LLM<->human loop uses an in-memory WS bridge (DocumentStore.onChange + applyMutation), not file-watch — preserves selection/undo/scroll",
+    "Atelier owns NO image generation — generation is chat-orchestrated (user runs Higgsfield CLI externally); Atelier ingests via atelier_import_images. Reverted in-Atelier generator (cherry-pick e87d29e to restore)",
+    "PNG export uses @napi-rs/canvas (prebuilt) not node-canvas, so it works on a plain npm install",
+    "Paradigm aspect convention is per-component (>=1 each, more for multi-responsibility) — stricter than generic 'multi-site only'; defer to project owner's rule",
+    "University pack bundled into the main @a-company/atelier package (versioned in lockstep with the engine), source of truth stays .paradigm/university/, copy generated at prepublish + gitignored"
   ],
   "recentBreadcrumbs": [
     {
-      "timestamp": 1771717609390,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1771717612051,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
-    },
-    {
-      "timestamp": 1771717620816,
-      "action": "tool-call",
-      "tool": "paradigm_navigate",
-      "symbol": "aspects",
-      "summary": "Navigate explore: aspects"
-    },
-    {
-      "timestamp": 1771717743783,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
-    {
-      "timestamp": 1771717808941,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1771717984671,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
-    },
-    {
-      "timestamp": 1771717984717,
+      "timestamp": 1779475177828,
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"
     },
     {
-      "timestamp": 1771718005665,
+      "timestamp": 1779475184009,
       "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     },
     {
-      "timestamp": 1771718013011,
+      "timestamp": 1779475572303,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779475576504,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779475784947,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779475789565,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779745320944,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779745325497,
+      "action": "tool-call",
+      "tool": "paradigm_session_health",
+      "summary": "session_health"
+    },
+    {
+      "timestamp": 1779745326382,
+      "action": "tool-call",
+      "tool": "paradigm_session_stats",
+      "summary": "session_stats"
+    },
+    {
+      "timestamp": 1779745345525,
       "action": "tool-call",
       "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=complete, Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, "
+      "summary": "Checkpoint: phase=complete, Atelier is shipped and current at v0.37.0 on npm with the Un"
     }
   ]
 }

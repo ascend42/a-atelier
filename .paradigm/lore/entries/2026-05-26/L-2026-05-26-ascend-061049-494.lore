@@ -1,0 +1,13 @@
+id: L-2026-05-26-ascend-061049-494
+type: insight
+timestamp: '2026-05-26T06:10:49.274Z'
+author: ascend
+title: Decision TD-2026-05-26-275 recorded
+summary: Companion lore entry for decision record TD-2026-05-26-275. See .paradigm/decisions/TD-2026-05-26-275.yaml.
+symbols_touched:
+  - '#atelier-university'
+references:
+  decision_id: TD-2026-05-26-275
+tags:
+  - companion-lore
+  - decision-reference

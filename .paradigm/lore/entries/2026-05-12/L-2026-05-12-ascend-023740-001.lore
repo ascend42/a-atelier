@@ -1,0 +1,37 @@
+id: L-2026-05-12-ascend-023740-001
+type: insight
+timestamp: '2026-05-12T02:37:40.313Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Paradigm v6.4 release video — Atelier feasibility report
+summary: 'Assessed whether Atelier can be the final assembler for the Paradigm v6.4 release video (4-5 min keynote-style, founder talking-head + Higgsfield B-roll + motion graphics). Found the video stack architecturally sound but with load-bearing pieces unshipped (T-002b WebCodecs demux, T-003 WASM ffmpeg, Timeline UI, Whisper, silence-removal, alpha-channel video, transitions beyond crossfade, aspect-ratio reframe). Recommended a phased path: Phase A renders per-segment motion-graphic MP4s in Atelier with NLE final assembly for v6.4 launch; Phase B rebuilds as a true Atelier master comp once Phase 2 lands, as a follow-up "how it was made" piece. Report written to docs/keynote/paradigm/v6-release-video-feasibility.md.'
+symbols_touched:
+  - '#video-renderer'
+  - '#video-project'
+  - '#keynote-paradigm'
+files_created:
+  - docs/keynote/paradigm/v6-release-video-feasibility.md
+decisions:
+  - id: TD-phased-release-video
+    decision: Ship v6.4 release video with Atelier-authored per-segment motion-graphic MP4s + external NLE final assembly (Phase A). Defer 'edited entirely in Atelier' master comp to a Phase B follow-up after T-002b, T-003, and Timeline UI land.
+    rationale: Phase 2 video pieces are scaffolded but not shipped. Blocking a flagship release on incomplete decode/encode/timeline infrastructure is the wrong stress test. Phase A still uses Atelier for every motion-graphic segment (its strongest capability today); Phase B becomes a 'how it was made' follow-up that doubles as Phase 2 promo.
+learnings:
+  - VideoVisual schema exists but WebCodecs demuxer (T-002b) throws — any .atelier referencing a VideoVisual layer currently fails to render.
+  - Atelier supports only crossfade transitions and single-track audio per state; multi-track mixing and depth-wipe-style transitions don't exist.
+  - No alpha-channel video support — talking-head must be pre-keyed and pre-composited until Phase 2 lands.
+  - No aspect-ratio reframe API — 9:16 / 1:1 cuts must be authored as separate .atelier docs or handled in the NLE.
+  - Atelier Composer agent should live in a-paradigm (alongside Showrunner and Director/DP) and consume Atelier MCP tools; Symphony handoff should be a single shot-list.yaml + asset folder, not a stream of shots.
+  - .atelier files are encrypted — must be read/written via pencil MCP batch_get/batch_design, not Read/Edit.
+tags:
+  - paradigm-release-video
+  - keynote
+  - video
+  - atelier-phase-2
+  - feasibility
+confidence: 0.82
+git_context:
+  ref: af0dcb438b33413ac8f002fcd4d34f75c7590dd6
+  branch: main
+  dirty: true

@@ -1,0 +1,12 @@
+id: T-2026-05-10-004
+blurb: VideoProject folder structure — source.mp4 / project.atelier / transcript.json / cuts.json / export/ convention
+priority: high
+status: open
+tags:
+  - phase-2
+  - '#video-project'
+  - local-first
+  - architecture
+created: '2026-05-10T18:23:26.188Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

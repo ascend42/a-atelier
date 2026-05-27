@@ -1,0 +1,13 @@
+id: T-2026-05-10-011
+blurb: Multi-take ingest — agent scans take folder, scores takes by silence/length/energy, proposes keeper list for user approval
+priority: medium
+status: open
+tags:
+  - phase-2
+  - '#video-project'
+  - '#atelier-edit-cli'
+  - agent-interface
+  - ugc
+created: '2026-05-10T18:23:26.266Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

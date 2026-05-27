@@ -1,4 +1,13 @@
-import type { TranscriptWord, TranscriptSegment, VideoTranscript } from "@a-company/atelier-types";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import type {
+  CutEntry,
+  TranscriptDerivedFrom,
+  TranscriptWord,
+  TranscriptSegment,
+  VideoTranscript,
+} from "@a-company/atelier-types";
 
 /** Default match tolerance for re-transcribe merge (seconds) */
 export const DEFAULT_TRANSCRIPT_MATCH_TOLERANCE = 0.3;
@@ -334,6 +343,186 @@ function mapWord(
       };
     }),
   };
+}
+
+// ─── Effective transcript (post-cut derivation) ─────────────────
+//
+// `applyCuts` is the pure derivation: given a raw transcript + the project's
+// cuts.json, produce the transcript that reflects the post-cut timeline.
+// Words whose `start` falls inside a cut range are dropped; surviving words
+// (and surviving segments) have their timestamps shifted backwards by the
+// cumulative cut duration that preceded them, so timestamps line up with the
+// trimmed clip the creator will export.
+//
+// This is the substrate Iris (and the agent team) reads when they need to
+// answer "what does the talk-track look like AFTER cuts?" without redoing
+// the math themselves. It is intentionally read-only: callers never persist
+// the effective transcript — the raw transcript.json stays authoritative on
+// disk so re-cutting later is non-destructive.
+
+/**
+ * Pure derivation: apply cuts to a raw transcript and return the effective
+ * (post-cut) transcript. Inputs are not mutated.
+ *
+ *  - A word is DROPPED if its `start` falls inside any cut interval
+ *    `[cut.start_s, cut.end_s)` — using effective spans on each cut
+ *    (the same `rawStart - paddingPre` ... `rawEnd + paddingPost` math
+ *    the trim pipeline uses for layer rewrites, but unclamped here since
+ *    we don't know `duration` at this layer; clamping happens at write time).
+ *
+ *  - A surviving word has its `start`/`end` shifted by the cumulative cut
+ *    duration that PRECEDES it in source-time. Effective time t' = t - sum
+ *    of cut durations whose end <= t.
+ *
+ *  - Segments adjust the same way; segments whose entire word list drops
+ *    out are dropped.
+ *
+ *  - A `derived_from` provenance stamp is attached so consumers (agents,
+ *    MCP tools) can distinguish "raw" from "effective" without re-deriving.
+ *
+ * NOTE: This function treats the cuts argument as KEEP intervals would be
+ * the inverse — but per the existing CutEntry semantics in this codebase,
+ * a CutEntry represents a KEPT speech span, not silence to remove. We must
+ * therefore invert: words inside any cut are KEPT (timestamps shift relative
+ * to the previous kept span's end); words OUTSIDE every cut are dropped.
+ * This matches `rewriteCutLayers` which lays out kept spans sequentially.
+ */
+export function applyCuts(
+  transcript: VideoTranscript,
+  cuts: CutEntry[],
+  options: { transcriptName?: string; cutsHash?: string; derivedAt?: string } = {},
+): VideoTranscript {
+  // Sort cuts by rawStart for deterministic processing. Cuts shouldn't overlap
+  // (the trim pipeline guarantees this via resolveOverlaps) but we sort anyway
+  // to be safe against hand-edited cut lists.
+  const sortedCuts = [...cuts].sort((a, b) => a.rawStart - b.rawStart);
+
+  // Effective span per cut: [start, end] in source time. Padding extends the
+  // kept region in both directions; we don't clamp negative starts here since
+  // upstream code (clampBoundaries in cut-model) already does that for the
+  // on-disk cuts.json.
+  const keepRanges = sortedCuts.map((c) => ({
+    start: Math.max(0, c.rawStart - c.paddingPre),
+    end: c.rawEnd + c.paddingPost,
+  }));
+
+  // Map a source-time `t` to its effective time on the trimmed timeline.
+  // Returns `null` if `t` is not inside any kept range (i.e. the word is cut).
+  function mapTime(t: number): number | null {
+    let cumulativeOffset = 0;
+    for (const r of keepRanges) {
+      if (t < r.start) {
+        // Falls in a dropped (silent) gap before this kept range.
+        return null;
+      }
+      if (t <= r.end) {
+        // Inside this kept range — shift by the offset of this range's start.
+        return t - r.start + cumulativeOffset;
+      }
+      cumulativeOffset += r.end - r.start;
+    }
+    // Past the final kept range — the word is in trailing silence and is cut.
+    return null;
+  }
+
+  const newSegments: TranscriptSegment[] = [];
+  for (const seg of transcript.segments) {
+    const newWords: TranscriptWord[] = [];
+    for (const w of seg.words) {
+      const newStart = mapTime(w.start);
+      const newEnd = mapTime(w.end);
+      // Drop the word if either endpoint is in a cut gap. Strict policy:
+      // a partial word straddling a boundary is dropped rather than clamped,
+      // matching how transcribe.ts's caption-builder treats hidden words
+      // (presence is binary; no partial render).
+      if (newStart === null || newEnd === null) continue;
+      newWords.push({
+        ...w,
+        start: newStart,
+        end: newEnd,
+      });
+    }
+    if (newWords.length === 0) continue; // segment fully cut → drop
+    newSegments.push({
+      text: seg.text,
+      // Segment-level start/end follow the first and last surviving word so
+      // the trimmed segment timing matches its words exactly.
+      start: newWords[0].start,
+      end: newWords[newWords.length - 1].end,
+      words: newWords,
+    });
+  }
+
+  const totalCutDurationS = keepRanges.reduce((sum, r) => sum + (r.end - r.start), 0);
+
+  const derived_from: TranscriptDerivedFrom = {
+    transcriptName: options.transcriptName ?? "transcript.json",
+    cutsHash: options.cutsHash ?? hashCuts(sortedCuts),
+    derivedAt: options.derivedAt ?? new Date().toISOString(),
+    cutsApplied: sortedCuts.length,
+    // totalCutDurationS reports the SUM of kept-range durations — i.e. the
+    // duration of the effective timeline (the post-cut clip). Naming is
+    // load-bearing: agents downstream use this as the trimmed-clip length.
+    totalCutDurationS,
+  };
+
+  return {
+    version: transcript.version,
+    ...(transcript.language !== undefined && { language: transcript.language }),
+    segments: newSegments,
+    derived_from,
+  };
+}
+
+/**
+ * Stable hash of a sorted cut list — used as `derived_from.cutsHash` so
+ * downstream callers can detect when cuts changed without comparing the full
+ * list. Hashes the canonical JSON of cut tuples (rawStart, rawEnd, paddings).
+ */
+export function hashCuts(cuts: CutEntry[]): string {
+  const canonical = cuts.map((c) => [c.rawStart, c.rawEnd, c.paddingPre, c.paddingPost]);
+  return createHash("sha256").update(JSON.stringify(canonical)).digest("hex").slice(0, 16);
+}
+
+/**
+ * Convenience loader: read `<projectDir>/transcript.json` + `<projectDir>/cuts.json`
+ * and return the effective transcript. Returns `null` when no transcript exists.
+ * When cuts.json is missing or has zero cuts, returns the raw transcript verbatim
+ * (no derivation stamp) — the spec lets agents distinguish via `derived_from`
+ * presence.
+ *
+ * Hand-rolled JSON read here (not via `loadVideoProject`/`readTranscript`) to
+ * avoid a circular import — this lib is consumed by transcribe.ts which
+ * already imports from video-project.ts. Inline reads keep the dependency
+ * arrow one-directional.
+ */
+export function loadEffectiveTranscript(
+  projectDir: string,
+  transcriptName: string = "transcript.json",
+): VideoTranscript | null {
+  const absDir = resolve(projectDir);
+  const transcriptPath = join(absDir, transcriptName);
+  if (!existsSync(transcriptPath)) return null;
+
+  const rawTranscript = JSON.parse(readFileSync(transcriptPath, "utf-8")) as VideoTranscript;
+
+  const cutsPath = join(absDir, "cuts.json");
+  if (!existsSync(cutsPath)) {
+    // No cuts → return raw verbatim; no derivation stamp.
+    return rawTranscript;
+  }
+
+  const rawCuts = JSON.parse(readFileSync(cutsPath, "utf-8")) as {
+    version?: string;
+    source?: string;
+    cuts: CutEntry[];
+  };
+
+  if (!rawCuts.cuts || rawCuts.cuts.length === 0) {
+    return rawTranscript;
+  }
+
+  return applyCuts(rawTranscript, rawCuts.cuts, { transcriptName });
 }
 
 // Re-export for convenience

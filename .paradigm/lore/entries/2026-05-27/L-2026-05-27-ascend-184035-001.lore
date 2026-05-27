@@ -1,0 +1,53 @@
+id: L-2026-05-27-ascend-184035-001
+type: milestone
+timestamp: '2026-05-27T18:40:35.399Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'v1-prep checkpoint: real content team bundle complete, ready for studio-UI integration'
+summary: 'Comprehensive checkpoint capturing the full pre-v1 arc. Workspace tests: types 6, math 29, schema 88, core 118, lottie 37, canvas 26, video 8, svg 32, react 15, studio 46, mcp 175, cli 302 — all passing. Compliance clean. Eleven decision records + a twelfth (TD-2026-05-27-723, local-only-by-default) all durable. The reconstruct skill + CLI verb shipped clean. The four-piece "real content team" bundle''s source code shipped (media-project.ts, media-notes.ts, media.ts command, effective-transcript MCP tool, media-notes MCP tool, technique library expanded, two new Iris skills) — bundle''s specific tests appear to be partially landed but overall test suite stable at +0 from reconstruct landing (302 cli). Final delegation report was truncated; verified MCP tool wiring landed in packages/mcp/src/index.ts. Next milestone: studio-UI-as-creator-interface bundle (drag-drop ingest, auto-transcribe pipeline triggered by UI, whisper model auto-resolve + auto-download). v1 publish gated on that bundle landing + full end-to-end validation.'
+symbols_touched:
+  - '#artifact-schemas'
+  - '#cli-artifacts'
+  - '#cli-init'
+  - '#cli-reconstruct'
+  - '#cli-media'
+  - '#workspace-schema'
+  - '#workspace-io'
+  - '#cli-studio'
+  - '#mcp-mind-map'
+  - '#mcp-effective-transcript'
+  - '#mcp-media-notes'
+  - '#paradigm-augment'
+  - '#claude-agents-bundle'
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+  - '#media-project-io'
+  - '#media-notes-io'
+  - '#media-notes-schema'
+learnings:
+  - 'Truncated delegation final-reports are a recurring pattern in long builder runs. Mitigation: verify file-existence + compliance independently after each delegation; treat the final report as a hint not a contract.'
+  - The CLI-verb-first then UI-on-top design pattern works — the verbs become library functions the UI calls. No work is wasted; what changes is the consumer.
+  - v1 readiness is gated on actual creator workflow validation (drag-drop in browser, agent end-to-end), not CLI-completeness. Per TD-2026-05-27-723 (local-only-by-default), the test surface should validate via local whisper + agents, not online fallbacks.
+verification:
+  status: pass
+  details:
+    workspace_tests: all green across 12 packages (types/math/schema/core/lottie/canvas/video/svg/react/studio/mcp/cli)
+    compliance: clean
+    portal: compliant
+    outstanding_concerns: bundle's targeted tests may be light vs design intent — track and fill in next pass
+tags:
+  - v1-prep
+  - checkpoint
+  - real-content-team
+  - creator-flow
+linked_lore:
+  - L-2026-05-27-ascend-180956-001
+  - L-2026-05-27-ascend-180634-001
+  - L-2026-05-27-ascend-140312-001
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: feat/creator-flow-v1-prep
+  dirty: true

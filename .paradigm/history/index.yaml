@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-03-03T20:43:51.298Z'
+generated: '2026-05-22T19:18:16.333Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -421,7 +421,7 @@ by_symbol:
           - examples/traffic-light.atelier
           - packages/mcp/.purpose
         description: 'docs: full documentation overhaul + website concept + canonical examples [0.17.2]'
-      - &ref_8
+      - &ref_9
         id: h0030
         ts: '2026-02-20T23:31:09.653Z'
         type: implement
@@ -475,16 +475,36 @@ by_symbol:
         - claude
   '#atelier-core':
     symbol: '#atelier-core'
-    total_changes: 9
-    last_modified: '2026-02-23T22:11:51Z'
+    total_changes: 10
+    last_modified: '2026-05-22T18:51:05Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_12
+        id: h0075
+        ts: '2026-05-22T18:51:05Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+          - '#atelier-core'
+          - '#atelier-mcp'
+          - '#atelier-studio'
+        author:
+          type: human
+          id: ascend
+        commit: f1289ee50ce8cec63b6755147ab47815eafb5e4a
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .purpose
+        description: 'docs(#paradigm): root package-level aspects — every component now has >=1 aspect'
       - *ref_0
       - *ref_1
       - *ref_5
       - *ref_6
-      - *ref_2
     contributors:
       human:
         - ascend
@@ -492,12 +512,83 @@ by_symbol:
         - claude
   '#frame-resolver':
     symbol: '#frame-resolver'
-    total_changes: 1
-    last_modified: '2026-02-13T23:02:12.930Z'
+    total_changes: 3
+    last_modified: '2026-05-21T05:41:06Z'
     stability_score: 1
     fragility: low
     recent:
       - &ref_7
+        id: h0071
+        ts: '2026-05-21T05:41:06Z'
+        type: implement
+        symbols:
+          - '#audio-timing'
+          - '#delta-resolver'
+          - '#expression-evaluator'
+          - '#frame-resolver'
+          - '#state-machine'
+        author:
+          type: human
+          id: ascend
+        commit: 38221e072b10cee555fb5d455987d3ba9f664f30
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - packages/core/.purpose
+        description: 'docs(#core): full aspect coverage for the core package (exemplar)'
+      - &ref_30
+        id: h0060
+        ts: '2026-05-08T00:38:38Z'
+        type: implement
+        symbols:
+          - '#asset-types'
+          - '#cli-lint'
+          - '#frame-resolver'
+          - '#layer-schema'
+          - '#layer-types'
+          - '#validation-functions'
+          - '#video-renderer'
+          - ^valid-delta
+          - ^valid-document
+          - ^valid-video-layer
+        author:
+          type: human
+          id: ascend
+        commit: cb75d8ef9129fdfec71c4b361257c8b0daa90ffe
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - packages/canvas/.purpose
+          - packages/canvas/package.json
+          - packages/canvas/src/canvas-types.ts
+          - packages/canvas/src/render-frame.ts
+          - packages/canvas/src/renderers/video-renderer.ts
+          - packages/cli/.purpose
+          - packages/cli/package.json
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/lint.ts
+          - packages/cli/src/index.test.ts
+          - packages/core/.purpose
+          - packages/core/package.json
+          - packages/core/src/resolver/frame-resolver.ts
+          - packages/react/.purpose
+          - packages/schema/.purpose
+          - packages/schema/package.json
+          - packages/schema/src/asset.ts
+          - packages/schema/src/index.ts
+          - packages/schema/src/layer.ts
+          - packages/schema/src/validate.ts
+          - packages/types/.purpose
+          - packages/types/package.json
+          - packages/types/src/asset.ts
+          - packages/types/src/index.ts
+          - packages/types/src/layer.ts
+          - portal.yaml
+        description: 'feat(#layer-types): VideoVisual layer type, schema gates, atelier lint CLI [0.26.0/0.29.0]'
+      - &ref_8
         id: h0002
         ts: '2026-02-13T23:02:12.930Z'
         type: implement
@@ -519,17 +610,19 @@ by_symbol:
           - packages/core/src/units/
           - packages/core/src/presets/
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#delta-resolver':
     symbol: '#delta-resolver'
-    total_changes: 2
-    last_modified: '2026-02-23T04:09:19Z'
+    total_changes: 3
+    last_modified: '2026-05-21T05:41:06Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_20
+      - *ref_7
+      - &ref_23
         id: h0048
         ts: '2026-02-23T04:09:19Z'
         type: implement
@@ -587,7 +680,7 @@ by_symbol:
           - packages/types/src/index.ts
           - packages/types/src/layer.ts
         description: 'feat(#pretend-integration): add spritesheet, sourceRect, visibility, tint, and ref composition [0.26.0]'
-      - *ref_7
+      - *ref_8
     contributors:
       human:
         - ascend
@@ -600,7 +693,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -612,7 +705,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_7
+      - *ref_8
     contributors:
       human: []
       agent:
@@ -628,7 +721,7 @@ by_symbol:
       - *ref_1
       - *ref_3
       - *ref_4
-      - *ref_8
+      - *ref_9
     contributors:
       human:
         - ascend
@@ -636,12 +729,36 @@ by_symbol:
         - claude
   '#render-frame':
     symbol: '#render-frame'
-    total_changes: 1
-    last_modified: '2026-02-13T23:18:36.507Z'
+    total_changes: 2
+    last_modified: '2026-05-22T18:34:12Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_9
+      - &ref_22
+        id: h0072
+        ts: '2026-05-22T18:34:12Z'
+        type: implement
+        symbols:
+          - '#delta-schema'
+          - '#layer-types'
+          - '#render-frame'
+          - '#spring-solver'
+        author:
+          type: human
+          id: ascend
+        commit: cd12230f235c533e53e4dbae5a7ba1d906acf79f
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - packages/canvas/.purpose
+          - packages/math/.purpose
+          - packages/schema/.purpose
+          - packages/types/.purpose
+        description: 'docs(#paradigm): aspect coverage wave A — types, schema, math, canvas'
+      - &ref_10
         id: h0005
         ts: '2026-02-13T23:18:36.507Z'
         type: implement
@@ -666,7 +783,8 @@ by_symbol:
           - packages/canvas/src/render-frame.ts
           - packages/canvas/src/index.ts
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#shape-renderer':
@@ -676,7 +794,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_10
+      - &ref_11
         id: h0025
         ts: '2026-02-14T19:09:05.615Z'
         type: implement
@@ -705,7 +823,7 @@ by_symbol:
           - packages/studio/src/panels/property-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/mcp/src/tools/deltas.ts
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -717,7 +835,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
@@ -729,8 +847,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_11
       - *ref_10
-      - *ref_9
     contributors:
       human: []
       agent:
@@ -742,21 +860,37 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_9
+      - *ref_10
     contributors:
       human: []
       agent:
         - claude
   '#atelier-mcp':
     symbol: '#atelier-mcp'
-    total_changes: 10
-    last_modified: '2026-02-23T22:11:51Z'
+    total_changes: 12
+    last_modified: '2026-05-22T18:51:05Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_12
+      - id: h0068
+        ts: '2026-05-20T05:46:44Z'
+        type: implement
+        symbols:
+          - '#atelier-mcp'
+        author:
+          type: human
+          id: ascend
+        commit: 211d2c6fb604452623313c5c0377bdd064512aa4
+        intent: fix
+        files:
+          - CHANGELOG.md
+          - packages/mcp/package.json
+          - packages/mcp/tsup.config.ts
+        description: 'fix(#atelier-mcp): make the atelier-mcp bin executable (shebang) [0.27.2]'
       - *ref_0
       - *ref_1
-      - &ref_12
+      - &ref_14
         id: h0045
         ts: '2026-02-22T00:04:48Z'
         type: implement
@@ -774,8 +908,183 @@ by_symbol:
         files:
           - README.md
         description: 'docs(#atelier-cli): update README for v0.25.1 — 52 tools, 11 packages, version history'
-      - *ref_6
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#mcp-store':
+    symbol: '#mcp-store'
+    total_changes: 2
+    last_modified: '2026-05-22T18:46:31Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_17
+        id: h0074
+        ts: '2026-05-22T18:46:31Z'
+        type: implement
+        symbols:
+          - '#atelier-studio'
+          - '#cut-model'
+          - '#mcp-store'
+          - '#recipe-lib'
+        author:
+          type: human
+          id: ascend
+        commit: b6a547944c7b053c7842ebd3dfc2f3159cb50606
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - packages/cli/.purpose
+          - packages/mcp/.purpose
+          - packages/studio/.purpose
+        description: 'docs(#paradigm): aspect coverage wave C — cli, mcp, studio (coverage complete)'
       - &ref_13
+        id: h0007
+        ts: '2026-02-13T23:33:39.797Z'
+        type: implement
+        symbols:
+          - '#atelier-mcp'
+          - '#mcp-store'
+          - '#mcp-document-tools'
+          - '#mcp-layer-tools'
+          - '#mcp-shape-tools'
+          - '#mcp-state-tools'
+          - '#mcp-delta-tools'
+          - '#mcp-preset-tools'
+          - '#mcp-preview-tools'
+        author:
+          type: agent
+          id: claude
+        intent: feature
+        description: 'Milestone 4: AI Creates Animations — MCP server with 25 tools across 7 categories (document, layer, shape, state, delta, preset, preview), in-memory document store, structured error responses, full end-to-end workflow support'
+        files:
+          - packages/mcp/src/store.ts
+          - packages/mcp/src/tools/document.ts
+          - packages/mcp/src/tools/layers.ts
+          - packages/mcp/src/tools/shapes.ts
+          - packages/mcp/src/tools/states.ts
+          - packages/mcp/src/tools/deltas.ts
+          - packages/mcp/src/tools/presets.ts
+          - packages/mcp/src/tools/preview.ts
+          - packages/mcp/src/index.ts
+    contributors:
+      human:
+        - ascend
+      agent:
+        - claude
+  '#mcp-document-tools':
+    symbol: '#mcp-document-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-layer-tools':
+    symbol: '#mcp-layer-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-shape-tools':
+    symbol: '#mcp-shape-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-state-tools':
+    symbol: '#mcp-state-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-delta-tools':
+    symbol: '#mcp-delta-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-preset-tools':
+    symbol: '#mcp-preset-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#mcp-preview-tools':
+    symbol: '#mcp-preview-tools'
+    total_changes: 1
+    last_modified: '2026-02-13T23:33:39.797Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_13
+    contributors:
+      human: []
+      agent:
+        - claude
+  '#atelier-cli':
+    symbol: '#atelier-cli'
+    total_changes: 10
+    last_modified: '2026-05-22T18:51:05Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_12
+      - id: h0046
+        ts: '2026-02-22T00:10:04Z'
+        type: implement
+        symbols:
+          - '#atelier-cli'
+        author:
+          type: human
+          id: ascend
+        commit: e7e473bab245a9b3034018a02f29149f3bb42503
+        intent: feature
+        files:
+          - packages/cli/package.json
+        description: 'chore(#atelier-cli): bump version to 0.25.1 for npm publish'
+      - *ref_14
+      - *ref_6
+      - &ref_25
         id: h0036
         ts: '2026-02-21T15:31:30Z'
         type: implement
@@ -813,159 +1122,6 @@ by_symbol:
         - ascend
       agent:
         - claude
-  '#mcp-store':
-    symbol: '#mcp-store'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - &ref_11
-        id: h0007
-        ts: '2026-02-13T23:33:39.797Z'
-        type: implement
-        symbols:
-          - '#atelier-mcp'
-          - '#mcp-store'
-          - '#mcp-document-tools'
-          - '#mcp-layer-tools'
-          - '#mcp-shape-tools'
-          - '#mcp-state-tools'
-          - '#mcp-delta-tools'
-          - '#mcp-preset-tools'
-          - '#mcp-preview-tools'
-        author:
-          type: agent
-          id: claude
-        intent: feature
-        description: 'Milestone 4: AI Creates Animations — MCP server with 25 tools across 7 categories (document, layer, shape, state, delta, preset, preview), in-memory document store, structured error responses, full end-to-end workflow support'
-        files:
-          - packages/mcp/src/store.ts
-          - packages/mcp/src/tools/document.ts
-          - packages/mcp/src/tools/layers.ts
-          - packages/mcp/src/tools/shapes.ts
-          - packages/mcp/src/tools/states.ts
-          - packages/mcp/src/tools/deltas.ts
-          - packages/mcp/src/tools/presets.ts
-          - packages/mcp/src/tools/preview.ts
-          - packages/mcp/src/index.ts
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-document-tools':
-    symbol: '#mcp-document-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-layer-tools':
-    symbol: '#mcp-layer-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-shape-tools':
-    symbol: '#mcp-shape-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-state-tools':
-    symbol: '#mcp-state-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-delta-tools':
-    symbol: '#mcp-delta-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-preset-tools':
-    symbol: '#mcp-preset-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#mcp-preview-tools':
-    symbol: '#mcp-preview-tools'
-    total_changes: 1
-    last_modified: '2026-02-13T23:33:39.797Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_11
-    contributors:
-      human: []
-      agent:
-        - claude
-  '#atelier-cli':
-    symbol: '#atelier-cli'
-    total_changes: 9
-    last_modified: '2026-02-22T00:10:04Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - id: h0046
-        ts: '2026-02-22T00:10:04Z'
-        type: implement
-        symbols:
-          - '#atelier-cli'
-        author:
-          type: human
-          id: ascend
-        commit: e7e473bab245a9b3034018a02f29149f3bb42503
-        intent: feature
-        files:
-          - packages/cli/package.json
-        description: 'chore(#atelier-cli): bump version to 0.25.1 for npm publish'
-      - *ref_12
-      - *ref_6
-      - *ref_13
-      - *ref_2
-    contributors:
-      human:
-        - ascend
-      agent:
-        - claude
   '#cli-validate':
     symbol: '#cli-validate'
     total_changes: 1
@@ -973,7 +1129,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_14
+      - &ref_15
         id: h0009
         ts: '2026-02-13T23:40:00.871Z'
         type: implement
@@ -1009,7 +1165,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1021,7 +1177,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
@@ -1033,19 +1189,20 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_14
+      - *ref_15
     contributors:
       human: []
       agent:
         - claude
   '#state-machine':
     symbol: '#state-machine'
-    total_changes: 1
-    last_modified: '2026-02-13T23:47:34.057Z'
+    total_changes: 2
+    last_modified: '2026-05-21T05:41:06Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_15
+      - *ref_7
+      - &ref_16
         id: h0011
         ts: '2026-02-13T23:47:34.057Z'
         type: implement
@@ -1063,7 +1220,8 @@ by_symbol:
           - packages/core/src/templates/template-resolver.ts
           - packages/mcp/src/tools/templates.ts
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#template-resolver':
@@ -1073,7 +1231,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_15
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1085,7 +1243,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_15
+      - *ref_16
     contributors:
       human: []
       agent:
@@ -1137,16 +1295,16 @@ by_symbol:
         - claude
   '#atelier-studio':
     symbol: '#atelier-studio'
-    total_changes: 6
-    last_modified: '2026-02-23T22:11:51Z'
+    total_changes: 8
+    last_modified: '2026-05-22T18:51:05Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_12
+      - *ref_17
       - *ref_0
       - *ref_1
       - *ref_3
-      - *ref_4
-      - *ref_8
     contributors:
       human:
         - ascend
@@ -1159,7 +1317,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_16
+      - &ref_18
         id: h0015
         ts: '2026-02-14T11:13:24.658Z'
         type: implement
@@ -1214,7 +1372,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_17
+      - &ref_19
         id: h0019
         ts: '2026-02-14T17:19:38.749Z'
         type: implement
@@ -1232,7 +1390,7 @@ by_symbol:
           - packages/studio/src/panels/layer-panel.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_16
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1244,8 +1402,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
-      - *ref_16
+      - *ref_11
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1257,7 +1415,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
       - id: h0023
         ts: '2026-02-14T18:07:54.907Z'
         type: implement
@@ -1271,7 +1429,7 @@ by_symbol:
         files:
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - &ref_19
+      - &ref_21
         id: h0021
         ts: '2026-02-14T17:56:19.446Z'
         type: implement
@@ -1291,8 +1449,8 @@ by_symbol:
           - packages/studio/src/controls/range-slider.ts
           - packages/studio/src/panels/delta-panel.ts
           - packages/studio/src/styles.css
-      - *ref_17
-      - &ref_18
+      - *ref_19
+      - &ref_20
         id: h0017
         ts: '2026-02-14T14:52:14.614Z'
         type: implement
@@ -1322,7 +1480,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_16
+      - *ref_18
     contributors:
       human: []
       agent:
@@ -1334,8 +1492,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_20
       - *ref_18
-      - *ref_16
     contributors:
       human: []
       agent:
@@ -1347,8 +1505,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_20
       - *ref_18
-      - *ref_16
     contributors:
       human: []
       agent:
@@ -1360,8 +1518,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_20
       - *ref_18
-      - *ref_16
     contributors:
       human: []
       agent:
@@ -1373,8 +1531,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_20
       - *ref_18
-      - *ref_16
     contributors:
       human: []
       agent:
@@ -1386,8 +1544,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_20
       - *ref_18
-      - *ref_16
     contributors:
       human: []
       agent:
@@ -1399,7 +1557,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_17
+      - *ref_19
     contributors:
       human: []
       agent:
@@ -1411,7 +1569,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_19
+      - *ref_21
     contributors:
       human: []
       agent:
@@ -1423,21 +1581,23 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_19
+      - *ref_21
     contributors:
       human: []
       agent:
         - claude
   '#delta-schema':
     symbol: '#delta-schema'
-    total_changes: 1
-    last_modified: '2026-02-14T17:56:19.446Z'
+    total_changes: 2
+    last_modified: '2026-05-22T18:34:12Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_19
+      - *ref_22
+      - *ref_21
     contributors:
-      human: []
+      human:
+        - ascend
       agent:
         - claude
   '#stroke-trim':
@@ -1447,7 +1607,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -1459,7 +1619,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_10
+      - *ref_11
     contributors:
       human: []
       agent:
@@ -1471,8 +1631,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
-      - *ref_10
+      - *ref_23
+      - *ref_11
     contributors:
       human:
         - ascend
@@ -1485,7 +1645,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_21
+      - &ref_24
         id: h0027
         ts: '2026-02-15T13:17:58.490Z'
         type: implement
@@ -1516,7 +1676,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_21
+      - *ref_24
     contributors:
       human: []
       agent:
@@ -1572,7 +1732,7 @@ by_symbol:
       - *ref_0
       - *ref_1
       - *ref_5
-      - *ref_12
+      - *ref_14
       - *ref_6
     contributors:
       human:
@@ -1587,7 +1747,7 @@ by_symbol:
     recent:
       - *ref_0
       - *ref_1
-      - *ref_12
+      - *ref_14
       - *ref_2
     contributors:
       human:
@@ -1603,7 +1763,7 @@ by_symbol:
       - *ref_0
       - *ref_1
       - *ref_5
-      - *ref_12
+      - *ref_14
       - *ref_6
     contributors:
       human:
@@ -1616,7 +1776,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_25
     contributors:
       human:
         - ascend
@@ -1628,7 +1788,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_25
     contributors:
       human:
         - ascend
@@ -1640,7 +1800,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_13
+      - *ref_25
     contributors:
       human:
         - ascend
@@ -1652,7 +1812,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_22
+      - &ref_26
         id: h0038
         ts: '2026-02-21T22:39:27Z'
         type: implement
@@ -1683,7 +1843,7 @@ by_symbol:
           - packages/mcp/src/index.ts
           - packages/mcp/src/tools/assets.ts
         description: 'feat(#atelier-mcp): M10 asset management — 3 new MCP tools, 1 CLI command [0.21.0]'
-      - &ref_23
+      - &ref_27
         id: h0037
         ts: '2026-02-21T22:29:24.094Z'
         type: implement
@@ -1718,8 +1878,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_22
-      - *ref_23
+      - *ref_26
+      - *ref_27
     contributors:
       human:
         - ascend
@@ -1732,7 +1892,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_24
+      - &ref_28
         id: h0039
         ts: '2026-02-21T23:24:34Z'
         type: implement
@@ -1773,7 +1933,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_24
+      - *ref_28
     contributors:
       human:
         - ascend
@@ -1785,7 +1945,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_25
+      - &ref_29
         id: h0040
         ts: '2026-02-21T23:28:03Z'
         type: implement
@@ -1829,7 +1989,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_25
+      - *ref_29
     contributors:
       human:
         - ascend
@@ -1841,7 +2001,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_25
+      - *ref_29
     contributors:
       human:
         - ascend
@@ -1937,11 +2097,12 @@ by_symbol:
       agent: []
   '#asset-types':
     symbol: '#asset-types'
-    total_changes: 1
-    last_modified: '2026-02-21T23:55:51Z'
+    total_changes: 2
+    last_modified: '2026-05-08T00:38:38Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_30
       - *ref_6
     contributors:
       human:
@@ -1949,11 +2110,12 @@ by_symbol:
       agent: []
   '#audio-timing':
     symbol: '#audio-timing'
-    total_changes: 1
-    last_modified: '2026-02-21T23:55:51Z'
+    total_changes: 2
+    last_modified: '2026-05-21T05:41:06Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_7
       - *ref_6
     contributors:
       human:
@@ -1973,11 +2135,12 @@ by_symbol:
       agent: []
   '#expression-evaluator':
     symbol: '#expression-evaluator'
-    total_changes: 1
-    last_modified: '2026-02-21T23:55:51Z'
+    total_changes: 2
+    last_modified: '2026-05-21T05:41:06Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_7
       - *ref_6
     contributors:
       human:
@@ -2038,7 +2201,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2050,7 +2213,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2062,7 +2225,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2074,7 +2237,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2086,7 +2249,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2098,7 +2261,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2110,19 +2273,43 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - *ref_23
     contributors:
       human:
         - ascend
       agent: []
   '#svg-renderer':
     symbol: '#svg-renderer'
-    total_changes: 1
-    last_modified: '2026-02-23T04:09:19Z'
+    total_changes: 2
+    last_modified: '2026-05-22T18:40:27Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_20
+      - &ref_45
+        id: h0073
+        ts: '2026-05-22T18:40:27Z'
+        type: implement
+        symbols:
+          - '#animation-player'
+          - '#lottie-warnings'
+          - '#svg-renderer'
+          - '#webcodecs-provider'
+        author:
+          type: human
+          id: ascend
+        commit: 70d8d35d7f79375759d04ab05b35733e9375e1ef
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - packages/lottie/.purpose
+          - packages/react/.purpose
+          - packages/svg/.purpose
+          - packages/video/.purpose
+        description: 'docs(#paradigm): aspect coverage wave B — svg, lottie, video, react'
+      - *ref_23
     contributors:
       human:
         - ascend
@@ -2134,7 +2321,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_26
+      - &ref_31
         id: h0054
         ts: '2026-03-03T16:51:31Z'
         type: implement
@@ -2165,7 +2352,7 @@ by_symbol:
           - CHANGELOG.md
           - packages/cli/package.json
         description: 'fix(#cli): replace workspace:* with real semver for npm install [0.27.2]'
-      - &ref_27
+      - &ref_32
         id: h0052
         ts: '2026-03-03T16:22:05Z'
         type: implement
@@ -2182,7 +2369,7 @@ by_symbol:
           - packages/cli/package.json
           - packages/cli/src/commands/studio.ts
         description: 'fix(#studio): resolve Vite pre-transform error on macOS [0.27.1]'
-      - &ref_28
+      - &ref_33
         id: h0051
         ts: '2026-03-03T15:38:19Z'
         type: implement
@@ -2213,7 +2400,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_31
+      - &ref_36
         id: h0057
         ts: '2026-03-03T20:19:05Z'
         type: implement
@@ -2235,7 +2422,7 @@ by_symbol:
           - packages/studio/src/index.ts
           - packages/studio/src/studio.ts
         description: 'feat(#studio): export filename from loaded file, add Export All batch export [0.28.0]'
-      - &ref_29
+      - &ref_34
         id: h0056
         ts: '2026-03-03T17:38:46Z'
         type: implement
@@ -2255,9 +2442,9 @@ by_symbol:
           - packages/studio/package.json
           - packages/types/package.json
         description: 'chore: bump subpackages to 0.25.2, CLI to 0.27.4 for npm publish'
-      - *ref_26
-      - *ref_27
-      - *ref_28
+      - *ref_31
+      - *ref_32
+      - *ref_33
     contributors:
       human:
         - ascend
@@ -2269,7 +2456,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_30
+      - &ref_35
         id: h0055
         ts: '2026-03-03T17:01:45Z'
         type: implement
@@ -2300,8 +2487,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_29
-      - *ref_30
+      - *ref_34
+      - *ref_35
     contributors:
       human:
         - ascend
@@ -2313,35 +2500,121 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_30
+      - *ref_35
     contributors:
       human:
         - ascend
       agent: []
   '#cli-studio':
     symbol: '#cli-studio'
-    total_changes: 2
-    last_modified: '2026-03-03T20:36:23Z'
+    total_changes: 7
+    last_modified: '2026-05-22T19:17:55Z'
     stability_score: 1
     fragility: low
     recent:
-      - id: h0058
-        ts: '2026-03-03T20:36:23Z'
+      - &ref_44
+        id: h0076
+        ts: '2026-05-22T19:17:55Z'
         type: implement
         symbols:
+          - '#atelier-university'
           - '#cli-studio'
         author:
           type: human
           id: ascend
-        commit: 83b696a6bc47e4e7904949ec3411e5e9b2aa5f35
-        intent: fix
+        commit: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+        intent: feature
+        files:
+          - .gitignore
+          - CHANGELOG.md
+          - README.md
+          - packages/cli/package.json
+          - packages/cli/scripts/bundle-university.mjs
+        description: 'feat(#cli-studio): ship the Atelier University pack in the npm package [0.37.0]'
+      - &ref_38
+        id: h0067
+        ts: '2026-05-20T04:42:40Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#mcp-import-images'
+          - '#recipe-lib'
+          - '#render-image'
+          - '#studio-inline-app'
+          - '#studio-widget'
+        author:
+          type: human
+          id: ascend
+        commit: c4a9bf5b003fbc5e9eb16af5a8709fcd8185029a
+        intent: feature
         files:
           - CHANGELOG.md
+          - README.md
           - packages/cli/package.json
-          - packages/cli/src/cli.ts
+          - packages/mcp/package.json
+          - packages/studio/package.json
+        description: 'chore(release): v0.36.0 — hardening pass (PNG export + 10 fixes + studio refactor)'
+      - &ref_42
+        id: h0066
+        ts: '2026-05-20T04:41:48Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#studio-inline-app'
+        author:
+          type: human
+          id: ascend
+        commit: bf7595cec0063aefee7f65e1a0856f92c8278fbf
+        intent: refactor
+        files:
+          - packages/cli/package.json
           - packages/cli/src/commands/studio.ts
-        description: 'fix(#cli): read version from package.json, log Export All errors [0.28.1]'
-      - *ref_31
+          - packages/cli/src/web/inline-app.ts
+          - packages/cli/src/web/tsconfig.json
+          - packages/cli/tsconfig.json
+          - packages/studio/src/index.test.ts
+        description: 'refactor(#cli-studio, #studio-inline-app): extract inline studio app to a typechecked module'
+      - &ref_41
+        id: h0065
+        ts: '2026-05-20T04:30:02Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#studio-save-coordinator'
+          - '#studio-widget'
+        author:
+          type: human
+          id: ascend
+        commit: f4de3568a61693e960a2c43b1b5617f9c70a9f30
+        intent: fix
+        files:
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/lib/studio-save-coordinator.ts
+          - packages/studio/src/controls/slider-input.ts
+          - packages/studio/src/panels/property-panel.ts
+          - packages/studio/src/studio.ts
+        description: 'fix(#cli-studio, #studio-widget): autosave corruption + bridge mkdir + slider commit-gating'
+      - &ref_39
+        id: h0063
+        ts: '2026-05-20T04:10:46Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#mcp-import-images'
+          - '#recipe-lib'
+        author:
+          type: human
+          id: ascend
+        commit: 7db071eb37c497777db562d1d4ada3567cc56b64
+        intent: fix
+        files:
+          - packages/cli/src/commands/recipe.ts
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.test.ts
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/tools/import-images.ts
+        description: 'fix(#cli-studio, #mcp-import-images, #recipe-lib): six reviewer- and smoke-test-confirmed defects'
     contributors:
       human:
         - ascend
@@ -2353,7 +2626,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_32
+      - &ref_37
         id: h0059
         ts: '2026-03-03T20:43:46Z'
         type: implement
@@ -2371,7 +2644,7 @@ by_symbol:
           - packages/studio/package.json
           - packages/studio/src/export/video-exporter.ts
         description: 'fix(#studio): try H.264 High Profile for MP4 export at 1080p+ [0.28.2]'
-      - *ref_31
+      - *ref_36
     contributors:
       human:
         - ascend
@@ -2383,7 +2656,524 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_32
+      - *ref_37
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-lint':
+    symbol: '#cli-lint'
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#layer-schema':
+    symbol: '#layer-schema'
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#layer-types':
+    symbol: '#layer-types'
+    total_changes: 2
+    last_modified: '2026-05-22T18:34:12Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_22
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#validation-functions':
+    symbol: '#validation-functions'
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#video-renderer':
+    symbol: '#video-renderer'
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ^valid-delta:
+    symbol: ^valid-delta
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ^valid-document:
+    symbol: ^valid-document
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ^valid-video-layer:
+    symbol: ^valid-video-layer
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_30
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#paradigm-compliance':
+    symbol: '#paradigm-compliance'
+    total_changes: 1
+    last_modified: '2026-05-08T00:38:47Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0061
+        ts: '2026-05-08T00:38:47Z'
+        type: implement
+        symbols:
+          - '#paradigm-compliance'
+        author:
+          type: human
+          id: ascend
+        commit: 492fd1641c35e067e79770e6c9f25e7eb05c75b9
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .cursor/hooks.json
+          - .cursor/hooks/paradigm-common.sh
+          - .cursor/hooks/paradigm-posttooluse.sh
+          - .cursor/hooks/paradigm-pretooluse.sh
+          - .cursor/hooks/paradigm-session-start.sh
+          - .cursor/mcp.json
+          - .cursor/rules/paradigm-agent-hints.mdc
+          - .cursor/rules/paradigm-context.mdc
+          - .cursor/rules/paradigm-core.mdc
+          - .cursor/rules/paradigm-flows.mdc
+          - .cursor/rules/paradigm-practices.mdc
+          - .cursor/rules/paradigm-workflow.mdc
+          - .github/copilot-instructions.md
+          - .paradigm/.metrics-salt
+          - .paradigm/adoptions.yaml
+          - .paradigm/aspect-graph.db
+          - .paradigm/authority.yaml
+          - .paradigm/config.yaml
+          - .paradigm/docs/commands.md
+          - .paradigm/docs/queries.md
+          - .paradigm/events/.last-processed
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/notebook-refs.jsonl
+          - .paradigm/events/session-log.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/flows.yaml
+          - .paradigm/graduation.yaml
+          - .paradigm/graphs/auto.graph.json
+          - .paradigm/habits.yaml
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-03-04/L-2026-03-04-ascend-090016-001.lore
+          - .paradigm/lore/entries/2026-05-06/L-2026-05-06-ascend-232952-001.lore
+          - .paradigm/lore/entries/2026-05-07/L-2026-05-07-ascend-182424-001.lore
+          - .paradigm/lore/entries/2026-05-07/L-2026-05-07-ascend-184120-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/manifest.consistency.json
+          - .paradigm/migrate.yaml
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/prompts/add-feature.md
+          - .paradigm/prompts/add-gate.md
+          - .paradigm/prompts/debug-auth.md
+          - .paradigm/prompts/implement-ftux.md
+          - .paradigm/prompts/implement-sandbox.md
+          - .paradigm/prompts/read-docs.md
+          - .paradigm/prompts/refactor.md
+          - .paradigm/prompts/run-e2e-tests.md
+          - .paradigm/prompts/trace-flow.md
+          - .paradigm/prompts/validate-portals.md
+          - .paradigm/protocols/index.yaml
+          - .paradigm/roster.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/sentinel/sentinel.db
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/specs/context-tracking.md
+          - .paradigm/specs/disciplines.md
+          - .paradigm/specs/probe.md
+          - .paradigm/tags.yaml
+          - .paradigm/university/.metrics/snapshot-2026-05-06.json
+          - .paradigm/university/config.yaml
+          - .paradigm/university/index.yaml
+          - .paradigm/wisdom/antipatterns.yaml
+          - .windsurfrules
+          - AGENTS.md
+          - CLAUDE.md
+        description: 'chore(paradigm): sync Paradigm config, agent roster, and lore entries'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-carousel':
+    symbol: '#cli-carousel'
+    total_changes: 1
+    last_modified: '2026-05-20T03:55:11Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_40
+        id: h0062
+        ts: '2026-05-20T03:55:11Z'
+        type: implement
+        symbols:
+          - '#cli-carousel'
+          - '#mcp-import-images'
+          - '#mcp-recipe-tools'
+          - '#render-image'
+        author:
+          type: human
+          id: ascend
+        commit: 2ddf1c1e3279dd9c7a126b0c01b6191e7749d927
+        intent: feature
+        files:
+          - CHANGELOG.md
+          - README.md
+          - packages/cli/package.json
+          - packages/mcp/package.json
+        description: 'chore(release): v0.35.0 — agent-driven content workflow'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-import-images':
+    symbol: '#mcp-import-images'
+    total_changes: 3
+    last_modified: '2026-05-20T04:42:40Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_38
+      - *ref_39
+      - *ref_40
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-recipe-tools':
+    symbol: '#mcp-recipe-tools'
+    total_changes: 1
+    last_modified: '2026-05-20T03:55:11Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_40
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#render-image':
+    symbol: '#render-image'
+    total_changes: 3
+    last_modified: '2026-05-20T04:42:40Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_38
+      - id: h0064
+        ts: '2026-05-20T04:23:04Z'
+        type: implement
+        symbols:
+          - '#render-image'
+        author:
+          type: human
+          id: ascend
+        commit: 960970aadec22eb014d8edb6419cc7c55d1e7718
+        intent: fix
+        files:
+          - packages/cli/.purpose
+          - packages/cli/package.json
+          - packages/cli/src/commands/still.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/lib/render-image.ts
+          - pnpm-lock.yaml
+        description: 'fix(#render-image): PNG export works on plain install — node-canvas → @napi-rs/canvas'
+      - *ref_40
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#recipe-lib':
+    symbol: '#recipe-lib'
+    total_changes: 3
+    last_modified: '2026-05-22T18:46:31Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
+      - *ref_38
+      - *ref_39
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-save-coordinator':
+    symbol: '#studio-save-coordinator'
+    total_changes: 1
+    last_modified: '2026-05-20T04:30:02Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_41
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-widget':
+    symbol: '#studio-widget'
+    total_changes: 2
+    last_modified: '2026-05-20T04:42:40Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_38
+      - *ref_41
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-inline-app':
+    symbol: '#studio-inline-app'
+    total_changes: 2
+    last_modified: '2026-05-20T04:42:40Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_38
+      - *ref_42
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~copy-on-write-doc:
+    symbol: ~copy-on-write-doc
+    total_changes: 1
+    last_modified: '2026-05-20T22:50:41Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_43
+        id: h0069
+        ts: '2026-05-20T22:50:41Z'
+        type: implement
+        symbols:
+          - ~copy-on-write-doc
+          - ~detected-vs-user-edited
+          - ~layer-tag-isolation
+          - ~source-tagged-mutation
+        author:
+          type: human
+          id: ascend
+        commit: 0d7c086f8c4626a373b5c55b0a736bd90660c3d6
+        intent: feature
+        files:
+          - .paradigm/flow-index.json
+          - .paradigm/navigator.yaml
+          - .paradigm/scan-index.json
+          - .purpose
+          - packages/canvas/.purpose
+        description: 'docs(#paradigm): register 4 cross-cutting aspects + fix canvas .purpose'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~detected-vs-user-edited:
+    symbol: ~detected-vs-user-edited
+    total_changes: 1
+    last_modified: '2026-05-20T22:50:41Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_43
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~layer-tag-isolation:
+    symbol: ~layer-tag-isolation
+    total_changes: 1
+    last_modified: '2026-05-20T22:50:41Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_43
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~source-tagged-mutation:
+    symbol: ~source-tagged-mutation
+    total_changes: 1
+    last_modified: '2026-05-20T22:50:41Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_43
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-university':
+    symbol: '#atelier-university'
+    total_changes: 2
+    last_modified: '2026-05-22T19:17:55Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_44
+      - id: h0070
+        ts: '2026-05-20T23:06:28Z'
+        type: implement
+        symbols:
+          - '#atelier-university'
+        author:
+          type: human
+          id: ascend
+        commit: a0603470f9ad5e71dc5df2094968ffae0e2738df
+        intent: feature
+        files:
+          - .paradigm/university/content/notes/N-atel-001-first-render.md
+          - .paradigm/university/content/notes/N-atel-001-install-and-launch.md
+          - .paradigm/university/content/notes/N-atel-001-what-is-atelier.md
+          - .paradigm/university/content/notes/N-atel-201-mcp-overview.md
+          - .paradigm/university/content/notes/N-atel-401-hierarchical-states.md
+          - .paradigm/university/content/notes/N-atel-401-motion-deep-dive.md
+          - .paradigm/university/content/notes/N-atel-401-presets-and-templates.md
+          - .paradigm/university/content/notes/N-atel-401-transitions.md
+          - .paradigm/university/content/notes/N-atel-501-detected-vs-user-edited.md
+          - .paradigm/university/content/notes/N-atel-501-layer-tag-isolation.md
+          - .paradigm/university/content/notes/N-atel-501-silence-trim.md
+          - .paradigm/university/content/notes/N-atel-501-transcribe-and-captions.md
+          - .paradigm/university/content/notes/N-atel-601-carousel.md
+          - .paradigm/university/content/notes/N-atel-601-overlay-rules.md
+          - .paradigm/university/content/notes/N-atel-601-recipe-tools-and-apply.md
+          - .paradigm/university/content/notes/N-atel-601-studio-recipe.md
+          - .paradigm/university/content/notes/N-atel-701-choosing-output.md
+          - .paradigm/university/content/notes/N-atel-701-png-and-frames.md
+          - .paradigm/university/content/notes/N-atel-701-vector.md
+          - .paradigm/university/content/notes/N-atel-701-video.md
+          - .paradigm/university/content/notes/N-atel-801-editing-surface.md
+          - .paradigm/university/content/notes/N-atel-801-live-bridge.md
+          - .paradigm/university/content/notes/N-atel-801-studio-app.md
+          - .paradigm/university/content/notes/N-atel-801-symbiotic-loop.md
+          - .paradigm/university/content/paths/LP-atel-401.yaml
+          - .paradigm/university/content/paths/LP-atel-501.yaml
+          - .paradigm/university/content/paths/LP-atel-601.yaml
+          - .paradigm/university/content/paths/LP-atel-701.yaml
+          - .paradigm/university/content/paths/LP-atel-801.yaml
+          - .paradigm/university/content/quizzes/Q-atel-401-state-machines.yaml
+          - .paradigm/university/content/quizzes/Q-atel-501-video-pipeline.yaml
+          - .paradigm/university/content/quizzes/Q-atel-601-recipes.yaml
+          - .paradigm/university/content/quizzes/Q-atel-701-export.yaml
+          - .paradigm/university/content/quizzes/Q-atel-801-studio-loop.yaml
+          - .paradigm/university/index.yaml
+        description: 'docs(#atelier-university): expand pack to 9 tracks (v0.1.0 → v0.2.0) — log all post-v0.1.0 know-hows'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#spring-solver':
+    symbol: '#spring-solver'
+    total_changes: 1
+    last_modified: '2026-05-22T18:34:12Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_22
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#animation-player':
+    symbol: '#animation-player'
+    total_changes: 1
+    last_modified: '2026-05-22T18:40:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_45
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#lottie-warnings':
+    symbol: '#lottie-warnings'
+    total_changes: 1
+    last_modified: '2026-05-22T18:40:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_45
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#webcodecs-provider':
+    symbol: '#webcodecs-provider'
+    total_changes: 1
+    last_modified: '2026-05-22T18:40:27Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_45
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cut-model':
+    symbol: '#cut-model'
+    total_changes: 1
+    last_modified: '2026-05-22T18:46:31Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_17
     contributors:
       human:
         - ascend

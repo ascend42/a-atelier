@@ -1,0 +1,39 @@
+id: L-2026-05-20-ascend-044257-001
+type: milestone
+timestamp: '2026-05-20T04:42:57.478Z'
+duration_minutes: 90
+author: ascend
+title: v0.36.0 hardening pass — PNG export fixed, blocking .atelier corruption fixed, studio client extracted
+summary: 'Team-driven quality pass on the v0.34/v0.35 surface, triggered by ''fix all things.'' Two review agents (reviewer Judge x2) + runtime smoke tests found real defects; six builders fixed them across 5 commits. Highlights: (1) PNG export was DEAD on fresh install — canvas was an optional peer dep needing brew install cairo pango; swapped to @napi-rs/canvas (prebuilt binaries) so export-image/carousel/still produce real PNGs out of the box (verified file out.png → PNG 1080x1080). (2) BLOCKING .atelier corruption: autosave loadFile never cleared the pending saveTimeout, so editing A then switching to B within 800ms wrote A''s bytes to B — fixed via a new SaveCoordinator (clear timer + flushPending to the correct file on switch). (3) /mcp WS endpoint was unreachable by real MCP clients (Origin check rejected missing-Origin) — split so /bridge stays strict, /mcp tolerates missing but rejects foreign. (4) Phantom agent-edit toast on every file open (system-source fell through broadcast filter). (5) Subfolder new-file + bridge persist ENOENT (no mkdir). (6) Slider drag flooded undo+bridge (split onInput preview vs onChange commit). (7) isSafePath over-broad. (8) import-images half-mutated doc (COW). (9) recipe new/validate path-resolution mismatch + double-extension. (10) Extracted the ~700-LOC inline studio client from a template-literal STRING into a typechecked module (packages/cli/src/web/inline-app.ts, bootStudioApp) with a dedicated DOM tsconfig — the root cause that let the save-race + slider bugs hide. Verified end-to-end: studio boots, scaffolds welcome.atelier, Vite transpiles the extracted module cleanly, POST save round-trips. Tests 676→696 passing, 0 skipped (was 3; PNG tests now run), 23/23 typechecks. Released v0.36.0.'
+symbols_touched:
+  - '#render-image'
+  - '#cli-studio'
+  - '#studio-widget'
+  - '#studio-inline-app'
+  - '#studio-save-coordinator'
+  - '#mcp-import-images'
+  - '#recipe-lib'
+commit: c4a9bf5
+learnings:
+  - 'Reviewer agents earn their keep: a broad audit caught a BLOCKING .atelier-corruption autosave race that all the unit tests + typecheck missed (it only manifests on a timing-dependent fast file switch). Pair agent review with runtime smoke tests — my own export-image smoke test caught that PNG export was dead-on-arrival (optional canvas peer dep) which no test covered because the tests were skipped for the same reason. The inline studio app being a template-literal STRING was the meta-bug: ~700 LOC of WS/bridge/autosave logic invisible to tsc/lint/tests'
+  - which is exactly where the two worst bugs lived; extracting it to a typechecked module (bootStudioApp + a 2-line entry shim + a DOM-scoped tsconfig so client/server lib types don't clash) is the durable fix. ALWAYS verify a studio-client refactor by booting the server + curling the Vite-transpiled module + a save round-trip — tsc cannot see template-string client code
+  - and now can.
+tags:
+  - v0.36.0
+  - release
+  - hardening
+  - bugfix
+  - blocking-fix
+  - studio-refactor
+  - team-review
+linked_commits:
+  - 7db071e
+  - 960970a
+  - f4de356
+  - bf7595c
+  - c4a9bf5
+confidence: 0.9
+git_context:
+  ref: c4a9bf5b003fbc5e9eb16af5a8709fcd8185029a
+  branch: main
+  dirty: true

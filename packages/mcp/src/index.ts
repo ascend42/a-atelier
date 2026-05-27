@@ -22,6 +22,9 @@ import { register as registerPerformanceTools } from "./tools/performance.js";
 import { register as registerOverlayTools } from "./tools/overlays.js";
 import { register as registerRecipeTools } from "./tools/recipes.js";
 import { register as registerImportImageTools } from "./tools/import-images.js";
+import { register as registerMindMapTools } from "./tools/mind-map.js";
+import { register as registerEffectiveTranscriptTools } from "./tools/effective-transcript.js";
+import { register as registerMediaNotesTools } from "./tools/media-notes.js";
 
 export { DocumentStore } from "./store.js";
 export type { MutationSource, ChangeListener } from "./store.js";
@@ -59,6 +62,7 @@ export { register as registerPerformanceTools } from "./tools/performance.js";
 export { register as registerOverlayTools } from "./tools/overlays.js";
 export { register as registerRecipeTools } from "./tools/recipes.js";
 export { register as registerImportImageTools } from "./tools/import-images.js";
+export { register as registerMindMapTools } from "./tools/mind-map.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -98,6 +102,7 @@ export function createServer(
   registerOverlayTools(server, store);
   registerRecipeTools(server, store);
   registerImportImageTools(server, store);
+  registerMindMapTools(server, store);
 
   return { server, store };
 }

@@ -1,0 +1,31 @@
+id: TD-2026-05-26-720
+timestamp: '2026-05-26T01:09:28.709Z'
+title: Atelier Studio gets a hosted tier as an additive layer on the bridge
+decision: >-
+  Keep local-first (127.0.0.1, origin-checked) as the default and developer path. Add a hosted Studio tier as a layer on
+  top of the existing WS bridge / DocumentStore protocol — auth + persistence around the same envelopes, not a rewrite —
+  sequenced after the content-gen agents land.
+rationale: >-
+  The owner's 'studio web platform and beyond' wants a reachable surface for phone-based UGC creators who won't run a
+  localhost Vite server. The bridge/DocumentStore were designed future-proof for exactly this, so hosting is additive.
+  Sequencing after agents means the hosted surface is worth visiting when it ships.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Stay localhost-only
+    rejected_because: A phone-based UGC creator cannot run a localhost Vite server; cuts off the actual target audience
+symbols_affected:
+  - '#studio-bridge'
+  - '#ws-transport'
+  - ^localhost-only
+status: active
+tags:
+  - creator-flow
+  - studio
+  - hosting
+  - phase-3

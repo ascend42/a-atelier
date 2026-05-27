@@ -1,0 +1,52 @@
+id: L-2026-05-27-ascend-140312-001
+type: milestone
+timestamp: '2026-05-27T14:03:12.593Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Paradigm-Atelier symbiosis: detection + 4-augmentation contract'
+summary: 'Implemented the symbiosis protocol agreed with the owner: when atelier studio --new runs in a Paradigm-initialized directory, four idempotent augmentations weave Atelier into the existing Paradigm scaffold without overwriting anything Paradigm owns. (1) CLAUDE.md gets a sentinel-bracketed Atelier section appended/replaced. (2) .claude/agents/ gets the three atelier-quill/lux/iris.md agent files dropped (canonical sync from embedded templates in atelier-agent-templates.ts). (3) .mcp.json gets the atelier server merged alongside paradigm (preserves permissions block + other servers). (4) .paradigm/personas/index.yaml gets the three atelier persona entries added via YAML merge. New --no-paradigm-integration escape hatch on atelier studio --new. Detection-and-augmentation model keeps Paradigm and Atelier codebases decoupled — no Paradigm-side preset registration needed.'
+symbols_touched:
+  - '#paradigm-augment'
+  - '#workspace-io'
+  - '#cli-studio'
+  - '#claude-agents-bundle'
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+symbols_created:
+  - '#paradigm-augment'
+  - '#atelier-agent-templates'
+files_created:
+  - packages/cli/src/lib/paradigm-augment.ts
+  - packages/cli/src/lib/atelier-agent-templates.ts
+files_modified:
+  - packages/cli/src/lib/workspace.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/index.ts
+  - packages/cli/src/index.test.ts
+  - packages/cli/.purpose
+learnings:
+  - Detection-and-augmentation in the consumer (atelier) beats preset registration in the producer (paradigm) when two tools need to cooperate without coupling. The augmentation logic lives where the consumer can evolve it independently of the producer's release cadence.
+  - Sentinel-bracketed markdown sections make CLAUDE.md augmentation safely idempotent across re-runs. Same pattern would work for any owned-by-another-tool config file we need to extend.
+verification:
+  status: pass
+  details:
+    cli_tests: 294 passing (+23 new)
+    typecheck: clean
+    compliance: clean
+    portal: compliant
+tags:
+  - symbiosis
+  - paradigm-integration
+  - workspace
+  - creator-flow
+linked_lore:
+  - L-2026-05-27-ascend-134737-001
+  - L-2026-05-27-ascend-134835-001
+  - TD-2026-05-26-275
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

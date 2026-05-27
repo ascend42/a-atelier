@@ -76,6 +76,10 @@ components:
     description: 'atelier transcript family — fix (single word or batch --replace), add (insert userAdded word), delete (hide word), merge (concat adjacent), split (fractional split with optional text override), list. All edits set userEdited/userAdded/hidden flags and regenerate caption layers unless --no-regenerate.'
     file: src/commands/transcript.ts
     tags: [video, captions, transcript, editing, cli]
+  '#cli-reconstruct':
+    description: 'atelier reconstruct [project-dir] — primes an Atelier Project for Quill''s `reconstruct-script-from-transcript` skill (the Veteran hero path''s first CLI move). Validates `<project-dir>` (defaults to cwd) is a Project (has `project.atelier`); short-circuits when `transcript.json` is already on disk or a forward-compat `transcripts/*.json` exists; otherwise verifies a `source.<ext>` (mp4 | mov | webm | mkv | avi) is present and calls into the exported `#cli-transcribe` helper `transcribeProject` in-process (NOT a subprocess) to write `transcript.json`. Prints a one-screen hint pointing the creator at `@atelier-quill reconstruct` in Claude Code; the LLM reasoning is Quill''s job, the CLI''s job is to make the inputs exist. `--json` emits a machine-readable payload `{ ok, projectDir, transcriptPath, scriptPath: null|"existing", ready, transcribed, notes }`. Pure helper `runReconstruct(opts)` returns `ReconstructResult`; takes a `transcribeFn` injection point so tests stub the whisper-cpp subprocess. Exit 0 on success, 1 on missing project.atelier / no source video / no transcript could be produced.'
+    file: src/commands/reconstruct.ts
+    tags: [video, ugc, transcribe, script, quill, cli, reconstruction]
   '#cli-captions':
     description: 'atelier captions regenerate — re-derive caption-tagged TextVisual layers from current transcript.json without re-running Whisper. Used when caption styling changes.'
     file: src/commands/captions.ts
@@ -100,6 +104,39 @@ components:
     description: 'atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.'
     file: src/commands/apply-recipe.ts
     tags: [video, ugc, recipe, cli, studio-recipe]
+  '#cli-init':
+    description: 'atelier init <project-dir> — first-run setup for a creator Project (Phase 3, delegation C). Creates <project-dir> if absent (refuses if it exists as a file), prompts for Ambient/Explicit learning mode (or accepts --mode <ambient|explicit> to skip the prompt), writes <project-dir>/.atelier/learning-mode.yaml via #learning-mode-io, creates <project-dir>/.atelier/mind-map/ with a creator-facing README (TD-2026-05-26-271: nothing in the mind-map leaves the machine), delegates to #cli-artifacts `scaffoldArtifacts` to drop DESIGN/SCRIPT/STORYBOARD (unless --no-scaffold), and runs `git init` + writes a minimal .gitignore (unless --no-git or already inside a repo, detected via `git -C <dir> rev-parse --show-toplevel`). Re-entrant: re-running init on an already-initialized dir refreshes learning-mode.yaml with a new timestamp and swallows scaffold''s refuse-to-overwrite as a soft skip. --json emits a machine-readable payload (ok, projectDir, mode, learningModeFile, scaffolded, mindMapDir, gitInitialized, alreadyInRepo, notes) and requires --mode (scripted use must pre-declare). Pure helper runInit(opts) returns InitResult; Commander wrapper catches and process.exit(1)s on error per the same split #cli-artifacts uses.'
+    file: src/commands/init.ts
+    tags: [init, setup, learning-mode, mind-map, scaffold, git, cli, phase-3]
+  '#learning-mode-io':
+    description: 'learning-mode.yaml read/write for the Atelier creator autonomy posture (TD-2026-05-26-646). writeLearningMode(dir, mode, opts?) writes <dir>/.atelier/learning-mode.yaml with version, mode (ambient|explicit), and an ISO 8601 chosen_at timestamp (overridable via opts.chosenAt for deterministic tests). readLearningMode(dir) returns undefined when the file is absent; throws on invalid mode or missing chosen_at. resolveLearningMode(cwd) returns { mode, source: workspace|project|default } — walks up from cwd, preferring the workspace-level mode when cwd is inside a workspace (via findWorkspace), else the nearest project-level mode, else { ambient, default } for read-only resolution; writes are still the caller`s responsibility at the right level. Hand-rolled scalar YAML — no YAML dep — matched to whatever the writer emits; the schema is intentionally tiny and stable. Iris and friends read this at session start to calibrate behavior; the system NEVER auto-prompts to switch — the creator changes mode by editing the file.'
+    file: src/lib/learning-mode.ts
+    tags: [init, learning-mode, yaml, io, phase-3, workspace]
+  '#workspace-io':
+    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence). createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
+    file: src/lib/workspace.ts
+    tags: [workspace, init, studio, yaml, io, discovery]
+  '#paradigm-augment':
+    description: 'Paradigm + Atelier workspace symbiosis. detectParadigm(dir) returns { present, claudeMdPath, mcpJsonPath, configYamlPath, personasIndexPath, agentsDirPath }; present is true iff both <dir>/CLAUDE.md and <dir>/.paradigm/config.yaml exist (the joint marker `paradigm shift` leaves). When present, augmentParadigmWithAtelier(dir, { workspaceName, learningMode, atelierMcpCwd? }) runs four idempotent operations: (1) augmentClaudeMd splices a sentinel-bracketed `## Atelier Creator Workspace` section between ATELIER_CLAUDE_MD_SECTION_BEGIN / _END markers — appends on first run, replaces on re-run, never touches bytes outside the sentinels; (2) augmentClaudeAgents drops atelier-{quill,lux,iris}.md from the snapshot in atelier-agent-templates.ts into <dir>/.claude/agents/ (creates dir if missing; overwrites OK — canonical sync per TD-2026-05-26-210); (3) augmentMcpJson merges an `atelier` entry into mcpServers (command:atelier-mcp, args:["."], cwd:<dir>) alongside any existing paradigm + permissions block — preserves siblings verbatim, returns added/updated/skipped; (4) augmentPersonasIndex block-replaces just the personas: subtree in .paradigm/personas/index.yaml (preserves version/generated/chains/gate_coverage/route_coverage/uncovered_routes byte-for-byte), adding quill-showrunner / lux-cinematographer / iris-composer entries alongside any pre-existing personas. Hand-rolled YAML + JSON merging — no js-yaml dep. Idempotent replay produces stable output (CLAUDE.md replaced, mcp.json skipped, personas skipped, agents updated). Wired into createWorkspace; gated by opts.skipParadigmIntegration (CLI: --no-paradigm-integration).'
+    file: src/lib/paradigm-augment.ts
+    tags: [workspace, paradigm, augment, claude-md, mcp, personas, agents, symbiosis, phase-3]
+  '#atelier-agent-templates':
+    description: 'Snapshot of engine .claude/agents/atelier-{quill,lux,iris}.md as TypeScript string constants (ATELIER_QUILL_AGENT_MD, ATELIER_LUX_AGENT_MD, ATELIER_IRIS_AGENT_MD + ATELIER_AGENT_TEMPLATES registry). Generated by escape-aware copy from the engine root .md files; sync convention is manual lockstep when canonical files change. Used by #paradigm-augment.augmentClaudeAgents to drop the three Claude Code agent wrapper files into a workspace .claude/agents/ directory when wiring Paradigm + Atelier symbiosis.'
+    file: src/lib/atelier-agent-templates.ts
+    tags: [agents, templates, claude-code, snapshot, paradigm-augment]
+  '#cli-artifacts':
+    description: 'atelier artifacts <validate|scaffold> — first user-facing surface over the Phase 2 front-of-pipeline artifact schemas (DESIGN.md / SCRIPT.md / STORYBOARD.md). `validate <project-dir> [--json]` walks the three artifact files (sibling-of-project.atelier convention per artifact spec §2), parses each present file via parseDesign / parseScript / parseStoryboard, and runs validateArtifactSet on whatever parsed cleanly to enforce ^valid-artifact-set — absent artifacts are noted as [not present] (NOT errors), parse failures and validator errors both exit 1, warnings alone (e.g. pre-VO duration overrun) keep exit 0 per the warn-only posture, --json emits a machine-readable payload (ok, present, missing, parseErrors, validation). `scaffold <project-dir> [--only design|script|storyboard] [--force] [--json]` writes canonical empty templates from #artifact-templates into the dir (recursive-mkdir if absent), refusing-to-overwrite by default with a single error listing every would-clobber path so the conflict surfaces in one pass — closing the author-side of the artifact loop (creators scaffold → fill → validate).'
+    file: src/commands/artifacts.ts
+    gates: ['^valid-artifact-set']
+    tags: [artifacts, design, script, storyboard, validation, scaffold, cli, phase-2]
+  '#artifact-templates':
+    description: 'Canonical empty templates for DESIGN.md / SCRIPT.md / STORYBOARD.md, exported as DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE TS string constants plus the ARTIFACT_TEMPLATES registry. Used by `atelier artifacts scaffold` to write a creator-fillable starting point with TODO markers and Markdown comments inline. INVARIANT: every template is schema-valid (placeholders use defaults sufficient to satisfy the schema package mins — voice.descriptors >= 3, palette/typography/logos/hook/cta non-empty, storyboard window.end_s > start_s, techniques drawn from TECHNIQUE_LIBRARY_V1) so parseDesign/parseScript/parseStoryboard succeed on first save; the triple ALSO cross-validates clean via validateArtifactSet (matching hook-1/cta-1 ids between SCRIPT and STORYBOARD, valid slot refs). Templates are pure TS constants so they version-lock to the consuming code and tree-shake — no external .md files.'
+    file: src/lib/artifact-templates.ts
+    tags: [artifacts, templates, scaffold, design, script, storyboard, phase-2]
+  '#artifact-project':
+    description: 'loadArtifactsFromProject(dir) → { projectDir, design?, script?, storyboard?, missing[], parseErrors[] }. Pure filesystem walker for the DESIGN.md / SCRIPT.md / STORYBOARD.md triplet at a Project root. Synchronously throws only on a missing or non-directory projectDir; per-file parse failures (read errors, YAML errors, Zod validation errors) are captured into parseErrors so callers can surface every problem in one pass rather than aborting on the first. ZodError issues are flattened to "path: message" form so multi-issue failures stay legible without a JSON dump. The library layer is reused by the CLI (atelier artifacts validate) and is the consumption point future agent / MCP callers will use to read project artifacts; no stdout / exit-code coupling lives here.'
+    file: src/lib/artifact-project.ts
+    tags: [artifacts, project, filesystem, pure, phase-2]
   '#cli-studio':
     description: 'atelier studio [file] — launches a Vite dev server serving the AtelierStudio widget as a browser-based editor. Lists .atelier files in CWD, autosaves edits with visible save/saving/error indicator + click-to-retry on failure, supports per-file and Export-All (gif/mp4/webm). Server bound to 127.0.0.1 only with Origin check on /api/* mutating endpoints (^localhost-only). No autoplay on file open — the embedded studio is constructed with autoplay:false.'
     file: src/commands/studio.ts
@@ -739,6 +776,114 @@ aspects:
       - packages/cli/src/lib/recipe.ts:329-363
     enforcement: drop overlay tag, rebuild, new doc
     appliesTo: ["#recipe-lib"]
+  artifact-templates-self-validate:
+    description: 'The DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE constants in #artifact-templates are not just illustrative — they are a load-bearing invariant. Every placeholder field carries a value sufficient to satisfy the schema mins (voice.descriptors has 3 entries even though they are TODO strings; palette/typography/logos have at least one entry; storyboard window.end_s > start_s; techniques come from TECHNIQUE_LIBRARY_V1; SCRIPT ships hook-1+cta-1 and STORYBOARD ships matching ## hook-1+## cta-1). A freshly-scaffolded triple must therefore parse via parseDesign/parseScript/parseStoryboard AND cross-validate via validateArtifactSet with ok:true — verified directly in tests. Loosening a template default to break this invariant means a creator''s first `atelier artifacts validate` after `scaffold` fails, breaking the documented author loop.'
+    tags:
+      - artifacts
+      - templates
+      - core-invariant
+      - schema-valid
+    anchors:
+      - packages/cli/src/lib/artifact-templates.ts
+      - packages/cli/src/index.test.ts:artifact-templates self-validate
+    enforcement: schema mins satisfied; hook-1+cta-1 cross-match
+    appliesTo: ['#artifact-templates']
+  artifacts-scaffold-refuse-overwrite-atomic:
+    description: 'atelier artifacts scaffold runs a pre-flight existsSync sweep over EVERY target file before writing any of them — if any one exists and --force is absent, the operation aborts with a single error message listing every would-clobber path. This is atomicity by abort: either every requested file is written or none are, never a partial scaffold that leaves a project dir in a half-written state. --force flips the pre-flight check off, allowing overwrite. Mirrors recipe new''s refuse-to-overwrite idiom (#cli-recipe) but extends it to the multi-file case.'
+    tags:
+      - artifacts
+      - scaffold
+      - safety
+      - atomic
+    anchors:
+      - packages/cli/src/commands/artifacts.ts
+    enforcement: pre-flight existsSync sweep, abort listing every clobber
+    appliesTo: ['#cli-artifacts']
+  artifacts-warnings-do-not-fail:
+    description: 'atelier artifacts validate exits 0 when validateArtifactSet returns errors:[] even if warnings is non-empty — the artifact spec §9 is explicit that pre-VO duration overrun (sum of est_duration_s > target_duration_s) is warn-only at the Phase 2 surface, with hard-fail deferred to post-transcript binding inside the Iris pipeline. Parse errors and ok:false on the validator both flip exit to 1; missing artifact files are reported as [not present] and do not affect the exit code.'
+    tags:
+      - artifacts
+      - exit-code
+      - warn-only
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/artifacts.ts:64-83
+    enforcement: errors and parseErrors flip exit 1, warnings do not
+    appliesTo: ["#cli-artifacts"]
+  artifacts-absent-not-failure:
+    description: 'loadArtifactsFromProject reports unfound files via the missing[] array and continues — only what is present is parsed, only what is parsed is validated. The schema-package validator mirrors this posture (it gates blocks of cross-artifact rules on the presence of each artifact). A project dir containing only DESIGN.md is a valid input and exits 0 if DESIGN.md is itself valid.'
+    tags:
+      - artifacts
+      - filesystem
+      - convention
+    anchors:
+      - packages/cli/src/lib/artifact-project.ts:85-95
+    enforcement: missing[] accumulates, parsing continues
+    appliesTo: ["#artifact-project"]
+  artifacts-parse-errors-aggregated:
+    description: 'Per-file parse failures (read error, YAML syntax error, Zod schema rejection) are caught and pushed into parseErrors[]; the walker never throws on a parseable directory. ZodError.issues are flattened to "path: message" semicolon-joined so a multi-issue failure surfaces every problem on one line without a JSON dump. Only a missing or non-directory projectDir throws synchronously — the caller decides whether parse aggregation also flips an exit code (the CLI command does; programmatic consumers can choose otherwise).'
+    tags:
+      - artifacts
+      - error-handling
+      - aggregate
+    anchors:
+      - packages/cli/src/lib/artifact-project.ts:97-114
+      - packages/cli/src/lib/artifact-project.ts:120-138
+    enforcement: try/catch per file, flatten ZodError issues
+    appliesTo: ["#artifact-project"]
+  init-idempotent-re-run-safe:
+    description: 'atelier init is explicitly re-entrant: running it a second time on an already-initialized project dir succeeds without clobbering creator work. Concretely: learning-mode.yaml is overwritten with a fresh chosen_at timestamp (and the new --mode if changed); the mind-map README is preserved via existsSync-guard so creator edits survive; the DESIGN/SCRIPT/STORYBOARD scaffold step swallows the underlying refuse-to-overwrite error as a soft-skip note (--force still routes through scaffoldArtifacts for real overwrite); git init is skipped when isInsideGitRepo() detects an existing work tree; .gitignore is existsSync-guarded so a hand-edited ignore file is never clobbered. The only error paths in re-init are the same as first-init: file-not-dir, invalid --mode (validated before any fs writes), or a genuine fs failure.'
+    tags:
+      - init
+      - idempotent
+      - re-run
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/init.ts
+    enforcement: existsSync-guard README + scaffold soft-skip + git in-repo detect
+    appliesTo: ['#cli-init']
+  init-mode-validated-before-writes:
+    description: 'A bad --mode value (e.g. --mode loose) exits 1 BEFORE any filesystem write — the dir is not created, learning-mode.yaml is not written, the mind-map is not scaffolded. runInit validates the supplied mode against LEARNING_MODES at the top of the function, before the mkdir step. The interactive prompt path is separately bounded at 3 attempts; --json without --mode is rejected because scripted use must pre-declare the autonomy posture (no prompt can run when stdout is being parsed). All three "couldn''t determine mode" exits are clean — no partial state.'
+    tags:
+      - init
+      - validation
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/init.ts
+    enforcement: validate --mode before mkdir; --json requires --mode; 3-attempt prompt cap
+    appliesTo: ['#cli-init']
+  learning-mode-no-yaml-dep:
+    description: 'learning-mode.yaml is rendered + parsed by a hand-rolled writer/reader (renderLearningModeYaml + the inline parser in readLearningMode), NOT a YAML library. The schema is intentionally tiny (version / mode / chosen_at scalars + header comments) and stable, so a real YAML parser would be over-engineering. The reader tolerates blank lines and comment lines, strips single/double-quoted scalars, and throws clear errors on invalid mode or missing chosen_at. If the on-disk shape ever needs to grow beyond scalars, that''s the moment to add a YAML dep here — not before.'
+    tags:
+      - learning-mode
+      - no-dependency
+      - convention
+    anchors:
+      - packages/cli/src/lib/learning-mode.ts
+    enforcement: hand-rolled scalar parser, no YAML dep
+    appliesTo: ['#learning-mode-io']
+  reconstruct-chains-transcribe-if-needed:
+    description: 'atelier reconstruct is a chain-or-skip verb: if `transcript.json` already exists at the project root (or a `transcripts/*.json` forward-compat secondary), the transcribe step is skipped entirely and `transcribed:false` is reported — Quill can reconstruct against a fresh OR a long-lived transcript. If neither path exists, the command verifies a `source.<ext>` video is in the project dir (mp4 | mov | webm | mkv | avi) FIRST and only then calls into the exported `transcribeProject` helper from #cli-transcribe to write `transcript.json`. The source-file pre-check exists because whisper-cpp''s stderr is noisy — "no source video found" is a clear creator-facing error, while a missing-file failure from inside whisper would be buried in a subprocess stack trace.'
+    tags:
+      - reconstruct
+      - chain
+      - re-use
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/reconstruct.ts
+    enforcement: skip when transcript present; pre-check source.<ext> before invoking transcribe
+    appliesTo: ['#cli-reconstruct']
+  reconstruct-no-llm-call-from-cli:
+    description: 'atelier reconstruct deliberately does NOT invoke any LLM. The CLI''s only job is to prepare the inputs (verify Project shape, ensure transcript.json exists, optionally chain `atelier transcribe`) and print a one-screen hint pointing the creator at `@atelier-quill reconstruct` in Claude Code. Reasoning over the transcript — walking word timings, identifying beats, inferring hook/story/proof/CTA, writing SCRIPT.md with `bind_to_transcript: true` — is Quill''s job, executed inside Claude Code per the canonical `reconstruct-script-from-transcript` skill bundle. This split keeps the CLI inert (no network, no model calls, no API keys) and makes the chat invocation one sentence. The transcribe step is in-process via the exported `transcribeProject` helper, NOT a subprocess shell-out, so failures surface cleanly through normal exception flow.'
+    tags:
+      - reconstruct
+      - inert
+      - llm-boundary
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/reconstruct.ts
+    enforcement: no LLM invocation; transcribe is an in-process helper call
+    appliesTo: ['#cli-reconstruct']
   recipe-lib-defaults-overlay:
     description: 'renderRecipeWithDefaults overlays a partial recipe on the canonical code defaults (silence_policy / caption_style / caption_grouping spread defaults-first then recipe) so `recipe show --with-defaults` shows the effective values a pipeline would actually use. The default constants here MUST stay in sync with cut-model / caption-builder defaults — they are duplicated, not imported.'
     tags:

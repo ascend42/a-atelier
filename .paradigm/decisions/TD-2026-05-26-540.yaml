@@ -1,0 +1,44 @@
+id: TD-2026-05-26-540
+timestamp: '2026-05-26T06:47:34.620Z'
+title: Atelier is local-first only — no hosted Studio tier (reverses TD-2026-05-26-720)
+decision: >-
+  Atelier Studio remains 127.0.0.1-bound, local-only. There is NO hosted Studio tier, no nevr.land-run Studio instance,
+  no self-hostable Studio backend offered as a separate product. nevr.land's role is narrowed to hosting only inert
+  public artifacts (skills, recipes, asset packs); it never holds personal data, never runs a Studio instance, and has
+  no auth surface for creator data. This explicitly reverses TD-2026-05-26-720 (which had committed to a hosted tier as
+  an additive layer). The phone-based UGC creator audience is consciously deferred — Atelier serves creators who can run
+  it locally, period.
+rationale: >-
+  Under the open-source + no-subscription + no-marketplace-fees stance (TD-2026-05-26-684), every hosted-tier shape
+  requires funding, infrastructure, and a privacy boundary the project doesn't want to maintain. Local-first wins:
+  privacy becomes trivial (data never leaves the laptop), nevr.land's safety property stays clean (only inert public
+  artifacts), and the engineering surface contracts dramatically (no backend, no auth, no multi-user). The bridge
+  architecture's future-proofing for hosting becomes moot for now but costs nothing to keep dormant.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Self-hostable open-source backend + free nevr.land-run public instance with limits (C-revised-2)
+    rejected_because: >-
+      Still requires funding the public instance and maintaining a privacy boundary server-side; conflicts with the
+      clean local-only posture
+  - option: Self-hostable only, no canonical instance (C-revised-1)
+    rejected_because: Keeps the backend complexity without the reach benefit; owner picked clean local-first
+  - option: Keep TD-2026-05-26-720 as written (hosted, additive)
+    rejected_because: Assumed a funding model that conflicts with TD-2026-05-26-684; owner reversed under the values constraint
+symbols_affected:
+  - '#studio-bridge'
+  - '#ws-transport'
+  - ^localhost-only
+  - '#cli-studio'
+status: active
+tags:
+  - creator-flow
+  - studio
+  - local-first
+  - supersedes
+  - values

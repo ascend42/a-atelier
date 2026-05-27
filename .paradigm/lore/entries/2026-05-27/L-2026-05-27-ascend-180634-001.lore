@@ -1,0 +1,37 @@
+id: L-2026-05-27-ascend-180634-001
+type: milestone
+timestamp: '2026-05-27T18:06:34.049Z'
+author: ascend
+title: Quill SCRIPT-reconstruction skill + atelier reconstruct CLI verb
+summary: 'Added canonical Quill skill (reconstruct-script-from-transcript.md) plus a thin atelier reconstruct [project-dir] CLI verb. The verb chains atelier transcribe via the exported transcribeProject helper in-process when no transcript exists, then prints a one-screen hint to invoke @atelier-quill in Claude Code. The CLI deliberately invokes no LLM — Quill does the reasoning over the transcript inside Claude Code. Updated Quill''s system prompt + Claude Code agent wrapper + atelier-agent-templates.ts snapshot with one sentence under My craft about reconstruction. Skills README updated. Two new aspects pinned to #cli-reconstruct in packages/cli/.purpose: reconstruct-chains-transcribe-if-needed and reconstruct-no-llm-call-from-cli. Veteran hero path''s first move.'
+symbols_touched:
+  - '#cli-reconstruct'
+  - '#quill-showrunner'
+  - '#cli-transcribe'
+files_modified:
+  - packages/cli/src/cli.ts
+  - packages/cli/src/lib/atelier-agent-templates.ts
+  - packages/cli/src/index.test.ts
+  - packages/cli/.purpose
+  - .paradigm/personas/quill/system-prompt.md
+  - .claude/agents/atelier-quill.md
+  - .paradigm/personas/quill/skills/README.md
+files_created:
+  - packages/cli/src/commands/reconstruct.ts
+  - .paradigm/personas/quill/skills/reconstruct-script-from-transcript.md
+learnings:
+  - 'Reality wins over spec: the on-disk transcript path is transcript.json at project root (loadVideoProject)'
+  - not transcripts/<name>.json as the spec doc suggests; the CLI accepts the canonical path with the transcripts/*.json secondary as forward-compat.|transcribeFn injection lets tests stub whisper-cpp the same way init.ts uses promptForMode — keeps CI hermetic.|The system-prompt and Claude Code agent wrapper plus the atelier-agent-templates.ts snapshot must all stay in lockstep; three files
+  - one sentence each.
+tags:
+  - quill
+  - reconstruct
+  - transcript
+  - cli
+  - skill
+  - veteran-path
+confidence: 0.9
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

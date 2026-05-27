@@ -29,3 +29,8 @@ Thumbs.db
 
 # Generated at publish by bundle-university (source of truth: .paradigm/university/)
 packages/cli/university/
+
+# Creator workspace — owner's master content studio for dogfooding Atelier.
+# Anything under here is private; iterate on the engine and on real content
+# in the same repo without committing personal projects.
+/creator/

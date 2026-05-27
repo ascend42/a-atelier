@@ -1,0 +1,41 @@
+id: L-2026-05-27-ascend-180956-001
+type: insight
+timestamp: '2026-05-27T18:09:56.135Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'V1 release gating: real-content-team bundle is the last build piece'
+summary: 'Owner greenlit the four-piece "real content team" bundle as the final build work before v1 publish. The bundle: (1) media/ folder convention + auto-transcribe on ingest, (2) effective transcript derivation (apply_cuts) + MCP tool, (3) sidecar notes convention with per-author sections + MCP tool, (4) animation craft — expanded technique library + two new Iris skills (compose-from-primitives, save-custom-as-preset). Together these deliver the workflow where a creator drops media into a project, agents auto-transcribe + annotate, the team''s edits stay reflected in an always-fresh effective transcript, and Iris builds + saves new animations that grow the creator''s reusable motion vocabulary. v1 publish is explicitly gated on: bundle landing → full end-to-end content pipeline validation → polish pass. The reconstruct skill (just shipped, L-2026-05-27-ascend-180634-001) is the immediately-preceding piece; everything before this was foundation, and the bundle is the cap that makes the foundation usable as a content tool.'
+symbols_touched:
+  - '#cli-media'
+  - '#cli-reconstruct'
+  - '#mcp-effective-transcript'
+  - '#mcp-media-notes'
+  - '#mcp-mind-map'
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+  - '#artifact-schemas'
+learnings:
+  - The bundle's coupling is the value, not a defect. Media folder + effective transcript + notes + animation craft only become 'real content team' when they exist together; shipping them separately would feel like four half-features. Single-delegation cost (~3 hr) is justified.
+  - v1 publish gating on validation (not just code-complete) matches the open-source values stance — quality floor matters more than ship velocity since there's no subscription revenue pressure to release fast.
+  - 'The reconstruct skill foreshadows the bundle: it already proves the agent-reads-transcript-and-writes-artifact loop. The bundle generalizes that pattern across all media types + adds the conversation/annotation layer that keeps the team aligned over time.'
+tags:
+  - v1-release
+  - creator-workflow
+  - real-content-team
+  - bundle-gate
+  - strategic-anchor
+linked_lore:
+  - L-2026-05-27-ascend-180634-001
+  - L-2026-05-27-ascend-140312-001
+  - TD-2026-05-26-088
+  - TD-2026-05-26-275
+  - TD-2026-05-26-540
+  - TD-2026-05-26-684
+  - TD-2026-05-26-229
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

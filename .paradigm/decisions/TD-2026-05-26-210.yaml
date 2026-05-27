@@ -1,0 +1,35 @@
+id: TD-2026-05-26-210
+timestamp: '2026-05-26T06:13:00.647Z'
+title: 'Creator agent-team identity model: shared Paradigm-published personas, per-creator notebooks'
+decision: >-
+  Quill, Lux, and Iris are canonical Paradigm-published persona definitions — one Quill prompt, one Quill expertise
+  spec, fine-tuned centrally by Atelier+Paradigm. Every creator's installation references the same persona definitions.
+  What is per-creator is the NOTEBOOK — the accumulated learnings, recipes, style patterns, and corrections. The persona
+  is the engine; the notebook is the creator. If forking persona definitions ever becomes a need, it ships later as a
+  community/contribution mechanism, not a v1 product surface.
+rationale: >-
+  Under the open-source + Paradigm-native + standalone-surface stance (TD-2026-05-26-275, TD-2026-05-26-684), persona
+  definitions must stay canonical so central fine-tuning reaches every creator. The creator's accumulated value lives in
+  the notebook, which is portable and theirs. Mirrors how Paradigm already works for code (same architect persona across
+  projects, different notebooks per project) — applying a proven pattern, not inventing.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Distinct persona instances per creator (each creator forks Quill/Lux/Iris)
+    rejected_because: >-
+      Breaks the centrally-fine-tuned model; Atelier's persona updates can't reach forked instances; massive versioning
+      surface to maintain
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - agents
+  - personas
+  - notebooks
+  - paradigm

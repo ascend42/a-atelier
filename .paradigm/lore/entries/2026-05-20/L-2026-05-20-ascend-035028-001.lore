@@ -1,0 +1,29 @@
+id: L-2026-05-20-ascend-035028-001
+type: insight
+timestamp: '2026-05-20T03:50:28.261Z'
+duration_minutes: 5
+author: ascend
+title: Reverted in-Atelier image generation (e87d29e) — generation is chat-orchestrated, not an Atelier feature
+summary: 'Built then immediately reverted a provider-agnostic AI image-generation foundation in packages/mcp after the user clarified the architecture. Build (commit e87d29e, ~440 LOC, 3 files + index registration + 13 tests): (1) generators/image-generator.ts — ImageGenerator interface (submit/poll/generate) + GenerateRequest/GeneratedImage/GenerationJob/JobStatus; (2) generators/mock-generator.ts — MockImageGenerator, deterministic, dependency-free (FNV-1a hash of prompt+seed+index+size to a stable base64 SVG data URL; simulated async job lifecycle in a Map); (3) tools/generate.ts — atelier_generate_image (inserts ImageVisual layers tagged ''generated'', source:llm for live-bridge keep/undo) + atelier_generation_status + getGenerator()/setGenerator() seam. Was 689 tests passing with it in. REVERTED via git reset --hard HEAD~1 (unpushed local tip). RECOVERY: git cherry-pick e87d29e restores the whole build verbatim.'
+symbols_touched:
+  - '#image-generator'
+  - '#mock-generator'
+  - '#mcp-generate'
+learnings:
+  - 'ARCHITECTURE: Atelier integrates NO image-generation provider — not Higgsfield/OpenAI/Replicate'
+  - 'not even a mock generator interface. Intended workflow: user talks to Claude in chat; Claude invokes the Higgsfield CLI externally via Bash; when images return'
+  - Claude ingests them into Atelier with the EXISTING tools — atelier_import_images (#17)
+  - atelier_add_asset/add_layer
+  - recipe tools (#16)
+  - 'atelier carousel for batch export (#18). Generation orchestration lives at the chat/agent layer; Atelier''s job starts at ''here are image files on disk.'' atelier_generate_image was a premise error (assumed Atelier should own generation). RECOVERY POINTER: git cherry-pick e87d29e (or git reflog before gc) to restore the interface+mock+tool if a future need arises for Atelier to call a generator directly.'
+tags:
+  - reverted
+  - image-generation
+  - higgsfield
+  - architecture
+  - recoverable
+confidence: 0.9
+git_context:
+  ref: e87d29e61fc934a5def62cca2a8d0ea959772569
+  branch: main
+  dirty: true

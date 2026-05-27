@@ -84,6 +84,7 @@ export type {
   VideoCutList,
   TranscriptWord,
   TranscriptSegment,
+  TranscriptDerivedFrom,
   VideoTranscript,
   VideoProjectManifest,
 } from "./video-project.js";

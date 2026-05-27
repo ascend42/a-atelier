@@ -1,0 +1,10 @@
+id: T-2026-05-10-014
+blurb: ShaderTransition layer type — WebGL-backed transition effects between clips as a new Visual type
+priority: low
+status: open
+tags:
+  - phase-3
+  - webgl
+  - '#layer-types'
+  - transitions
+created: '2026-05-10T18:23:26.295Z'

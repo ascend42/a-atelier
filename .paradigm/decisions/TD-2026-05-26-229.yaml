@@ -1,0 +1,45 @@
+id: TD-2026-05-26-229
+timestamp: '2026-05-26T06:36:21.261Z'
+title: >-
+  Recipe sharing & asset portability: nevr.land hosts inert artifacts, structure-only recipes, asset slots bound by the
+  mind-map
+decision: >-
+  Distribution: nevr.land is the canonical home for shareable inert artifacts — skills (prompt + docs), recipes (YAML
+  structure), and later asset packs. Everything on nevr.land is viewable, never executable; no scripts, no compromising
+  content. GitHub-hosted recipes work as a federated fallback (install-by-URL), but nevr.land is the discoverable,
+  registerable surface. Authorship: agent owners (Matt for Quill/Lux/Iris) publish CORE skills + canonical notebooks
+  that ship with each agent; community members publish RELATED skills/recipes registered against those agents. Asset
+  portability: recipes ship pure structure with asset-typed variable slots; assets stay local on the recipient's machine
+  and are bound to slots at install time by the recipient's agent team querying their mind-map. Optional asset packs are
+  a sibling artifact (also inert, viewable, attribution-explicit) for cases where authors want to share specific
+  licensed assets — never bundled into recipes.
+rationale: >-
+  nevr.land's safety property (everything viewable, no scripts/executables) makes it trustworthy at scale and naturally
+  constrains the artifact model — recipes have to be inert structure, which forces the asset-slot pattern, which
+  fortuitously turns out to be the cleanest architecture anyway (recipes travel light, assets stay local, mind-map
+  binds). Aligns Atelier's sharing with the substrate-tied Paradigm/nevr.land stance (TD-2026-05-26-275) and the
+  open-source/no-marketplace stance (TD-2026-05-26-684).
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Paid marketplace with revenue share
+    rejected_because: Excluded by TD-2026-05-26-684 (open-source, no fees)
+  - option: Recipes bundle binary assets
+    rejected_because: Violates nevr.land's no-compromising-content property and creates licensing/portability mess
+  - option: GitHub-federated only, no central registry
+    rejected_because: Loses discoverability for new creators; nevr.land's existing skill-marketplace pattern is the proven home
+symbols_affected:
+  - '#mcp-recipe-tools'
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - recipes
+  - sharing
+  - nevr-land
+  - asset-portability

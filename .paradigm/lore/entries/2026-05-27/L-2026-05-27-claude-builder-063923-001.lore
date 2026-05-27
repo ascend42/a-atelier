@@ -1,0 +1,36 @@
+id: L-2026-05-27-claude-builder-063923-001
+type: milestone
+timestamp: '2026-05-27T06:39:23.625Z'
+author: claude-builder
+title: 'Phase 1 completion: minimal project.atelier + persona active-project awareness'
+summary: Closed the two remaining gaps for workspace-level studio Phase 1. (A) runInit now drops a minimal JSON project.atelier (1080x1920@30, empty layers, empty states {}) so listProjects/setActiveProject can discover/activate freshly-init'd projects. (B) Added an 'Active project — I check this before I act' section to all 6 persona prompts (quill/lux/iris under .paradigm/personas/ and .claude/agents/) instructing personas to read <workspace>/.atelier/active.yaml before acting, with explicit cwd context overriding workspace state.
+symbols_touched:
+  - '#init'
+  - '#workspace'
+  - '#cli-studio'
+  - '#persona-quill'
+  - '#persona-lux'
+  - '#persona-iris'
+files_modified:
+  - packages/cli/src/commands/init.ts
+  - .paradigm/personas/quill/system-prompt.md
+  - .paradigm/personas/lux/system-prompt.md
+  - .paradigm/personas/iris/system-prompt.md
+  - .claude/agents/atelier-quill.md
+  - .claude/agents/atelier-lux.md
+  - .claude/agents/atelier-iris.md
+learnings:
+  - JSON is valid YAML so parseAtelier accepts project.atelier emitted as JSON.stringify(doc)
+  - Schema package stays a devDependency — runtime emission uses an object literal not a typed import
+  - project.atelier write is gated by existsSync to preserve the init-idempotent-re-run-safe aspect
+tags:
+  - phase-1
+  - workspace-studio
+  - personas
+  - project-atelier
+body: 'Verification: 271/271 tests pass (previously 269/271). typecheck clean. compliance-check clean after nulling 10 drifted aspect anchors carried over from the previous builder''s studio.ts edits (all in ~source-tagged-mutation, ~studio-localhost-only-bind, ~studio-origin-check-bridge-vs-mcp-split, ~studio-ws-upgrade-rechecks-origin, ~studio-llm-only-broadcast, ~studio-contained-path-guard — line ranges only, no semantic change). Minimal doc shape mirrors the canonical atelier_create MCP tool (states: {} rather than a single ''default'' state) to stay congruent with the established empty-doc convention.'
+confidence: 0.92
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

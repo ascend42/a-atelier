@@ -1,0 +1,35 @@
+id: L-2026-05-20-ascend-230652-001
+type: milestone
+timestamp: '2026-05-20T23:06:52.215Z'
+duration_minutes: 75
+author: ascend
+title: Paradigm symbols pass (4 aspects) + University pack expanded to 9 tracks/53 entries
+summary: 'Two-pronged knowledge-capture pass on the now-mature atelier, both via the Paradigm MCP. (1) SYMBOLS: atelier had 151 components but ZERO aspects — registered the 4 multi-site cross-cutting invariants with enforced code anchors via paradigm_purpose_add_aspect: ~layer-tag-isolation (4 anchors), ~detected-vs-user-edited (2), ~copy-on-write-doc (5), ~source-tagged-mutation (6). Skipped ~schema-validated-mutation after research proved it single-site (only document.ts validates). Fixed a YAML parse error in packages/canvas/.purpose. aspects 0→4, 180 symbols, root .purpose validates clean, all anchors resolve. (2) UNIVERSITY PACK: was stuck at v0.1.0 (4 tracks/24 entries) while 4 releases shipped. Refreshed 001/201/301 (tool count 52/51→61, MCP groups 13→15 adding recipe+import, fixed stale ''atelier export''→export-image/render commands), then authored 5 new tracks via 5 parallel file-write-only builders (no index race): ATEL-401 (state machines/motion), 501 (video pipeline, teaches the detected-vs-user-edited + layer-tag-isolation aspects), 601 (recipes/overlays/carousel), 701 (export/delivery), 801 (studio + live agent loop, teaches source-tagged-mutation). Central verification caught + fixed a stray </content> artifact in one note and a phantom reindex-trigger entry in index.yaml. validate --project: 53 items, all checks passed. Pack now 9 tracks/53 entries.'
+symbols_touched:
+  - ~layer-tag-isolation
+  - ~detected-vs-user-edited
+  - ~copy-on-write-doc
+  - ~source-tagged-mutation
+  - '#atelier-university'
+commit: a060347
+learnings:
+  - Aspects must be MULTI-SITE cross-cutting rules (N>1 enforcement anchors that stay in sync); single-site invariants (resolveFrame determinism
+  - SaveCoordinator) belong in the component's .purpose description
+  - not as aspects — confirmed via advisor + research. paradigm_purpose_add_aspect requires real code anchors; declaring cross-package aspects in the ROOT .purpose with repo-relative anchor paths works cleanly. University pack authoring parallelizes safely ONLY if builders are file-write-only (no paradigm university CLI) — the shared index.yaml races otherwise; orchestrator does ONE central reindex+validate. The index rebuild (via the add-note trick) structurally lags by one note
+  - leaving a phantom entry; there's no clean university reindex subcommand
+  - 'so hand-edit index.yaml + totalContent to match disk. Quiz YAML: single-quote any string with a colon-space or braces or the entry silently fails to index (bit multiple builders).'
+tags:
+  - paradigm
+  - aspects
+  - symbols-pass
+  - university-pack
+  - knowledge-capture
+  - multi-agent
+linked_commits:
+  - 0d7c086
+  - a060347
+confidence: 0.9
+git_context:
+  ref: a0603470f9ad5e71dc5df2094968ffae0e2738df
+  branch: main
+  dirty: true

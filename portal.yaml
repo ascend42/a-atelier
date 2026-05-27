@@ -26,8 +26,18 @@ gates:
     location: packages/schema/src/validate.ts
     prizes: []
   localhost-only:
-    description: 'atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user''s CWD.'
+    description: atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user's CWD.
     type: security
     location: packages/cli/src/commands/studio.ts
+    prizes: []
+  valid-artifact-set:
+    description: 'Validates a set of Atelier front-of-pipeline artifacts (DESIGN/SCRIPT/STORYBOARD) — cross-artifact rules: STORYBOARD beat ids exist in SCRIPT (except b-roll.* prefix), slot references use closed kind enum, sum of beat durations within target_duration_s (warn-only pre-VO).'
+    type: validation
+    location: packages/schema/src/artifacts/validate.ts
+    prizes: []
+  valid-mind-map-query:
+    description: Validates atelier_mind_map_query input — projectDir resolves to an extant directory, kind is from the closed SlotKind enum, hints array is non-empty if provided, limit within bounds.
+    type: validation
+    location: packages/mcp/src/tools/mind-map.ts
     prizes: []
 routes: {}

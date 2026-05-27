@@ -1,0 +1,34 @@
+id: TD-2026-05-26-271
+timestamp: '2026-05-26T06:47:42.569Z'
+title: Personal notebooks and mind-map are creator-owned, never leave the local disk
+decision: >-
+  A creator's personal notebooks (per-creator agent memory) and mind-map (asset/knowledge graph over their clips, memes,
+  content directories) are creator-owned and live exclusively on the creator's local disk. Atelier never uploads them.
+  nevr.land never holds them. They are never used to train Paradigm-published personas. Privacy is enforced by
+  architecture — under the local-first stance (revised-C), there is no backend the data could be uploaded to. Agents
+  working in Claude Code consume notebooks/mind-map as prompt context locally; what gets sent to the Claude API is
+  governed by Anthropic's policies, not Atelier's.
+rationale: >-
+  Under local-first (revised-C, supersedes TD-2026-05-26-720), there is no hosted tier to upload data to in the first
+  place — privacy becomes a structural property of the system, not a policy promise. The creator's lived experience
+  (style, accumulated learnings, asset graph) is their edge; the architecture preserves it without needing trust or
+  auth.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Cloud-synced personal notebooks (opt-in)
+    rejected_because: Conflicts with revised-C local-first stance; no backend to sync to
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - privacy
+  - notebooks
+  - mind-map
+  - local-first

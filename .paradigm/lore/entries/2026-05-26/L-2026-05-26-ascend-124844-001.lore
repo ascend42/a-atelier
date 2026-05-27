@@ -1,0 +1,60 @@
+id: L-2026-05-26-ascend-124844-001
+type: agent-session
+timestamp: '2026-05-26T12:48:44.033Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Phase 2: artifact Zod schemas (DESIGN/SCRIPT/STORYBOARD) landed'
+summary: 'Implemented Phase 2 of the consolidated Atelier creator roadmap: Zod schemas, parsers, and cross-artifact validator for the three front-of-pipeline artifacts (DESIGN/SCRIPT/STORYBOARD), plus the typed slot reference system and a starter animation technique library. 80 tests pass, typecheck and build clean. First source-code work after the 11 strategic decisions made the day prior.'
+symbols_touched:
+  - '#artifact-schemas'
+  - ^valid-artifact-set
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+symbols_created:
+  - '#artifact-schemas'
+  - ^valid-artifact-set
+files_created:
+  - packages/schema/src/artifacts/slot.ts
+  - packages/schema/src/artifacts/technique.ts
+  - packages/schema/src/artifacts/design.ts
+  - packages/schema/src/artifacts/script.ts
+  - packages/schema/src/artifacts/storyboard.ts
+  - packages/schema/src/artifacts/parse.ts
+  - packages/schema/src/artifacts/validate.ts
+  - packages/schema/src/artifacts/index.ts
+  - packages/schema/src/artifacts/__fixtures__/DESIGN.md
+  - packages/schema/src/artifacts/__fixtures__/SCRIPT.md
+  - packages/schema/src/artifacts/__fixtures__/STORYBOARD.md
+  - packages/schema/src/artifacts/__tests__/artifacts.test.ts
+files_modified:
+  - packages/schema/src/index.ts
+  - packages/schema/.purpose
+learnings:
+  - Slot vocabulary stated as 3-segment in the brief but the artifact spec's own examples use 2 and 4 segments; the resolution (closed kind + at least one non-empty tail) preserved spec fidelity over the abstraction.
+  - Phase 2 is additive only — the artifacts surface lives alongside recipe.ts without touching it, validating the 'extend, don't replace' principle from the roadmap.
+  - Cross-artifact validator returns {ok, warnings, errors} rather than the recipe idiom's {success, warnings?} because multi-severity rules need the distinction (duration warn vs technique-kind hard-fail).
+verification:
+  status: pass
+  details:
+    tests: 80 passed (3 files)
+    typecheck: clean across workspace
+    build: clean ESM + CJS + dts
+    purpose_validate: clean
+tags:
+  - phase-2
+  - artifacts
+  - schema
+  - zod
+  - creator-flow
+linked_lore:
+  - TD-2026-05-26-363
+  - TD-2026-05-26-229
+  - TD-2026-05-26-540
+  - TD-2026-05-26-271
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

@@ -48,3 +48,22 @@ export {
 
 // YAML parsing
 export { parseAtelier, serializeAtelier } from "./parse.js";
+
+// Front-of-pipeline artifact schemas (Phase 2) — DESIGN, SCRIPT, STORYBOARD
+export * from "./artifacts/index.js";
+
+// Workspace manifest (post-core-build ergonomics — `workspace.atelier`)
+export { WorkspaceManifestSchema, type WorkspaceManifest } from "./workspace.js";
+
+// Media notes (sidecar `<file>.notes.md` for files in the project's `media/` dir)
+export {
+  MediaNotesSchema,
+  MediaNotesFrontmatterSchema,
+  MediaNotesConstraintsSchema,
+  MediaNotesAuthorSchema,
+  MEDIA_NOTES_HEADINGS,
+  type MediaNotes,
+  type MediaNotesFrontmatter,
+  type MediaNotesConstraints,
+  type MediaNotesAuthor,
+} from "./media-notes.js";

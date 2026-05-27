@@ -33,6 +33,14 @@ components:
     description: parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)
     file: src/parse.ts
     tags: [parsing, yaml]
+  '#workspace-schema':
+    description: 'WorkspaceManifestSchema — Zod schema for `workspace.atelier`, the YAML manifest at the root of an Atelier workspace (a layer above Project that holds multiple content Projects with shared creator-level config). Fields: version (literal "1.0"), name (display, default basename(dir) at create time), created (ISO 8601), default_mode (ambient|explicit — inherited by new projects via `atelier init`), projects? (advisory relative subdir names; on-disk truth wins — `listProjects` refreshes), description?. .strict() — unknown keys are hard errors so authoring typos surface at validate time, matching the recipe-schema posture. workspace.atelier is intentionally YAML (distinguishes it from project.atelier which is JSON) and shares the .atelier extension as a family marker; the two never collide in a single directory.'
+    file: src/workspace.ts
+    tags: [validation, schema, workspace]
+  '#artifact-schemas':
+    description: 'Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).'
+    file: src/artifacts/index.ts
+    tags: [validation, schema, artifacts, design, script, storyboard]
 
 gates:
   ^valid-document:
@@ -43,6 +51,8 @@ gates:
     description: VideoVisual passes semantic checks — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty
   ^valid-recipe:
     description: StudioRecipe passes Zod validation including overlay_rules (anchor enum, page-number format template syntax)
+  ^valid-artifact-set:
+    description: 'Cross-artifact rules pass — every STORYBOARD beat id matches a SCRIPT beat id or is prefixed `b-roll.`; all slot refs use a known kind from the closed enum; all techniques exist in the resolved technique library; duration sum within target (warn-only pre-VO).'
 
 aspects:
   document-shape-asymmetry:
@@ -194,6 +204,76 @@ aspects:
       - packages/schema/src/parse.ts:11-20
     enforcement: try/catch to ValidationResult, never throw
     appliesTo: ["#yaml-parser"]
+  artifact-slot-closed-kind-open-tail:
+    description: 'SlotRefSchema enforces a hybrid contract — the first dot-separated segment (kind) is a CLOSED Zod enum (image|video|audio|text|font|voice|logo); everything after the first dot is OPEN and creator-extensible, with the only structural rule being ≥1 non-empty tail segment. This is what reconciles the artifact spec''s own examples mixing two-segment (font.display) and four-segment (audio.sfx.transition.whoosh) refs while still failing fast on a typo''d kind.'
+    tags:
+      - schema
+      - artifacts
+      - slot
+      - core-invariant
+    anchors:
+      - packages/schema/src/artifacts/slot.ts:25-33
+      - packages/schema/src/artifacts/slot.ts:45-61
+    enforcement: superRefine — kind in closed enum + ≥1 non-empty tail segment
+    appliesTo: ["#artifact-schemas"]
+  artifact-script-discriminated-union:
+    description: 'ScriptArtifactSchema is a z.discriminatedUnion on the literal "mode" field across narrated | carousel | text-only — narrated has the four ordered blocks (hook/story/proof/cta), carousel and text-only use a flat beats list. A wrong or missing mode yields a single clear error instead of unioning every branch error. Adding a new script mode requires both a literal("mode") member and a union entry.'
+    tags:
+      - schema
+      - artifacts
+      - script
+      - discriminated-union
+    anchors:
+      - packages/schema/src/artifacts/script.ts:79-83
+    enforcement: z.discriminatedUnion on "mode" literal
+    appliesTo: ["#artifact-schemas"]
+  artifact-validator-result-shape-deviates-from-recipe-idiom:
+    description: 'validateArtifactSet returns { ok: boolean, warnings: string[], errors: string[] } — intentionally different from validateRecipe''s { success: true, warnings?: [] } idiom. The artifacts surface validates multiple independent rules whose severities differ (some warn-only pre-VO, others hard fails) and flattening to a single discriminated result loses that. Callers handle warn vs. error decisions themselves; the validator never throws.'
+    tags:
+      - validation
+      - artifacts
+      - api-contract
+      - deliberate-asymmetry
+    anchors:
+      - packages/schema/src/artifacts/validate.ts:18-22
+    enforcement: explicit ok/warnings/errors shape; never throws
+    appliesTo: ["#artifact-schemas"]
+  artifact-technique-library-validated-cross-artifact:
+    description: 'StoryboardArtifactSchema validates techniques as `string[]` at the pure-Zod level — the closed-enum membership check happens in validateArtifactSet, which resolves the active library via technique_library_version (integer; per artifact spec §9 Q4). This keeps the schema version-agnostic while still hard-failing on unknown technique strings at validate time. v1 ships four techniques drawn from the artifact spec''s STORYBOARD EXAMPLE.'
+    tags:
+      - schema
+      - artifacts
+      - storyboard
+      - versioning
+    anchors:
+      - packages/schema/src/artifacts/storyboard.ts:71
+      - packages/schema/src/artifacts/validate.ts:84-104
+      - packages/schema/src/artifacts/technique.ts:28-37
+    enforcement: schema = string[]; validateArtifactSet checks library membership
+    appliesTo: ["#artifact-schemas"]
+  artifact-b-roll-id-exemption:
+    description: 'Cross-artifact beat-id matching has one explicit exemption — a STORYBOARD beat whose id starts with `b-roll.` does NOT need a matching SCRIPT beat. This is what lets Lux add storyboard-only B-roll beats without forcing Quill to write a corresponding script line. The prefix is checked literally via String#startsWith(''b-roll.''); any other dot-namespaced id (e.g. `intro.cards`) still requires a script match.'
+    tags:
+      - validation
+      - artifacts
+      - cross-artifact
+      - edge-case
+    anchors:
+      - packages/schema/src/artifacts/storyboard.ts:84-86
+      - packages/schema/src/artifacts/validate.ts:46-54
+    enforcement: literal prefix check on storyboard beat id
+    appliesTo: ["#artifact-schemas"]
+  artifact-parser-frontmatter-plus-body-universal:
+    description: 'All three artifact parsers share the same outer shape — leading `---` fence, YAML frontmatter mapping, closing `---` fence, then a Markdown body. splitFrontmatter() is the shared splitter (rejects missing-fence with a clear error and never throws on otherwise-valid YAML failures without context). Per-artifact parsers then lift body content into typed fields: DESIGN keeps the body verbatim, SCRIPT extracts `# Hook/Story/Proof/CTA` H1 lists in narrated mode (flat YAML list otherwise), STORYBOARD extracts `## <beat-id>` H2 sections each with a YAML mapping. Beats live in the body (not frontmatter) so single-beat edits diff cleanly — the load-bearing re-entry property per artifact spec §7.'
+    tags:
+      - parsing
+      - artifacts
+      - convention
+    anchors:
+      - packages/schema/src/artifacts/parse.ts:38-72
+      - packages/schema/src/artifacts/parse.ts:84-95
+    enforcement: shared splitter + per-artifact body shape
+    appliesTo: ["#artifact-schemas"]
   yaml-safe-by-default-data-only:
     description: 'parseAtelier uses the yaml package''s parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.'
     tags:
