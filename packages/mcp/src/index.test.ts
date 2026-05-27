@@ -313,7 +313,10 @@ describe("MCP Tools", () => {
 
     expect(toolNames).toContain("atelier_import_images");
     expect(toolNames).toContain("atelier_mind_map_query");
-    expect(toolNames).toHaveLength(62);
+    expect(toolNames).toContain("atelier_get_effective_transcript");
+    expect(toolNames).toContain("atelier_get_media_notes");
+    expect(toolNames).toContain("atelier_write_media_note");
+    expect(toolNames).toHaveLength(65);
   });
 
   // ── Document tools ────────────────────────────────────────

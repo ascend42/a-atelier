@@ -116,6 +116,101 @@ export interface ErrorEnvelope {
   opId?: string;
 }
 
+// ─── Workspace-aware envelopes ─────────────────────────────────────
+//
+// These are server → client only. They let the workspace-aware studio UI
+// react to backend events (media ingest progress, file additions) without
+// polling. The browser side accepts unknown envelope types gracefully, so a
+// older client connected to a newer server is harmless.
+
+/**
+ * The media file list on disk changed (file added/removed). The client
+ * refetches `/api/project/:name/media` on receipt. Cheap signal — no payload
+ * beyond the project name keeps the envelope small for high-frequency events.
+ */
+export interface MediaListChangedEnvelope {
+  type: "media:list:changed";
+  projectName: string;
+}
+
+/** A transcript file was added or updated. */
+export interface TranscriptAddedEnvelope {
+  type: "transcript:added";
+  projectName: string;
+  /** Workspace-relative path of the transcript file. */
+  transcriptPath: string;
+}
+
+/**
+ * Progress envelope for the multi-step ingest pipeline. `phase` reflects the
+ * current sub-step; the UI maps it to a human-readable status string. The
+ * `received`/`total` pair carries download progress when phase is
+ * `model:download` (whisper model fetch on first use).
+ */
+export interface MediaIngestProgressEnvelope {
+  type: "media:ingest:progress";
+  projectName: string;
+  /** Source-file basename for display. */
+  file: string;
+  phase:
+    | "start"
+    | "model:download"
+    | "transcribing"
+    | "composing"
+    | "done"
+    | "error";
+  /** Bytes received so far (download-only). */
+  received?: number;
+  /** Total bytes when known (download-only). */
+  total?: number | null;
+  /** Error message when phase === "error". */
+  error?: string;
+}
+
+/**
+ * A single workspace file was deleted via DELETE /api/file. Used for plain
+ * artifacts / sidecar notes / per-file transcripts (anything that the UI
+ * surfaces but that isn't the cascade-bearing media-file or whole-project
+ * delete). Lets the sidebar invalidate just the affected section.
+ *
+ * `projectName` is best-effort: when the deleted path lives inside a project
+ * subdir the server fills it so the sidebar can `refreshProject(name)`
+ * without re-deriving the owner. Workspace-root files (rare) leave it null.
+ */
+export interface FileDeletedEnvelope {
+  type: "file:deleted";
+  /** Workspace-relative path of the removed file. */
+  path: string;
+  /** Owning project subdir name, when the path is inside a project. */
+  projectName: string | null;
+}
+
+/**
+ * A media file was deleted via DELETE /api/project/:name/media. Carries the
+ * cascade report so the sidebar can refresh both the media list and the
+ * transcripts list in one round-trip. See `delete-cascade-project-atelier-surgery`.
+ */
+export interface MediaDeletedEnvelope {
+  type: "media:deleted";
+  projectName: string;
+  /** Basename of the deleted media file (e.g. "IMG_7347.MOV"). */
+  file: string;
+}
+
+/**
+ * A whole project was deleted via DELETE /api/project/:name. The sidebar
+ * removes it from the projects list; `wasActive` lets the UI clear the
+ * active-project indicator when the deleted project happened to be active
+ * (the server already cleared active.yaml — this is just the UI signal).
+ */
+export interface ProjectDeletedEnvelope {
+  type: "project:deleted";
+  /** Subdir basename of the removed project. */
+  projectName: string;
+  /** True iff the deleted project was active (active.yaml was cleared too). */
+  wasActive: boolean;
+}
+
 /** Discriminated union of all envelopes carried over the bridge. */
 export type BridgeEnvelope =
   | HelloEnvelope
@@ -123,7 +218,13 @@ export type BridgeEnvelope =
   | DocLoadedEnvelope
   | DocPatchEnvelope
   | LlmMutationEnvelope
-  | ErrorEnvelope;
+  | ErrorEnvelope
+  | MediaListChangedEnvelope
+  | TranscriptAddedEnvelope
+  | MediaIngestProgressEnvelope
+  | FileDeletedEnvelope
+  | MediaDeletedEnvelope
+  | ProjectDeletedEnvelope;
 
 /** Type guard for runtime envelope validation. */
 export function isBridgeEnvelope(value: unknown): value is BridgeEnvelope {
@@ -135,6 +236,12 @@ export function isBridgeEnvelope(value: unknown): value is BridgeEnvelope {
     t === "doc:loaded" ||
     t === "doc:patch" ||
     t === "llm:mutation" ||
-    t === "error"
+    t === "error" ||
+    t === "media:list:changed" ||
+    t === "transcript:added" ||
+    t === "media:ingest:progress" ||
+    t === "file:deleted" ||
+    t === "media:deleted" ||
+    t === "project:deleted"
   );
 }

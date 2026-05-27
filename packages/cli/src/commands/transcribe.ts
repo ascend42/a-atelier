@@ -20,6 +20,15 @@ import { loadRecipe, applyRecipeToTranscribeOptions } from "../lib/recipe.js";
 export interface TranscribeOptions {
   /** Whisper model selection */
   model?: WhisperModel;
+  /** Explicit path to the model file — overrides model short-name lookup */
+  modelPath?: string;
+  /**
+   * Override the source video path. By default `transcribeProject` uses the
+   * legacy VideoProject scanner (`<projectDir>/source.<ext>`). Passing
+   * `sourcePath` lets the multi-media ingest target an arbitrary media file
+   * (e.g. `<projectDir>/media/<basename>`) without copying it to root.
+   */
+  sourcePath?: string;
   /** BCP-47 language hint (omit for autodetect) */
   language?: string;
   /** Discard existing user edits; full fresh transcript */
@@ -71,8 +80,10 @@ export async function transcribeProject(
     );
   }
 
-  const rawJson = await runWhisperCpp(project.sourcePath, {
+  const sourcePath = options.sourcePath ?? project.sourcePath;
+  const rawJson = await runWhisperCpp(sourcePath, {
     model: options.model,
+    modelPath: options.modelPath,
     language: options.language,
   });
   let transcript = parseWhisperCppJson(rawJson);
@@ -135,6 +146,7 @@ export function transcribeCommand(program: Command): void {
       "Preserves user transcript edits on re-run.",
     )
     .option("--model <name>", "Whisper model: tiny|base|small|medium|large-v3", "base.en")
+    .option("--model-path <path>", "Explicit path to a .bin model file (overrides --model)")
     .option("--language <code>", "BCP-47 language hint (omit for autodetect)")
     .option("--reset", "Discard existing user edits; full fresh transcript")
     .option("--no-captions", "Write transcript.json only; skip caption layer generation")
@@ -145,6 +157,7 @@ export function transcribeCommand(program: Command): void {
       project: string,
       opts: {
         model: WhisperModel;
+        modelPath?: string;
         language?: string;
         reset?: boolean;
         captions: boolean;
@@ -156,6 +169,7 @@ export function transcribeCommand(program: Command): void {
       try {
         let transcribeOpts: TranscribeOptions = {
           model: opts.model,
+          modelPath: opts.modelPath,
           language: opts.language,
           reset: opts.reset,
           noCaptions: !opts.captions,

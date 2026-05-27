@@ -1,107 +1,68 @@
 {
   "phase": "complete",
-  "context": "Atelier is shipped and current at v0.37.0 on npm with the University pack bundled into the @a-company/atelier tarball (verified live: 55 university files + paradigm.universityPack pointer). Paradigm symbols now carry FULL per-component aspect coverage — 305 aspects across all 137 components (was 0), every component has >=1, drift clean on 485 anchors, all compliance passing. Working tree clean, 0 unpushed commits. Nothing outstanding; this is a natural stopping point.",
-  "timestamp": 1779745345527,
-  "sessionId": "smpdn6yyh",
-  "plan": "Complete. Releases v0.34.0–v0.37.0 published to npm (atelier 0.37.0, -mcp 0.27.2, -studio 0.28.0, -schema 0.28.0, -types 0.31.0, -video 0.1.0). Claude plugin (ascend42/a-atelier-plugin) live with corrected launch + 61 tools. Future content edits: author in .paradigm/university/, bump CLI version, pnpm release (prepublish auto-bundles). Deferred/optional follow-ups: Playwright e2e (spec in .paradigm/specs/v1-testing-strategy.md), pixel-snapshot tests, the @a-company/atelier-mcp peerDependency cleanup, extract-inline-app already done.",
-  "modifiedFiles": [
-    ".paradigm/university/",
-    "packages/cli/package.json",
-    "packages/cli/scripts/bundle-university.mjs",
-    "packages/mcp/tsup.config.ts",
-    ".purpose",
-    "packages/core/.purpose",
-    "packages/types/.purpose",
-    "packages/cli/.purpose",
-    "packages/mcp/.purpose",
-    "packages/studio/.purpose",
-    "CHANGELOG.md",
-    "README.md"
-  ],
-  "symbolsTouched": [
-    "#cli-studio",
-    "#studio-bridge",
-    "#ws-transport",
-    "#cli-carousel",
-    "#cli-export-image",
-    "#render-image",
-    "#mcp-recipe-tools",
-    "#mcp-import-images",
-    "#atelier-university",
-    "~layer-tag-isolation",
-    "~detected-vs-user-edited",
-    "~copy-on-write-doc",
-    "~source-tagged-mutation",
-    "^localhost-only"
-  ],
-  "decisions": [
-    "Studio v1 = promote the existing atelier studio CLI app to creator-grade, not build a new app (cold review found the app already existed)",
-    "LLM<->human loop uses an in-memory WS bridge (DocumentStore.onChange + applyMutation), not file-watch — preserves selection/undo/scroll",
-    "Atelier owns NO image generation — generation is chat-orchestrated (user runs Higgsfield CLI externally); Atelier ingests via atelier_import_images. Reverted in-Atelier generator (cherry-pick e87d29e to restore)",
-    "PNG export uses @napi-rs/canvas (prebuilt) not node-canvas, so it works on a plain npm install",
-    "Paradigm aspect convention is per-component (>=1 each, more for multi-responsibility) — stricter than generic 'multi-site only'; defer to project owner's rule",
-    "University pack bundled into the main @a-company/atelier package (versioned in lockstep with the engine), source of truth stays .paradigm/university/, copy generated at prepublish + gitignored"
-  ],
+  "context": "Atelier v1 UX validated end-to-end in the local studio. Drag-drop ingest produces per-file transcripts, populates the canvas with one clean source video + caption set, and respects multi-media (no cross-contamination). Delete cascade works with floating confirmation modal. Project surface stays clean (no source.<ext> at root anymore). Owner confirmed the loop works after restart. Ready to clear context and continue.</context>\n<plan>Next session pickup: (1) commit the v1 UX bundle landings to feat/creator-flow-v1-prep — many uncommitted .ts edits across studio.ts, compose-video-project.ts, transcribe-orchestrator.ts, workspace-project-info.ts, transcribe.ts, whisper.ts, workspace-app.ts. (2) Run the v1 publish flow per docs/keynote/paradigm/v1-publish-readiness.md once owner gives green light — version bump to 1.0.0 lockstep across the workspace, CHANGELOG migration, pnpm -r publish. (3) Outstanding polish items if needed: agent-loop validation test (@atelier-quill/Lux/Iris real run end-to-end), studio drag-and-drop on additional file types (images / audio), keyboard shortcuts. None block v1 publish per the gating criteria.</plan>\n<modifiedFiles>[\"packages/cli/src/commands/studio.ts\", \"packages/cli/src/commands/transcribe.ts\", \"packages/cli/src/lib/compose-video-project.ts\", \"packages/cli/src/lib/transcribe-orchestrator.ts\", \"packages/cli/src/lib/workspace-project-info.ts\", \"packages/cli/src/lib/whisper.ts\", \"packages/cli/src/web/workspace-app.ts\", \"packages/cli/src/workspace-ui.test.ts\"]</modifiedFiles>\n<symbolsTouched>[\"#cli-studio\", \"#compose-video-project\", \"#transcribe-orchestrator\", \"#whisper-model-resolution\", \"#cli-media\", \"#workspace-project-info\", \"#studio-workspace-app\"]</symbolsTouched>\n<decisions>[\"per-file transcripts at transcripts/<stem>.json are canonical; root transcript.json is back-compat only (hidden from sidebar when media/ has entries)\", \"transcribeProject accepts a sourcePath override; multi-media ingest passes media/<basename> directly and never writes source.<ext> at project root\", \"compose-video-project pre-cleans stale source-video* + caption-tagged layers before adding new ones, so each ingest lands a single clean set\", \"delete cascade UI uses ConfirmDialog floating modal (centered, backdrop-blurred, destructive-button styled) + context-menu on sidebar rows + Delete button on media-preview header\", \"v1 publish gating per docs/keynote/paradigm/v1-publish-readiness.md is met on the UX side; remaining is the commit + pnpm publish workflow\"]</decisions>\n</invoke>",
+  "timestamp": 1779918132620,
+  "sessionId": "smplqhnx8",
   "recentBreadcrumbs": [
     {
-      "timestamp": 1779475177828,
+      "timestamp": 1779889715389,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Session arc: artifact schemas → agent wiring → workspace lay"
     },
     {
-      "timestamp": 1779475184009,
+      "timestamp": 1779890592590,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Paradigm-Atelier symbiosis: detection + 4-augmentation contr"
     },
     {
-      "timestamp": 1779475572303,
+      "timestamp": 1779905396116,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: V1 release gating: real-content-team bundle is the last buil"
     },
     {
-      "timestamp": 1779475576504,
+      "timestamp": 1779906118321,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_decision_record",
+      "summary": "decision_record: Local-only by default — all third-party integrations are opt"
     },
     {
-      "timestamp": 1779475784947,
+      "timestamp": 1779907235339,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1-prep checkpoint: real content team bundle complete, ready"
     },
     {
-      "timestamp": 1779475789565,
+      "timestamp": 1779910481452,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Test stance: end-to-end UX validation over piecemeal agent t"
     },
     {
-      "timestamp": 1779745320944,
+      "timestamp": 1779911298378,
       "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1 UX bundle: workspace-aware studio UI, drag-drop ingest, a"
     },
     {
-      "timestamp": 1779745325497,
+      "timestamp": 1779914335313,
       "action": "tool-call",
-      "tool": "paradigm_session_health",
-      "summary": "session_health"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Per-file transcripts + media preview split-pane with click-t"
     },
     {
-      "timestamp": 1779745326382,
+      "timestamp": 1779918114227,
       "action": "tool-call",
-      "tool": "paradigm_session_stats",
-      "summary": "session_stats"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Studio UX validated end-to-end: drag-drop → per-file transcr"
     },
     {
-      "timestamp": 1779745345525,
+      "timestamp": 1779918132617,
       "action": "tool-call",
       "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=complete, Atelier is shipped and current at v0.37.0 on npm with the Un"
+      "summary": "Checkpoint: phase=complete, Atelier v1 UX validated end-to-end in the local studio. Drag"
     }
   ]
 }

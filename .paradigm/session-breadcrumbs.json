@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779906118346,
+  "lastActivity": 1779918114394,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -146,6 +146,36 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: v1-prep checkpoint: real content team bundle complete, ready"
+    },
+    {
+      "timestamp": 1779910481452,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Test stance: end-to-end UX validation over piecemeal agent t"
+    },
+    {
+      "timestamp": 1779911298378,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1 UX bundle: workspace-aware studio UI, drag-drop ingest, a"
+    },
+    {
+      "timestamp": 1779914335313,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Per-file transcripts + media preview split-pane with click-t"
+    },
+    {
+      "timestamp": 1779918114227,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Studio UX validated end-to-end: drag-drop → per-file transcr"
+    },
+    {
+      "timestamp": 1779918132617,
+      "action": "tool-call",
+      "tool": "paradigm_session_checkpoint",
+      "summary": "Checkpoint: phase=complete, Atelier v1 UX validated end-to-end in the local studio. Drag"
     }
   ],
   "symbolsModified": [],

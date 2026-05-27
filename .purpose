@@ -98,7 +98,7 @@ aspects:
       - core-invariant
     anchors:
       - packages/cli/src/lib/cut-model.ts:127-139
-      - packages/cli/src/lib/transcript-model.ts:100-115
+      - packages/cli/src/lib/transcript-model.ts:109-124
     enforcement: merge-on-match (timing tolerance + unchanged detected text)
   copy-on-write-doc:
     description: Any code that mutates an AtelierDocument constructs a NEW document object (spread the doc, replace the layers/assets arrays) before calling DocumentStore.set — it never mutates the stored object in place. Guarantees a concurrent reader (notably the live WebSocket bridge broadcasting to the studio) can never observe a half-mutated document mid-update.

@@ -130,7 +130,9 @@
       "Bash(timeout 2 atelier-mcp)",
       "Bash(atelier-mcp)",
       "Bash(atelier --help)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(atelier transcribe *)",
+      "Bash(whisper-cli source.mp4 --model ~/.cache/whisper.cpp/models/ggml-large-v3-turbo.bin --output-json --print-progress false)"
     ]
   },
   "enableAllProjectMcpServers": true,

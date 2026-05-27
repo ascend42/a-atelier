@@ -40,6 +40,12 @@ export type {
   DocPatchEnvelope,
   LlmMutationEnvelope,
   ErrorEnvelope,
+  MediaListChangedEnvelope,
+  TranscriptAddedEnvelope,
+  MediaIngestProgressEnvelope,
+  FileDeletedEnvelope,
+  MediaDeletedEnvelope,
+  ProjectDeletedEnvelope,
 } from "./bridge-protocol.js";
 export { WebSocketServerTransport } from "./transports/ws-transport.js";
 export type { WsLike } from "./transports/ws-transport.js";
@@ -103,6 +109,8 @@ export function createServer(
   registerRecipeTools(server, store);
   registerImportImageTools(server, store);
   registerMindMapTools(server, store);
+  registerEffectiveTranscriptTools(server, store);
+  registerMediaNotesTools(server, store);
 
   return { server, store };
 }

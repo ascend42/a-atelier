@@ -596,8 +596,8 @@ aspects:
       - re-run
       - core-invariant
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:3-4
-      - packages/cli/src/lib/transcript-model.ts:99-116
+      - packages/cli/src/lib/transcript-model.ts:12-13
+      - packages/cli/src/lib/transcript-model.ts:108-125
     enforcement: 0.3s start + unchanged detected match
     appliesTo: ["#transcript-model"]
   transcript-model-phrase-break-rules:
@@ -607,8 +607,8 @@ aspects:
       - captions
       - phrasing
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:6-11
-      - packages/cli/src/lib/transcript-model.ts:41-72
+      - packages/cli/src/lib/transcript-model.ts:15-20
+      - packages/cli/src/lib/transcript-model.ts:50-81
     enforcement: maxWords / punct / pauseGap break, skip hidden
     appliesTo: ["#transcript-model"]
   transcript-model-orphan-userAdded-reinsert:
@@ -618,8 +618,8 @@ aspects:
       - immutability
       - edge-case
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:120-133
-      - packages/cli/src/lib/transcript-model.ts:314-337
+      - packages/cli/src/lib/transcript-model.ts:129-142
+      - packages/cli/src/lib/transcript-model.ts:323-346
     enforcement: re-insert orphans by timing, immutable maps
     appliesTo: ["#transcript-model"]
   caption-builder-fade-frame-math:

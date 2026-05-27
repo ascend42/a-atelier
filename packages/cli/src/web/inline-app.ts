@@ -72,11 +72,42 @@ interface FileEntry {
 }
 
 /**
- * Boot the in-browser Atelier Studio client. Wires up the file sidebar, the
- * AtelierStudio editor + autosave, image drag-drop, the WS bridge, and the
- * export-all flow. Called once by the temp-dir entry shim.
+ * Boot the in-browser Atelier Studio client.
+ *
+ * Two modes:
+ *   - **workspace** — when the server reports `/api/workspace` 200 OK, the
+ *     workspace-aware UI (sidebar tree + main-panel adapter + drop-zone)
+ *     boots from `workspace-app.ts`. This is the v1 UX bundle.
+ *   - **project** — legacy single-document UI, untouched (see below).
+ *
+ * The dispatch happens BEFORE any of the legacy DOM is built so workspace mode
+ * gets a clean root; the legacy code path runs only when `/api/workspace`
+ * responds 404 (project mode or detached).
  */
-export function bootStudioApp(config: StudioAppConfig): void {
+export async function bootStudioApp(config: StudioAppConfig): Promise<void> {
+  // Probe the workspace endpoint. A 200 means we're rooted at a workspace dir
+  // and should render the workspace UI; anything else falls through to the
+  // legacy single-document path.
+  try {
+    const probe = await fetch("/api/workspace");
+    if (probe.ok) {
+      const mod = await import("./workspace-app.js");
+      await mod.bootWorkspaceApp();
+      return;
+    }
+  } catch {
+    // Endpoint missing or network failure → legacy path. Non-fatal.
+  }
+
+  bootLegacyApp(config);
+}
+
+/**
+ * Legacy single-document client. Wires up the flat file sidebar, the
+ * AtelierStudio editor + autosave, image drag-drop, the WS bridge, and the
+ * export-all flow. Behavior preserved exactly from pre-workspace days.
+ */
+function bootLegacyApp(config: StudioAppConfig): void {
   // ── State ──
   let studio: AtelierStudio | null = null;
   let currentFile: string | null = null;

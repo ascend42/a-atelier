@@ -12,8 +12,8 @@
  *   atelier studio --no-open                → don't auto-open browser
  */
 
-import { resolve, join, relative, dirname, basename, sep } from "node:path";
-import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync } from "node:fs";
+import { resolve, join, relative, dirname, basename, sep, extname } from "node:path";
+import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync, createReadStream } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { exec } from "node:child_process";
@@ -43,6 +43,18 @@ import {
 } from "@a-company/atelier-mcp";
 import { parseAtelier, serializeAtelier } from "@a-company/atelier-schema";
 import { WebSocketServer, type WebSocket as WsWebSocket } from "ws";
+import {
+  listProjectMedia,
+  listProjectTranscripts,
+  listProjectArtifacts,
+  projectNameFromPath,
+} from "../lib/workspace-project-info.js";
+import { composeVideoProject } from "../lib/compose-video-project.js";
+import {
+  cascadeDeleteMedia,
+  deleteProject,
+  deleteWorkspaceFile,
+} from "../lib/workspace-delete.js";
 
 /** Recursively glob for .atelier files under a directory. */
 function findAtelierFiles(dir: string, base: string = dir): string[] {
@@ -97,6 +109,116 @@ export function isSafePath(filePath: string): boolean {
 export function writeFileEnsuringDir(absPath: string, body: string): void {
   mkdirSync(dirname(absPath), { recursive: true });
   writeFileSync(absPath, body, "utf-8");
+}
+
+/**
+ * Decide how to serve a file: as a UTF-8 text response (with a sensible mime
+ * type) or as a binary stream. Drives `/api/file` so the workspace UI can
+ * preview videos, images, audio in a `<video>` / `<img>` / `<audio>` element
+ * directly via the same endpoint that serves DESIGN.md and project.atelier.
+ *
+ * Extension list mirrors the slot-kind extension map used by mind-map.ts and
+ * media-project.ts so a file the media-list endpoint surfaces is the same
+ * file the preview can play.
+ */
+export function getFileServeKind(
+  absPath: string,
+): { kind: "text"; mime: string } | { kind: "binary"; mime: string } {
+  const ext = absPath.toLowerCase().match(/\.[^./\\]+$/)?.[0] ?? "";
+  switch (ext) {
+    // Atelier docs + plain config
+    case ".atelier": return { kind: "text", mime: "application/json; charset=utf-8" };
+    case ".md":      return { kind: "text", mime: "text/markdown; charset=utf-8" };
+    case ".yaml":
+    case ".yml":     return { kind: "text", mime: "application/yaml; charset=utf-8" };
+    case ".json":    return { kind: "text", mime: "application/json; charset=utf-8" };
+    case ".txt":     return { kind: "text", mime: "text/plain; charset=utf-8" };
+    case ".svg":     return { kind: "text", mime: "image/svg+xml" };
+    // Video
+    case ".mp4":     return { kind: "binary", mime: "video/mp4" };
+    case ".mov":     return { kind: "binary", mime: "video/quicktime" };
+    case ".webm":    return { kind: "binary", mime: "video/webm" };
+    case ".mkv":     return { kind: "binary", mime: "video/x-matroska" };
+    // Audio
+    case ".mp3":     return { kind: "binary", mime: "audio/mpeg" };
+    case ".wav":     return { kind: "binary", mime: "audio/wav" };
+    case ".m4a":     return { kind: "binary", mime: "audio/mp4" };
+    case ".ogg":     return { kind: "binary", mime: "audio/ogg" };
+    case ".flac":    return { kind: "binary", mime: "audio/flac" };
+    // Image
+    case ".png":     return { kind: "binary", mime: "image/png" };
+    case ".jpg":
+    case ".jpeg":    return { kind: "binary", mime: "image/jpeg" };
+    case ".gif":     return { kind: "binary", mime: "image/gif" };
+    case ".webp":    return { kind: "binary", mime: "image/webp" };
+    case ".avif":    return { kind: "binary", mime: "image/avif" };
+    // Font
+    case ".ttf":     return { kind: "binary", mime: "font/ttf" };
+    case ".otf":     return { kind: "binary", mime: "font/otf" };
+    case ".woff":    return { kind: "binary", mime: "font/woff" };
+    case ".woff2":   return { kind: "binary", mime: "font/woff2" };
+    // Default — treat as text/plain to preserve back-compat with anything the
+    // previous endpoint returned as text. (.atelier docs predominate here.)
+    default:         return { kind: "text", mime: "text/plain; charset=utf-8" };
+  }
+}
+
+/**
+ * Stream a binary file with proper Content-Type + Range support so
+ * <video>/<audio> elements can seek. If the request includes a `Range:
+ * bytes=START-END` header we respond 206 Partial Content with the requested
+ * slice; otherwise we send the whole file as 200.
+ *
+ * Synchronous statSync + createReadStream is fine for the localhost-only
+ * use case — the studio runs alongside the creator's working session, not
+ * as a high-throughput server.
+ */
+export function serveBinaryFile(
+  req: import("node:http").IncomingMessage,
+  res: import("node:http").ServerResponse,
+  absPath: string,
+  mime: string,
+): void {
+  // statSync + createReadStream are top-level imports — using `require()` in
+  // tsup's ESM output gets shim'd to `__require()` which can silently return
+  // undefined and break the call. Top-level import is the safe path.
+  let stat: import("node:fs").Stats;
+  try {
+    stat = statSync(absPath);
+  } catch {
+    res.statusCode = 404;
+    res.end("File not found");
+    return;
+  }
+  const size = stat.size;
+  const rangeHeader = (req.headers["range"] as string | undefined) ?? "";
+  const rangeMatch = rangeHeader.match(/^bytes=(\d+)-(\d*)$/);
+
+  if (rangeMatch) {
+    const start = parseInt(rangeMatch[1], 10);
+    const end = rangeMatch[2].length > 0 ? parseInt(rangeMatch[2], 10) : size - 1;
+    if (isNaN(start) || isNaN(end) || start > end || end >= size) {
+      res.statusCode = 416;
+      res.setHeader("Content-Range", `bytes */${size}`);
+      res.end();
+      return;
+    }
+    const chunkSize = end - start + 1;
+    res.statusCode = 206;
+    res.setHeader("Content-Type", mime);
+    res.setHeader("Content-Length", String(chunkSize));
+    res.setHeader("Content-Range", `bytes ${start}-${end}/${size}`);
+    res.setHeader("Accept-Ranges", "bytes");
+    createReadStream(absPath, { start, end }).pipe(res);
+    return;
+  }
+
+  // No range header — send the whole file.
+  res.statusCode = 200;
+  res.setHeader("Content-Type", mime);
+  res.setHeader("Content-Length", String(size));
+  res.setHeader("Accept-Ranges", "bytes");
+  createReadStream(absPath).pipe(res);
 }
 
 /**
@@ -534,6 +656,202 @@ export async function handleCreateProject(
   };
 }
 
+// ─── /api/project/:name/{media,transcripts,artifacts} handlers ─────
+//
+// These run only in workspace mode (when serveDir IS the workspace root).
+// In project mode the workspace tree UI is hidden and these endpoints
+// return 404 — keeps the surface area minimal for the single-doc path.
+
+/**
+ * Resolve a project subdir name to its absolute directory inside the served
+ * workspace, validating the name through `isValidProjectName` so a crafted
+ * `..`-name can't escape. Returns null on invalid name or missing project.
+ */
+export function resolveProjectInWorkspace(
+  workspaceDir: string,
+  name: unknown,
+): string | null {
+  if (!isValidProjectName(name)) return null;
+  const dir = join(resolve(workspaceDir), name);
+  if (!existsSync(join(dir, "project.atelier"))) return null;
+  return dir;
+}
+
+/** GET /api/project/:name/media → workspace-relative media entry list. */
+export function buildProjectMedia(
+  workspaceDir: string,
+  name: unknown,
+): WorkspaceApiResult {
+  const dir = resolveProjectInWorkspace(workspaceDir, name);
+  if (!dir) return { status: 404, body: { error: `project not found: ${String(name)}` } };
+  return { status: 200, body: listProjectMedia(dir, String(name)) };
+}
+
+/** GET /api/project/:name/transcripts → transcript file list with metadata. */
+export function buildProjectTranscripts(
+  workspaceDir: string,
+  name: unknown,
+): WorkspaceApiResult {
+  const dir = resolveProjectInWorkspace(workspaceDir, name);
+  if (!dir) return { status: 404, body: { error: `project not found: ${String(name)}` } };
+  return { status: 200, body: listProjectTranscripts(dir, String(name)) };
+}
+
+/** GET /api/project/:name/artifacts → DESIGN/SCRIPT/STORYBOARD info. */
+export function buildProjectArtifacts(
+  workspaceDir: string,
+  name: unknown,
+): WorkspaceApiResult {
+  const dir = resolveProjectInWorkspace(workspaceDir, name);
+  if (!dir) return { status: 404, body: { error: `project not found: ${String(name)}` } };
+  return { status: 200, body: listProjectArtifacts(dir, String(name)) };
+}
+
+/**
+ * Match `/api/project/:name/(media|transcripts|artifacts)` and return
+ * `{ name, kind }`. Used by the middleware to dispatch without ad-hoc regex
+ * branching inline. Returns null on no match.
+ */
+export function matchProjectInfoRoute(
+  pathname: string,
+): { name: string; kind: "media" | "transcripts" | "artifacts" } | null {
+  const m = pathname.match(/^\/api\/project\/([^/]+)\/(media|transcripts|artifacts)$/);
+  if (!m) return null;
+  return {
+    name: decodeURIComponent(m[1]),
+    kind: m[2] as "media" | "transcripts" | "artifacts",
+  };
+}
+
+// ─── DELETE handlers (pure) ────────────────────────────────────────────
+//
+// Three deletion endpoints sitting on the same safety floor as the GET /
+// POST handlers: loopback-bound, Origin-checked (the MUTATING set above
+// already includes DELETE), name + path validated BEFORE any disk work.
+// All cascade logic lives in #workspace-delete so unit tests exercise it
+// without HTTP. The handlers here are a thin translator: outcome → status.
+
+/**
+ * Build the DELETE /api/file response. `relPath` is a workspace-relative
+ * path; the underlying `deleteWorkspaceFile` enforces resolved containment
+ * and refuses directories (use DELETE /api/project for those). Project
+ * ownership is derived for the WS envelope so the sidebar can `refreshProject`
+ * without re-deriving the owner.
+ */
+export function handleDeleteFile(
+  cwd: string,
+  relPath: string | null,
+): WorkspaceApiResult & { projectName?: string | null } {
+  if (!relPath || relPath.length === 0) {
+    return { status: 400, body: { error: "missing path" } };
+  }
+  const outcome = deleteWorkspaceFile(cwd, relPath);
+  if (outcome.kind === "invalid-path") {
+    return { status: 400, body: { error: "invalid path" } };
+  }
+  if (outcome.kind === "is-directory") {
+    return {
+      status: 400,
+      body: { error: "refusing to delete a directory via /api/file — use /api/project/:name" },
+    };
+  }
+  if (outcome.kind === "not-found") {
+    return { status: 404, body: { error: "file not found" } };
+  }
+  // Derive owning project for the WS envelope. projectNameFromPath returns
+  // null when the path is at the workspace root (rare — e.g. workspace-level
+  // README).
+  const projectName = projectNameFromPath(cwd, relPath);
+  return {
+    status: 200,
+    body: { deleted: true, path: outcome.path },
+    projectName,
+  };
+}
+
+/**
+ * Build the DELETE /api/project/:name/media response. Cascade-deletes the
+ * media file and every artifact derived from it; see
+ * #delete-cascade-project-atelier-surgery for the exact rules. Returns 404
+ * on missing media (the project itself missing also surfaces as 404 via
+ * `invalid-project`, mirroring the GET endpoints' shape).
+ */
+export function handleDeleteProjectMedia(
+  cwd: string,
+  name: unknown,
+  fileQuery: string | null,
+): WorkspaceApiResult {
+  if (typeof name !== "string") {
+    return { status: 400, body: { error: "missing project name" } };
+  }
+  if (!fileQuery || fileQuery.length === 0) {
+    return { status: 400, body: { error: "missing file" } };
+  }
+  const outcome = cascadeDeleteMedia(cwd, name, fileQuery);
+  switch (outcome.kind) {
+    case "invalid-project":
+      return { status: 404, body: { error: `project not found: ${String(name)}` } };
+    case "invalid-basename":
+      return { status: 400, body: { error: "invalid media basename" } };
+    case "not-found":
+      return { status: 404, body: { error: "media file not found" } };
+    case "deleted":
+      return { status: 200, body: { deleted: outcome.report } };
+  }
+}
+
+/**
+ * Build the DELETE /api/project/:name response. Removes the whole project
+ * subdir, clears active.yaml if it pointed at the project, and trims the
+ * workspace manifest's projects[] list when present.
+ */
+export function handleDeleteProject(
+  cwd: string,
+  name: unknown,
+): WorkspaceApiResult {
+  if (typeof name !== "string") {
+    return { status: 400, body: { error: "missing project name" } };
+  }
+  const outcome = deleteProject(cwd, name);
+  switch (outcome.kind) {
+    case "invalid-name":
+      return { status: 400, body: { error: "invalid project name" } };
+    case "not-found":
+      return { status: 404, body: { error: `project not found: ${String(name)}` } };
+    case "deleted":
+      return {
+        status: 200,
+        body: {
+          deleted: true,
+          name: outcome.report.name,
+          wasActive: outcome.report.wasActive,
+          manifestUpdated: outcome.report.manifestUpdated,
+        },
+      };
+  }
+}
+
+/**
+ * Match `/api/project/:name/media` for the DELETE method specifically — same
+ * URL as the GET handler, but the middleware dispatches on method. (We reuse
+ * `matchProjectInfoRoute` for the GET path; this matcher is a thin pair so
+ * the DELETE branch reads symmetrically without an inline regex.)
+ */
+export function matchProjectMediaDeleteRoute(
+  pathname: string,
+): { name: string } | null {
+  const m = pathname.match(/^\/api\/project\/([^/]+)\/media$/);
+  if (!m) return null;
+  return { name: decodeURIComponent(m[1]) };
+}
+
+/** Match `/api/project/:name` (no trailing segment) — DELETE target. */
+export function matchProjectRoute(pathname: string): { name: string } | null {
+  const m = pathname.match(/^\/api\/project\/([^/]+)$/);
+  if (!m) return null;
+  return { name: decodeURIComponent(m[1]) };
+}
+
 /**
  * Read an incoming request body as a UTF-8 string, then JSON-parse it.
  * Returns `undefined` on empty body, throws on invalid JSON. Used by the
@@ -968,7 +1286,9 @@ export function studioCommand(program: Command): void {
             workspaceName = basename(wsDir);
           }
 
-          // Positional `target` lets the caller pick a project by name.
+          // Positional `target` lets the caller pre-select a project by name —
+          // it's surfaced via active.yaml so the workspace UI opens to it on
+          // first paint. Validate against the on-disk projects list.
           let pick: string | undefined;
           if (target) {
             if (projects.includes(target)) {
@@ -982,31 +1302,27 @@ export function studioCommand(program: Command): void {
               return;
             }
           } else if (projects.length === 0) {
-            // Just-created workspace, or empty one — no projects to open.
-            console.log(`  Workspace "${workspaceName}" has no projects yet.`);
-            console.log(`  Run \`atelier init <name>\` from inside the workspace to create one.`);
-            return;
-          } else if (projects.length === 1) {
-            pick = projects[0];
-          } else {
-            // Multiple projects: interactive picker.
-            console.log("");
-            console.log(`  Workspace: ${workspaceName}`);
-            console.log(`  Projects:`);
-            projects.forEach((p, i) => console.log(`    ${i + 1}) ${p}`));
-            console.log("");
-            const raw = (await question(`Open which? [1-${projects.length}]: `)).trim();
-            const idx = parseInt(raw, 10);
-            if (!isFinite(idx) || idx < 1 || idx > projects.length) {
-              console.error(`atelier studio: invalid selection "${raw}"`);
-              process.exit(1);
-              return;
-            }
-            pick = projects[idx - 1];
+            // Just-created workspace — still open the workspace UI so the
+            // creator can use the "+ New" button to create a project from
+            // the sidebar (no need to drop back to the shell).
+            console.log(`  Workspace "${workspaceName}" has no projects yet — launching empty UI.`);
           }
 
-          serveDir = resolve(wsDir, pick);
-          projectLabel = pick;
+          // Workspace mode: the dev server is rooted at the WORKSPACE itself
+          // so the new workspace-tree UI can see every project + media file
+          // and the new `/api/project/:name/*` endpoints can target any of
+          // them by name. Active selection flows through active.yaml — the
+          // browser reads it on boot via `/api/workspace/active`.
+          serveDir = wsDir;
+          if (pick) {
+            // Best-effort: set active.yaml so the browser opens to the right
+            // project. Stale pointer is harmless (the UI marks it `stale:true`).
+            try { setActiveProject(wsDir, pick); } catch { /* non-fatal */ }
+            projectLabel = pick;
+          } else if (projects.length === 1) {
+            try { setActiveProject(wsDir, projects[0]); } catch { /* non-fatal */ }
+            projectLabel = projects[0];
+          }
         } else if (ctx.kind === "project") {
           serveDir = ctx.projectDir!;
           projectLabel = basename(serveDir);
@@ -1098,6 +1414,199 @@ interface LaunchStudioOptions {
   projectLabel?: string;
   /** Display label for the containing workspace, if any. */
   workspaceName?: string;
+}
+
+/**
+ * Handle a `POST /api/media/ingest` request. Streams the body into a temp
+ * file, copies into the named project's `media/` directory, then runs
+ * `composeVideoProject` to compose a playable doc. Progress envelopes are
+ * broadcast over the bridge so the browser can show a status overlay.
+ *
+ * The contract is intentionally simple: octet-stream body + headers, no
+ * multipart parser dep. Matches the existing /api/export upload shape.
+ */
+function handleMediaIngestRequest(
+  req: import("node:http").IncomingMessage,
+  res: import("node:http").ServerResponse,
+  cwd: string,
+  bridgeClients: Set<WsWebSocket>,
+): void {
+  const projectName = headerString(req, "x-atelier-project");
+  const filename = headerString(req, "x-atelier-filename");
+  const modelHeader = headerString(req, "x-atelier-model") ?? "base.en";
+
+  if (!isValidProjectName(projectName)) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "missing or invalid x-atelier-project header" }));
+    return;
+  }
+  if (!filename || filename.includes("/") || filename.includes("\\") || filename.startsWith(".")) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "missing or invalid x-atelier-filename header" }));
+    return;
+  }
+
+  const projectDir = join(resolve(cwd), projectName);
+  if (!existsSync(join(projectDir, "project.atelier"))) {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: `project not found: ${projectName}` }));
+    return;
+  }
+
+  const mediaDir = join(projectDir, "media");
+  if (!existsSync(mediaDir)) mkdirSync(mediaDir, { recursive: true });
+  const destPath = join(mediaDir, filename);
+
+  // Stream the body straight to disk. No buffering — keeps memory bounded
+  // for large video uploads.
+  broadcastIngest(bridgeClients, {
+    type: "media:ingest:progress",
+    projectName,
+    file: filename,
+    phase: "start",
+  });
+
+  const chunks: Buffer[] = [];
+  let totalBytes = 0;
+  req.on("data", (chunk: Buffer) => {
+    chunks.push(chunk);
+    totalBytes += chunk.length;
+  });
+  req.on("error", (err) => {
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: `upload failed: ${err.message}` }));
+  });
+  req.on("end", () => {
+    try {
+      writeFileSync(destPath, Buffer.concat(chunks));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      broadcastIngest(bridgeClients, {
+        type: "media:ingest:progress",
+        projectName,
+        file: filename,
+        phase: "error",
+        error: msg,
+      });
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: msg }));
+      return;
+    }
+
+    broadcastIngest(bridgeClients, {
+      type: "media:list:changed",
+      projectName,
+    });
+
+    // Kick off transcription + composition asynchronously. The HTTP response
+    // returns immediately with `accepted` once the file is on disk — the
+    // browser tracks ingest progress via WS envelopes from here.
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "transcribing",
+    });
+
+    // Clear any leftover source.<ext> from prior ingest paths — modern
+    // ingest passes the media file path directly via TranscribeOptions.sourcePath
+    // and never writes source.<ext> at root. The cleanup keeps the project
+    // surface free of legacy clutter as projects migrate.
+    {
+      const POSSIBLE = [".mp4", ".mov", ".webm", ".mkv", ".avi"];
+      for (const e of POSSIBLE) {
+        const stale = join(projectDir, `source${e}`);
+        if (existsSync(stale)) {
+          try { rmSync(stale); } catch { /* non-fatal */ }
+        }
+      }
+    }
+
+    composeVideoProject({
+      projectDir,
+      sourceFile: destPath,
+      mediaBasename: filename,
+      // Pass the media file's real path to whisper directly — no more copying
+      // to source.<ext> at root (TD-2026-05-27 clean-project stance).
+      transcribeOptions: { model: modelHeader as never, sourcePath: destPath },
+    })
+      .then((result) => {
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "composing",
+        });
+        // Per-file transcript mirror lives at `transcripts/<stem>.json` —
+        // see #transcribe-orchestrator. Strip the extension before broadcasting
+        // so the studio sidebar can locate the right file. Fall back to the
+        // legacy root transcript path when the orchestrator didn't run a mirror
+        // (shouldn't happen on this code path; defensive only).
+        const stem = filename.replace(/\.[^./\\]+$/, "");
+        const transcriptPath = result.mirroredTranscriptPath
+          ? `${projectName}/transcripts/${stem}.json`
+          : `${projectName}/transcript.json`;
+        broadcastIngest(bridgeClients, {
+          type: "transcript:added",
+          projectName,
+          transcriptPath,
+        });
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "done",
+        });
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({
+          ok: true,
+          projectName,
+          file: filename,
+          bytes: totalBytes,
+          addedVideoLayer: result.addedVideoLayer,
+          targetStateName: result.targetStateName,
+          targetDurationSeconds: result.targetDurationSeconds,
+          wordCount: result.transcribe?.wordCount ?? null,
+        }));
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: msg,
+        });
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: msg }));
+      });
+  });
+}
+
+/** Pull a single string header from an IncomingMessage, lowercased lookup. */
+function headerString(
+  req: import("node:http").IncomingMessage,
+  name: string,
+): string | null {
+  const v = req.headers[name.toLowerCase()];
+  if (typeof v === "string") return v;
+  if (Array.isArray(v) && v.length > 0) return v[0];
+  return null;
+}
+
+/** Helper that re-uses the bridge broadcaster but with the new envelopes. */
+function broadcastIngest(
+  clients: Set<WsWebSocket>,
+  envelope: BridgeEnvelope,
+): void {
+  broadcastToBridge(clients, envelope);
 }
 
 async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
@@ -1288,16 +1797,26 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
 
                     if (req.method === "GET") {
                       try {
-                        const content = readFileSync(absPath, "utf-8");
-                        // Mirror into the shared store so MCP clients connecting
-                        // over /mcp see the same active document and the bridge
-                        // can broadcast it to late-joining browser clients.
-                        const parsed = parseAtelier(content);
-                        if (parsed.success) {
-                          bridgeState.store.set(filePath, parsed.data, "system");
-                          bridgeState.currentDocId = filePath;
+                        const mimeAndKind = getFileServeKind(absPath);
+                        if (mimeAndKind.kind === "binary") {
+                          // Binary media (mp4, mov, webm, mp3, png, ...) — stream
+                          // with the correct MIME type and Range support so
+                          // <video>/<audio> elements can seek.
+                          serveBinaryFile(req, res, absPath, mimeAndKind.mime);
+                          return;
                         }
-                        res.setHeader("Content-Type", "text/plain");
+                        const content = readFileSync(absPath, "utf-8");
+                        // For .atelier docs, mirror into the shared store so MCP
+                        // clients connecting over /mcp see the same active doc
+                        // and the bridge broadcasts to late-joining browsers.
+                        if (absPath.endsWith(".atelier")) {
+                          const parsed = parseAtelier(content);
+                          if (parsed.success) {
+                            bridgeState.store.set(filePath, parsed.data, "system");
+                            bridgeState.currentDocId = filePath;
+                          }
+                        }
+                        res.setHeader("Content-Type", mimeAndKind.mime);
                         res.end(content);
                       } catch {
                         res.statusCode = 404;
@@ -1329,6 +1848,24 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                           res.end(msg);
                         }
                       });
+                      return;
+                    }
+
+                    if (req.method === "DELETE") {
+                      // Single-file delete. The pure handler walks the same
+                      // isSafePath / refuse-directory guards as the POST
+                      // sibling but ends in unlinkSync; we broadcast
+                      // `file:deleted` so the sidebar invalidates the right
+                      // section without a full workspace refetch.
+                      const result = handleDeleteFile(cwd, filePath);
+                      writeJsonResult(res, result);
+                      if (result.status === 200) {
+                        broadcastIngest(bridgeClients, {
+                          type: "file:deleted",
+                          path: filePath,
+                          projectName: result.projectName ?? null,
+                        });
+                      }
                       return;
                     }
                   }
@@ -1413,6 +1950,80 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                       res.setHeader("Content-Type", "application/json");
                       res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
                     });
+                    return;
+                  }
+
+                  // ── /api/project/:name/{media,transcripts,artifacts}
+                  // Only meaningful in workspace mode where `cwd` IS the
+                  // workspace root. In project mode the resolveProjectInWorkspace
+                  // guard returns 404 (no `<cwd>/<name>/project.atelier`), so
+                  // the same code path is safe either way.
+                  const projectInfo = matchProjectInfoRoute(url.pathname);
+                  if (projectInfo && (req.method === "GET" || !req.method)) {
+                    if (projectInfo.kind === "media") {
+                      writeJsonResult(res, buildProjectMedia(cwd, projectInfo.name));
+                      return;
+                    }
+                    if (projectInfo.kind === "transcripts") {
+                      writeJsonResult(res, buildProjectTranscripts(cwd, projectInfo.name));
+                      return;
+                    }
+                    if (projectInfo.kind === "artifacts") {
+                      writeJsonResult(res, buildProjectArtifacts(cwd, projectInfo.name));
+                      return;
+                    }
+                  }
+
+                  // ── DELETE /api/project/:name/media?file=<basename>
+                  // Cascade-deletes the media file + per-file transcript +
+                  // sidecar notes + every layer in project.atelier that
+                  // references the source. See #delete-cascade-project-atelier-surgery.
+                  const projectMediaDel = matchProjectMediaDeleteRoute(url.pathname);
+                  if (projectMediaDel && req.method === "DELETE") {
+                    const fileQuery = url.searchParams.get("file");
+                    const result = handleDeleteProjectMedia(cwd, projectMediaDel.name, fileQuery);
+                    writeJsonResult(res, result);
+                    if (result.status === 200 && typeof fileQuery === "string") {
+                      broadcastIngest(bridgeClients, {
+                        type: "media:deleted",
+                        projectName: projectMediaDel.name,
+                        file: fileQuery,
+                      });
+                    }
+                    return;
+                  }
+
+                  // ── DELETE /api/project/:name
+                  // Whole-project delete. rm-rf the dir, clear active.yaml
+                  // when it pointed at us, trim workspace manifest's
+                  // projects[] when present. See #delete-active-project-clears-active-yaml.
+                  const projectDel = matchProjectRoute(url.pathname);
+                  if (projectDel && req.method === "DELETE") {
+                    const result = handleDeleteProject(cwd, projectDel.name);
+                    writeJsonResult(res, result);
+                    if (result.status === 200) {
+                      const body = result.body as { wasActive: boolean };
+                      broadcastIngest(bridgeClients, {
+                        type: "project:deleted",
+                        projectName: projectDel.name,
+                        wasActive: body.wasActive,
+                      });
+                    }
+                    return;
+                  }
+
+                  // ── POST /api/media/ingest — drag-and-drop video → playable.
+                  //
+                  // Multipart-free contract: the client sends the raw bytes as
+                  // application/octet-stream and identifies the target project
+                  // + filename via headers. Simpler than a hand-rolled multipart
+                  // parser and avoids any new dep.
+                  //
+                  //   x-atelier-project: <project-name>   (workspace mode only)
+                  //   x-atelier-filename: <basename>      (no path separators)
+                  //   x-atelier-model: <whisper model>    (optional, default "base.en")
+                  if (url.pathname === "/api/media/ingest" && req.method === "POST") {
+                    handleMediaIngestRequest(req, res, cwd, bridgeClients);
                     return;
                   }
 

@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-22T19:18:16.333Z'
+generated: '2026-05-27T18:43:04.252Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -2507,11 +2507,205 @@ by_symbol:
       agent: []
   '#cli-studio':
     symbol: '#cli-studio'
-    total_changes: 7
-    last_modified: '2026-05-22T19:17:55Z'
+    total_changes: 8
+    last_modified: '2026-05-27T18:42:58Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_46
+        id: h0077
+        ts: '2026-05-27T18:42:58Z'
+        type: implement
+        symbols:
+          - '#artifact-project'
+          - '#artifact-schemas'
+          - '#artifact-templates'
+          - '#atelier-agent-templates'
+          - '#claude-agents-bundle'
+          - '#cli-artifacts'
+          - '#cli-init'
+          - '#cli-media'
+          - '#cli-reconstruct'
+          - '#cli-studio'
+          - '#iris-composer'
+          - '#lux-cinematographer'
+          - '#mcp-effective-transcript'
+          - '#mcp-media-notes'
+          - '#mcp-mind-map'
+          - '#media-notes-io'
+          - '#media-notes-schema'
+          - '#media-project-io'
+          - '#paradigm-augment'
+          - '#quill-showrunner'
+          - '#workspace-io'
+          - '#workspace-schema'
+          - ^valid-artifact-set
+          - ^valid-mind-map-query
+        author:
+          type: human
+          id: ascend
+        commit: 415cdc8b5c94b6466f09434395f1e1bf20a59ca3
+        intent: feature
+        files:
+          - .claude/.purpose
+          - .claude/agents/atelier-iris.md
+          - .claude/agents/atelier-lux.md
+          - .claude/agents/atelier-quill.md
+          - .claude/settings.local.json
+          - .gitignore
+          - .paradigm/aspect-graph.db
+          - .paradigm/decisions/TD-2026-05-10-078.yaml
+          - .paradigm/decisions/TD-2026-05-10-241.yaml
+          - .paradigm/decisions/TD-2026-05-26-088.yaml
+          - .paradigm/decisions/TD-2026-05-26-210.yaml
+          - .paradigm/decisions/TD-2026-05-26-229.yaml
+          - .paradigm/decisions/TD-2026-05-26-271.yaml
+          - .paradigm/decisions/TD-2026-05-26-275.yaml
+          - .paradigm/decisions/TD-2026-05-26-363.yaml
+          - .paradigm/decisions/TD-2026-05-26-540.yaml
+          - .paradigm/decisions/TD-2026-05-26-646.yaml
+          - .paradigm/decisions/TD-2026-05-26-684.yaml
+          - .paradigm/decisions/TD-2026-05-26-720.yaml
+          - .paradigm/decisions/TD-2026-05-26-902.yaml
+          - .paradigm/decisions/TD-2026-05-27-723.yaml
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-10/L-2026-05-10-ascend-182220-001.lore
+          - .paradigm/lore/entries/2026-05-10/L-2026-05-10-ascend-182244-392.lore
+          - .paradigm/lore/entries/2026-05-10/L-2026-05-10-ascend-182244-422.lore
+          - .paradigm/lore/entries/2026-05-10/L-2026-05-10-ascend-183257-001.lore
+          - .paradigm/lore/entries/2026-05-12/L-2026-05-12-ascend-023740-001.lore
+          - .paradigm/lore/entries/2026-05-18/L-2026-05-18-ascend-203245-001.lore
+          - .paradigm/lore/entries/2026-05-18/L-2026-05-18-ascend-203946-001.lore
+          - .paradigm/lore/entries/2026-05-20/L-2026-05-20-ascend-012741-001.lore
+          - .paradigm/lore/entries/2026-05-20/L-2026-05-20-ascend-035028-001.lore
+          - .paradigm/lore/entries/2026-05-20/L-2026-05-20-ascend-044257-001.lore
+          - .paradigm/lore/entries/2026-05-20/L-2026-05-20-ascend-230652-001.lore
+          - .paradigm/lore/entries/2026-05-22/L-2026-05-22-ascend-185123-001.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-010922-099.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-010925-655.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-010928-128.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-060409-809.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-061049-494.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-061234-941.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-061300-619.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-063621-935.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-064734-119.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-064742-202.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-064751-629.lore
+          - .paradigm/lore/entries/2026-05-26/L-2026-05-26-ascend-124844-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-035359-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-044400-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-134737-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-134835-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-140312-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-171631-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-180634-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-180956-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-182158-824.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-184035-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-claude-builder-063923-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/manifest.consistency.json
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/personas/iris/notebook.yaml
+          - .paradigm/personas/iris/persona.yaml
+          - .paradigm/personas/iris/skills/README.md
+          - .paradigm/personas/iris/skills/apply-recipe-to-document.md
+          - .paradigm/personas/iris/skills/run-silence-trim-and-caption.md
+          - .paradigm/personas/iris/system-prompt.md
+          - .paradigm/personas/lux/notebook.yaml
+          - .paradigm/personas/lux/persona.yaml
+          - .paradigm/personas/lux/skills/README.md
+          - .paradigm/personas/lux/skills/decompose-script-to-storyboard.md
+          - .paradigm/personas/lux/skills/resolve-asset-slot.md
+          - .paradigm/personas/lux/system-prompt.md
+          - .paradigm/personas/quill/notebook.yaml
+          - .paradigm/personas/quill/persona.yaml
+          - .paradigm/personas/quill/skills/README.md
+          - .paradigm/personas/quill/skills/draft-design-brief.md
+          - .paradigm/personas/quill/skills/reconstruct-script-from-transcript.md
+          - .paradigm/personas/quill/skills/write-30s-hook-script.md
+          - .paradigm/personas/quill/system-prompt.md
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/session-checkpoint.json
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-001.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-002.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-003.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-004.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-005.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-006.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-007.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-008.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-009.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-010.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-011.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-012.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-013.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-014.yaml
+          - .paradigm/tasks/entries/2026-05-10/T-2026-05-10-015.yaml
+          - .paradigm/tasks/index.yaml
+          - .paradigm/university/index.yaml
+          - CHANGELOG.md
+          - docs/keynote/paradigm/atelier-creator-flow-assessment.md
+          - docs/keynote/paradigm/atelier-creator-roadmap.md
+          - docs/keynote/paradigm/atelier-front-of-pipeline-artifacts.md
+          - docs/keynote/paradigm/atelier-hero-paths-and-creator-teams.md
+          - docs/keynote/paradigm/overnight-summary-2026-05-26.md
+          - docs/keynote/paradigm/phase-3-reconciliation-notes.md
+          - docs/keynote/paradigm/v6-release-video-feasibility.md
+          - packages/cli/.purpose
+          - packages/cli/src/cli.ts
+          - packages/cli/src/commands/artifacts.ts
+          - packages/cli/src/commands/init.ts
+          - packages/cli/src/commands/media.ts
+          - packages/cli/src/commands/reconstruct.ts
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/index.ts
+          - packages/cli/src/lib/artifact-project.ts
+          - packages/cli/src/lib/artifact-templates.ts
+          - packages/cli/src/lib/atelier-agent-templates.ts
+          - packages/cli/src/lib/learning-mode.ts
+          - packages/cli/src/lib/media-notes.ts
+          - packages/cli/src/lib/media-project.ts
+          - packages/cli/src/lib/paradigm-augment.ts
+          - packages/cli/src/lib/transcript-model.ts
+          - packages/cli/src/lib/workspace.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/tools/effective-transcript.ts
+          - packages/mcp/src/tools/media-notes.ts
+          - packages/mcp/src/tools/mind-map.ts
+          - packages/schema/.purpose
+          - packages/schema/src/artifacts/__fixtures__/DESIGN.md
+          - packages/schema/src/artifacts/__fixtures__/SCRIPT.md
+          - packages/schema/src/artifacts/__fixtures__/STORYBOARD.md
+          - packages/schema/src/artifacts/__tests__/artifacts.test.ts
+          - packages/schema/src/artifacts/design.ts
+          - packages/schema/src/artifacts/index.ts
+          - packages/schema/src/artifacts/parse.ts
+          - packages/schema/src/artifacts/script.ts
+          - packages/schema/src/artifacts/slot.ts
+          - packages/schema/src/artifacts/storyboard.ts
+          - packages/schema/src/artifacts/technique.ts
+          - packages/schema/src/artifacts/validate.ts
+          - packages/schema/src/index.ts
+          - packages/schema/src/media-notes.ts
+          - packages/schema/src/workspace.test.ts
+          - packages/schema/src/workspace.ts
+          - packages/types/src/index.ts
+          - packages/types/src/video-project.ts
+          - portal.yaml
+        description: 'feat(#cli-studio): creator-flow foundation — agents, workspace, symbiosis, media pipeline'
       - &ref_44
         id: h0076
         ts: '2026-05-22T19:17:55Z'
@@ -2595,26 +2789,6 @@ by_symbol:
           - packages/studio/src/panels/property-panel.ts
           - packages/studio/src/studio.ts
         description: 'fix(#cli-studio, #studio-widget): autosave corruption + bridge mkdir + slider commit-gating'
-      - &ref_39
-        id: h0063
-        ts: '2026-05-20T04:10:46Z'
-        type: implement
-        symbols:
-          - '#cli-studio'
-          - '#mcp-import-images'
-          - '#recipe-lib'
-        author:
-          type: human
-          id: ascend
-        commit: 7db071eb37c497777db562d1d4ada3567cc56b64
-        intent: fix
-        files:
-          - packages/cli/src/commands/recipe.ts
-          - packages/cli/src/commands/studio.ts
-          - packages/cli/src/index.test.ts
-          - packages/mcp/src/index.test.ts
-          - packages/mcp/src/tools/import-images.ts
-        description: 'fix(#cli-studio, #mcp-import-images, #recipe-lib): six reviewer- and smoke-test-confirmed defects'
     contributors:
       human:
         - ascend
@@ -2858,7 +3032,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_40
+      - &ref_39
         id: h0062
         ts: '2026-05-20T03:55:11Z'
         type: implement
@@ -2890,8 +3064,27 @@ by_symbol:
     fragility: low
     recent:
       - *ref_38
+      - &ref_40
+        id: h0063
+        ts: '2026-05-20T04:10:46Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#mcp-import-images'
+          - '#recipe-lib'
+        author:
+          type: human
+          id: ascend
+        commit: 7db071eb37c497777db562d1d4ada3567cc56b64
+        intent: fix
+        files:
+          - packages/cli/src/commands/recipe.ts
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.test.ts
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/tools/import-images.ts
+        description: 'fix(#cli-studio, #mcp-import-images, #recipe-lib): six reviewer- and smoke-test-confirmed defects'
       - *ref_39
-      - *ref_40
     contributors:
       human:
         - ascend
@@ -2903,7 +3096,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_40
+      - *ref_39
     contributors:
       human:
         - ascend
@@ -2934,7 +3127,7 @@ by_symbol:
           - packages/cli/src/lib/render-image.ts
           - pnpm-lock.yaml
         description: 'fix(#render-image): PNG export works on plain install — node-canvas → @napi-rs/canvas'
-      - *ref_40
+      - *ref_39
     contributors:
       human:
         - ascend
@@ -2948,7 +3141,7 @@ by_symbol:
     recent:
       - *ref_17
       - *ref_38
-      - *ref_39
+      - *ref_40
     contributors:
       human:
         - ascend
@@ -3174,6 +3367,282 @@ by_symbol:
     fragility: low
     recent:
       - *ref_17
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#artifact-project':
+    symbol: '#artifact-project'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#artifact-schemas':
+    symbol: '#artifact-schemas'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#artifact-templates':
+    symbol: '#artifact-templates'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-agent-templates':
+    symbol: '#atelier-agent-templates'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#claude-agents-bundle':
+    symbol: '#claude-agents-bundle'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-artifacts':
+    symbol: '#cli-artifacts'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-init':
+    symbol: '#cli-init'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-media':
+    symbol: '#cli-media'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cli-reconstruct':
+    symbol: '#cli-reconstruct'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#iris-composer':
+    symbol: '#iris-composer'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#lux-cinematographer':
+    symbol: '#lux-cinematographer'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-effective-transcript':
+    symbol: '#mcp-effective-transcript'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-media-notes':
+    symbol: '#mcp-media-notes'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-mind-map':
+    symbol: '#mcp-mind-map'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#media-notes-io':
+    symbol: '#media-notes-io'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#media-notes-schema':
+    symbol: '#media-notes-schema'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#media-project-io':
+    symbol: '#media-project-io'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#paradigm-augment':
+    symbol: '#paradigm-augment'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#quill-showrunner':
+    symbol: '#quill-showrunner'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-io':
+    symbol: '#workspace-io'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-schema':
+    symbol: '#workspace-schema'
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ^valid-artifact-set:
+    symbol: ^valid-artifact-set
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ^valid-mind-map-query:
+    symbol: ^valid-mind-map-query
+    total_changes: 1
+    last_modified: '2026-05-27T18:42:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_46
     contributors:
       human:
         - ascend
