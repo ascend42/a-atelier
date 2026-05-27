@@ -15,18 +15,27 @@ export {
 } from "./easing.js";
 export { ShadowSchema } from "./shadow.js";
 export {
-  ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, VideoVisualSchema,
+  ShapeVisualSchema, TextVisualSchema, ImageVisualSchema, VideoVisualSchema, AudioVisualSchema,
   GroupVisualSchema, RefVisualSchema,
   VisualSchema, LayerSchema, BlendModeSchema, MotionPathSchema,
   SpritesheetConfigSchema, SourceRectSchema,
 } from "./layer.js";
 export { AnimatablePropertySchema, FrameRangeSchema, DeltaSchema } from "./delta.js";
-export { AudioSchema, StateSchema } from "./state.js";
+export { StateSchema, StateTransitionConfigSchema } from "./state.js";
 export { PresetDeltaSchema, PresetSchema } from "./preset.js";
 export { VariableTypeSchema, VariableSchema } from "./variable.js";
 export { AssetTypeSchema, AssetSchema } from "./asset.js";
 export { TriggerTypeSchema, TriggerSchema, ActionTypeSchema, ActionSchema, InteractionSchema } from "./interaction.js";
-export { CanvasSchema, AtelierDocumentSchema } from "./document.js";
+export { CanvasSchema, AtelierDocumentSchema, ProjectKindSchema } from "./document.js";
+export { TimelineSchema, TimelineTrackSchema, TimelineClipSchema } from "./timeline.js";
+export { SlideRefSchema, SlideTransitionSchema } from "./slides.js";
+export {
+  AtelierDesignSchema,
+  AtelierDesignRelationSchema,
+  DesignRelationSchema,
+  DesignTypographySchema,
+  DesignMotionSchema,
+} from "./design.js";
 
 // Validation functions
 export { validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe } from "./validate.js";

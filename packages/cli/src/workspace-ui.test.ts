@@ -20,6 +20,7 @@ import {
 import {
   composeVideoProject,
   ensureVideoLayer,
+  slugifyBasename,
 } from "./lib/compose-video-project.js";
 
 import {
@@ -116,7 +117,7 @@ describe("composeVideoProject", () => {
     rmSync(projectDir, { recursive: true, force: true });
   });
 
-  it("adds a VideoVisual layer covering the canvas when absent", () => {
+  it("adds a track group + parented clip layer when absent", () => {
     const doc: AtelierDocument = {
       version: "1.0",
       name: "x",
@@ -126,9 +127,16 @@ describe("composeVideoProject", () => {
     };
     const { doc: out, addedVideoLayer } = ensureVideoLayer(doc, "source.mp4");
     expect(addedVideoLayer).toBe(true);
-    expect(out.layers).toHaveLength(1);
-    expect(out.layers[0].visual).toMatchObject({ type: "video", src: "source.mp4" });
-    expect(out.layers[0].bounds).toMatchObject({ width: 1920, height: 1080 });
+    // Two layers: the lazy-created `track-video-1` group, plus the clip.
+    expect(out.layers).toHaveLength(2);
+    const track = out.layers.find((l) => l.id === "track-video-1")!;
+    expect(track).toBeDefined();
+    expect((track.visual as { type: string }).type).toBe("group");
+    const clip = out.layers.find((l) => l.id === "clip-source")!;
+    expect(clip).toBeDefined();
+    expect(clip.parentId).toBe("track-video-1");
+    expect(clip.visual).toMatchObject({ type: "video", src: "source.mp4" });
+    expect(clip.bounds).toMatchObject({ width: 1920, height: 1080 });
   });
 
   it("is idempotent — does not double-add when video already present", () => {
@@ -137,7 +145,8 @@ describe("composeVideoProject", () => {
       name: "x",
       canvas: { width: 1920, height: 1080, fps: 30 },
       layers: [{
-        id: "existing",
+        id: "clip-source",
+        parentId: "track-video-1",
         visual: { type: "video", src: "source.mp4", startFrame: 0, sourceOffset: 0, playbackRate: 1, objectFit: "contain" } as never,
         frame: { x: 0, y: 0 },
         bounds: { width: 1920, height: 1080 },
@@ -147,6 +156,13 @@ describe("composeVideoProject", () => {
     const { doc: out, addedVideoLayer } = ensureVideoLayer(doc, "source.mp4");
     expect(addedVideoLayer).toBe(false);
     expect(out.layers).toHaveLength(1);
+  });
+
+  it("slugifyBasename produces stable kebab-case ids", () => {
+    expect(slugifyBasename("IMG_7346.MOV")).toBe("img-7346");
+    expect(slugifyBasename("media/B-roll Clip.mp4")).toBe("b-roll-clip");
+    expect(slugifyBasename("source.mp4")).toBe("source");
+    expect(slugifyBasename("__weird__name__.webm")).toBe("weird-name");
   });
 
   it("composes a playable project with transcription stubbed", async () => {
@@ -193,7 +209,192 @@ describe("composeVideoProject", () => {
 
     const persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
     expect(persisted.states.default.duration).toBe(150); // 5s * 30fps
-    expect(persisted.layers.some((l) => (l.visual as { type?: string }).type === "video")).toBe(true);
+    // Track group + clip layer present, both with correct ids.
+    expect(persisted.layers.some((l) => l.id === "track-video-1")).toBe(true);
+    const clip = persisted.layers.find((l) => l.id === "clip-source")!;
+    expect(clip).toBeDefined();
+    expect(clip.parentId).toBe("track-video-1");
+    expect((clip.visual as { type: string }).type).toBe("video");
+    // Timeline summary block reflects the placement.
+    expect(persisted.timeline).toBeDefined();
+    expect(persisted.timeline!.fps).toBe(30);
+    expect(persisted.timeline!.totalFrames).toBe(150);
+    expect(persisted.timeline!.tracks).toHaveLength(1);
+    expect(persisted.timeline!.tracks[0].id).toBe("track-video-1");
+    expect(persisted.timeline!.tracks[0].clips).toHaveLength(1);
+    expect(persisted.timeline!.tracks[0].clips[0]).toMatchObject({
+      layerId: "clip-source",
+      startFrame: 0,
+      endFrame: 150,
+    });
+  });
+
+  it("two sequential ingests produce two clip layers parented to track-video-1", async () => {
+    // Seed two source files inside media/ and a fresh project.atelier.
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+    const fileA = join(projectDir, "media", "IMG_7346.MOV");
+    const fileB = join(projectDir, "media", "IMG_7347.MOV");
+    writeFileSync(fileA, "fakeA");
+    writeFileSync(fileB, "fakeB");
+
+    const makeTranscribe = (segText: string) => vi.fn(async (dir: string, opts?: { dryRun?: boolean }) => {
+      const payload = {
+        version: "1.1" as const,
+        language: "en",
+        segments: [
+          {
+            text: segText,
+            start: 0,
+            end: 1,
+            words: [{ detected: segText, text: segText, start: 0, end: 1 }],
+          },
+        ],
+      };
+      if (!opts?.dryRun) {
+        writeFileSync(join(dir, "transcript.json"), JSON.stringify(payload));
+      }
+      return {
+        projectDir: dir,
+        backend: "whisper-cpp",
+        transcript: payload,
+        wordCount: 1,
+        captionsGenerated: false,
+      };
+    });
+
+    // First ingest — 2s clip.
+    const r1 = await composeVideoProject({
+      projectDir,
+      sourceFile: fileA,
+      mediaBasename: "IMG_7346.MOV",
+      transcribeFn: makeTranscribe("a"),
+      probeDurationFn: async () => 2.0,
+    });
+    expect(r1.addedVideoLayer).toBe(true);
+    expect(r1.clipLayerId).toBe("clip-img-7346");
+
+    // Second ingest — 3s clip. Must NOT delete clip A.
+    const r2 = await composeVideoProject({
+      projectDir,
+      sourceFile: fileB,
+      mediaBasename: "IMG_7347.MOV",
+      transcribeFn: makeTranscribe("b"),
+      probeDurationFn: async () => 3.0,
+    });
+    expect(r2.addedVideoLayer).toBe(true);
+    expect(r2.clipLayerId).toBe("clip-img-7347");
+
+    const persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
+
+    // Both clip layers present, both parented to track-video-1.
+    const clipA = persisted.layers.find((l) => l.id === "clip-img-7346")!;
+    const clipB = persisted.layers.find((l) => l.id === "clip-img-7347")!;
+    expect(clipA).toBeDefined();
+    expect(clipB).toBeDefined();
+    expect(clipA.parentId).toBe("track-video-1");
+    expect(clipB.parentId).toBe("track-video-1");
+
+    // Clip B placed at end-of-clip-A (2s * 30fps = 60).
+    expect((clipA.visual as { startFrame?: number }).startFrame).toBe(0);
+    expect((clipB.visual as { startFrame?: number }).startFrame).toBe(60);
+
+    // Timeline summary block has both clips in order, fps + totalFrames set.
+    expect(persisted.timeline).toBeDefined();
+    expect(persisted.timeline!.fps).toBe(30);
+    expect(persisted.timeline!.tracks).toHaveLength(1);
+    const clips = persisted.timeline!.tracks[0].clips;
+    expect(clips).toHaveLength(2);
+    expect(clips[0]).toMatchObject({ layerId: "clip-img-7346", startFrame: 0, endFrame: 60 });
+    expect(clips[1]).toMatchObject({ layerId: "clip-img-7347", startFrame: 60, endFrame: 150 });
+    expect(persisted.timeline!.totalFrames).toBe(150);
+
+    // State.duration covers both clips.
+    expect(persisted.states.default.duration).toBe(150);
+
+    // Asset entries are clip-<slug> one-to-one.
+    expect(persisted.assets?.["clip-img-7346"]).toBeDefined();
+    expect(persisted.assets?.["clip-img-7347"]).toBeDefined();
+    expect(persisted.assets!["clip-img-7346"].src).toContain("IMG_7346.MOV");
+    expect(persisted.assets!["clip-img-7347"].src).toContain("IMG_7347.MOV");
+  });
+
+  it("per-clip captions are parented and survive a subsequent ingest", async () => {
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+    const fileA = join(projectDir, "media", "IMG_7346.MOV");
+    const fileB = join(projectDir, "media", "IMG_7347.MOV");
+    writeFileSync(fileA, "fakeA");
+    writeFileSync(fileB, "fakeB");
+
+    const makeTranscribe = (segText: string) => vi.fn(async (dir: string, opts?: { dryRun?: boolean }) => {
+      const payload = {
+        version: "1.1" as const,
+        language: "en",
+        segments: [
+          {
+            text: segText,
+            start: 0,
+            end: 1.5,
+            words: [{ detected: segText, text: segText, start: 0, end: 1.5 }],
+          },
+        ],
+      };
+      if (!opts?.dryRun) {
+        writeFileSync(join(dir, "transcript.json"), JSON.stringify(payload));
+      }
+      return {
+        projectDir: dir,
+        backend: "whisper-cpp",
+        transcript: payload,
+        wordCount: 1,
+        captionsGenerated: false,
+      };
+    });
+
+    await composeVideoProject({
+      projectDir,
+      sourceFile: fileA,
+      mediaBasename: "IMG_7346.MOV",
+      transcribeFn: makeTranscribe("hello"),
+      probeDurationFn: async () => 2.0,
+    });
+
+    // After first ingest, clip A captions should exist parented to clip-img-7346.
+    let persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
+    const aCaptions = persisted.layers.filter((l) => l.id.startsWith("cap-img-7346-"));
+    expect(aCaptions.length).toBeGreaterThan(0);
+    for (const cap of aCaptions) {
+      expect(cap.parentId).toBe("clip-img-7346");
+      expect(cap.tags).toContain("caption");
+    }
+
+    await composeVideoProject({
+      projectDir,
+      sourceFile: fileB,
+      mediaBasename: "IMG_7347.MOV",
+      transcribeFn: makeTranscribe("world"),
+      probeDurationFn: async () => 3.0,
+    });
+
+    // After second ingest, clip A captions should STILL exist (multi-clip preservation).
+    persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
+    const aCaptionsAfter = persisted.layers.filter((l) => l.id.startsWith("cap-img-7346-"));
+    expect(aCaptionsAfter.length).toBe(aCaptions.length);
+    for (const cap of aCaptionsAfter) {
+      expect(cap.parentId).toBe("clip-img-7346");
+    }
+
+    // Clip B captions also exist parented to clip B.
+    const bCaptions = persisted.layers.filter((l) => l.id.startsWith("cap-img-7347-"));
+    expect(bCaptions.length).toBeGreaterThan(0);
+    for (const cap of bCaptions) {
+      expect(cap.parentId).toBe("clip-img-7347");
+    }
+
+    // No unparented `caption-N` layers leak through.
+    const unparented = persisted.layers.filter(
+      (l) => (l.tags ?? []).includes("caption") && !l.parentId,
+    );
+    expect(unparented).toHaveLength(0);
   });
 });
 

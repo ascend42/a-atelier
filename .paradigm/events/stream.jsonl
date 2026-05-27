@@ -56,3 +56,4 @@
 {"id":"ev-1779913298246-5109","type":"compliance-violation","source":"stop-hook","timestamp":"2026-05-27T20:21:38.246Z","context":"Stop hook: 2 violation(s)","severity":"error"}
 {"id":"ev-1779914335422-7236","timestamp":"2026-05-27T20:38:55.422Z","type":"work-completed","source":"mcp-tool-call","tool":"paradigm_lore_record","symbols":["#cli-studio","#studio-workspace-app","#cli-media","#compose-video-project"],"context":"Lore recorded: Per-file transcripts + media preview split-pane with click-to-seek"}
 {"id":"ev-1779918114394-6180","timestamp":"2026-05-27T21:41:54.394Z","type":"work-completed","source":"mcp-tool-call","tool":"paradigm_lore_record","symbols":[],"context":"Lore recorded: Studio UX validated end-to-end: drag-drop → per-file transcripts → clean canvas → delete cascade"}
+{"id":"ev-1779918364646-7777","type":"compliance-violation","source":"stop-hook","timestamp":"2026-05-27T21:46:04.646Z","context":"Stop hook: 2 violation(s)","severity":"error"}

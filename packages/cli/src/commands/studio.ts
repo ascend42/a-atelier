@@ -12,7 +12,7 @@
  *   atelier studio --no-open                → don't auto-open browser
  */
 
-import { resolve, join, relative, dirname, basename, sep, extname } from "node:path";
+import { resolve, join, relative, dirname, basename, sep } from "node:path";
 import { mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, realpathSync, symlinkSync, existsSync, copyFileSync, createReadStream } from "node:fs";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";

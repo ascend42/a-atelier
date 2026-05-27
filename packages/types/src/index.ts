@@ -36,6 +36,7 @@ export type {
   TextVisual,
   ImageVisual,
   VideoVisual,
+  AudioVisual,
   GroupVisual,
   RefVisual,
   Visual,
@@ -57,11 +58,23 @@ export type {
 // delta.ts
 export type { AnimatableProperty, FrameRange, Delta } from "./delta.js";
 
-// audio.ts
-export type { Audio } from "./audio.js";
-
 // state.ts
 export type { State, StateTransitionConfig } from "./state.js";
+
+// timeline.ts
+export type { Timeline, TimelineTrack, TimelineClip } from "./timeline.js";
+
+// slides.ts
+export type { SlideRef, SlideTransition } from "./slides.js";
+
+// design.ts
+export type {
+  AtelierDesign,
+  AtelierDesignRelation,
+  DesignRelation,
+  DesignTypography,
+  DesignMotion,
+} from "./design.js";
 
 // preset.ts
 export type { PresetDelta, Preset } from "./preset.js";
@@ -76,7 +89,7 @@ export type { TriggerType, Trigger, ActionType, Action, Interaction } from "./in
 export type { AssetType, Asset } from "./asset.js";
 
 // document.ts
-export type { Canvas, AtelierDocument } from "./document.js";
+export type { Canvas, AtelierDocument, ProjectKind } from "./document.js";
 
 // video-project.ts
 export type {

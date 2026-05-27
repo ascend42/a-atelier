@@ -41,39 +41,11 @@ const EasingInputSchema = z.union([
 ]).describe("Easing function");
 
 export function register(server: McpServer, store: DocumentStore): void {
-  // ── atelier_set_audio ─────────────────────────────────────
-  server.tool(
-    "atelier_set_audio",
-    "Set or remove an audio track on a state",
-    {
-      id: z.string().describe("Document ID"),
-      stateName: z.string().describe("State name"),
-      audio: z.object({
-        src: z.string().describe("Audio source — asset reference, file path, or URL"),
-        offset: z.number().min(0).optional().describe("Skip into audio in seconds (default: 0)"),
-        volume: z.number().min(0).max(1).optional().describe("Playback volume 0–1 (default: 1)"),
-        loop: z.boolean().optional().describe("Loop for state duration (default: false)"),
-        startFrame: z.number().int().min(0).optional().describe("Frame to start playing (default: 0)"),
-      }).nullable().describe("Audio configuration, or null to remove"),
-    },
-    { readOnlyHint: false, destructiveHint: false },
-    async ({ id, stateName, audio }) => {
-      const result = getDoc(store, id);
-      if ("error" in result) return err(result.error);
-      const { doc } = result;
-
-      const state = doc.states[stateName];
-      if (!state) return err(`State "${stateName}" not found`);
-
-      if (audio === null) {
-        delete state.audio;
-        return ok({ stateName, audio: null, removed: true });
-      }
-
-      state.audio = audio;
-      return ok({ stateName, audioSrc: audio.src });
-    },
-  );
+  // NOTE: `atelier_set_audio` was removed in v1.0. Audio is now a first-class
+  // `AudioVisual` layer (not a per-state field). Add audio via the unified
+  // clip-authoring path: `atelier_add_clip` with `kind: "audio"`. State
+  // configuration tools below still operate on transitions and state
+  // metadata; audio is no longer state-scoped.
 
   // ── atelier_configure_transition ──────────────────────────
   server.tool(

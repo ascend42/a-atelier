@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-27T18:43:04.252Z'
+generated: '2026-05-27T21:45:49.454Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -2507,11 +2507,78 @@ by_symbol:
       agent: []
   '#cli-studio':
     symbol: '#cli-studio'
-    total_changes: 8
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 9
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_47
+        id: h0078
+        ts: '2026-05-27T21:45:44Z'
+        type: implement
+        symbols:
+          - '#artifact-schemas'
+          - '#atelier-agent-templates'
+          - '#claude-agents-bundle'
+          - '#cli-artifacts'
+          - '#cli-init'
+          - '#cli-media'
+          - '#cli-reconstruct'
+          - '#cli-studio'
+          - '#compose-video-project'
+          - '#iris-composer'
+          - '#lux-cinematographer'
+          - '#mcp-effective-transcript'
+          - '#mcp-media-notes'
+          - '#mcp-mind-map'
+          - '#paradigm-augment'
+          - '#quill-showrunner'
+          - '#studio-workspace-app'
+          - '#transcribe-orchestrator'
+          - '#whisper-model-resolution'
+          - '#workspace-delete'
+          - '#workspace-project-info'
+          - '#workspace-schema'
+          - ^valid-artifact-set
+          - ^valid-mind-map-query
+        author:
+          type: human
+          id: ascend
+        commit: c0eb80f4bbe73869099d6b207233452a4ecd444d
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-193441-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-194818-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-203855-001.lore
+          - .paradigm/lore/entries/2026-05-27/L-2026-05-27-ascend-214154-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/session-checkpoint.json
+          - .purpose
+          - docs/keynote/paradigm/v1-publish-readiness.md
+          - packages/cli/.purpose
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/commands/transcribe.ts
+          - packages/cli/src/lib/compose-video-project.ts
+          - packages/cli/src/lib/transcribe-orchestrator.ts
+          - packages/cli/src/lib/whisper.ts
+          - packages/cli/src/lib/workspace-delete.ts
+          - packages/cli/src/lib/workspace-project-info.ts
+          - packages/cli/src/web/inline-app.ts
+          - packages/cli/src/web/workspace-app.ts
+          - packages/cli/src/workspace-ui.test.ts
+          - packages/mcp/src/bridge-protocol.ts
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+        description: 'feat(#cli-studio): v1 UX bundle — workspace-aware studio + drag-drop ingest + per-file transcripts + delete cascade'
       - &ref_46
         id: h0077
         ts: '2026-05-27T18:42:58Z'
@@ -2768,27 +2835,6 @@ by_symbol:
           - packages/cli/tsconfig.json
           - packages/studio/src/index.test.ts
         description: 'refactor(#cli-studio, #studio-inline-app): extract inline studio app to a typechecked module'
-      - &ref_41
-        id: h0065
-        ts: '2026-05-20T04:30:02Z'
-        type: implement
-        symbols:
-          - '#cli-studio'
-          - '#studio-save-coordinator'
-          - '#studio-widget'
-        author:
-          type: human
-          id: ascend
-        commit: f4de3568a61693e960a2c43b1b5617f9c70a9f30
-        intent: fix
-        files:
-          - packages/cli/src/commands/studio.ts
-          - packages/cli/src/index.test.ts
-          - packages/cli/src/lib/studio-save-coordinator.ts
-          - packages/studio/src/controls/slider-input.ts
-          - packages/studio/src/panels/property-panel.ts
-          - packages/studio/src/studio.ts
-        description: 'fix(#cli-studio, #studio-widget): autosave corruption + bridge mkdir + slider commit-gating'
     contributors:
       human:
         - ascend
@@ -3153,7 +3199,27 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_41
+      - &ref_41
+        id: h0065
+        ts: '2026-05-20T04:30:02Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#studio-save-coordinator'
+          - '#studio-widget'
+        author:
+          type: human
+          id: ascend
+        commit: f4de3568a61693e960a2c43b1b5617f9c70a9f30
+        intent: fix
+        files:
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.test.ts
+          - packages/cli/src/lib/studio-save-coordinator.ts
+          - packages/studio/src/controls/slider-input.ts
+          - packages/studio/src/panels/property-panel.ts
+          - packages/studio/src/studio.ts
+        description: 'fix(#cli-studio, #studio-widget): autosave corruption + bridge mkdir + slider commit-gating'
     contributors:
       human:
         - ascend
@@ -3385,11 +3451,12 @@ by_symbol:
       agent: []
   '#artifact-schemas':
     symbol: '#artifact-schemas'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3409,11 +3476,12 @@ by_symbol:
       agent: []
   '#atelier-agent-templates':
     symbol: '#atelier-agent-templates'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3421,11 +3489,12 @@ by_symbol:
       agent: []
   '#claude-agents-bundle':
     symbol: '#claude-agents-bundle'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3433,11 +3502,12 @@ by_symbol:
       agent: []
   '#cli-artifacts':
     symbol: '#cli-artifacts'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3445,11 +3515,12 @@ by_symbol:
       agent: []
   '#cli-init':
     symbol: '#cli-init'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3457,11 +3528,12 @@ by_symbol:
       agent: []
   '#cli-media':
     symbol: '#cli-media'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3469,11 +3541,12 @@ by_symbol:
       agent: []
   '#cli-reconstruct':
     symbol: '#cli-reconstruct'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3481,11 +3554,12 @@ by_symbol:
       agent: []
   '#iris-composer':
     symbol: '#iris-composer'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3493,11 +3567,12 @@ by_symbol:
       agent: []
   '#lux-cinematographer':
     symbol: '#lux-cinematographer'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3505,11 +3580,12 @@ by_symbol:
       agent: []
   '#mcp-effective-transcript':
     symbol: '#mcp-effective-transcript'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3517,11 +3593,12 @@ by_symbol:
       agent: []
   '#mcp-media-notes':
     symbol: '#mcp-media-notes'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3529,11 +3606,12 @@ by_symbol:
       agent: []
   '#mcp-mind-map':
     symbol: '#mcp-mind-map'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3577,11 +3655,12 @@ by_symbol:
       agent: []
   '#paradigm-augment':
     symbol: '#paradigm-augment'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3589,11 +3668,12 @@ by_symbol:
       agent: []
   '#quill-showrunner':
     symbol: '#quill-showrunner'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3613,11 +3693,12 @@ by_symbol:
       agent: []
   '#workspace-schema':
     symbol: '#workspace-schema'
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3625,11 +3706,12 @@ by_symbol:
       agent: []
   ^valid-artifact-set:
     symbol: ^valid-artifact-set
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
     contributors:
       human:
@@ -3637,12 +3719,85 @@ by_symbol:
       agent: []
   ^valid-mind-map-query:
     symbol: ^valid-mind-map-query
-    total_changes: 1
-    last_modified: '2026-05-27T18:42:58Z'
+    total_changes: 2
+    last_modified: '2026-05-27T21:45:44Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_47
       - *ref_46
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#compose-video-project':
+    symbol: '#compose-video-project'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-workspace-app':
+    symbol: '#studio-workspace-app'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#transcribe-orchestrator':
+    symbol: '#transcribe-orchestrator'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#whisper-model-resolution':
+    symbol: '#whisper-model-resolution'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-delete':
+    symbol: '#workspace-delete'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-project-info':
+    symbol: '#workspace-project-info'
+    total_changes: 1
+    last_modified: '2026-05-27T21:45:44Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_47
     contributors:
       human:
         - ascend

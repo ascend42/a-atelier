@@ -945,91 +945,97 @@ describe("audio timing", () => {
     expect(timeToFrame(0.9, 30)).toBe(27);
   });
 
+  // v1.0: audio is now an AudioVisual layer (not a state.audio field).
+  // Utility signatures: computeAudioState(layer, frame, fps, totalFrames),
+  // computeAudioCues(layer, fps, totalFrames).
+  const audioLayer = (overrides: Partial<{
+    assetId: string;
+    src: string;
+    startFrame: number;
+    sourceOffset: number;
+    sourceEnd: number;
+    playbackRate: number;
+    volume: number;
+    muted: boolean;
+    fadeIn: number;
+    fadeOut: number;
+  }> = {}): import("@a-company/atelier-types").AudioVisual => ({
+    type: "audio",
+    assetId: "music",
+    src: "music.mp3",
+    ...overrides,
+  });
+
   it("computeAudioState — basic playback", () => {
-    const audio = { src: "music.mp3" };
-    const state = computeAudioState(audio, 0, 30, 90);
+    const state = computeAudioState(audioLayer(), 0, 30, 90);
     expect(state.shouldPlay).toBe(true);
     expect(state.currentTime).toBe(0);
     expect(state.volume).toBe(1);
   });
 
-  it("computeAudioState — respects offset", () => {
-    const audio = { src: "music.mp3", offset: 5 };
-    // At frame 30 (1 second into 30fps), currentTime = offset + elapsed = 5 + 1 = 6
-    const state = computeAudioState(audio, 30, 30, 90);
+  it("computeAudioState — respects sourceOffset", () => {
+    // At frame 30 (1 second), currentTime = sourceOffset + elapsed = 5 + 1 = 6
+    const state = computeAudioState(audioLayer({ sourceOffset: 5 }), 30, 30, 90);
     expect(state.shouldPlay).toBe(true);
     expect(state.currentTime).toBeCloseTo(6);
   });
 
   it("computeAudioState — respects volume", () => {
-    const audio = { src: "music.mp3", volume: 0.5 };
-    const state = computeAudioState(audio, 0, 30, 90);
+    const state = computeAudioState(audioLayer({ volume: 0.5 }), 0, 30, 90);
     expect(state.volume).toBe(0.5);
   });
 
-  it("computeAudioState — delayed start", () => {
-    const audio = { src: "music.mp3", startFrame: 30 };
-    // Before startFrame
-    const before = computeAudioState(audio, 15, 30, 90);
-    expect(before.shouldPlay).toBe(false);
-    expect(before.currentTime).toBe(0);
-
-    // At startFrame
-    const at = computeAudioState(audio, 30, 30, 90);
-    expect(at.shouldPlay).toBe(true);
-    expect(at.currentTime).toBe(0);
-
-    // After startFrame
-    const after = computeAudioState(audio, 60, 30, 90);
-    expect(after.shouldPlay).toBe(true);
-    expect(after.currentTime).toBe(1); // 30 frames = 1 second at 30fps
+  it("computeAudioState — muted forces volume to 0", () => {
+    const state = computeAudioState(audioLayer({ volume: 0.8, muted: true }), 0, 30, 90);
+    expect(state.volume).toBe(0);
   });
 
-  it("computeAudioState — stops at state end", () => {
-    const audio = { src: "music.mp3" };
-    const state = computeAudioState(audio, 90, 30, 90);
-    expect(state.shouldPlay).toBe(false);
+  it("computeAudioState — delayed startFrame", () => {
+    const layer = audioLayer({ startFrame: 30 });
+    expect(computeAudioState(layer, 15, 30, 90).shouldPlay).toBe(false);
+    expect(computeAudioState(layer, 30, 30, 90)).toMatchObject({ shouldPlay: true, currentTime: 0 });
+    expect(computeAudioState(layer, 60, 30, 90).currentTime).toBeCloseTo(1);
   });
 
-  it("computeAudioState — loop wraps time", () => {
-    const audio = { src: "beat.mp3", loop: true };
-    // State is 90 frames = 3 seconds at 30fps
-    // At frame 0: time = 0
-    const t0 = computeAudioState(audio, 0, 30, 90);
-    expect(t0.shouldPlay).toBe(true);
-    expect(t0.currentTime).toBe(0);
-
-    // At frame 45 (1.5s): should still be playing
-    const t1 = computeAudioState(audio, 45, 30, 90);
-    expect(t1.shouldPlay).toBe(true);
-    expect(t1.currentTime).toBeCloseTo(1.5);
+  it("computeAudioState — stops at composition end", () => {
+    expect(computeAudioState(audioLayer(), 90, 30, 90).shouldPlay).toBe(false);
   });
 
-  it("computeAudioState — loop with offset + delayed start", () => {
-    const audio = { src: "beat.mp3", loop: true, offset: 2, startFrame: 30 };
-    // At frame 30 (start): elapsed = 0, currentTime = offset + 0 = 2
-    const t0 = computeAudioState(audio, 30, 30, 90);
-    expect(t0.currentTime).toBeCloseTo(2);
+  it("computeAudioState — sourceEnd clips the layer's effective duration", () => {
+    // sourceEnd=2s, fps=30 → layer plays 60 frames from startFrame
+    const layer = audioLayer({ sourceEnd: 2 });
+    expect(computeAudioState(layer, 59, 30, 90).shouldPlay).toBe(true);
+    expect(computeAudioState(layer, 60, 30, 90).shouldPlay).toBe(false);
+  });
+
+  it("computeAudioState — fadeIn ramps volume up at the start", () => {
+    const layer = audioLayer({ fadeIn: 1, volume: 1 }); // 1s fade-in = 30 frames
+    expect(computeAudioState(layer, 0, 30, 90).volume).toBe(0);
+    expect(computeAudioState(layer, 15, 30, 90).volume).toBeCloseTo(0.5);
+    expect(computeAudioState(layer, 30, 30, 90).volume).toBe(1);
+  });
+
+  it("computeAudioState — fadeOut ramps volume down at the end", () => {
+    const layer = audioLayer({ fadeOut: 1, volume: 1 }); // 1s fade-out before totalFrames=90
+    expect(computeAudioState(layer, 60, 30, 90).volume).toBe(1);
+    expect(computeAudioState(layer, 75, 30, 90).volume).toBeCloseTo(0.5);
+    expect(computeAudioState(layer, 89, 30, 90).volume).toBeCloseTo(0.033, 1);
   });
 
   it("computeAudioCues — basic start/end", () => {
-    const audio = { src: "music.mp3" };
-    const cues = computeAudioCues(audio, 90);
+    const cues = computeAudioCues(audioLayer(), 30, 90);
     expect(cues).toContainEqual({ frame: 0, event: "start" });
     expect(cues).toContainEqual({ frame: 89, event: "end" });
   });
 
   it("computeAudioCues — delayed start", () => {
-    const audio = { src: "music.mp3", startFrame: 30 };
-    const cues = computeAudioCues(audio, 90);
+    const cues = computeAudioCues(audioLayer({ startFrame: 30 }), 30, 90);
     expect(cues[0]).toEqual({ frame: 30, event: "start" });
     expect(cues[cues.length - 1]).toEqual({ frame: 89, event: "end" });
   });
 
-  it("computeAudioCues — no cues when startFrame >= duration", () => {
-    const audio = { src: "music.mp3", startFrame: 100 };
-    const cues = computeAudioCues(audio, 90);
-    expect(cues).toEqual([]);
+  it("computeAudioCues — no cues when startFrame >= totalFrames", () => {
+    expect(computeAudioCues(audioLayer({ startFrame: 100 }), 30, 90)).toEqual([]);
   });
 });
 
@@ -1683,5 +1689,92 @@ describe("new animatable properties", () => {
 
     const frameEnd = resolveFrame(srcRectDoc, "pan", 29);
     expect(frameEnd.layers[0].computedProperties["visual.image.sourceRect.x"]).toBe(100);
+  });
+});
+
+// ─── Clip-local time for captions parented to video clips (v1.0) ──
+//
+// Captions on a clip layer set parentId=<clipLayerId> and author deltas
+// in clip-local frames (0..clipDuration). The resolver shifts evaluation
+// by the parent clip's startFrame so "move a clip, captions follow" works.
+describe("clip-local time for parented layers", () => {
+  const doc: AtelierDocument = {
+    version: "1.0",
+    name: "clip-local-test",
+    canvas: { width: 100, height: 100, fps: 30 },
+    layers: [
+      {
+        id: "clip-A",
+        visual: {
+          type: "video",
+          assetId: "videoA",
+          src: "a.mp4",
+          startFrame: 100, // clip plays from composition frame 100 onward
+        },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 100, height: 100 },
+      },
+      {
+        id: "caption",
+        // Parented to clip-A → deltas are clip-local
+        parentId: "clip-A",
+        visual: {
+          type: "text",
+          content: "hi",
+          style: { fontFamily: "Inter", fontSize: 24, color: "#fff" },
+        },
+        frame: { x: 0, y: 0 },
+        bounds: { width: 100, height: 20 },
+        opacity: 0,
+      },
+    ],
+    states: {
+      default: {
+        duration: 200,
+        // Caption opacity ramps 0→1 over clip-local frames 0–10. Composition
+        // frames where this fires: 100–110 (shifted by clip-A.startFrame=100).
+        deltas: [
+          {
+            layer: "caption",
+            property: "opacity",
+            range: [0, 10],
+            from: 0,
+            to: 1,
+          },
+        ],
+      },
+    },
+  };
+
+  it("caption opacity stays at start value before clip begins", () => {
+    const before = resolveFrame(doc, "default", 50);
+    // Local frame = 50 - 100 = -50 → before delta range → start value (from=0)
+    // The resolver returns the 'from' value when frame is before the range.
+    expect(before.layers[1].computedProperties.opacity ?? 0).toBe(0);
+  });
+
+  it("caption opacity ramps during clip-local frames", () => {
+    // Composition frame 105 = clip-local 5 = midway through 0→1 ramp.
+    const mid = resolveFrame(doc, "default", 105);
+    expect(mid.layers[1].computedProperties.opacity).toBeCloseTo(0.5);
+  });
+
+  it("caption opacity holds at end value after clip-local delta completes", () => {
+    // Composition frame 150 = clip-local 50 → past range → holds at 'to' = 1
+    const after = resolveFrame(doc, "default", 150);
+    expect(after.layers[1].computedProperties.opacity).toBe(1);
+  });
+
+  it("non-parented layers unaffected — composition frame still applies", () => {
+    const docNoParent: AtelierDocument = {
+      ...doc,
+      layers: [
+        doc.layers[0],
+        { ...doc.layers[1], parentId: undefined }, // detached
+      ],
+    };
+    // Without parent → no shift → composition frame 5 should be mid-ramp now.
+    const r = resolveFrame(docNoParent, "default", 5);
+    expect(r.layers[1].computedProperties.opacity).toBeCloseTo(0.5);
   });
 });

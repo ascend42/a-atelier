@@ -21,7 +21,7 @@ function err(message: string) {
 
 /** Zod schema for visual objects passed by the AI */
 const VisualInputSchema = z.object({
-  type: z.enum(["shape", "text", "image", "group", "ref"]).describe("Visual type"),
+  type: z.enum(["shape", "text", "image", "video", "audio", "group", "ref"]).describe("Visual type"),
   // shape visual fields
   shape: z.object({
     type: z.enum(["rect", "ellipse", "path"]),
@@ -56,6 +56,16 @@ const VisualInputSchema = z.object({
   src: z.string().optional(),
   state: z.string().optional(),
   frame: z.number().int().min(0).optional(),
+  // video / audio visual fields (v1.0+)
+  startFrame: z.number().int().min(0).optional().describe("Video/audio: composition frame when playback begins"),
+  sourceOffset: z.number().min(0).optional().describe("Video/audio: seconds into source to begin playback"),
+  sourceEnd: z.number().positive().optional().describe("Video/audio: seconds of source to stop at"),
+  playbackRate: z.number().positive().optional().describe("Video/audio: playback speed multiplier"),
+  volume: z.number().min(0).max(1).optional().describe("Video/audio: volume 0–1"),
+  muted: z.boolean().optional().describe("Video/audio: mute"),
+  objectFit: z.enum(["contain", "cover", "fill"]).optional().describe("Video: fit mode"),
+  fadeIn: z.number().min(0).optional().describe("Audio: fade-in duration in seconds"),
+  fadeOut: z.number().min(0).optional().describe("Audio: fade-out duration in seconds"),
 }).describe("Visual content definition");
 
 export function register(server: McpServer, store: DocumentStore): void {

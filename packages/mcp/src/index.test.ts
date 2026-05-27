@@ -276,7 +276,7 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_set_motion_path");
     expect(toolNames).toContain("atelier_set_clip_path");
     expect(toolNames).toContain("atelier_edit_visual");
-    expect(toolNames).toContain("atelier_set_audio");
+    // atelier_set_audio removed in v1.0 — audio is now an AudioVisual layer.
     expect(toolNames).toContain("atelier_configure_transition");
     expect(toolNames).toContain("atelier_set_state_parent");
     expect(toolNames).toContain("atelier_export_svg");
@@ -316,7 +316,7 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_get_effective_transcript");
     expect(toolNames).toContain("atelier_get_media_notes");
     expect(toolNames).toContain("atelier_write_media_note");
-    expect(toolNames).toHaveLength(65);
+    expect(toolNames).toHaveLength(64); // atelier_set_audio removed in v1.0
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1425,30 +1425,10 @@ describe("MCP Tools", () => {
       await callTool(client, "atelier_add_state", { id: docId, stateName: "hover", duration: 30 });
     });
 
-    it("atelier_set_audio sets audio on state", async () => {
-      const result = await callTool(client, "atelier_set_audio", {
-        id: docId, stateName: "intro",
-        audio: { src: "music.mp3", volume: 0.8, loop: true },
-      });
-      expect(result.success).toBe(true);
-      expect(result.audioSrc).toBe("music.mp3");
-      expect(store.get(docId)!.states.intro.audio).toBeDefined();
-      expect(store.get(docId)!.states.intro.audio!.volume).toBe(0.8);
-    });
-
-    it("atelier_set_audio removes with null", async () => {
-      await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: { src: "x.mp3" } });
-      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: null });
-      expect(result.success).toBe(true);
-      expect(result.removed).toBe(true);
-      expect(store.get(docId)!.states.intro.audio).toBeUndefined();
-    });
-
-    it("atelier_set_audio errors on nonexistent state", async () => {
-      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "gone", audio: { src: "x" } });
-      expect(result._isError).toBe(true);
-      expect(result.error).toContain("not found");
-    });
+    // atelier_set_audio was removed in v1.0 — audio is now an AudioVisual
+    // layer, added via the upcoming atelier_add_clip path (kind="audio").
+    // Three tests deleted with the tool; AudioVisual layer coverage lives
+    // in @a-company/atelier-core (audio-timing tests).
 
     it("atelier_configure_transition configures transition", async () => {
       const result = await callTool(client, "atelier_configure_transition", {
@@ -1640,23 +1620,23 @@ describe("MCP Tools", () => {
     });
 
     it("atelier_list_assets lists with usage info", async () => {
-      // Add asset
+      // v1.0: usage tracking is layer-only (image, video, audio layers via
+      // their assetId). Audio is no longer state-scoped — it's a layer.
       await callTool(client, "atelier_add_asset", {
         id: docId, assetId: "photo", type: "image", src: "photo.jpg",
       });
-      // Add a layer referencing it
       await callTool(client, "atelier_add_layer", {
         id: docId, layerId: "img-layer",
         visual: { type: "image", assetId: "photo" },
         x: 0, y: 0, width: 100, height: 100,
       });
-      // Add audio asset and state referencing it
       await callTool(client, "atelier_add_asset", {
         id: docId, assetId: "music", type: "audio", src: "music.mp3",
       });
-      await callTool(client, "atelier_add_state", { id: docId, stateName: "intro", duration: 30 });
-      await callTool(client, "atelier_set_audio", {
-        id: docId, stateName: "intro", audio: { src: "music" },
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "bg-music",
+        visual: { type: "audio", assetId: "music" },
+        x: 0, y: 0, width: 0, height: 0,
       });
 
       const result = await callTool(client, "atelier_list_assets", { id: docId });
@@ -1667,7 +1647,7 @@ describe("MCP Tools", () => {
       expect(photo.usedByLayers).toContain("img-layer");
 
       const music = result.assets.find((a: any) => a.assetId === "music");
-      expect(music.usedByStates).toContain("intro");
+      expect(music.usedByLayers).toContain("bg-music");
     });
 
     it("atelier_list_assets returns empty list", async () => {

@@ -1,5 +1,4 @@
 import type { Delta } from "./delta.js";
-import type { Audio } from "./audio.js";
 import type { Easing } from "./easing.js";
 
 /** Transition definition for smooth crossfade between states */
@@ -10,7 +9,15 @@ export interface StateTransitionConfig {
   easing?: Easing;
 }
 
-/** A named choreography — what layers do during this state */
+/**
+ * A named choreography — what layers do during this state.
+ *
+ * Removed in v1.0: `audio?: Audio`. Audio is now a first-class `AudioVisual`
+ * layer (see `layer.ts`) so it participates in tracks, parenting, and the
+ * timeline summary like video clips. Pre-1.0 documents that still carry
+ * `state.audio` are tolerated by the parser but the field is ignored —
+ * authors should migrate to audio layers.
+ */
 export interface State {
   description?: string;
   tags?: string[];
@@ -20,8 +27,6 @@ export interface State {
   duration: number;
   /** Animation instructions */
   deltas: Delta[];
-  /** Audio track synchronized with this state */
-  audio?: Audio;
   /** Transition configurations keyed by target state name */
   transitions?: Record<string, StateTransitionConfig>;
 }

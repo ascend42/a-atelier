@@ -62,6 +62,39 @@ export interface VideoVisual {
   objectFit?: "contain" | "cover" | "fill";
 }
 
+/**
+ * Audio layer — a sound source placed on the timeline. Has no visible
+ * rendering; the export/preview audio pipeline picks these up by filtering
+ * `layer.visual.type === "audio"`.
+ *
+ * Replaces the legacy `State.audio` field (removed in v1.0): audio is now
+ * a first-class layer that participates in tracks, parenting, and the
+ * timeline summary like any other layer.
+ */
+export interface AudioVisual {
+  type: "audio";
+  /** Asset ID reference */
+  assetId: string;
+  /** Direct URL or data-URL for the audio source */
+  src?: string;
+  /** Composition frame when the audio begins playing */
+  startFrame?: number;
+  /** Seconds into the source to begin playback from */
+  sourceOffset?: number;
+  /** Seconds of source to stop at (undefined = play to end) */
+  sourceEnd?: number;
+  /** Playback speed multiplier (1.0 = normal) */
+  playbackRate?: number;
+  /** Volume 0–1 */
+  volume?: number;
+  /** Mute */
+  muted?: boolean;
+  /** Fade-in duration in seconds at the layer's startFrame */
+  fadeIn?: number;
+  /** Fade-out duration in seconds at the layer's effective end */
+  fadeOut?: number;
+}
+
 export interface GroupVisual {
   type: "group";
 }
@@ -77,7 +110,14 @@ export interface RefVisual {
   frame?: number;
 }
 
-export type Visual = ShapeVisual | TextVisual | ImageVisual | VideoVisual | GroupVisual | RefVisual;
+export type Visual =
+  | ShapeVisual
+  | TextVisual
+  | ImageVisual
+  | VideoVisual
+  | AudioVisual
+  | GroupVisual
+  | RefVisual;
 
 /** Canvas 2D composite operations */
 export type BlendMode =

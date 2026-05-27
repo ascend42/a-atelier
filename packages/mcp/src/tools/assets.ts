@@ -2,7 +2,7 @@
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { AtelierDocument, ImageVisual } from "@a-company/atelier-types";
+import type { AtelierDocument, ImageVisual, VideoVisual, AudioVisual } from "@a-company/atelier-types";
 import type { DocumentStore } from "../store.js";
 
 function getDoc(store: DocumentStore, id: string): { doc: AtelierDocument } | { error: string } {
@@ -72,15 +72,18 @@ export function register(server: McpServer, store: DocumentStore): void {
 
       const assets = doc.assets ?? {};
       const entries = Object.entries(assets).map(([assetId, asset]) => {
-        // Find layers referencing this asset (ImageVisual.assetId)
+        // Find layers referencing this asset (ImageVisual, VideoVisual, AudioVisual all
+        // address assets by `assetId`). v1.0: audio is layer-scoped — there's no
+        // longer a per-state audio reference to track here.
         const referencingLayers = doc.layers
-          .filter(l => l.visual.type === "image" && (l.visual as ImageVisual).assetId === assetId)
+          .filter(l => {
+            const v = l.visual as ImageVisual | VideoVisual | AudioVisual | { type: string; assetId?: string };
+            return (
+              (v.type === "image" || v.type === "video" || v.type === "audio") &&
+              "assetId" in v && v.assetId === assetId
+            );
+          })
           .map(l => l.id);
-
-        // Find states whose audio.src matches this assetId
-        const referencingStates = Object.entries(doc.states)
-          .filter(([, state]) => state.audio?.src === assetId)
-          .map(([name]) => name);
 
         return {
           assetId,
@@ -88,7 +91,6 @@ export function register(server: McpServer, store: DocumentStore): void {
           src: asset.src,
           description: asset.description,
           usedByLayers: referencingLayers,
-          usedByStates: referencingStates,
         };
       });
 
@@ -99,7 +101,7 @@ export function register(server: McpServer, store: DocumentStore): void {
   // ── atelier_remove_asset ──────────────────────────────────────
   server.tool(
     "atelier_remove_asset",
-    "Remove a registered asset. Warns if layers or state audio still reference it.",
+    "Remove a registered asset. Warns if layers still reference it.",
     {
       id: z.string().describe("Document ID"),
       assetId: z.string().describe("Asset ID to remove"),
@@ -114,20 +116,18 @@ export function register(server: McpServer, store: DocumentStore): void {
 
       const warnings: string[] = [];
 
-      // Check layers referencing this asset
+      // Check layers (image/video/audio) referencing this asset
       const referencingLayers = doc.layers
-        .filter(l => l.visual.type === "image" && (l.visual as ImageVisual).assetId === assetId)
+        .filter(l => {
+          const v = l.visual as ImageVisual | VideoVisual | AudioVisual | { type: string; assetId?: string };
+          return (
+            (v.type === "image" || v.type === "video" || v.type === "audio") &&
+            "assetId" in v && v.assetId === assetId
+          );
+        })
         .map(l => l.id);
       if (referencingLayers.length > 0) {
         warnings.push(`Asset is referenced by layer(s): ${referencingLayers.join(", ")}`);
-      }
-
-      // Check state audio referencing this asset
-      const referencingStates = Object.entries(doc.states)
-        .filter(([, state]) => state.audio?.src === assetId)
-        .map(([name]) => name);
-      if (referencingStates.length > 0) {
-        warnings.push(`Asset is referenced by state audio: ${referencingStates.join(", ")}`);
       }
 
       delete doc.assets[assetId];

@@ -4,9 +4,12 @@ import type { AtelierDocument, State } from "@a-company/atelier-types";
 export function collectUnsupportedWarnings(doc: AtelierDocument, state: State): string[] {
   const warnings: string[] = [];
 
-  // Audio not supported
-  if (state.audio) {
-    warnings.push("Audio tracks are not supported in Lottie format and will be dropped");
+  // Audio layers not supported in Lottie (v1.0: audio is layer-scoped, not state-scoped)
+  const audioLayers = doc.layers.filter((l) => l.visual.type === "audio");
+  if (audioLayers.length > 0) {
+    warnings.push(
+      `${audioLayers.length} audio layer(s) are not supported in Lottie format and will be dropped`,
+    );
   }
 
   // Expressions not supported

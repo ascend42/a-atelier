@@ -176,6 +176,12 @@
       "action": "tool-call",
       "tool": "paradigm_session_checkpoint",
       "summary": "Checkpoint: phase=complete, Atelier v1 UX validated end-to-end in the local studio. Drag"
+    },
+    {
+      "timestamp": 1779918434708,
+      "action": "tool-call",
+      "tool": "paradigm_session_recover",
+      "summary": "session_recover"
     }
   ],
   "symbolsModified": [],

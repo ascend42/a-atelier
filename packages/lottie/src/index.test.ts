@@ -178,18 +178,22 @@ describe("exportToLottie", () => {
     expect(() => exportToLottie(testDoc, { state: "nonexistent" })).toThrow("not found");
   });
 
-  it("warns about audio tracks", () => {
+  it("warns about audio layers", () => {
+    // v1.0: audio is layer-scoped, not state-scoped.
     const audioDoc: AtelierDocument = {
       ...testDoc,
-      states: {
-        intro: {
-          ...testDoc.states.intro,
-          audio: { src: "music.mp3" },
+      layers: [
+        ...testDoc.layers,
+        {
+          id: "background-music",
+          visual: { type: "audio", assetId: "music", src: "music.mp3" },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 0, height: 0 },
         },
-      },
+      ],
     };
     const { warnings } = exportToLottie(audioDoc);
-    expect(warnings.some(w => w.includes("Audio"))).toBe(true);
+    expect(warnings.some(w => w.toLowerCase().includes("audio"))).toBe(true);
   });
 
   it("warns about shadows", () => {
@@ -357,10 +361,23 @@ describe("mapDeltasToAnimated", () => {
 // ── collectUnsupportedWarnings ────────────────────────────
 
 describe("collectUnsupportedWarnings", () => {
-  it("warns about audio", () => {
-    const state = { duration: 30, deltas: [], audio: { src: "music.mp3" } };
-    const warnings = collectUnsupportedWarnings(testDoc, state);
-    expect(warnings.some(w => w.includes("Audio"))).toBe(true);
+  it("warns about audio (layer-scoped in v1.0)", () => {
+    // v1.0: audio detection moved from state.audio to doc.layers (AudioVisual).
+    const docWithAudio: AtelierDocument = {
+      ...testDoc,
+      layers: [
+        ...testDoc.layers,
+        {
+          id: "bg-music",
+          visual: { type: "audio", assetId: "music", src: "music.mp3" },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 0, height: 0 },
+        },
+      ],
+    };
+    const state = { duration: 30, deltas: [] };
+    const warnings = collectUnsupportedWarnings(docWithAudio, state);
+    expect(warnings.some(w => w.toLowerCase().includes("audio"))).toBe(true);
   });
 
   it("warns about expressions", () => {

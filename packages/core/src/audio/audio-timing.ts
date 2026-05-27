@@ -1,122 +1,128 @@
-import type { Audio } from "@a-company/atelier-types";
+import type { AudioVisual } from "@a-company/atelier-types";
 
-/** Audio playback state at a given frame */
+/**
+ * Audio-layer playback utilities.
+ *
+ * v1.0: audio is no longer a per-state field. These utilities now take an
+ * `AudioVisual` layer (see `@a-company/atelier-types/layer.ts`) and a
+ * composition frame; they answer "is this layer playing right now, at what
+ * source-time, at what volume?".
+ *
+ * Pure functions — no I/O, no state. Reusable by the canvas renderer's
+ * audio scheduler and by any export pipeline (e.g. an ffmpeg mux step).
+ */
+
+/** Audio playback state at a given composition frame */
 export interface AudioPlaybackState {
   /** Whether audio should be playing at this frame */
   shouldPlay: boolean;
-  /** Current position in the audio track (seconds) */
+  /** Current position in the audio source (seconds) */
   currentTime: number;
-  /** Effective volume (0–1) */
+  /** Effective volume (0–1), accounting for fadeIn/fadeOut envelopes */
   volume: number;
 }
 
-/**
- * Convert a frame number to time in seconds.
- */
+/** Convert a frame number to time in seconds. */
 export function frameToTime(frame: number, fps: number): number {
   return frame / fps;
 }
 
-/**
- * Convert time in seconds to a frame number (floored).
- */
+/** Convert time in seconds to a frame number (floored). */
 export function timeToFrame(time: number, fps: number): number {
   return Math.floor(time * fps);
 }
 
 /**
- * Compute the audio playback state for a given frame.
+ * Compute the playback state of an audio layer at a given composition frame.
  *
- * @param audio - Audio configuration from a state
- * @param frame - Current frame number within the state
- * @param fps - Frames per second from canvas config
- * @param stateDuration - Total state duration in frames
- * @returns AudioPlaybackState with shouldPlay, currentTime, and volume
+ * @param layer       The AudioVisual to evaluate.
+ * @param frame       Current composition frame.
+ * @param fps         Canvas fps.
+ * @param totalFrames Total composition duration in frames (used for fade-out
+ *                    anchor when the layer plays to the end of the comp).
+ * @returns           Whether the layer is audible at this frame, where the
+ *                    source playhead is, and the effective volume after
+ *                    fade envelopes.
  */
 export function computeAudioState(
-  audio: Audio,
+  layer: AudioVisual,
   frame: number,
   fps: number,
-  stateDuration: number,
+  totalFrames: number,
 ): AudioPlaybackState {
-  const startFrame = audio.startFrame ?? 0;
-  const offset = audio.offset ?? 0;
-  const volume = audio.volume ?? 1;
-  const loop = audio.loop ?? false;
+  const startFrame = layer.startFrame ?? 0;
+  const sourceOffset = layer.sourceOffset ?? 0;
+  const baseVolume = layer.muted ? 0 : (layer.volume ?? 1);
+  const playbackRate = layer.playbackRate ?? 1;
 
-  // Before audio starts
+  // Before the layer starts on the composition timeline.
   if (frame < startFrame) {
-    return { shouldPlay: false, currentTime: 0, volume };
+    return { shouldPlay: false, currentTime: 0, volume: baseVolume };
   }
 
-  // Time elapsed since audio started
+  // Layer's effective end on the composition timeline. Derived from sourceEnd
+  // (clip-out point) if set, otherwise plays to totalFrames.
+  let endFrame = totalFrames;
+  if (layer.sourceEnd !== undefined) {
+    const segmentSec = (layer.sourceEnd - sourceOffset) / playbackRate;
+    endFrame = Math.min(totalFrames, startFrame + timeToFrame(segmentSec, fps));
+  }
+
+  if (frame >= endFrame) {
+    return { shouldPlay: false, currentTime: 0, volume: baseVolume };
+  }
+
   const elapsedFrames = frame - startFrame;
   const elapsedTime = frameToTime(elapsedFrames, fps);
+  const currentTime = sourceOffset + elapsedTime * playbackRate;
 
-  // Total available playback time (from startFrame to end of state)
-  const availableFrames = stateDuration - startFrame;
-  const availableTime = frameToTime(availableFrames, fps);
-
-  if (!loop) {
-    // Non-looping: audio plays from offset, stops at end of state
-    const currentTime = offset + elapsedTime;
-    return {
-      shouldPlay: frame < stateDuration,
-      currentTime,
-      volume,
-    };
+  // Apply fade envelopes (in/out are seconds at the LAYER edges, not source edges).
+  let volume = baseVolume;
+  if (layer.fadeIn && layer.fadeIn > 0) {
+    const inFrames = timeToFrame(layer.fadeIn, fps);
+    if (elapsedFrames < inFrames && inFrames > 0) {
+      volume *= elapsedFrames / inFrames;
+    }
   }
-
-  // Looping: wrap elapsed time around available duration
-  // The audio segment length is the available time
-  const segmentDuration = availableTime;
-  if (segmentDuration <= 0) {
-    return { shouldPlay: false, currentTime: 0, volume };
-  }
-
-  const wrappedTime = elapsedTime % segmentDuration;
-  const currentTime = offset + wrappedTime;
-
-  return {
-    shouldPlay: frame < stateDuration,
-    currentTime,
-    volume,
-  };
-}
-
-/**
- * Compute audio cue points — frames where audio events occur.
- *
- * @param audio - Audio configuration
- * @param stateDuration - Total state duration in frames
- * @returns Array of { frame, event } describing audio events
- */
-export function computeAudioCues(
-  audio: Audio,
-  stateDuration: number,
-): Array<{ frame: number; event: "start" | "end" | "loop" }> {
-  const startFrame = audio.startFrame ?? 0;
-  const loop = audio.loop ?? false;
-  const cues: Array<{ frame: number; event: "start" | "end" | "loop" }> = [];
-
-  if (startFrame < stateDuration) {
-    cues.push({ frame: startFrame, event: "start" });
-  }
-
-  if (loop) {
-    // In loop mode, audio restarts each full cycle
-    const availableFrames = stateDuration - startFrame;
-    if (availableFrames > 0) {
-      // Loop points at each full cycle
-      for (let i = 1; startFrame + i * availableFrames < stateDuration; i++) {
-        cues.push({ frame: startFrame + i * availableFrames, event: "loop" });
-      }
+  if (layer.fadeOut && layer.fadeOut > 0) {
+    const outFrames = timeToFrame(layer.fadeOut, fps);
+    const framesUntilEnd = endFrame - frame;
+    if (framesUntilEnd < outFrames && outFrames > 0) {
+      volume *= framesUntilEnd / outFrames;
     }
   }
 
-  // Audio ends when state ends
-  if (stateDuration > startFrame) {
-    cues.push({ frame: stateDuration - 1, event: "end" });
+  return { shouldPlay: true, currentTime, volume };
+}
+
+/**
+ * Compute cue points for an audio layer — frames where audio events occur
+ * (start, end). Useful for scheduling DOM/audio-context play/stop calls.
+ *
+ * v1.0: with `loop` removed from the schema (AudioVisual doesn't support
+ * looping yet — add when a real use case lands), there are at most two
+ * cues per layer: start and end.
+ */
+export function computeAudioCues(
+  layer: AudioVisual,
+  fps: number,
+  totalFrames: number,
+): Array<{ frame: number; event: "start" | "end" }> {
+  const startFrame = layer.startFrame ?? 0;
+  const sourceOffset = layer.sourceOffset ?? 0;
+  const playbackRate = layer.playbackRate ?? 1;
+  const cues: Array<{ frame: number; event: "start" | "end" }> = [];
+
+  if (startFrame >= totalFrames) return cues;
+  cues.push({ frame: startFrame, event: "start" });
+
+  let endFrame = totalFrames;
+  if (layer.sourceEnd !== undefined) {
+    const segmentSec = (layer.sourceEnd - sourceOffset) / playbackRate;
+    endFrame = Math.min(totalFrames, startFrame + timeToFrame(segmentSec, fps));
+  }
+  if (endFrame > startFrame && endFrame <= totalFrames) {
+    cues.push({ frame: endFrame - 1, event: "end" });
   }
 
   return cues;
