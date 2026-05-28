@@ -63,6 +63,19 @@ export interface ExportOptions {
    * (legacy behaviour).
    */
   videoSeek?: VideoSeekResolver;
+  /**
+   * Optional resolved URL of a source video whose audio track should be
+   * muxed into the output (MP4/WebM only — GIF has no audio container).
+   * Mediabunny demuxes the URL's audio packets in-codec and feeds them
+   * to mp4-muxer's `addAudioChunkRaw` — no re-encoding. Pass the SAME
+   * resolved URL the videoSeek provider uses (i.e. already run through
+   * the host's srcResolver). Omitted → silent export, current default.
+   *
+   * Limitation: only the FIRST video layer's audio is muxed. Multi-clip
+   * audio composition is v1.1 — would need an AudioMixer or per-clip
+   * EncodedAudioChunk re-timing.
+   */
+  audioSource?: string;
 }
 
 export interface ExportResult {
@@ -196,6 +209,27 @@ async function exportMP4(
     );
   }
 
+  // Pre-resolve the source audio track's codec/channels/rate via Mediabunny
+  // so we can configure the muxer's audio track BEFORE writing any chunks
+  // (mp4-muxer requires the audio config up-front, not lazily on first
+  // addAudioChunk). If no audioSource was given or the URL has no decodable
+  // audio, fall through to a silent export. This call is the only thing
+  // that could block on network — keep it small + fail-soft.
+  let audioConfig: {
+    codec: "aac" | "opus";
+    channels: number;
+    sampleRate: number;
+    decoderConfig?: AudioDecoderConfig;
+    extract: () => Promise<Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }>>;
+  } | null = null;
+  if (opts.audioSource) {
+    try {
+      audioConfig = await resolveAudioConfig(opts.audioSource);
+    } catch (err) {
+      console.warn("[atelier export] audio mux skipped:", err);
+    }
+  }
+
   const target = new ArrayBufferTarget();
   const muxer = new Muxer({
     target,
@@ -204,6 +238,13 @@ async function exportMP4(
       width: encWidth,
       height: encHeight,
     },
+    ...(audioConfig ? {
+      audio: {
+        codec: audioConfig.codec,
+        numberOfChannels: audioConfig.channels,
+        sampleRate: audioConfig.sampleRate,
+      },
+    } : {}),
     fastStart: "in-memory",
   });
 
@@ -286,6 +327,26 @@ async function exportMP4(
     await encoder.flush();
     checkError();
     encoder.close();
+
+    // Mux audio AFTER video encode finishes. Doing it before would race the
+    // video encoder's interleave with mp4-muxer's internal track interleaver
+    // and risk out-of-order chunks; doing it serially is simpler + correct.
+    // Audio chunks are pre-encoded in-source-codec (no re-encode pass), so
+    // this is just an I/O loop, not a decode loop.
+    if (audioConfig) {
+      const audioPackets = await audioConfig.extract();
+      const decoderConfig = audioConfig.decoderConfig;
+      for (const p of audioPackets) {
+        muxer.addAudioChunkRaw(
+          p.data,
+          p.type,
+          p.timestamp,
+          p.duration,
+          decoderConfig ? { decoderConfig } : undefined,
+        );
+      }
+    }
+
     muxer.finalize();
   } finally {
     // Restore canvas dimensions even if encoding fails
@@ -301,6 +362,78 @@ async function exportMP4(
     format: "mp4",
     totalFrames,
     durationMs,
+  };
+}
+
+// ── Mediabunny audio extract helper ─────────────────────────────
+
+/**
+ * Demux the audio track from a source URL, returning the encoded packets
+ * and the muxer-config it needs (codec, channels, sample rate). Bytes are
+ * returned in source codec — no decode/re-encode pass, so a 4-minute AAC
+ * source takes well under 100ms to extract.
+ *
+ * Throws if Mediabunny can't open the URL or the file has no audio track.
+ * Caller (exportMP4) catches + warns + falls back to silent export.
+ */
+async function resolveAudioConfig(audioSourceUrl: string): Promise<{
+  codec: "aac" | "opus";
+  channels: number;
+  sampleRate: number;
+  decoderConfig?: AudioDecoderConfig;
+  extract: () => Promise<Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }>>;
+}> {
+  // Mediabunny is a ~1MB dep; dynamic-import so silent-audio exports don't
+  // pay the parse cost. Same pattern mp4-muxer + webm-muxer follow.
+  const { Input, UrlSource, ALL_FORMATS, EncodedPacketSink } = await import("mediabunny");
+  const input = new Input({
+    source: new UrlSource(audioSourceUrl),
+    formats: ALL_FORMATS,
+  });
+  const tracks = await input.getTracks();
+  // isAudioTrack() narrows InputTrack → InputAudioTrack so we can hit
+  // getNumberOfChannels / getSampleRate / getDecoderConfig without a cast.
+  const audioTrack = tracks.find((t) => t.isAudioTrack());
+  if (!audioTrack || !audioTrack.isAudioTrack()) {
+    throw new Error(`no audio track in ${audioSourceUrl}`);
+  }
+
+  const codecName = await audioTrack.getCodec();
+  // mp4-muxer accepts only aac/opus. Other codecs (mp3, flac, vorbis) would
+  // require a transcode pass — out of scope for v1.0.
+  const muxerCodec: "aac" | "opus" | null =
+    codecName === "aac" ? "aac" :
+    codecName === "opus" ? "opus" :
+    null;
+  if (!muxerCodec) {
+    throw new Error(`source audio codec '${codecName}' isn't mp4-muxer compatible (need aac/opus)`);
+  }
+
+  const channels = await audioTrack.getNumberOfChannels();
+  const sampleRate = await audioTrack.getSampleRate();
+  const decoderConfig = (await audioTrack.getDecoderConfig()) ?? undefined;
+
+  return {
+    codec: muxerCodec,
+    channels,
+    sampleRate,
+    decoderConfig: decoderConfig ?? undefined,
+    extract: async () => {
+      const sink = new EncodedPacketSink(audioTrack);
+      const packets: Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }> = [];
+      for await (const packet of sink.packets()) {
+        packets.push({
+          data: packet.data,
+          // mp4-muxer treats audio packets uniformly; mediabunny exposes
+          // delta/key but for typical AAC every packet is independently
+          // decodable so 'key' is the safer default.
+          type: "key",
+          timestamp: Math.round(packet.timestamp * 1_000_000),
+          duration: Math.round(packet.duration * 1_000_000),
+        });
+      }
+      return packets;
+    },
   };
 }
 

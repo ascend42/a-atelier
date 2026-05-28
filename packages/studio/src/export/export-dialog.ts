@@ -28,6 +28,13 @@ export class ExportDialog {
    * guard) — the bug owner caught in animation (1).mp4.
    */
   private videoSeek: VideoSeekResolver | undefined;
+  /**
+   * `audioSource` — resolved URL of the source video whose audio track
+   * gets demuxed (Mediabunny) and re-muxed (no re-encode) into the
+   * exported MP4/WebM. The studio derives this from the doc's first
+   * VideoVisual layer + the host's srcResolver; omitted → silent export.
+   */
+  private audioSource: string | undefined;
 
   show(
     doc: AtelierDocument,
@@ -36,10 +43,12 @@ export class ExportDialog {
     parentEl: HTMLElement,
     filename?: string,
     videoSeek?: VideoSeekResolver,
+    audioSource?: string,
   ): void {
     this.filename = filename ?? null;
     this.parentEl = parentEl;
     this.videoSeek = videoSeek;
+    this.audioSource = audioSource;
 
     // Overlay
     this.overlay = document.createElement("div");
@@ -190,6 +199,7 @@ export class ExportDialog {
     exportDocument(doc, canvas, imageCache, {
       format,
       videoSeek: this.videoSeek,
+      audioSource: this.audioSource,
       onProgress: ({ frame, total, percent }) => {
         progress.value = percent;
         statusText.textContent = `Rendering frame ${frame} / ${total}`;

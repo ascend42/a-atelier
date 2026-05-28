@@ -27,11 +27,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@a-company/atelier-types": "workspace:*",
-    "@a-company/atelier-math": "workspace:*",
-    "@a-company/atelier-core": "workspace:*",
     "@a-company/atelier-canvas": "workspace:*",
+    "@a-company/atelier-core": "workspace:*",
+    "@a-company/atelier-math": "workspace:*",
     "@a-company/atelier-schema": "workspace:*",
+    "@a-company/atelier-types": "workspace:*",
+    "mediabunny": "^1.45.4",
     "mp4-muxer": "^5.1.3",
     "webm-muxer": "^5.0.1"
   },

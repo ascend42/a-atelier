@@ -654,6 +654,20 @@ export class AtelierStudio {
     // (the bug owner caught in animation (1).mp4: static frame + caption
     // accumulation).
     const provider = this.canvasPanel.getVideoProvider();
+    // Derive the audio source — first VideoVisual layer's resolved URL.
+    // Mediabunny demuxes its audio track and mp4-muxer rewrites those
+    // packets verbatim into the output (no re-encode). Multi-clip audio
+    // composition is v1.1; here we hand the exporter one source.
+    const resolver = this.opts.srcResolver ?? ((s: string): string => s);
+    let audioSource: string | undefined;
+    for (const layer of this.doc.layers) {
+      if (layer.visual.type !== "video") continue;
+      const v = layer.visual;
+      const src = v.src ?? (v.assetId ? this.doc.assets?.[v.assetId]?.src : undefined);
+      if (!src) continue;
+      audioSource = resolver(src);
+      break;
+    }
     dialog.show(
       this.doc,
       this.canvasPanel.getCanvas(),
@@ -661,6 +675,7 @@ export class AtelierStudio {
       this.root,
       this.currentFilename ?? undefined,
       provider.awaitSeek.bind(provider),
+      audioSource,
     );
   }
 }
