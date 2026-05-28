@@ -591,6 +591,13 @@ function bootLegacyApp(config: StudioAppConfig): void {
     const result = parseAtelier(content);
 
     if (!result.success) {
+      // Destroy the prior studio BEFORE wiping the container — otherwise the
+      // next loadFile's destroy() call would try to removeChild on a node
+      // that's already been wiped via innerHTML="" (NotFoundError).
+      if (studio) {
+        studio.destroy();
+        studio = null;
+      }
       editorContainer.innerHTML = "";
       const err = document.createElement("div");
       err.className = "main__empty";

@@ -313,7 +313,12 @@ export class AtelierStudio {
   destroy(): void {
     this.abortController.abort();
     this.canvasPanel.destroy();
-    this.container.removeChild(this.root);
+    // Defensive: a consumer may have wiped the container (e.g. innerHTML="" on
+    // a parse-error path) which removes our root indirectly. Don't throw on
+    // double-detach — just check parentage before removeChild.
+    if (this.root.parentNode === this.container) {
+      this.container.removeChild(this.root);
+    }
   }
 
   private buildToolbar(): void {

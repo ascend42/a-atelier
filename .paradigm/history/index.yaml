@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T09:28:24.358Z'
+generated: '2026-05-28T09:41:55.000Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3919,11 +3919,47 @@ by_symbol:
       agent: []
   '':
     symbol: ''
-    total_changes: 5
-    last_modified: '2026-05-28T09:17:38Z'
+    total_changes: 6
+    last_modified: '2026-05-28T09:41:50Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_56
+        id: h0090
+        ts: '2026-05-28T09:41:50Z'
+        type: implement
+        symbols:
+          - ''
+          - '#ingest-bin-types'
+          - '#timeline-state-types'
+          - '#timeline-view'
+        author:
+          type: human
+          id: ascend
+        commit: ec5c40b66618f024abbdba3956437079bc7ea3a2
+        intent: feature
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-094129-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/manifest.consistency.json
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/university/index.yaml
+          - CHANGELOG.md
+          - packages/cli/.purpose
+          - packages/cli/src/commands/studio.ts
+          - packages/mcp/src/bridge-protocol.ts
+          - portal.yaml
+        description: 'feat(#atelier-v1.0): media-bin pivot + bottom timeline + sidebar drag (CHANGELOG, gate fixes)'
       - &ref_53
         id: h0088
         ts: '2026-05-28T09:17:38Z'
@@ -4073,6 +4109,17 @@ by_symbol:
           - packages/types/.purpose
           - portal.yaml
         description: 'feat(#atelier-v1-surface): agent clip tools + image/carousel compose + rename cascade — v1.0 surface bundle'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-v1-schema':
+    symbol: '#atelier-v1-schema'
+    total_changes: 1
+    last_modified: '2026-05-27T23:05:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
       - &ref_49
         id: h0079
         ts: '2026-05-27T23:05:38Z'
@@ -4125,18 +4172,6 @@ by_symbol:
           - packages/types/src/state.ts
           - packages/types/src/timeline.ts
         description: 'feat(#atelier-v1-schema): multi-track timeline + AudioVisual + kind/design/slides — v1 schema bundle'
-    contributors:
-      human:
-        - ascend
-      agent: []
-  '#atelier-v1-schema':
-    symbol: '#atelier-v1-schema'
-    total_changes: 1
-    last_modified: '2026-05-27T23:05:38Z'
-    stability_score: 1
-    fragility: low
-    recent:
-      - *ref_49
     contributors:
       human:
         - ascend
@@ -4360,12 +4395,13 @@ by_symbol:
       agent: []
   '#ingest-bin-types':
     symbol: '#ingest-bin-types'
-    total_changes: 1
-    last_modified: '2026-05-28T09:05:03Z'
+    total_changes: 2
+    last_modified: '2026-05-28T09:41:50Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_56
+      - *ref_56
+      - &ref_57
         id: h0087
         ts: '2026-05-28T09:05:03Z'
         type: implement
@@ -4398,12 +4434,13 @@ by_symbol:
       agent: []
   '#timeline-state-types':
     symbol: '#timeline-state-types'
-    total_changes: 1
-    last_modified: '2026-05-28T09:05:03Z'
+    total_changes: 2
+    last_modified: '2026-05-28T09:41:50Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_56
+      - *ref_57
     contributors:
       human:
         - ascend
@@ -4439,7 +4476,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_57
+      - &ref_58
         id: h0089
         ts: '2026-05-28T09:28:22Z'
         type: implement
@@ -4474,7 +4511,19 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_57
+      - *ref_58
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#timeline-view':
+    symbol: '#timeline-view'
+    total_changes: 1
+    last_modified: '2026-05-28T09:41:50Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_56
     contributors:
       human:
         - ascend
