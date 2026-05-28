@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T11:33:57.792Z'
+generated: '2026-05-28T11:44:36.347Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3494,11 +3494,53 @@ by_symbol:
       agent: []
   ~source-tagged-mutation:
     symbol: ~source-tagged-mutation
-    total_changes: 1
-    last_modified: '2026-05-20T22:50:41Z'
+    total_changes: 2
+    last_modified: '2026-05-28T11:44:35Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_64
+        id: h0098
+        ts: '2026-05-28T11:44:35Z'
+        type: implement
+        symbols:
+          - ~apply-mutation-one-tick-suppress
+          - ~apply-mutation-preserves-state-and-selection
+          - ~artifact-templates-self-validate
+          - ~canvas-letterbox-fit-observes-panel
+          - ~image-drop-files-only
+          - ~image-drop-first-replaces-background
+          - ~keyboard-shortcut-input-passthrough
+          - ~llm-op-is-undoable
+          - ~preview-vs-commit-render-split
+          - ~scrub-pause-resume
+          - ~source-tagged-mutation
+          - ~undo-redo-preserves-state
+        author:
+          type: human
+          id: ascend
+        commit: 55f9a1f77c65343ddf12c5d9f5aa92f0de496d62
+        intent: feature
+        files:
+          - .paradigm/.purpose-paths
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/manifest.consistency.json
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/university/index.yaml
+          - .purpose
+          - packages/cli/.purpose
+          - packages/studio/.purpose
+        description: 'chore(aspects): re-anchor 12 drifted aspects after triage R1+R2+R3 reshape'
       - *ref_45
     contributors:
       human:
@@ -4762,6 +4804,138 @@ by_symbol:
     fragility: low
     recent:
       - *ref_18
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~apply-mutation-one-tick-suppress:
+    symbol: ~apply-mutation-one-tick-suppress
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~apply-mutation-preserves-state-and-selection:
+    symbol: ~apply-mutation-preserves-state-and-selection
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~artifact-templates-self-validate:
+    symbol: ~artifact-templates-self-validate
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~canvas-letterbox-fit-observes-panel:
+    symbol: ~canvas-letterbox-fit-observes-panel
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~image-drop-files-only:
+    symbol: ~image-drop-files-only
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~image-drop-first-replaces-background:
+    symbol: ~image-drop-first-replaces-background
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~keyboard-shortcut-input-passthrough:
+    symbol: ~keyboard-shortcut-input-passthrough
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~llm-op-is-undoable:
+    symbol: ~llm-op-is-undoable
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~preview-vs-commit-render-split:
+    symbol: ~preview-vs-commit-render-split
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~scrub-pause-resume:
+    symbol: ~scrub-pause-resume
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
+    contributors:
+      human:
+        - ascend
+      agent: []
+  ~undo-redo-preserves-state:
+    symbol: ~undo-redo-preserves-state
+    total_changes: 1
+    last_modified: '2026-05-28T11:44:35Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_64
     contributors:
       human:
         - ascend

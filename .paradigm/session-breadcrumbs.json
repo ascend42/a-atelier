@@ -1,14 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779968597065,
+  "lastActivity": 1779968627010,
   "breadcrumbs": [
-    {
-      "timestamp": 1779911298378,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: v1 UX bundle: workspace-aware studio UI, drag-drop ingest, a"
-    },
     {
       "timestamp": 1779914335313,
       "action": "tool-call",
@@ -302,6 +296,12 @@
       "action": "tool-call",
       "tool": "paradigm_aspect_drift",
       "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779981000905,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Runtime verification — R3 video provider paints; \"caption st"
     }
   ],
   "symbolsModified": [],
