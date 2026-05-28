@@ -1,0 +1,34 @@
+id: L-2026-05-28-ascend-090321-001
+type: milestone
+timestamp: '2026-05-28T09:03:21.518Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: S0 — shared types for media-bin pivot + bottom timeline UI
+summary: 'Sub-phase 0 for the v1.0 media-bin pivot + bottom timeline bundle. Three new files: ingest-bin-types.ts (BinAddResult / BinAddRejected / MediaRefPayload + isValidMediaRefPath validator), ingest-bin-types.test.ts (13 unit tests), and timeline-state-types.ts (TimelineSelection + frameToPixel/pixelToFrame helpers for the new browser-side timeline component). Gates Wave A''s three parallel builders (Kit-A backend, Kit-B timeline UI, Kit-C UI shell).'
+symbols_touched:
+  - '#ingest-dispatch'
+  - '#workspace-app'
+symbols_created:
+  - '#ingest-bin-types'
+  - '#timeline-state-types'
+files_created:
+  - packages/cli/src/lib/ingest-bin-types.ts
+  - packages/cli/src/lib/ingest-bin-types.test.ts
+  - packages/cli/src/web/timeline-state-types.ts
+verification:
+  status: pass
+  details:
+    workspace_tests: 1176 → 1188 (+12)
+    tsc_workspace: exit 0
+tags:
+  - v1.0
+  - media-bin
+  - timeline-ui
+  - S0
+confidence: 0.95
+git_context:
+  ref: b4b8eac09d24ba3b7be10acf8b3a8a7f5dd133a3
+  branch: feat/creator-flow-v1-prep
+  dirty: true

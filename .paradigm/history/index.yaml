@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T04:39:45.410Z'
+generated: '2026-05-28T04:54:36.696Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -2285,7 +2285,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_45
+      - &ref_44
         id: h0073
         ts: '2026-05-22T18:40:27Z'
         type: implement
@@ -2507,12 +2507,34 @@ by_symbol:
       agent: []
   '#cli-studio':
     symbol: '#cli-studio'
-    total_changes: 9
-    last_modified: '2026-05-27T21:45:44Z'
+    total_changes: 10
+    last_modified: '2026-05-28T04:54:33Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_47
+      - &ref_54
+        id: h0086
+        ts: '2026-05-28T04:54:33Z'
+        type: implement
+        symbols:
+          - '#cascade-delete-media'
+          - '#cli-studio'
+          - '#studio-workspace-sidebar'
+        author:
+          type: human
+          id: ascend
+        commit: b4b8eac09d24ba3b7be10acf8b3a8a7f5dd133a3
+        intent: fix
+        files:
+          - .claude/settings.local.json
+          - .paradigm/.purpose-paths
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - packages/cli/src/lib/workspace-delete.test.ts
+          - packages/cli/src/lib/workspace-delete.ts
+          - packages/cli/src/web/workspace-app.ts
+        description: 'fix(#cascade-delete-media,#studio-deletes): post-pivot media delete + silent error surfacing'
+      - &ref_46
         id: h0078
         ts: '2026-05-27T21:45:44Z'
         type: implement
@@ -2579,7 +2601,7 @@ by_symbol:
           - packages/mcp/src/index.test.ts
           - packages/mcp/src/index.ts
         description: 'feat(#cli-studio): v1 UX bundle — workspace-aware studio + drag-drop ingest + per-file transcripts + delete cascade'
-      - &ref_46
+      - &ref_45
         id: h0077
         ts: '2026-05-27T18:42:58Z'
         type: implement
@@ -2773,7 +2795,7 @@ by_symbol:
           - packages/types/src/video-project.ts
           - portal.yaml
         description: 'feat(#cli-studio): creator-flow foundation — agents, workspace, symbiosis, media pipeline'
-      - &ref_44
+      - &ref_43
         id: h0076
         ts: '2026-05-22T19:17:55Z'
         type: implement
@@ -2815,26 +2837,6 @@ by_symbol:
           - packages/mcp/package.json
           - packages/studio/package.json
         description: 'chore(release): v0.36.0 — hardening pass (PNG export + 10 fixes + studio refactor)'
-      - &ref_42
-        id: h0066
-        ts: '2026-05-20T04:41:48Z'
-        type: implement
-        symbols:
-          - '#cli-studio'
-          - '#studio-inline-app'
-        author:
-          type: human
-          id: ascend
-        commit: bf7595cec0063aefee7f65e1a0856f92c8278fbf
-        intent: refactor
-        files:
-          - packages/cli/package.json
-          - packages/cli/src/commands/studio.ts
-          - packages/cli/src/web/inline-app.ts
-          - packages/cli/src/web/tsconfig.json
-          - packages/cli/tsconfig.json
-          - packages/studio/src/index.test.ts
-        description: 'refactor(#cli-studio, #studio-inline-app): extract inline studio app to a typechecked module'
     contributors:
       human:
         - ascend
@@ -3245,7 +3247,25 @@ by_symbol:
     fragility: low
     recent:
       - *ref_38
-      - *ref_42
+      - id: h0066
+        ts: '2026-05-20T04:41:48Z'
+        type: implement
+        symbols:
+          - '#cli-studio'
+          - '#studio-inline-app'
+        author:
+          type: human
+          id: ascend
+        commit: bf7595cec0063aefee7f65e1a0856f92c8278fbf
+        intent: refactor
+        files:
+          - packages/cli/package.json
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/web/inline-app.ts
+          - packages/cli/src/web/tsconfig.json
+          - packages/cli/tsconfig.json
+          - packages/studio/src/index.test.ts
+        description: 'refactor(#cli-studio, #studio-inline-app): extract inline studio app to a typechecked module'
     contributors:
       human:
         - ascend
@@ -3257,7 +3277,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_43
+      - &ref_42
         id: h0069
         ts: '2026-05-20T22:50:41Z'
         type: implement
@@ -3289,7 +3309,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_43
+      - *ref_42
     contributors:
       human:
         - ascend
@@ -3301,7 +3321,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_43
+      - *ref_42
     contributors:
       human:
         - ascend
@@ -3313,7 +3333,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_43
+      - *ref_42
     contributors:
       human:
         - ascend
@@ -3325,7 +3345,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_44
+      - *ref_43
       - id: h0070
         ts: '2026-05-20T23:06:28Z'
         type: implement
@@ -3396,7 +3416,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_45
+      - *ref_44
     contributors:
       human:
         - ascend
@@ -3408,7 +3428,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_45
+      - *ref_44
     contributors:
       human:
         - ascend
@@ -3420,7 +3440,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_45
+      - *ref_44
     contributors:
       human:
         - ascend
@@ -3444,7 +3464,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3456,8 +3476,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3469,7 +3489,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3481,8 +3501,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3494,8 +3514,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3507,8 +3527,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3520,8 +3540,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3533,8 +3553,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3546,8 +3566,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3559,8 +3579,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3572,8 +3592,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3585,8 +3605,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3598,8 +3618,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3611,8 +3631,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3624,7 +3644,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3636,7 +3656,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3648,7 +3668,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3660,8 +3680,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3673,8 +3693,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3686,7 +3706,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3698,8 +3718,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3711,8 +3731,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3724,8 +3744,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
       - *ref_46
+      - *ref_45
     contributors:
       human:
         - ascend
@@ -3737,7 +3757,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_48
+      - &ref_47
         id: h0084
         ts: '2026-05-28T04:28:24Z'
         type: implement
@@ -3759,7 +3779,7 @@ by_symbol:
           - packages/cli/src/lib/compose-video-project.ts
           - packages/cli/src/workspace-ui.test.ts
         description: 'fix(#compose-video-project): skip legacy caption-rewrite on transcribe (ENOENT fix)'
-      - &ref_49
+      - &ref_48
         id: h0082
         ts: '2026-05-28T03:04:27Z'
         type: implement
@@ -3809,7 +3829,7 @@ by_symbol:
           - packages/mcp/src/tools/docs.ts
           - portal.yaml
         description: 'feat(#doc-management): flat-docs pivot — drop manifest concept, fix .atelier/ listing bug'
-      - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3821,7 +3841,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3833,8 +3853,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_48
       - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3846,7 +3866,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3858,7 +3878,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_53
+      - &ref_52
         id: h0083
         ts: '2026-05-28T04:19:36Z'
         type: implement
@@ -3880,7 +3900,7 @@ by_symbol:
           - packages/cli/src/lib/workspace-delete.test.ts
           - packages/cli/src/workspace-ui.test.ts
         description: 'fix(#studio-doc-endpoints): resolveProjectInWorkspace accepts .atelier/-only projects'
-      - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3892,7 +3912,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_47
+      - *ref_46
     contributors:
       human:
         - ascend
@@ -3904,8 +3924,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
-      - &ref_52
+      - *ref_48
+      - &ref_51
         id: h0081
         ts: '2026-05-28T01:47:58Z'
         type: implement
@@ -3957,7 +3977,7 @@ by_symbol:
           - packages/studio/src/panels/layer-panel.ts
           - portal.yaml
         description: 'feat(#doc-management): + new doc UI + duplicate + delete + 4 MCP tools — doc-management v1.0.x'
-      - &ref_51
+      - &ref_50
         id: h0080
         ts: '2026-05-28T00:33:07Z'
         type: implement
@@ -4020,7 +4040,7 @@ by_symbol:
           - packages/types/.purpose
           - portal.yaml
         description: 'feat(#atelier-v1-surface): agent clip tools + image/carousel compose + rename cascade — v1.0 surface bundle'
-      - &ref_50
+      - &ref_49
         id: h0079
         ts: '2026-05-27T23:05:38Z'
         type: implement
@@ -4083,7 +4103,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_49
     contributors:
       human:
         - ascend
@@ -4095,7 +4115,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_49
     contributors:
       human:
         - ascend
@@ -4107,7 +4127,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_49
     contributors:
       human:
         - ascend
@@ -4119,7 +4139,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_49
     contributors:
       human:
         - ascend
@@ -4131,7 +4151,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_51
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4143,7 +4163,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_51
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4155,7 +4175,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_51
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4167,7 +4187,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_51
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4179,8 +4199,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
-      - *ref_52
+      - *ref_48
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4192,8 +4212,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
-      - *ref_52
+      - *ref_48
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4205,7 +4225,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_52
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4217,7 +4237,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_54
+      - &ref_53
         id: h0085
         ts: '2026-05-28T04:38:14Z'
         type: implement
@@ -4239,7 +4259,7 @@ by_symbol:
           - packages/cli/src/web/workspace-app.ts
           - packages/cli/src/workspace-ui.test.ts
         description: 'feat(#ingest-dispatch): context-aware drag-drop — canvas drop adds to loaded doc'
-      - *ref_53
+      - *ref_52
     contributors:
       human:
         - ascend
@@ -4251,7 +4271,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_53
+      - *ref_52
     contributors:
       human:
         - ascend
@@ -4263,7 +4283,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_54
+      - *ref_53
     contributors:
       human:
         - ascend
@@ -4272,6 +4292,30 @@ by_symbol:
     symbol: '#studio-drop-zone'
     total_changes: 1
     last_modified: '2026-05-28T04:38:14Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_53
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#cascade-delete-media':
+    symbol: '#cascade-delete-media'
+    total_changes: 1
+    last_modified: '2026-05-28T04:54:33Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_54
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-workspace-sidebar':
+    symbol: '#studio-workspace-sidebar'
+    total_changes: 1
+    last_modified: '2026-05-28T04:54:33Z'
     stability_score: 1
     fragility: low
     recent:
