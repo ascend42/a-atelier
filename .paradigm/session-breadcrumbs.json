@@ -1,14 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779986254806,
+  "lastActivity": 1779988549166,
   "breadcrumbs": [
-    {
-      "timestamp": 1779966786465,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Root cause for v1.0 triage bugs: CLI loads npm studio v0.26."
-    },
     {
       "timestamp": 1779968001274,
       "action": "tool-call",
@@ -302,6 +296,12 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: CLI atelier render fixed — source video + audio passthrough "
+    },
+    {
+      "timestamp": 1779994136648,
+      "action": "tool-call",
+      "tool": "paradigm_decision_record",
+      "summary": "decision_record: v2.0 pivot — Atelier becomes a Hyperframes-management layer "
     }
   ],
   "symbolsModified": [],
