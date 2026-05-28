@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-27T18:06:02.460Z",
+  "generatedAt": "2026-05-28T00:22:52.353Z",
   "flows": {
     "$frame-resolution": {
       "id": "$frame-resolution",
@@ -33,6 +33,75 @@
         }
       ],
       "definedIn": "packages/core/.purpose"
+    },
+    "$media-ingest-flow": {
+      "id": "$media-ingest-flow",
+      "description": "Drag-drop in the studio → file lands in media/ via /api/media/ingest → #ingest-dispatch classifyMediaFile derives kind (video / image / audio / unsupported) → routeIngest pairs (file-kind, project-kind|undefined) into the 12-cell matrix → dispatcher routes to the right composer or rejects + unlinks the upload. Scaffold-on-ingest is permitted only for video+undef and image+undef; audio cannot establish a project on its own. Spans the studio HTTP handler, #ingest-dispatch, and one of the three composers depending on the route.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "receive POST /api/media/ingest, stream upload into media/<basename>",
+          "symbol": "#cli-studio"
+        },
+        {
+          "id": "step-2",
+          "action": "classifyMediaFile + routeIngest (file-kind, project-kind|undefined)",
+          "symbol": "#ingest-dispatch"
+        },
+        {
+          "id": "step-3",
+          "action": "ingest video into video project (compose-video target)",
+          "symbol": "#compose-video-project"
+        },
+        {
+          "id": "step-4",
+          "action": "ingest single image into image project (compose-image target)",
+          "symbol": "#compose-image-project"
+        },
+        {
+          "id": "step-5",
+          "action": "add-audio-clip target — register audio clip on audio track",
+          "symbol": "#timeline-ops"
+        },
+        {
+          "id": "step-6",
+          "action": "on reject, unlink the just-uploaded file and respond 400",
+          "symbol": "#cli-studio"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$rename-cascade-flow": {
+      "id": "$rename-cascade-flow",
+      "description": "One rename op cascades through media/, transcripts/, and project.atelier (assets, layers, timeline). Phase 1 stages every change in memory (load doc → apply rename walk → recompute timeline → scan artifacts for warnings) without touching disk. Phase 2 writes in order: media file → transcript (if present) → doc; on any mid-step failure the prior writes are reverse-rolled-back best-effort before the original error is rethrown. Triggered from either the studio HTTP endpoint or the MCP tool wrapper; both gate on ^valid-media-basename before entry, and both join straight into <projectDir>/media/<basename> so the basename guard is load-bearing.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "validate basenames (^valid-media-basename), parse JSON body",
+          "symbol": "#studio-rename-endpoint"
+        },
+        {
+          "id": "step-2",
+          "action": "Phase 1 — load doc, applyMediaRenameToDoc, recomputeTimeline, scan artifacts",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-3",
+          "action": "Phase 2 — rename media file",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-4",
+          "action": "Phase 2 — rename transcript if present (rollback media on failure)",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-5",
+          "action": "Phase 2 — write project.atelier (rollback transcript + media on failure)",
+          "symbol": "#rename-media"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
     }
   },
   "symbolToFlows": {
@@ -44,6 +113,27 @@
     ],
     "#easing-resolver": [
       "$frame-resolution"
+    ],
+    "#cli-studio": [
+      "$media-ingest-flow"
+    ],
+    "#ingest-dispatch": [
+      "$media-ingest-flow"
+    ],
+    "#compose-video-project": [
+      "$media-ingest-flow"
+    ],
+    "#compose-image-project": [
+      "$media-ingest-flow"
+    ],
+    "#timeline-ops": [
+      "$media-ingest-flow"
+    ],
+    "#studio-rename-endpoint": [
+      "$rename-cascade-flow"
+    ],
+    "#rename-media": [
+      "$rename-cascade-flow"
     ]
   }
 }

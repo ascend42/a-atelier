@@ -316,7 +316,16 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_get_effective_transcript");
     expect(toolNames).toContain("atelier_get_media_notes");
     expect(toolNames).toContain("atelier_write_media_note");
-    expect(toolNames).toHaveLength(64); // atelier_set_audio removed in v1.0
+    // v1.0 clip + slide tools (Slice A)
+    expect(toolNames).toContain("atelier_add_clip");
+    expect(toolNames).toContain("atelier_move_clip");
+    expect(toolNames).toContain("atelier_trim_clip");
+    expect(toolNames).toContain("atelier_remove_clip");
+    expect(toolNames).toContain("atelier_transcribe_clip");
+    expect(toolNames).toContain("atelier_move_slide");
+    // v1.0 rename-media tool (Slice C)
+    expect(toolNames).toContain("atelier_rename_media");
+    expect(toolNames).toHaveLength(71); // atelier_set_audio removed in v1.0; +6 v1.0 clip/slide tools; +1 atelier_rename_media (Slice C)
   });
 
   // ── Document tools ────────────────────────────────────────

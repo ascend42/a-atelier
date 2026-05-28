@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779918114394,
+  "lastActivity": 1779924432434,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -182,6 +182,30 @@
       "action": "tool-call",
       "tool": "paradigm_session_recover",
       "summary": "session_recover"
+    },
+    {
+      "timestamp": 1779923206335,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779923271634,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1 schema lock + multi-track timeline + carousel/image kinds"
+    },
+    {
+      "timestamp": 1779924432354,
+      "action": "tool-call",
+      "tool": "paradigm_agent_list",
+      "summary": "agent_list"
+    },
+    {
+      "timestamp": 1779927771905,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [],

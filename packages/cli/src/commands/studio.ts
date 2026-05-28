@@ -49,12 +49,26 @@ import {
   listProjectArtifacts,
   projectNameFromPath,
 } from "../lib/workspace-project-info.js";
-import { composeVideoProject } from "../lib/compose-video-project.js";
+import { composeVideoProject, readAtelierDoc, slugifyBasename } from "../lib/compose-video-project.js";
+import { composeImageProject } from "../lib/compose-image-project.js";
+import { routeIngest } from "../lib/ingest-dispatch.js";
+import {
+  AUDIO_TRACK_ID,
+  ensureClipLayer,
+  recomputeTimeline,
+} from "../lib/timeline-ops.js";
+import { probeDuration } from "../lib/silence-detect.js";
+import type { AtelierDocument, ProjectKind } from "@a-company/atelier-types";
 import {
   cascadeDeleteMedia,
   deleteProject,
   deleteWorkspaceFile,
 } from "../lib/workspace-delete.js";
+import {
+  renameMedia,
+  isValidMediaBasenameForRename,
+  type RenameMediaResult,
+} from "../lib/rename-media.js";
 
 /** Recursively glob for .atelier files under a directory. */
 function findAtelierFiles(dir: string, base: string = dir): string[] {
@@ -853,6 +867,74 @@ export function matchProjectRoute(pathname: string): { name: string } | null {
 }
 
 /**
+ * Handle POST /api/media/rename. Atomic media-file rename cascade: media file +
+ * transcript + every reference inside project.atelier are rewritten in one
+ * two-phase op (see #rename-media for the spec).
+ *
+ * Path-traversal defense — Aegis audit surface:
+ *   - `oldBasename` / `newBasename` MUST pass `isValidMediaBasenameForRename`,
+ *     which rejects `/`, `\`, `..`, leading-`.`, NUL / control bytes and the
+ *     empty / whitespace-only string. The underlying `renameMedia` does NOT
+ *     re-validate — it joins straight into `media/<basename>` — so this is the
+ *     single line of defense for the HTTP layer.
+ *   - The project name is funneled through `resolveProjectInWorkspace`, which
+ *     itself validates through `isValidProjectName` BEFORE any disk work,
+ *     keeping any crafted `..`-name from escaping the workspace root.
+ * Both checks happen BEFORE the rename call so a probe can't even trigger an
+ * `existsSync` outside the project dir.
+ *
+ * Pure: no HTTP, no WS — the middleware translates the WorkspaceApiResult and
+ * (on 200) broadcasts a `media:list:changed` envelope. Mirrors the
+ * `handleDeleteProjectMedia` shape so unit tests can exercise the surface
+ * without spinning up Vite.
+ */
+export async function handleMediaRenameRequest(
+  cwd: string,
+  projectName: unknown,
+  body: unknown,
+): Promise<WorkspaceApiResult & { result?: RenameMediaResult }> {
+  // Project name — validated by resolveProjectInWorkspace via isValidProjectName.
+  const projectDir = resolveProjectInWorkspace(cwd, projectName);
+  if (!projectDir) {
+    return { status: 404, body: { error: `project not found: ${String(projectName)}` } };
+  }
+
+  // Body shape: { oldBasename: string, newBasename: string }.
+  if (!body || typeof body !== "object") {
+    return { status: 400, body: { error: "missing JSON body" } };
+  }
+  const { oldBasename, newBasename } = body as { oldBasename?: unknown; newBasename?: unknown };
+
+  // ── Path-traversal defense ──────
+  // `renameMedia` joins `<projectDir>/media/<basename>` directly. Without
+  // this gate, a crafted `../../etc/passwd` would let an attacker probe
+  // (via existsSync) — or rename — files outside `media/`. Reject any
+  // separator / leading-dot / control char up front. Aegis: audit here.
+  if (!isValidMediaBasenameForRename(oldBasename)) {
+    return { status: 400, body: { error: "invalid basename" } };
+  }
+  if (!isValidMediaBasenameForRename(newBasename)) {
+    return { status: 400, body: { error: "invalid basename" } };
+  }
+
+  try {
+    const result = await renameMedia({ projectDir, oldBasename, newBasename });
+    return { status: 200, body: { success: true, result }, result };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // Map the cascade's "not found" / "already exists" outcomes to 4xx; every
+    // other failure (rollback or disk IO) becomes a 500.
+    if (msg.includes("media file not found") || msg.includes("missing project.atelier")) {
+      return { status: 404, body: { error: msg } };
+    }
+    if (msg.includes("destination file already exists") || msg.includes("no media/ dir")) {
+      return { status: 400, body: { error: msg } };
+    }
+    return { status: 500, body: { error: msg } };
+  }
+}
+
+/**
  * Read an incoming request body as a UTF-8 string, then JSON-parse it.
  * Returns `undefined` on empty body, throws on invalid JSON. Used by the
  * middleware to feed the pure handlers above.
@@ -1425,7 +1507,7 @@ interface LaunchStudioOptions {
  * The contract is intentionally simple: octet-stream body + headers, no
  * multipart parser dep. Matches the existing /api/export upload shape.
  */
-function handleMediaIngestRequest(
+export function handleMediaIngestRequest(
   req: import("node:http").IncomingMessage,
   res: import("node:http").ServerResponse,
   cwd: string,
@@ -1449,12 +1531,18 @@ function handleMediaIngestRequest(
   }
 
   const projectDir = join(resolve(cwd), projectName);
-  if (!existsSync(join(projectDir, "project.atelier"))) {
+  // NOTE: a missing project.atelier is no longer fatal — the dispatcher
+  // (see #ingest-dispatch) will route a fresh upload to `compose-video` or
+  // `compose-image` and scaffold the project. We only require the parent
+  // (workspace) dir to exist so we don't accidentally create projects in
+  // a non-workspace cwd.
+  if (!existsSync(resolve(cwd))) {
     res.statusCode = 404;
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: `project not found: ${projectName}` }));
+    res.end(JSON.stringify({ error: `workspace not found: ${cwd}` }));
     return;
   }
+  if (!existsSync(projectDir)) mkdirSync(projectDir, { recursive: true });
 
   const mediaDir = join(projectDir, "media");
   if (!existsSync(mediaDir)) mkdirSync(mediaDir, { recursive: true });
@@ -1498,95 +1586,262 @@ function handleMediaIngestRequest(
       return;
     }
 
+    // Determine the current project kind (if any) so the dispatcher can
+    // pick the correct composer. Missing / unreadable / no-kind project.atelier
+    // → `undefined`, which means "scaffold a fresh project."
+    const compositionPath = join(projectDir, "project.atelier");
+    let currentProjectKind: ProjectKind | undefined;
+    if (existsSync(compositionPath)) {
+      try {
+        const existingDoc = readAtelierDoc(compositionPath);
+        currentProjectKind = existingDoc.kind;
+      } catch {
+        currentProjectKind = undefined;
+      }
+    }
+
+    const route = routeIngest(filename, currentProjectKind);
+
+    // ── Reject path ─────────────────────────────────────────────────
+    if (route.target === "reject") {
+      // Cleanup the just-uploaded file so the project isn't left with an
+      // orphan in media/. Critical: otherwise repeated rejected uploads
+      // accumulate.
+      try { rmSync(destPath, { force: true }); } catch { /* non-fatal */ }
+      broadcastIngest(bridgeClients, {
+        type: "media:ingest:progress",
+        projectName,
+        file: filename,
+        phase: "error",
+        error: route.error ?? "ingest rejected",
+      });
+      res.statusCode = 400;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ ok: false, error: route.error ?? "ingest rejected" }));
+      return;
+    }
+
+    // File is staying — let listeners know media/ changed.
     broadcastIngest(bridgeClients, {
       type: "media:list:changed",
       projectName,
     });
 
-    // Kick off transcription + composition asynchronously. The HTTP response
-    // returns immediately with `accepted` once the file is on disk — the
-    // browser tracks ingest progress via WS envelopes from here.
-    broadcastIngest(bridgeClients, {
-      type: "media:ingest:progress",
-      projectName,
-      file: filename,
-      phase: "transcribing",
-    });
+    // ── Video path (compose-video, transcribe-included) ─────────────
+    if (route.target === "compose-video") {
+      // Kick off transcription + composition asynchronously. The HTTP response
+      // returns immediately with `accepted` once the file is on disk — the
+      // browser tracks ingest progress via WS envelopes from here.
+      broadcastIngest(bridgeClients, {
+        type: "media:ingest:progress",
+        projectName,
+        file: filename,
+        phase: "transcribing",
+      });
 
-    // Clear any leftover source.<ext> from prior ingest paths — modern
-    // ingest passes the media file path directly via TranscribeOptions.sourcePath
-    // and never writes source.<ext> at root. The cleanup keeps the project
-    // surface free of legacy clutter as projects migrate.
-    {
-      const POSSIBLE = [".mp4", ".mov", ".webm", ".mkv", ".avi"];
-      for (const e of POSSIBLE) {
-        const stale = join(projectDir, `source${e}`);
-        if (existsSync(stale)) {
-          try { rmSync(stale); } catch { /* non-fatal */ }
+      // Clear any leftover source.<ext> from prior ingest paths — modern
+      // ingest passes the media file path directly via TranscribeOptions.sourcePath
+      // and never writes source.<ext> at root. The cleanup keeps the project
+      // surface free of legacy clutter as projects migrate.
+      {
+        const POSSIBLE = [".mp4", ".mov", ".webm", ".mkv", ".avi"];
+        for (const e of POSSIBLE) {
+          const stale = join(projectDir, `source${e}`);
+          if (existsSync(stale)) {
+            try { rmSync(stale); } catch { /* non-fatal */ }
+          }
         }
       }
+
+      composeVideoProject({
+        projectDir,
+        sourceFile: destPath,
+        mediaBasename: filename,
+        // Pass the media file's real path to whisper directly — no more copying
+        // to source.<ext> at root (TD-2026-05-27 clean-project stance).
+        transcribeOptions: { model: modelHeader as never, sourcePath: destPath },
+      })
+        .then((result) => {
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "composing",
+          });
+          // Per-file transcript mirror lives at `transcripts/<stem>.json` —
+          // see #transcribe-orchestrator. Strip the extension before broadcasting
+          // so the studio sidebar can locate the right file. Fall back to the
+          // legacy root transcript path when the orchestrator didn't run a mirror
+          // (shouldn't happen on this code path; defensive only).
+          const stem = filename.replace(/\.[^./\\]+$/, "");
+          const transcriptPath = result.mirroredTranscriptPath
+            ? `${projectName}/transcripts/${stem}.json`
+            : `${projectName}/transcript.json`;
+          broadcastIngest(bridgeClients, {
+            type: "transcript:added",
+            projectName,
+            transcriptPath,
+          });
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "done",
+          });
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({
+            ok: true,
+            projectName,
+            file: filename,
+            bytes: totalBytes,
+            kind: "video",
+            addedVideoLayer: result.addedVideoLayer,
+            targetStateName: result.targetStateName,
+            targetDurationSeconds: result.targetDurationSeconds,
+            wordCount: result.transcribe?.wordCount ?? null,
+          }));
+        })
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "error",
+            error: msg,
+          });
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: msg }));
+        });
+      return;
     }
 
-    composeVideoProject({
-      projectDir,
-      sourceFile: destPath,
-      mediaBasename: filename,
-      // Pass the media file's real path to whisper directly — no more copying
-      // to source.<ext> at root (TD-2026-05-27 clean-project stance).
-      transcribeOptions: { model: modelHeader as never, sourcePath: destPath },
-    })
-      .then((result) => {
-        broadcastIngest(bridgeClients, {
-          type: "media:ingest:progress",
-          projectName,
-          file: filename,
-          phase: "composing",
-        });
-        // Per-file transcript mirror lives at `transcripts/<stem>.json` —
-        // see #transcribe-orchestrator. Strip the extension before broadcasting
-        // so the studio sidebar can locate the right file. Fall back to the
-        // legacy root transcript path when the orchestrator didn't run a mirror
-        // (shouldn't happen on this code path; defensive only).
-        const stem = filename.replace(/\.[^./\\]+$/, "");
-        const transcriptPath = result.mirroredTranscriptPath
-          ? `${projectName}/transcripts/${stem}.json`
-          : `${projectName}/transcript.json`;
-        broadcastIngest(bridgeClients, {
-          type: "transcript:added",
-          projectName,
-          transcriptPath,
-        });
-        broadcastIngest(bridgeClients, {
-          type: "media:ingest:progress",
-          projectName,
-          file: filename,
-          phase: "done",
-        });
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({
-          ok: true,
-          projectName,
-          file: filename,
-          bytes: totalBytes,
-          addedVideoLayer: result.addedVideoLayer,
-          targetStateName: result.targetStateName,
-          targetDurationSeconds: result.targetDurationSeconds,
-          wordCount: result.transcribe?.wordCount ?? null,
-        }));
-      })
-      .catch((err: unknown) => {
-        const msg = err instanceof Error ? err.message : String(err);
-        broadcastIngest(bridgeClients, {
-          type: "media:ingest:progress",
-          projectName,
-          file: filename,
-          phase: "error",
-          error: msg,
-        });
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ ok: false, error: msg }));
+    // ── Image path (compose-image, no transcribe) ───────────────────
+    if (route.target === "compose-image") {
+      broadcastIngest(bridgeClients, {
+        type: "media:ingest:progress",
+        projectName,
+        file: filename,
+        phase: "composing",
       });
+      composeImageProject({
+        projectDir,
+        sourceFile: destPath,
+        mediaBasename: filename,
+      })
+        .then((result) => {
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "done",
+          });
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({
+            ok: true,
+            projectName,
+            file: filename,
+            bytes: totalBytes,
+            kind: "image",
+            addedImageLayer: result.addedImageLayer,
+            layerId: result.layerId,
+          }));
+        })
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "error",
+            error: msg,
+          });
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: msg }));
+        });
+      return;
+    }
+
+    // ── Audio path (add-audio-clip, in-process) ─────────────────────
+    if (route.target === "add-audio-clip") {
+      broadcastIngest(bridgeClients, {
+        type: "media:ingest:progress",
+        projectName,
+        file: filename,
+        phase: "composing",
+      });
+      // Audio path is only reachable when projectKind === "video", which
+      // means project.atelier already exists. We trust that here — the
+      // dispatcher would have rejected the upload otherwise.
+      (async () => {
+        const doc = readAtelierDoc(compositionPath);
+        let clipDurationSeconds = 0;
+        try {
+          clipDurationSeconds = await probeDuration(destPath);
+        } catch {
+          clipDurationSeconds = 0;
+        }
+        const fps = doc.canvas.fps;
+        const clipDurationFrames = Math.max(1, Math.round(clipDurationSeconds * fps));
+        const slug = slugifyBasename(filename);
+        if (!slug) {
+          throw new Error(`cannot derive a slug from "${filename}"`);
+        }
+        const clipLayerId = `aud-${slug}`;
+        let working: AtelierDocument = doc;
+        const ensured = ensureClipLayer(working, {
+          clipLayerId,
+          trackId: AUDIO_TRACK_ID,
+          sourceName: `media/${filename}`,
+          clipDurationSeconds,
+          clipDurationFrames,
+          kind: "audio",
+        });
+        working = recomputeTimeline(ensured.doc);
+        writeFileSync(compositionPath, JSON.stringify(working, null, 2), "utf-8");
+        return { addedLayer: ensured.addedLayer, clipLayerId };
+      })()
+        .then((result) => {
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "done",
+          });
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({
+            ok: true,
+            projectName,
+            file: filename,
+            bytes: totalBytes,
+            kind: "audio",
+            addedAudioLayer: result.addedLayer,
+            layerId: result.clipLayerId,
+          }));
+        })
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          broadcastIngest(bridgeClients, {
+            type: "media:ingest:progress",
+            projectName,
+            file: filename,
+            phase: "error",
+            error: msg,
+          });
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: msg }));
+        });
+      return;
+    }
+
+    // Unreachable: the dispatcher returns one of the four targets above.
+    // Defensive 500 in case a new target is added without handling.
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: `internal: unhandled dispatch target "${String(route.target)}"` }));
   });
 }
 
@@ -2024,6 +2279,34 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                   //   x-atelier-model: <whisper model>    (optional, default "base.en")
                   if (url.pathname === "/api/media/ingest" && req.method === "POST") {
                     handleMediaIngestRequest(req, res, cwd, bridgeClients);
+                    return;
+                  }
+
+                  // ── POST /api/media/rename — atomic basename cascade.
+                  //
+                  // Project identified via x-atelier-project header (same
+                  // family as /api/media/ingest). JSON body carries
+                  // { oldBasename, newBasename }. Path-traversal defense
+                  // lives in handleMediaRenameRequest (Aegis audit surface).
+                  if (url.pathname === "/api/media/rename" && req.method === "POST") {
+                    const projectName = headerString(req, "x-atelier-project");
+                    readJsonBody(req)
+                      .then(async (rawBody) => {
+                        const result = await handleMediaRenameRequest(cwd, projectName, rawBody);
+                        writeJsonResult(res, result);
+                        if (result.status === 200 && typeof projectName === "string") {
+                          broadcastIngest(bridgeClients, {
+                            type: "media:list:changed",
+                            projectName,
+                          });
+                        }
+                      })
+                      .catch((err: unknown) => {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        res.statusCode = 400;
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(JSON.stringify({ error: `invalid JSON body: ${msg}` }));
+                      });
                     return;
                   }
 

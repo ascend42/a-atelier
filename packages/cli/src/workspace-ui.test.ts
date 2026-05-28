@@ -39,7 +39,10 @@ import {
   buildProjectTranscripts,
   buildProjectArtifacts,
   resolveProjectInWorkspace,
+  handleMediaIngestRequest,
 } from "./commands/studio.js";
+
+import { EventEmitter } from "node:events";
 
 import type { AtelierDocument } from "@a-company/atelier-types";
 
@@ -722,6 +725,176 @@ describe("studio /api/project route handlers", () => {
     expect(buildProjectMedia(workspaceDir, "ghost").status).toBe(404);
     expect(buildProjectTranscripts(workspaceDir, "ghost").status).toBe(404);
     expect(buildProjectArtifacts(workspaceDir, "ghost").status).toBe(404);
+  });
+});
+
+// ─── handleMediaIngestRequest — kind-aware dispatch (B3) ────────────
+//
+// Two coverage points the slice spec calls out:
+//   1. Image-only project (fresh dir, no project.atelier yet, image drag) →
+//      composeImageProject runs, project.atelier is written with kind:"image"
+//      and an ImageVisual layer.
+//   2. Image-into-video reject path → 400 response, error string present,
+//      AND the file just uploaded into media/ is removed (no orphans).
+//
+// We drive the handler directly (it's exported) using a tiny mock req that
+// extends EventEmitter — same shape as Node's IncomingMessage for the bits
+// the handler reads.
+
+/** Minimal IncomingMessage-shaped mock with controllable body chunks. */
+function makeMockReq(headers: Record<string, string>, body: Buffer): EventEmitter & {
+  headers: Record<string, string>;
+} {
+  const req = new EventEmitter() as EventEmitter & { headers: Record<string, string> };
+  req.headers = headers;
+  // Defer emission so the handler has a chance to attach listeners.
+  setImmediate(() => {
+    req.emit("data", body);
+    req.emit("end");
+  });
+  return req;
+}
+
+/** Mock ServerResponse — captures statusCode + body + headers. */
+interface MockRes {
+  statusCode: number;
+  headers: Record<string, string>;
+  body: string;
+  setHeader(name: string, value: string): void;
+  end(body?: string): void;
+  ended: Promise<void>;
+}
+
+function makeMockRes(): MockRes {
+  let resolveEnded!: () => void;
+  const ended = new Promise<void>((r) => { resolveEnded = r; });
+  return {
+    statusCode: 200,
+    headers: {},
+    body: "",
+    setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+    end(body?: string) {
+      if (body !== undefined) this.body = body;
+      resolveEnded();
+    },
+    ended,
+  };
+}
+
+/** Wait one task tick — composeImageProject's promise chain resolves async. */
+async function flushAsync(): Promise<void> {
+  // Two ticks: setImmediate + composeImageProject resolution + .then().
+  for (let i = 0; i < 5; i++) {
+    await new Promise<void>((r) => setImmediate(r));
+  }
+}
+
+describe("handleMediaIngestRequest — kind-aware dispatch", () => {
+  let workspaceDir: string;
+
+  beforeEach(() => {
+    workspaceDir = mkdtempSync(join(tmpdir(), "atelier-ingest-dispatch-"));
+    writeFileSync(join(workspaceDir, "workspace.atelier"),
+      `version: '1.0'\nname: testws\ncreated: '2026-01-01T00:00:00.000Z'\ndefault_mode: explicit\n`);
+  });
+
+  afterEach(() => {
+    rmSync(workspaceDir, { recursive: true, force: true });
+  });
+
+  it("fresh project + image drag → scaffolds kind:'image' with an ImageVisual layer", async () => {
+    // No project dir exists yet — the handler must create it from scratch.
+    const projectName = "demo-img";
+    const fakePng = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const req = makeMockReq(
+      {
+        "x-atelier-project": projectName,
+        "x-atelier-filename": "photo.png",
+      },
+      fakePng,
+    );
+    const res = makeMockRes();
+    // Cast: our EventEmitter mock satisfies the bits handleMediaIngestRequest
+    // actually reads (headers + 'data' / 'end' / 'error' events).
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    const projectDir = join(workspaceDir, projectName);
+    const compositionPath = join(projectDir, "project.atelier");
+    expect(existsSync(compositionPath)).toBe(true);
+
+    const doc = JSON.parse(readFileSync(compositionPath, "utf-8")) as AtelierDocument;
+    expect(doc.kind).toBe("image");
+
+    const imageLayers = doc.layers.filter((l) => l.visual.type === "image");
+    expect(imageLayers.length).toBe(1);
+    expect((imageLayers[0]!.visual as { src?: string }).src).toBe("media/photo.png");
+
+    // The dropped file is preserved at media/photo.png.
+    expect(existsSync(join(projectDir, "media", "photo.png"))).toBe(true);
+
+    // Response shape — handler writes ok:true + kind:"image".
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body) as { ok: boolean; kind: string; addedImageLayer: boolean };
+    expect(body.ok).toBe(true);
+    expect(body.kind).toBe("image");
+    expect(body.addedImageLayer).toBe(true);
+  });
+
+  it("image-into-video-project rejects with 400, error message, and removes the uploaded file", async () => {
+    // Seed an EXISTING kind:"video" project — image drag must be refused.
+    const projectName = "demo-vid";
+    const projectDir = join(workspaceDir, projectName);
+    mkdirSync(projectDir, { recursive: true });
+    const videoDoc: AtelierDocument = {
+      version: "1.0",
+      name: projectName,
+      kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [],
+      states: { default: { duration: 0, deltas: [] } },
+    };
+    writeFileSync(join(projectDir, "project.atelier"), JSON.stringify(videoDoc, null, 2));
+
+    const fakePng = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+    const req = makeMockReq(
+      {
+        "x-atelier-project": projectName,
+        "x-atelier-filename": "intruder.png",
+      },
+      fakePng,
+    );
+    const res = makeMockRes();
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    // Status + body.
+    expect(res.statusCode).toBe(400);
+    const body = JSON.parse(res.body) as { ok: boolean; error: string };
+    expect(body.ok).toBe(false);
+    expect(typeof body.error).toBe("string");
+    expect(body.error.length).toBeGreaterThan(0);
+
+    // Critical invariant: the uploaded file must NOT linger in media/.
+    const uploadedPath = join(projectDir, "media", "intruder.png");
+    expect(existsSync(uploadedPath)).toBe(false);
+
+    // The pre-existing project.atelier must be untouched — no spurious layer.
+    const persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
+    expect(persisted.kind).toBe("video");
+    expect(persisted.layers.length).toBe(0);
   });
 });
 

@@ -126,3 +126,28 @@ export {
   RECIPE_VERSION,
 } from "./lib/recipe.js";
 export type { LoadedRecipe } from "./lib/recipe.js";
+
+// Compose pipelines — kind:"video" / kind:"image" / kind:"carousel" project ingest.
+export {
+  composeVideoProject,
+  type ComposeVideoProjectOptions,
+  type ComposeVideoProjectResult,
+} from "./lib/compose-video-project.js";
+export {
+  composeImageProject,
+  type ComposeImageProjectOptions,
+  type ComposeImageProjectResult,
+} from "./lib/compose-image-project.js";
+export {
+  composeCarouselProject,
+  type ComposeCarouselProjectOptions,
+  type ComposeCarouselProjectResult,
+} from "./lib/compose-carousel-project.js";
+
+// Drag-drop ingest dispatcher (B3) — classify file + route to a composer.
+export {
+  classifyMediaFile,
+  routeIngest,
+  type IngestKind,
+  type IngestRoute,
+} from "./lib/ingest-dispatch.js";

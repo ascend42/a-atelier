@@ -30,29 +30,31 @@
 //     Other clips' caption layers + their deltas pass through untouched.
 //   - Layers tagged "track" / "video" track group are lazy-created and reused.
 //   - All other user-authored layers/deltas are preserved.
+//
+// The pure helpers (ensureClipLayer, ensureTrackLayer, endOfTrackFrame,
+// recomputeTimeline, stripStaleCaptionArtifacts, rebuildClipCaptions) live in
+// #timeline-ops so the MCP per-clip surfaces (atelier_transcribe_clip, etc.)
+// can reuse them without dragging the fs / probe wiring of composeVideoProject.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 import type {
   AtelierDocument,
-  Asset,
-  Delta,
-  Layer,
   State,
-  Timeline,
-  TimelineClip,
-  TimelineTrack,
   VideoTranscript,
-  VideoVisual,
 } from "@a-company/atelier-types";
 import { parseAtelier } from "@a-company/atelier-schema";
 import { transcribeProject, type TranscribeOptions, type TranscribeResult } from "../commands/transcribe.js";
 import { transcribeMediaFile } from "./transcribe-orchestrator.js";
 import { probeDuration } from "./silence-detect.js";
-import { buildCaptionLayers, type BuildCaptionsOptions } from "./caption-builder.js";
-
-/** Stable id for the lazily-created primary video track group layer. */
-const VIDEO_TRACK_ID = "track-video-1";
+import { type BuildCaptionsOptions } from "./caption-builder.js";
+import {
+  VIDEO_TRACK_ID,
+  ensureClipLayer as ensureClipLayerOp,
+  recomputeTimeline,
+  stripStaleCaptionArtifacts,
+  rebuildClipCaptions,
+} from "./timeline-ops.js";
 
 /**
  * Read project.atelier handling both JSON and YAML on-disk formats — the
@@ -61,7 +63,7 @@ const VIDEO_TRACK_ID = "track-video-1";
  * yields a schema error so the caller's catch can still surface a useful
  * message for malformed docs.
  */
-function readAtelierDoc(absPath: string): AtelierDocument {
+export function readAtelierDoc(absPath: string): AtelierDocument {
   const raw = readFileSync(absPath, "utf-8");
   const parsed = parseAtelier(raw);
   if (parsed.success) return parsed.data as AtelierDocument;
@@ -244,11 +246,13 @@ export async function composeVideoProject(
   const fps = doc.canvas.fps;
   const clipDurationFrames = Math.max(1, Math.round(clipDurationSeconds * fps));
 
-  const { doc: docWithClip, addedVideoLayer } = ensureClipLayer(doc, {
+  const { doc: docWithClip, addedLayer } = ensureClipLayerOp(doc, {
     clipLayerId,
+    trackId: VIDEO_TRACK_ID,
     sourceName: sourceBasename,
     clipDurationSeconds,
     clipDurationFrames,
+    kind: "video",
   });
   doc = docWithClip;
 
@@ -256,48 +260,15 @@ export async function composeVideoProject(
   //    clip layer. `buildCaptionLayers` emits clip-LOCAL frame ranges (since
   //    transcript times are relative to the source = 0); the renderer's
   //    parent-aware clip-local-time pass shifts them into composition frames
-  //    at render-time. We just rename ids + set parentId.
+  //    at render-time. The helper renames ids + sets parentId.
   if (transcribeResult?.transcript) {
-    const built = buildCaptionLayers(
+    doc = rebuildClipCaptions(
+      doc,
+      clipLayerId,
       transcribeResult.transcript,
       doc.canvas,
       opts.captionOptions ?? {},
     );
-    const idMap = new Map<string, string>();
-    const renamedLayers: Layer[] = built.layers.map((layer, idx) => {
-      const newId = `cap-${clipSlug}-${idx}`;
-      idMap.set(layer.id, newId);
-      return { ...layer, id: newId, parentId: clipLayerId };
-    });
-    const renamedDeltas: Delta[] = built.deltas.map((d) => ({
-      ...d,
-      layer: idMap.get(d.layer) ?? d.layer,
-    }));
-
-    doc = {
-      ...doc,
-      layers: [...doc.layers, ...renamedLayers],
-    };
-
-    // Land caption deltas in the target state.
-    const stateNames = Object.keys(doc.states);
-    const captionStateName = stateNames.includes("default")
-      ? "default"
-      : (stateNames[0] ?? "default");
-    const captionStates = { ...doc.states };
-    const existingCap = captionStates[captionStateName];
-    if (existingCap) {
-      captionStates[captionStateName] = {
-        ...existingCap,
-        deltas: [...existingCap.deltas, ...renamedDeltas],
-      };
-    } else {
-      captionStates[captionStateName] = {
-        duration: 0,
-        deltas: renamedDeltas,
-      };
-    }
-    doc = { ...doc, states: captionStates };
   }
 
   // 6. Recompute the derived `timeline` summary block from current clip layers.
@@ -324,7 +295,7 @@ export async function composeVideoProject(
 
   return {
     doc,
-    addedVideoLayer,
+    addedVideoLayer: addedLayer,
     clipSlug,
     clipLayerId,
     targetStateName,
@@ -332,201 +303,6 @@ export async function composeVideoProject(
     ...(transcribeResult !== undefined ? { transcribe: transcribeResult } : {}),
     ...(mirroredTranscriptPath !== undefined ? { mirroredTranscriptPath } : {}),
   };
-}
-
-/**
- * Strip caption-layer + delta artifacts that conflict with the per-clip
- * rebuild incoming. Drops:
- *   - Unparented `caption-N` (legacy rewriteCaptionLayers byproduct)
- *   - `cap-<clipSlug>-*` (this clip's prior captions, about to be rebuilt)
- * Preserves every caption layer parented to ANOTHER clip.
- */
-function stripStaleCaptionArtifacts(
-  doc: AtelierDocument,
-  thisClipLayerId: string,
-): AtelierDocument {
-  const droppedIds = new Set<string>();
-  const keptLayers = doc.layers.filter((layer) => {
-    if (!(layer.tags ?? []).includes("caption")) return true;
-    // Unparented caption layer — legacy artifact, drop.
-    if (!layer.parentId) {
-      droppedIds.add(layer.id);
-      return false;
-    }
-    // Caption belonging to THIS clip — drop, will be rebuilt.
-    if (layer.parentId === thisClipLayerId) {
-      droppedIds.add(layer.id);
-      return false;
-    }
-    // Belongs to another clip — preserve.
-    return true;
-  });
-
-  if (droppedIds.size === 0) return doc;
-
-  const states: Record<string, State> = {};
-  for (const [name, st] of Object.entries(doc.states)) {
-    states[name] = {
-      ...st,
-      deltas: st.deltas.filter((d) => !droppedIds.has(d.layer)),
-    };
-  }
-  return { ...doc, layers: keptLayers, states };
-}
-
-interface EnsureClipArgs {
-  clipLayerId: string;
-  sourceName: string;
-  clipDurationSeconds: number;
-  clipDurationFrames: number;
-}
-
-/**
- * Idempotent clip-layer placement.
- *
- * - If `clip-<slug>` already exists (re-ingest of the same src): leave it
- *   untouched (preserves user trim) and return `addedVideoLayer: false`.
- * - Otherwise: lazy-create the `track-video-1` Group if missing, then append
- *   a new `VideoVisual` clip layer parented to the track at the end-of-track
- *   startFrame.
- */
-export function ensureClipLayer(
-  doc: AtelierDocument,
-  args: EnsureClipArgs,
-): { doc: AtelierDocument; addedVideoLayer: boolean } {
-  const existingClip = doc.layers.find((l) => l.id === args.clipLayerId);
-  if (existingClip) {
-    return { doc, addedVideoLayer: false };
-  }
-
-  // Lazy-create the video track group.
-  let workingLayers = doc.layers;
-  const hasTrack = workingLayers.some((l) => l.id === VIDEO_TRACK_ID);
-  if (!hasTrack) {
-    const trackLayer: Layer = {
-      id: VIDEO_TRACK_ID,
-      tags: ["track", "video"],
-      description: "Video track 1",
-      visual: { type: "group" },
-      frame: { x: 0, y: 0 },
-      bounds: { width: doc.canvas.width, height: doc.canvas.height },
-    };
-    workingLayers = [trackLayer, ...workingLayers];
-  }
-
-  // Compute end-of-track startFrame for the new clip.
-  const startFrame = endOfTrackFrame(workingLayers, VIDEO_TRACK_ID, doc.canvas.fps);
-
-  // Register an asset entry keyed by the layer id (one-to-one — eliminates
-  // orphan-asset accumulation).
-  const newAsset: Asset = {
-    type: "video",
-    src: args.sourceName,
-    description: `Source: ${args.sourceName}`,
-  };
-  const assets: Record<string, Asset> = {
-    ...(doc.assets ?? {}),
-    [args.clipLayerId]: newAsset,
-  };
-
-  const visual: VideoVisual = {
-    type: "video",
-    assetId: args.clipLayerId,
-    src: args.sourceName,
-    startFrame,
-    sourceOffset: 0,
-    sourceEnd: args.clipDurationSeconds,
-    playbackRate: 1.0,
-    objectFit: "contain",
-  };
-
-  const newClip: Layer = {
-    id: args.clipLayerId,
-    parentId: VIDEO_TRACK_ID,
-    visual,
-    frame: { x: 0, y: 0 },
-    bounds: { width: doc.canvas.width, height: doc.canvas.height },
-  };
-
-  return {
-    doc: {
-      ...doc,
-      assets,
-      layers: [...workingLayers, newClip],
-    },
-    addedVideoLayer: true,
-  };
-}
-
-/**
- * Find the highest endFrame across all VideoVisual clip layers parented to
- * the given track. Returns 0 when the track has no clips yet. Clip duration
- * is derived from `(sourceEnd - sourceOffset) * fps` (seconds → frames).
- */
-function endOfTrackFrame(layers: Layer[], trackId: string, fps: number): number {
-  let maxEnd = 0;
-  for (const layer of layers) {
-    if (layer.parentId !== trackId) continue;
-    const v = layer.visual;
-    if (v.type !== "video") continue;
-    const start = v.startFrame ?? 0;
-    const offset = v.sourceOffset ?? 0;
-    const end = v.sourceEnd;
-    if (end === undefined) continue;
-    const durFrames = Math.max(0, Math.round((end - offset) * fps));
-    const layerEnd = start + durFrames;
-    if (layerEnd > maxEnd) maxEnd = layerEnd;
-  }
-  return maxEnd;
-}
-
-/** Build the derived `timeline` summary block from the current clip layers. */
-function recomputeTimeline(doc: AtelierDocument): AtelierDocument {
-  const fps = doc.canvas.fps;
-  const clipLayers = doc.layers
-    .filter((l) => l.parentId === VIDEO_TRACK_ID && l.visual.type === "video")
-    .map((l) => ({ layer: l, visual: l.visual as VideoVisual }));
-
-  // Only attach a `timeline` block when there's at least one track-parented
-  // clip — keeps legacy single-source projects unchanged.
-  const hasTrack = doc.layers.some((l) => l.id === VIDEO_TRACK_ID);
-  if (!hasTrack || clipLayers.length === 0) {
-    // Strip any stale timeline so we don't leave a misleading summary.
-    if (doc.timeline === undefined) return doc;
-    const { timeline: _omit, ...rest } = doc;
-    void _omit;
-    return rest as AtelierDocument;
-  }
-
-  const clips: TimelineClip[] = clipLayers
-    .map(({ layer, visual }) => {
-      const start = visual.startFrame ?? 0;
-      const offset = visual.sourceOffset ?? 0;
-      const end = visual.sourceEnd ?? offset;
-      const durFrames = Math.max(0, Math.round((end - offset) * fps));
-      return {
-        layerId: layer.id,
-        startFrame: start,
-        endFrame: start + durFrames,
-        source: visual.src ?? "",
-      } satisfies TimelineClip;
-    })
-    .sort((a, b) => a.startFrame - b.startFrame);
-
-  const totalFrames = clips.reduce((m, c) => Math.max(m, c.endFrame), 0);
-
-  const track: TimelineTrack = {
-    id: VIDEO_TRACK_ID,
-    kind: "video",
-    clips,
-  };
-  const timeline: Timeline = {
-    fps,
-    totalFrames,
-    tracks: [track],
-  };
-
-  return { ...doc, timeline };
 }
 
 /**
@@ -555,7 +331,8 @@ function canonicalSourceName(sourceFile: string, projectDir: string): string {
 /**
  * Backwards-compatible `ensureVideoLayer(doc, sourceName)` — kept for the
  * existing tests and any other call-sites. Internally delegates to
- * `ensureClipLayer` so the new multi-clip + parented structure is produced.
+ * `ensureClipLayer` (timeline-ops) with kind:"video" so the new multi-clip +
+ * parented structure is produced.
  *
  * Note: this signature can't compute a frame-accurate `sourceEnd` (no probe
  * available), so the produced clip has `sourceEnd: undefined` and the
@@ -587,12 +364,33 @@ export function ensureVideoLayer(
   });
   if (alreadyReferenced) return { doc, addedVideoLayer: false };
 
-  return ensureClipLayer(doc, {
+  const { doc: out, addedLayer } = ensureClipLayerOp(doc, {
     clipLayerId,
+    trackId: VIDEO_TRACK_ID,
     sourceName,
     clipDurationSeconds: 0,
     clipDurationFrames: 0,
+    kind: "video",
   });
+  // Match the legacy shape — produce a clip with sourceEnd:undefined so
+  // existing tests that don't pre-set a duration keep their semantics.
+  // (ensureClipLayerOp sets sourceEnd to clipDurationSeconds (0); for the
+  // legacy contract that field was undefined. Patch the new clip if we just
+  // added it.)
+  if (addedLayer) {
+    const patchedLayers = out.layers.map((l) => {
+      if (l.id !== clipLayerId) return l;
+      if (l.visual.type !== "video") return l;
+      const { sourceEnd: _drop, ...visualRest } = l.visual;
+      void _drop;
+      return { ...l, visual: { ...visualRest } };
+    });
+    return {
+      doc: { ...out, layers: patchedLayers },
+      addedVideoLayer: addedLayer,
+    };
+  }
+  return { doc: out, addedVideoLayer: addedLayer };
 }
 
 /** Last word end time across all segments, or undefined when no words. */

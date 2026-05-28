@@ -40,4 +40,19 @@ gates:
     type: validation
     location: packages/mcp/src/tools/mind-map.ts
     prizes: []
+  carousel-cycle-safe:
+    description: Adding a SlideRef to a carousel project MUST NOT create a cycle (direct self-ref or transitive ref back to the carousel). Enforced by detectCarouselCycle in #ref-cycle. Depth-limited (64 hops) defends against pathological graphs.
+    type: validation
+    location: packages/cli/src/lib/ref-cycle.ts
+    prizes: []
+  valid-media-basename:
+    description: Media basenames passed to rename-media must not contain path separators (/, \), parent-dir refs (..), leading dot (hidden files), control bytes (NUL through 0x1f), or be empty/whitespace. Enforced at both HTTP layer (studio.ts) and the rename-media core fn for defense-in-depth.
+    type: security
+    location: packages/cli/src/lib/rename-media.ts
+    prizes: []
+  workspace-scoped-project-dir:
+    description: atelier_rename_media MCP tool requires the supplied projectDir to resolve inside workspaceDir (defaults to process.cwd()). Prevents agents (including via prompt injection) from renaming media in arbitrary directories on the host fs. Workspace scoping check runs before any fs op.
+    type: security
+    location: packages/mcp/src/tools/rename-media.ts
+    prizes: []
 routes: {}

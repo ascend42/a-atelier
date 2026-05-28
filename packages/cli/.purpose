@@ -146,6 +146,77 @@ components:
     description: 'Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.'
     file: src/lib/recipe.ts
     tags: [video, recipe, studio-recipe, pure]
+  '#timeline-ops':
+    description: 'Pure helpers over an AtelierDocument''s track + clip layers, extracted from #compose-video-project and generalized for audio tracks. Exports VIDEO_TRACK_ID / AUDIO_TRACK_ID constants; endOfTrackFrame (max(startFrame+durationFrames) across track children, video OR audio); ensureTrackLayer (lazy-creates a Group layer tagged ["track", kind]); ensureClipLayer (idempotent VideoVisual or AudioVisual placement — kind:"video" → bounds=canvas, objectFit:"contain", playbackRate:1; kind:"audio" → bounds 0×0, no playbackRate default, asset type:"audio"; both register an asset entry keyed by layer id one-to-one); recomputeTimeline (walks every Group layer tagged "track", emits one TimelineTrack per group with kind read from tags, filters children to match the track kind so cross-kind layers are skipped, strips a stale timeline when no track groups exist for byte-stability with legacy single-source projects); rebuildClipCaptions (drops THIS clip''s prior cap-<slug>-* layers + their deltas, builds fresh captions via #caption-builder, renames ids to cap-<slug>-N and parents to clipLayerId, lands deltas in "default" state or first state); stripStaleCaptionArtifacts (drops only the target clip''s captions + unparented legacy captions, preserves other clips'' captions verbatim — the multi-clip preservation invariant). Pure (immutable returns); no fs / no logging side effects. Reused by the MCP per-clip ops surfaces (atelier_transcribe_clip, future audio-track ingest).'
+    file: src/lib/timeline-ops.ts
+    tags: [video, audio, timeline, track, clip, captions, pure]
+  '#ref-cycle':
+    description: 'Carousel + ref-visual cycle detector. detectCarouselCycle(rootPath, candidatePath, workspaceRoot) walks .atelier files via slides[].src AND any RefVisual layer''s src (doc.layers[*].visual where visual.type === "ref"), collecting visited absolute paths; returns { cycle: true, path: [visited chain → duplicate] } when candidatePath transitively refs rootPath (or itself), else { cycle: false }. Depth-limited (MAX_HOPS=64) — returns cycle:false gracefully when the cap is hit, never throws on malformed graphs. Missing slide/ref paths emit a console.warn and skip (non-fatal). Refs resolve relative to dirname(currentDocPath) first, then fall back to workspaceRoot. DAG-tolerant (diamond — two slides pointing at the same .atelier — is NOT a cycle). Uses #atelier-schema''s parseAtelier (YAML + JSON tolerant) with a JSON.parse fallback for legacy docs. Consumed by carousel-add / RefVisual-edit tooling that needs to refuse self-referential graphs before they lock the resolver. Pure — no fs writes, no logging beyond the missing-path warn.'
+    file: src/lib/ref-cycle.ts
+    tags: [carousel, ref, cycle, slides, refvisual, pure]
+  '#compose-image-project':
+    description: 'composeImageProject({ projectDir, sourceFile, mediaBasename? }) — ingest a single image into a kind:"image" Atelier project. Ensures media/ dir, copies the source into media/<basename> (skipped if dest exists), reads or scaffolds project.atelier (kind:"image", canvas 1080×1920@30, states.default = { duration: 1, deltas: [] }), then adds an img-<slug> ImageVisual layer (tags ["image"], description = basename, bounds = canvas, frame {0,0}, src = "media/<basename>") plus a one-to-one asset entry. Single-image invariant (TD-2026-05-27): if the doc already has an img-* ImageVisual layer pointing at a DIFFERENT basename, throws "image project already has an image; rename or delete the existing image before adding another"; idempotent for the same basename (returns addedImageLayer:false). NO transcription, NO timeline block — image projects render as a single frame. Reuses readAtelierDoc + slugifyBasename from #compose-video-project for parity.'
+    file: src/lib/compose-image-project.ts
+    tags: [image, ingest, project, compose, single-image]
+  '#compose-carousel-project':
+    description: 'composeCarouselProject({ projectDir, slidePath, workspaceRoot?, insertAt?, transition?, duration?, label? }) — add a slide ref to a kind:"carousel" Atelier project, cycle-safe. Reads or scaffolds project.atelier (kind:"carousel", canvas 1080×1920@30, slides:[]); refuses if existing doc has kind:"video" (throws "project is not a carousel; cannot add slides"). Resolves workspaceRoot to dirname(projectDir) by default, then runs #ref-cycle detectCarouselCycle(projectDir/project.atelier, slidePath, workspaceRoot) BEFORE writing — throws "carousel cycle detected: A → B → C → A" when self/transitive cycle found. Computes src as relative(workspaceRoot, slidePath); idempotent on duplicate src (returns addedSlide:false with the existing slideIndex). Default insert = append; insertAt clamps into [0, slides.length]. NO layers added, NO transcription — the carousel doc is a pure manifest. Reuses readAtelierDoc from #compose-video-project.'
+    file: src/lib/compose-carousel-project.ts
+    tags: [carousel, ingest, project, compose, slides, cycle-safe]
+  '#ingest-dispatch':
+    description: 'Drag-drop ingest dispatcher (slice B3). classifyMediaFile(filename) → "video" | "image" | "audio" | "unsupported" via case-insensitive extname lookup (video: .mp4 .mov .webm .mkv .avi; image: .png .jpg .jpeg .webp .gif; audio: .mp3 .wav .m4a .aac .flac .ogg). routeIngest(filename, projectKind|undefined) → { kind, target, error? } with target ∈ { compose-video, compose-image, add-audio-clip, reject }; encodes the full 12-cell routing matrix: video→video/undef = compose-video; image→undef = compose-image; audio→video = add-audio-clip; everything else rejects with an explanatory error string. `projectKind === undefined` means "no project.atelier exists yet — scaffold fresh"; only video+undef and image+undef are valid scaffold-on-ingest paths (audio cannot establish a project on its own). Pure / synchronous / no fs — wired from #cli-studio handleMediaIngestRequest after the upload is written to media/<basename>. On reject, the studio handler unlinks the just-uploaded file before responding 400 so media/ never accumulates orphans.'
+    file: src/lib/ingest-dispatch.ts
+    tags: [ingest, dispatch, drag-drop, studio, routing, pure]
+  # ── v1.0 rename cascade (Slice C) ──────
+  '#rename-media':
+    description: 'renameMedia({ projectDir, oldBasename, newBasename, dryRun? }) — atomic two-phase media-file rename cascade. One creator-visible op, multiple effects: (1) media/<old> → media/<new>; (2) transcripts/<oldStem>.json → transcripts/<newStem>.json when present; (3) project.atelier rewrites — assets[key].src (keys preserved per TD-2026-05-27 stable-provenance), layers[*].visual.src (video/audio/image), timeline.tracks[*].clips[*].source via recomputeTimeline; (4) DESIGN.md / SCRIPT.md / STORYBOARD.md substring scan returns warnings (NOT rewritten — v1 warn-only). Phase 1 stages everything in memory (load doc → applyMediaRenameToDoc walk → recomputeTimeline → scanArtifactsForOldBasename); Phase 2 writes (media rename → transcript rename → doc write) with best-effort reverse rollback on any mid-op failure so the project never lands half-renamed. Same-name → no-op short-circuit; missing media/ dir / missing source / pre-existing destination all throw BEFORE any disk write. dryRun returns the would-change lists with every boolean false. Exports `isValidMediaBasenameForRename(name)` as the basename guard used by the studio HTTP layer and the MCP wrapper — rejects empty, leading/trailing whitespace, path separators (/, \), ".", "..", leading dot, and ASCII control chars (0x00-0x1F).'
+    file: src/lib/rename-media.ts
+    gates: ['^valid-media-basename']
+    tags: [rename, media, cascade, atomic, rollback, v1]
+  '#studio-rename-endpoint':
+    description: 'POST /api/media/rename — HTTP endpoint exposing the rename cascade to the studio drag/rename surface. handleMediaRenameRequest(cwd, projectName, rawBody) parses the JSON body { oldBasename, newBasename, dryRun? }, resolves <cwd>/<projectName> as the project dir, runs `isValidMediaBasenameForRename` on both basenames (path-traversal defense — the rename joins straight into media/<basename>), and delegates to #rename-media renameMedia. Wired into the dev server alongside /api/media/ingest (same family), gated by the same ^localhost-only Origin check that protects every mutating /api/* route. Returns the RenameMediaResult (or { error } on validation/cascade failure) as JSON. Surfaced from the Aegis audit pass and registered explicitly so the security boundary is documented at the symbol level.'
+    file: src/commands/studio.ts
+    gates: ['^localhost-only', '^valid-media-basename']
+    tags: [rename, media, studio, http, security, v1]
+flows:
+  $media-ingest-flow:
+    description: 'Drag-drop in the studio → file lands in media/ via /api/media/ingest → #ingest-dispatch classifyMediaFile derives kind (video / image / audio / unsupported) → routeIngest pairs (file-kind, project-kind|undefined) into the 12-cell matrix → dispatcher routes to the right composer or rejects + unlinks the upload. Scaffold-on-ingest is permitted only for video+undef and image+undef; audio cannot establish a project on its own. Spans the studio HTTP handler, #ingest-dispatch, and one of the three composers depending on the route.'
+    steps:
+      - component: '#cli-studio'
+        action: receive POST /api/media/ingest, stream upload into media/<basename>
+      - component: '#ingest-dispatch'
+        action: classifyMediaFile + routeIngest (file-kind, project-kind|undefined)
+      - component: '#compose-video-project'
+        action: ingest video into video project (compose-video target)
+      - component: '#compose-image-project'
+        action: ingest single image into image project (compose-image target)
+      - component: '#timeline-ops'
+        action: add-audio-clip target — register audio clip on audio track
+      - component: '#cli-studio'
+        action: on reject, unlink the just-uploaded file and respond 400
+    tags: [ingest, drag-drop, studio, dispatch, v1]
+  $rename-cascade-flow:
+    description: 'One rename op cascades through media/, transcripts/, and project.atelier (assets, layers, timeline). Phase 1 stages every change in memory (load doc → apply rename walk → recompute timeline → scan artifacts for warnings) without touching disk. Phase 2 writes in order: media file → transcript (if present) → doc; on any mid-step failure the prior writes are reverse-rolled-back best-effort before the original error is rethrown. Triggered from either the studio HTTP endpoint or the MCP tool wrapper; both gate on ^valid-media-basename before entry, and both join straight into <projectDir>/media/<basename> so the basename guard is load-bearing.'
+    steps:
+      - component: '#studio-rename-endpoint'
+        action: validate basenames (^valid-media-basename), parse JSON body
+      - component: '#rename-media'
+        action: Phase 1 — load doc, applyMediaRenameToDoc, recomputeTimeline, scan artifacts
+      - component: '#rename-media'
+        action: Phase 2 — rename media file
+      - component: '#rename-media'
+        action: Phase 2 — rename transcript if present (rollback media on failure)
+      - component: '#rename-media'
+        action: Phase 2 — write project.atelier (rollback transcript + media on failure)
+    tags: [rename, media, cascade, atomic, v1]
+gates:
+  ^carousel-cycle-safe:
+    description: 'A carousel slide ref (or RefVisual src) must not create a cycle back to its own document — direct or transitive. Enforced by detectCarouselCycle in #ref-cycle, which walks slides[].src AND RefVisual src layers, tracks visited absolute paths, is depth-limited at MAX_HOPS=64, and is DAG-tolerant (diamonds OK, cycles refused). compose-carousel-project calls this BEFORE writing any slide ref.'
+    enforcement: detectCarouselCycle visited-set walk, depth-cap 64
+    appliesTo: ["#ref-cycle", "#compose-carousel-project"]
+  ^valid-media-basename:
+    description: 'Media basenames passed to the rename cascade must not contain path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), or be empty / whitespace-only. Enforced by isValidMediaBasenameForRename in #rename-media. Required because the cascade joins straight into <projectDir>/media/<basename> with no further sanitization — the basename guard IS the path-traversal defense.'
+    enforcement: isValidMediaBasenameForRename guard at every external entry point (studio HTTP, MCP tool)
+    appliesTo: ["#rename-media", "#studio-rename-endpoint", "mcp-tool-rename-media"]
 aspects:
   lint-gate-cascade-short-circuit:
     description: 'lintFile runs three gates in order, but a failed ^valid-document aborts the rest with an early return — ^valid-delta and ^valid-video-layer cannot run on an unparseable document, so a parse failure reports exactly one gate, not three. ^valid-video-layer only inspects layers whose visual.type is "video".'
@@ -894,3 +965,75 @@ aspects:
       - packages/cli/src/lib/recipe.ts:249-280
     enforcement: defaults-first spread, recipe overrides
     appliesTo: ["#recipe-lib"]
+  # ── v1.0 bundle aspects ──────
+  cycle-safe-resolution:
+    description: 'ALL .atelier ref walks (slides[].src on carousels, RefVisual src layers) MUST track visited absolute paths in a Set and refuse to recurse into a path already seen — otherwise a self/transitive ref locks the resolver. detectCarouselCycle owns the canonical implementation: visited-set keyed by absolute path, DAG-tolerant (diamond — two slides pointing at the same .atelier — is NOT a cycle), depth-limited at MAX_HOPS=64 (returns cycle:false gracefully when the cap is hit, never throws on malformed graphs). Missing slide/ref paths emit a console.warn and skip (non-fatal). New ref-walking code MUST share this discipline.'
+    tags:
+      - carousel
+      - ref
+      - cycle
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/ref-cycle.ts:77-95
+      - packages/cli/src/lib/ref-cycle.ts:33
+    enforcement: visited-Set walk, depth cap 64, refuse on duplicate
+    appliesTo: ["#ref-cycle", "#compose-carousel-project"]
+  image-kind-single-image:
+    description: 'A kind:"image" project holds EXACTLY ONE image — multi-image is kind:"carousel". composeImageProject refuses a second image with "image project already has an image; rename or delete the existing image before adding another" when the doc already carries an img-* ImageVisual layer pointing at a DIFFERENT basename; same-basename re-add is idempotent (addedImageLayer:false). The decision is intentional: image projects render as a single frame with NO transcription and NO timeline block, so they''re a degenerate composition; a creator who wants two images uses a carousel.'
+    tags:
+      - image
+      - kind
+      - invariant
+      - v1
+    anchors:
+      - packages/cli/src/lib/compose-image-project.ts:108
+    enforcement: refuse second image with different basename, idempotent on same
+    appliesTo: ["#compose-image-project"]
+  slide-ref-no-ownership:
+    description: 'Carousel slides do NOT own their referenced docs — a slide.src may point to any .atelier in the workspace (canonical project.atelier files, free-standing slide-N.atelier files, image projects, or even other carousel projects). There is no "slides/" subdirectory convention. The carousel is a MANIFEST, not a container. Tooling that walks slides[].src must therefore (a) treat refs as arbitrary workspace paths, (b) cycle-protect via ~cycle-safe-resolution, and (c) never assume the slide doc lives under the carousel project dir.'
+    tags:
+      - carousel
+      - slides
+      - ownership
+      - core-invariant
+    anchors:
+      - packages/types/src/slides.ts:2-13
+    enforcement: type-level documentation + cycle-safe resolution at every walk
+    appliesTo: ["#compose-carousel-project", "#ref-cycle"]
+  rename-atomicity:
+    description: 'renameMedia is two-phase with best-effort rollback. Phase 1 stages every change in memory (load doc → applyMediaRenameToDoc walk → recomputeTimeline → scanArtifactsForOldBasename) and never touches disk. Phase 2 writes in order: (a) media rename → (b) transcript rename if present → (c) doc write. On any mid-step failure the prior writes are reverse-rolled-back best-effort BEFORE the original error is rethrown — each rollback runs in its own try/catch so a rollback failure cannot swallow the original error (it logs CRITICAL via console.error). Pre-flight checks (no media/ dir, missing source, pre-existing destination, missing project.atelier) throw BEFORE any disk write so a half-renamed state is impossible from validation alone.'
+    tags:
+      - rename
+      - atomic
+      - rollback
+      - core-invariant
+      - v1
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:290-350
+      - packages/cli/src/lib/rename-media.ts:225-265
+    enforcement: stage-in-memory then ordered writes with reverse rollback
+    appliesTo: ["#rename-media"]
+  rename-not-concurrent-safe:
+    description: 'renameMedia has NO concurrency guard today: two concurrent calls against the same projectDir can interleave their Phase 2 writes (media rename vs transcript rename vs doc write) and produce inconsistent on-disk state — the rollback paths assume single-writer semantics. Callers MUST serialize rename ops per project at the caller layer (studio HTTP queue, MCP server single-thread). A future Kit pass is expected to add a per-project mutex inside the lib and reframe this aspect as ~rename-per-project-serialized.'
+    tags:
+      - rename
+      - concurrency
+      - gotcha
+      - cautionary
+      - v1
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:225-360
+    enforcement: caller-side serialization (no lib-level lock yet)
+    appliesTo: ["#rename-media"]
+  rename-symlink-passthrough:
+    description: 'renameSync (node:fs) does NOT follow symlinks: if media/<oldBasename> is a symlink, renameSync renames the link itself, NOT its target. This is the intended behavior — the rename cascade is operating on the project''s view of media/, not the underlying file an admin may have symlinked in. Asset/visual.src rewrites happen at the doc layer regardless. Document, do not "fix".'
+    tags:
+      - rename
+      - symlink
+      - convention
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:294
+      - packages/cli/src/lib/rename-media.ts:306
+    enforcement: renameSync semantics — rename the link, not the target
+    appliesTo: ["#rename-media"]

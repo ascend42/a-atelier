@@ -62,8 +62,8 @@ aspects:
       - convention
       - composition
     anchors:
-      - packages/schema/src/document.ts:9-11
-      - packages/schema/src/document.ts:24-25
+      - packages/schema/src/document.ts:12-14
+      - packages/schema/src/document.ts:38-39
     enforcement: array vs record + int().positive() bounds
     appliesTo: ["#document-schema"]
   visual-discriminated-union:
@@ -94,8 +94,8 @@ aspects:
       - validation
     anchors:
       - packages/schema/src/layer.ts:15
-      - packages/schema/src/layer.ts:100
-      - packages/schema/src/layer.ts:108-111
+      - packages/schema/src/layer.ts:115
+      - packages/schema/src/layer.ts:123-126
     enforcement: min/max clamp + min(1) non-empty
     appliesTo: ["#layer-schema"]
   animatable-property-canonical-enum:

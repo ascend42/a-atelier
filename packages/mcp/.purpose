@@ -1,5 +1,5 @@
 version: 1.0.0
-description: MCP server — AI authoring interface for Atelier animations with 62 tools
+description: MCP server — AI authoring interface for Atelier animations with 70 tools
 context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
@@ -73,6 +73,53 @@ components:
     file: src/tools/mind-map.ts
     gates:
       - ^valid-mind-map-query
+  # ── v1.0 clip tools (Slice A) ──────
+  mcp-tool-add-clip:
+    description: atelier_add_clip — register a media source as a clip layer on a video or audio track via disk round-trip. Probes duration through an injectable probeDurationFn, derives a slug-based id (clip-<slug> or aud-<slug>), lazy-creates the track group, and recomputes the derived timeline. Idempotent — re-adding the same source preserves placement and applies only explicit startFrame/sourceOffset/sourceEnd overrides. Writes back to disk + store.set(source="llm").
+    file: src/tools/clips.ts
+  mcp-tool-move-clip:
+    description: atelier_move_clip — shift a clip's composition-frame startFrame. Captions parented to the clip stay aligned (renderer uses clip-local time). Recomputes the timeline summary block. Round-trips through disk.
+    file: src/tools/clips.ts
+  mcp-tool-trim-clip:
+    description: atelier_trim_clip — adjust sourceOffset / sourceEnd (seconds-into-source) on a clip. Captions outside the new effective range are NOT auto-pruned; the renderer skips out-of-range deltas naturally. Requires at least one of the two fields.
+    file: src/tools/clips.ts
+  mcp-tool-remove-clip:
+    description: atelier_remove_clip — drop a clip layer plus all transitively-parented descendants (caption layers, etc.), strip referencing deltas across every state, and remove the matching assets entry. Refuses to remove a track group layer (use atelier_remove_track in a future release).
+    file: src/tools/clips.ts
+  mcp-tool-transcribe-clip:
+    description: atelier_transcribe_clip — (re)build per-clip caption layers as cap-<slug>-N parented to the clip layer. Refuses audio layers (audio captions not supported in v1). Production wiring receives a transcribeFn via __setTranscribeClipFn; tests stub the same hook. Fallback reads an existing transcript at <projectDir>/transcripts/<stem>.json.
+    file: src/tools/clips.ts
+  mcp-tool-move-slide:
+    description: atelier_move_slide — splice-reorder a carousel project's slides[] array. Refuses on non-carousel projects and on out-of-bounds indices. Pure-data mutation, disk-only (no derived re-render).
+    file: src/tools/clips.ts
+  mcp-lib-timeline-ops:
+    description: Local duplication of cli/lib/timeline-ops.ts plus slugifyBasename / buildCaptionLayers / probeDuration. Lives here so the MCP clip tools have access without forming a cli↔mcp cycle. Mirrors the duplication convention used by recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts. MUST be kept in sync with cli/lib/timeline-ops.ts until the planned Unit-0.5 lift into a shared package.
+    file: src/lib/timeline-ops.ts
+  # ── v1.0 rename cascade (Slice C) ──────
+  mcp-tool-rename-media:
+    description: 'atelier_rename_media — MCP wrapper around #rename-media renameMedia with workspace scoping. Validates oldBasename + newBasename via isValidMediaBasenameForRename (rejects separators, "." / "..", leading dot, control chars, empty) — the single line of defense because renameMedia joins straight into <projectDir>/media/<basename> with no further sanitization. Bounds the rename to workspaceDir (defaults to process.cwd()): rejects any projectDir that resolves outside the workspace root via resolve()+prefix check with sep boundary — closes Aegis Finding 1 (TD-2026-05-27). On success and !dryRun, reloads <projectDir>/project.atelier into the DocumentStore via store.set(documentId, parsedDoc, "system") so subsequent tool calls see the post-rename state. Wraps any thrown error in the standard `{ error }` envelope with isError:true. destructiveHint:true.'
+    file: src/tools/rename-media.ts
+    gates: ['^valid-media-basename', '^workspace-scoped-project-dir']
+    signals: ['!media-rename-cascaded']
+    tags: [rename, media, cascade, mcp, security, v1]
+  mcp-lib-rename-media:
+    description: 'Local duplication of cli/lib/rename-media.ts (renameMedia + applyMediaRenameToDoc + scanArtifactsForOldBasename + isValidMediaBasenameForRename). Lives here so the MCP rename tool has access without forming a cli↔mcp dependency cycle. Mirrors the duplication convention established by mcp-lib-timeline-ops / recipes.ts / overlays.ts. Carries a sentinel header comment explaining the dep-cycle constraint and the in-sync-with-cli requirement; the two files MUST be edited together until the planned Unit-0.5 lift into a shared package.'
+    file: src/lib/rename-media.ts
+    tags: [rename, media, lib, duplication, v1]
+signals:
+  '!clip-added-to-track':
+    description: 'Declared signal for the v1.0 clip tools — fires when atelier_add_clip lands a new clip layer onto a video or audio track. NOT yet wired to an emitter; reserved as the ambient WS-bridge layer that will fan out clip additions to attached studio instances in a future pass. Listed here so the symbol registry has the canonical name before the wiring lands.'
+    emittedBy: ["mcp-tool-add-clip"]
+    tags: [clip, timeline, future, ambient, v1]
+  '!media-rename-cascaded':
+    description: 'Emitted by atelier_rename_media after a successful rename cascade (media file + transcript + project.atelier all written, rollback not triggered). Currently informational — the MCP tool already reloads the doc via store.set(source:"system") so subscribers can detect via the !doc-change stream — but declared explicitly so the rename surface has a dedicated symbol for future ambient layers (notifications, undo records, audit trail).'
+    emittedBy: ["mcp-tool-rename-media"]
+    tags: [rename, media, cascade, v1]
+gates:
+  ^workspace-scoped-project-dir:
+    description: 'atelier_rename_media bounds the rename to the workspace root: by default process.cwd() (the MCP server is launched from the workspace), or an explicit `workspaceDir` argument. Any projectDir that resolves outside that root is rejected with `projectDir must be inside workspace <root>` before any cascade work runs. Resolved-prefix containment check with a trailing path separator boundary, so sibling /a/workspace-x does NOT pass for workspace /a/workspace. Closes Aegis Finding 1 (TD-2026-05-27): the MCP tool previously accepted an unconstrained projectDir.'
+    enforcement: resolve()+startsWith(root + sep) containment check
+    appliesTo: ["mcp-tool-rename-media"]
 aspects:
   store-synchronous-registration-order-emit:
     description: 'onChange listeners fire synchronously inside create/set/delete (not on a microtask), in registration order, over a slice() snapshot of the listener array taken at emit time — so a listener that subscribes/unsubscribes mid-emit neither skips nor double-fires its siblings. The unsubscribe closure splices by indexOf, so the same function registered twice only removes one copy.'
@@ -145,9 +192,9 @@ aspects:
       - mutation
       - live-bridge
     anchors:
-      - packages/mcp/src/tools/layers.ts:119
-      - packages/mcp/src/tools/layers.ts:153-171
-      - packages/mcp/src/tools/layers.ts:209
+      - packages/mcp/src/tools/layers.ts:129
+      - packages/mcp/src/tools/layers.ts:163-181
+      - packages/mcp/src/tools/layers.ts:219
     enforcement: direct in-place mutation, no store.set
     appliesTo: ["mcp-layer-tools"]
   layer-reorder-clamps-overshoot:
@@ -157,7 +204,7 @@ aspects:
       - clamp
       - gotcha
     anchors:
-      - packages/mcp/src/tools/layers.ts:263-265
+      - packages/mcp/src/tools/layers.ts:273-275
     enforcement: Math.min clamp to length-1
     appliesTo: ["mcp-layer-tools"]
   layer-parent-existence-not-cycle:
@@ -167,8 +214,8 @@ aspects:
       - validation
       - gotcha
     anchors:
-      - packages/mcp/src/tools/layers.ts:99-101
-      - packages/mcp/src/tools/layers.ts:161-168
+      - packages/mcp/src/tools/layers.ts:109-111
+      - packages/mcp/src/tools/layers.ts:171-178
     enforcement: existence check only, no cycle scan
     appliesTo: ["mcp-layer-tools"]
   shape-visual-type-guard:
@@ -290,7 +337,7 @@ aspects:
       - validation
       - core-invariant
     anchors:
-      - packages/mcp/src/tools/state-config.ts:158-167
+      - packages/mcp/src/tools/state-config.ts:130-139
     enforcement: visited-set walk + reject cycle
     appliesTo: ["mcp-state-config-tools"]
   state-config-transition-self-and-prune:
@@ -300,7 +347,7 @@ aspects:
       - cleanup
       - edge-case
     anchors:
-      - packages/mcp/src/tools/state-config.ts:100-115
+      - packages/mcp/src/tools/state-config.ts:72-87
     enforcement: self-guard + empty-map prune
     appliesTo: ["mcp-state-config-tools"]
   export-defaults-first-state-frame-zero:
@@ -377,8 +424,8 @@ aspects:
       - edge-case
       - introspection
     anchors:
-      - packages/mcp/src/tools/performance.ts:242-253
-      - packages/mcp/src/tools/performance.ts:218-221
+      - packages/mcp/src/tools/performance.ts:243-254
+      - packages/mcp/src/tools/performance.ts:217-220
     enforcement: visited-set bounded chain walk
     appliesTo: ["mcp-performance-tools"]
   overlay-tag-isolation-but-mutates-in-place:
@@ -503,3 +550,16 @@ aspects:
       - packages/mcp/src/tools/mind-map.ts:106-141
     enforcement: walk-on-each-call, depth-capped at 4, no index
     appliesTo: ["mcp-mind-map"]
+  # ── v1.0 bundle aspect ──────
+  mcp-lib-duplication-vs-cli:
+    description: 'Files in packages/mcp/src/lib/ that intentionally duplicate packages/cli/src/lib/ (timeline-ops.ts, rename-media.ts — and historically recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts) carry a sentinel header comment explaining the dep-cycle constraint and the in-sync requirement with the cli twin. The duplication is NOT an oversight: cli depends on mcp (the studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a dependency cycle that breaks the build. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The planned Unit-0.5 lift into a shared @a-company/atelier-ops package is the medium-term exit; until then, the duplication is the convention, not a bug.'
+    tags:
+      - duplication
+      - dep-cycle
+      - convention
+      - core-invariant
+    anchors:
+      - packages/mcp/src/lib/timeline-ops.ts:12
+      - packages/mcp/src/lib/rename-media.ts:11
+    enforcement: sentinel header comment + manual lockstep edit
+    appliesTo: ["mcp-lib-timeline-ops", "mcp-lib-rename-media"]

@@ -48,10 +48,18 @@ components:
     description: Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)
     file: src/shadow.ts
     tags: [types, effects]
-  '#audio-types':
-    description: Audio type — audio track config (src, offset, volume, loop, startFrame)
-    file: src/audio.ts
-    tags: [types, audio]
+  '#timeline-types':
+    description: Timeline, TimelineTrack, TimelineClip — derived clip-placement summary on video projects (writer-regenerated, reader-tolerant hint)
+    file: src/timeline.ts
+    tags: [types, timeline, video, v1]
+  '#slides-types':
+    description: SlideRef, SlideTransition — carousel slide refs pointing at any .atelier in the workspace (cycle-safety is the resolver's responsibility)
+    file: src/slides.ts
+    tags: [types, slides, carousel, v1]
+  '#design-types':
+    description: AtelierDesign, AtelierDesignRelation, DesignTypography, DesignMotion — per-file design block. Self-contained (no auto-cascade); lineage via relatedTo[].
+    file: src/design.ts
+    tags: [types, design, brand, v1]
   '#asset-types':
     description: AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata
     file: src/asset.ts
@@ -167,7 +175,7 @@ aspects:
       - required-field
       - layers
     anchors:
-      - packages/types/src/layer.ts:114-144
+      - packages/types/src/layer.ts:154-184
     enforcement: 0-1 / degrees / factor per field
     appliesTo: ["#layer-types"]
   easing-objects-or-preset-string:
@@ -229,16 +237,17 @@ aspects:
       - packages/types/src/shadow.ts:4-9
     enforcement: required color + blur
     appliesTo: ["#shadow-types"]
-  audio-offset-seconds-startframe-frames:
-    description: 'Audio mixes time units like VideoVisual — offset is SECONDS skipped into the track (default 0) while startFrame is the COMPOSITION FRAME at which playback begins (default 0). volume is 0-1 (default 1) and loop defaults false; only src is required.'
+  audiovisual-layer-not-state-scoped:
+    description: 'v1.0: audio is a first-class AudioVisual layer (type: "audio"), not a per-state field. Mixes time units like VideoVisual — sourceOffset/sourceEnd in SECONDS into the source; startFrame in COMPOSITION FRAMES; fadeIn/fadeOut in seconds at layer edges. State.audio was REMOVED in v1.0; pre-v1 docs strip the field on read (Zod default strip-unknown-keys).'
     tags:
       - units
       - audio
-      - required-field
+      - layer-scoped
+      - v1-breaking
     anchors:
-      - packages/types/src/audio.ts:2-13
-    enforcement: seconds vs frames per field
-    appliesTo: ["#audio-types"]
+      - packages/types/src/layer.ts:65-95
+    enforcement: seconds vs frames per field; State.audio removed
+    appliesTo: ["#layer-types"]
   asset-videometa-required-for-video-gate:
     description: 'Asset.type is a 6-value closed enum (image|svg|font|animation|audio|video). videoMeta is OPTIONAL in TypeScript but REQUIRED at validation time for the ^valid-video-layer gate (per the field comment) — a video asset without videoMeta type-checks yet fails the gate. spritesheet metadata is image-only.'
     tags:

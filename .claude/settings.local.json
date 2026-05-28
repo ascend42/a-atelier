@@ -132,7 +132,20 @@
       "Bash(atelier --help)",
       "Bash(git checkout *)",
       "Bash(atelier transcribe *)",
-      "Bash(whisper-cli source.mp4 --model ~/.cache/whisper.cpp/models/ggml-large-v3-turbo.bin --output-json --print-progress false)"
+      "Bash(whisper-cli source.mp4 --model ~/.cache/whisper.cpp/models/ggml-large-v3-turbo.bin --output-json --print-progress false)",
+      "Bash(awk '{s+=$2} END {print s, \"total\"}')",
+      "Bash(/bin/grep *)",
+      "Bash(/usr/bin/grep *)",
+      "Bash(/usr/bin/awk '{print $0}')",
+      "Bash(/usr/bin/sed -n '413,415p' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace-delete.ts)",
+      "Bash(/usr/bin/xxd)",
+      "Bash(/usr/bin/sed -n '372,373p' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/rename-media.ts)",
+      "Bash(/usr/bin/sed -n '372,374p' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/rename-media.ts)",
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "Bash(echo \"TSC=$?\")",
+      "Bash(awk '{sum += $2} END {print \"Total:\", sum}')",
+      "Bash(awk -F'Tests' '{print $2}')",
+      "Bash(awk '{sum += $1} END {print \"TOTAL:\", sum}')"
     ]
   },
   "enableAllProjectMcpServers": true,

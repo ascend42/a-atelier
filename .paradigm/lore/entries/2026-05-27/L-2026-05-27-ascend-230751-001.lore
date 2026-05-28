@@ -1,0 +1,112 @@
+id: L-2026-05-27-ascend-230751-001
+type: milestone
+timestamp: '2026-05-27T23:07:51.646Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: v1 schema lock + multi-track timeline + carousel/image kinds
+summary: 'Locked the v1 .atelier schema in one session: AudioVisual replaces State.audio; kind: video|image|carousel + design block + slides[] added; Timeline summary block becomes a writer-derived top-level field; compose-video-project rewritten to support multi-clip with lazy track-video-1 Group, slug-based clip IDs, parented captions in clip-local time, and one-to-one asset/layer mapping that eliminates orphan-asset accumulation. Renderer now applies the nearest ancestor VideoVisual''s startFrame to delta evaluation so captions parented to a clip follow when the clip moves on the timeline.'
+symbols_touched:
+  - '#atelier-v1-schema'
+  - '#audio-visual'
+  - '#timeline-block'
+  - '#project-kind'
+  - '#atelier-design'
+  - '#carousel-slides'
+  - '#compose-video-project'
+  - '#frame-resolver'
+  - '#caption-builder'
+  - '#core-audio-timing'
+  - '#lottie-warnings'
+  - '#mcp-tool-assets'
+  - '#mcp-tool-state-config'
+  - '#mcp-tool-layers'
+symbols_created:
+  - '#audio-visual'
+  - '#timeline-block'
+  - '#project-kind'
+  - '#atelier-design'
+  - '#carousel-slides'
+  - '#slide-ref'
+  - '#atelier-design-relation'
+files_created:
+  - packages/types/src/timeline.ts
+  - packages/types/src/slides.ts
+  - packages/types/src/design.ts
+  - packages/schema/src/timeline.ts
+  - packages/schema/src/slides.ts
+  - packages/schema/src/design.ts
+files_modified:
+  - packages/types/src/layer.ts
+  - packages/types/src/state.ts
+  - packages/types/src/document.ts
+  - packages/types/src/index.ts
+  - packages/schema/src/layer.ts
+  - packages/schema/src/state.ts
+  - packages/schema/src/document.ts
+  - packages/schema/src/index.ts
+  - packages/cli/src/lib/compose-video-project.ts
+  - packages/cli/src/workspace-ui.test.ts
+  - packages/cli/src/commands/assets.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/core/src/audio/audio-timing.ts
+  - packages/core/src/resolver/frame-resolver.ts
+  - packages/core/src/index.test.ts
+  - packages/lottie/src/warnings.ts
+  - packages/lottie/src/index.test.ts
+  - packages/mcp/src/index.test.ts
+  - packages/mcp/src/tools/assets.ts
+  - packages/mcp/src/tools/layers.ts
+  - packages/mcp/src/tools/performance.ts
+  - packages/mcp/src/tools/state-config.ts
+  - packages/types/.purpose
+decisions:
+  - id: TD-2026-05-27-audio-visual
+    decision: Audio becomes a first-class AudioVisual layer; State.audio removed entirely
+    rationale: v1 multi-track wanted audio to participate in tracks, parenting, and the timeline like video clips. Per-state audio couldn't express layered audio (background music + voiceover + SFX) and conflicted with the layer-uniform mental model. Pre-v1 docs that carry state.audio silently strip on read via Zod default.
+  - id: TD-2026-05-27-project-kind
+    decision: 'Top-level kind: video|image|carousel field (default video for backcompat)'
+    rationale: Three creator-facing project flavors are distinct enough that exporters and authoring tools branch on kind. Default video keeps every pre-v1 doc working without migration.
+  - id: TD-2026-05-27-carousel-slides-as-refs
+    decision: Carousel slides are SlideRef[] pointing at any .atelier in workspace; no ownership concept; resolver enforces cycle safety
+    rationale: Reuses the existing RefVisual composability hint. Slides are independently-editable .atelier files. Owner explicitly rejected slide-folder ownership — carousel is a manifest, not a container.
+  - id: TD-2026-05-27-design-no-cascade
+    decision: Per-file design block is self-contained — no auto-merge with workspace DESIGN. Lineage is explicit via relatedTo[]
+    rationale: 'Owner rejected override/cascade semantics: ''I don''t believe in overriding any of these files but I want agents to see which design files relate to which and where they stem from.'' Resolution-at-distance is replaced by an explicit graph of pointers agents can walk.'
+  - id: TD-2026-05-27-clip-local-captions
+    decision: Captions parent to their clip; renderer shifts delta ranges by the nearest ancestor VideoVisual's startFrame
+    rationale: The durable answer (vs. baking absolute frame offsets at write time). Move-a-clip-and-captions-follow works naturally. Renderer change is one helper + one frame-offset application; tests proved it preserves all existing single-state behavior (clip-local offset = 0 for layers without video ancestors).
+  - id: TD-2026-05-27-tracks-as-group-convention
+    decision: Video tracks are Group layers tagged ['track','video'] with parentId-parented clips; lazy-created on first clip ingest
+    rationale: The schema already supports parentId + Group; no new top-level Track concept needed. Audio tracks would have needed real schema work (AudioVisual added separately addresses the audio-track motivation, layer-scoped). Lazy creation keeps fresh projects clean.
+  - id: TD-2026-05-27-timeline-block-derived
+    decision: Timeline summary block is writer-emitted, reader-tolerant. Layers stay source of truth
+    rationale: 'Solves ''where are my clips in this 200-line .atelier file?'' without inventing a second canonical structure. Drift-safe: stale block is harmless because the layers are still authoritative.'
+learnings:
+  - Multi-track video is essentially free via Group + parentId — the schema was already composable. Multi-track AUDIO required real schema work (no AudioVisual existed). Owner's instinct toward 'multi-track' had two very different bills underneath; surfacing that distinction unlocked the right scope decision.
+  - Adding new schema bundles late in a session works when the decisions are tight and the work is mechanical (Zod mirrors). Carousel/image/design landed in the same commit as multi-track because the type foundation was already in motion.
+  - 'The ''design lineage not cascade'' framing is a strong concept: explicit relatedTo[] pointers replace spooky-resolution-at-distance. Worth applying to other ''inheritance'' surfaces in the framework.'
+  - Builder subagents are well-suited for tightly-scoped rewrites with locked design + clear test expectations. The compose-video-project rewrite (608 lines) delegated cleanly and came back passing.
+  - Pre-existing tsc errors blocking 'clean' commit often turn out to be stale dist .d.ts files — rebuilding the upstream package resolves them. Worth checking before assuming a real bug.
+verification:
+  status: pass
+  details:
+    workspace_tests: 911/911 pass across 12 packages
+    tsc_workspace: zero errors
+    compliance_check: all checks passed (1 lingering audio.ts reference in append-only history log; not actionable)
+tags:
+  - v1
+  - schema-lock
+  - multi-clip
+  - audio-visual
+  - carousel
+  - design-lineage
+  - milestone
+linked_commits:
+  - f204462
+confidence: 0.85
+git_context:
+  ref: f20446236ae9aa314db22a9c40269783c5678041
+  branch: feat/creator-flow-v1-prep
+  dirty: true

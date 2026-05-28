@@ -1,10 +1,10 @@
 {
-  "reindex_ts": "2026-05-26T12:48:31.476Z",
+  "reindex_ts": "2026-05-28T00:22:52.461Z",
   "transformations": [
     {
       "kind": "prefix-stripped",
       "surface": "purpose.yaml",
-      "count": 79
+      "count": 103
     }
   ],
   "lossy_count": 0,
