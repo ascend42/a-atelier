@@ -134,7 +134,11 @@ const theme = {
   accentHover: "#D4724E",
   sliderTrack: "#4A4A4A",
   sliderThumb: "#C75B39",
-  fontFamily: "'Cormorant Garamond', Georgia, serif",
+  // Inter — variable UI sans with high legibility at 12-15px sizes (replaces
+  // Cormorant Garamond, a beautiful editorial serif that lost too much detail
+  // in dense UI chrome per owner feedback 2026-05-28). Inter is loaded via
+  // Google Fonts in getInlineHTML().
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   fontMono: "'SF Mono', 'Fira Code', monospace",
   canvasShadow: "0 4px 60px rgba(199, 91, 57, 0.12), 0 0 40px rgba(0,0,0,0.4)",
 };
@@ -2694,73 +2698,81 @@ function injectStyles(): void {
   style.textContent = `
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #2C2C2C; color: #F5F0EB; }
-  body { font-family: 'Cormorant Garamond', Georgia, serif; }
+  /* ── Typography legibility pass 2026-05-28 ──
+     Inter as the base sans (was Cormorant Garamond, an editorial serif that
+     lost detail in dense UI chrome). Bumped base font-size from default 16px
+     to 15px on body (Inter renders denser than Cormorant at the same px), then
+     individual rules below add +1-2px to every label/list/menu that was 10-12px
+     so creators don't squint. Line-heights raised to 1.4-1.5 for body copy,
+     antialiased fonts for crisper rendering on macOS Retina. */
+  html, body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   #studio { height: 100vh; width: 100vw; display: flex; }
 
   .atel-workspace-shell { display: flex; flex: 1; min-height: 0; }
   .atel-workspace-sidebar {
-    width: 300px; min-width: 300px; background: #333; border-right: 1px solid #4A4A4A;
+    width: 320px; min-width: 320px; background: #333; border-right: 1px solid #4A4A4A;
     display: flex; flex-direction: column; overflow: hidden;
   }
   .atel-workspace-sidebar__header {
-    padding: 14px 16px; border-bottom: 1px solid #4A4A4A;
+    padding: 16px 18px; border-bottom: 1px solid #4A4A4A;
   }
   .atel-workspace-sidebar__title {
-    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: #A89F95; text-transform: uppercase;
+    font-size: 12px; font-weight: 600; letter-spacing: 1.4px; color: #A89F95; text-transform: uppercase;
   }
   .atel-workspace-sidebar__section {
-    margin-top: 12px; display: flex; align-items: center; justify-content: space-between;
-    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #A89F95;
+    margin-top: 14px; display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: #A89F95;
   }
   .atel-workspace-sidebar__new-btn {
     background: #3D3D3D; color: #F5F0EB; border: 1px solid #4A4A4A; border-radius: 3px;
-    padding: 2px 8px; font-size: 10px; cursor: pointer; font-family: inherit;
+    padding: 3px 10px; font-size: 11px; cursor: pointer; font-family: inherit;
   }
-  .atel-workspace-sidebar__list { flex: 1; overflow-y: auto; padding: 6px 0; }
+  .atel-workspace-sidebar__list { flex: 1; overflow-y: auto; padding: 8px 0; }
 
-  .atel-workspace-sidebar__project { padding: 4px 0; }
+  .atel-workspace-sidebar__project { padding: 5px 0; }
   .atel-workspace-sidebar__project-header {
-    padding: 6px 14px; cursor: pointer; font-size: 13px; color: #A89F95;
+    padding: 8px 16px; cursor: pointer; font-size: 14px; color: #A89F95;
     display: flex; align-items: center; gap: 6px;
   }
   .atel-workspace-sidebar__project-header:hover { color: #F5F0EB; background: #363636; }
   .atel-workspace-sidebar__project--active .atel-workspace-sidebar__project-header { color: #C75B39; }
-  .atel-project-name { font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
-  .atel-active-marker { color: #C75B39; font-size: 11px; }
+  .atel-project-name { font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; }
+  .atel-active-marker { color: #C75B39; font-size: 12px; }
 
   .atel-workspace-sidebar__group {
-    margin: 6px 0; padding: 0 14px;
+    margin: 8px 0; padding: 0 16px;
   }
   .atel-workspace-sidebar__group-label {
-    font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #6E6862; padding: 4px 8px 2px;
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #6E6862; padding: 5px 8px 3px;
   }
   .atel-workspace-sidebar__item {
-    padding: 4px 8px 4px 22px; font-size: 12px; cursor: pointer; color: #A89F95;
+    padding: 6px 8px 6px 22px; font-size: 13px; cursor: pointer; color: #A89F95;
     font-family: 'SF Mono', 'Fira Code', monospace; border-radius: 3px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 1.4;
   }
   .atel-workspace-sidebar__item:hover { background: #363636; color: #F5F0EB; }
   /* Currently-loaded doc row — accent color + bold to mirror the active-project treatment. */
   .atel-workspace-sidebar__item--loaded { color: #C75B39; }
   .atel-workspace-sidebar__item--loaded:hover { color: #D4724E; background: #363636; }
-  .atel-loaded-marker { color: #C75B39; font-size: 10px; letter-spacing: 0.5px; }
+  .atel-loaded-marker { color: #C75B39; font-size: 11px; letter-spacing: 0.5px; }
   .atel-workspace-sidebar__empty {
-    padding: 6px 8px 4px 22px; font-size: 11px; color: #6E6862;
+    padding: 6px 8px 4px 22px; font-size: 12px; color: #6E6862;
     font-family: 'SF Mono', 'Fira Code', monospace; font-style: italic;
   }
-  .atel-item-icon { display: inline-block; width: 18px; }
-  .atel-item-meta { color: #6E6862; font-size: 11px; }
+  .atel-item-icon { display: inline-block; width: 20px; }
+  .atel-item-meta { color: #6E6862; font-size: 12px; }
   .atel-badge {
-    display: inline-block; background: #3D3D3D; padding: 1px 5px; border-radius: 2px;
-    font-size: 9px; letter-spacing: 0.5px; margin-left: 4px; color: #A89F95;
+    display: inline-block; background: #3D3D3D; padding: 2px 6px; border-radius: 2px;
+    font-size: 11px; letter-spacing: 0.5px; margin-left: 5px; color: #A89F95;
   }
   .atel-badge--ok { color: #6B8E6B; }
 
   .atel-workspace-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   .atel-workspace-status {
-    height: 32px; min-height: 32px; padding: 0 16px; display: flex; align-items: center;
+    height: 34px; min-height: 34px; padding: 0 18px; display: flex; align-items: center;
     background: #333; border-bottom: 1px solid #4A4A4A;
-    font-size: 11px; color: #A89F95; font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px; color: #A89F95; font-family: 'SF Mono', 'Fira Code', monospace;
   }
   /* ── v1.0 UI shell rework (Kit-C) ──
      mainBody (.atel-workspace-body) is the vertical flex container:
@@ -2815,7 +2827,7 @@ function injectStyles(): void {
   .atel-timeline-view__tick {
     position: absolute; top: 0;
     transform: translateX(-50%);
-    font-size: 10px; color: var(--atel-text-muted, #A89F95);
+    font-size: 11px; color: var(--atel-text-muted, #A89F95);
     padding: 4px 0;
     pointer-events: none;
   }
@@ -2841,7 +2853,7 @@ function injectStyles(): void {
     background: rgba(199, 91, 57, 0.15);
   }
   .atel-timeline-view__clip-label {
-    font-size: 11px; color: var(--atel-text, #F5F0EB);
+    font-size: 12px; color: var(--atel-text, #F5F0EB);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .atel-timeline-view__playhead {
@@ -2928,7 +2940,7 @@ function injectStyles(): void {
     border-left: 2px solid #4A4A4A; padding: 6px 10px; margin: 5px 0;
   }
   .atel-media-preview__transcript-time {
-    font-size: 10px; color: #6E6862; font-family: monospace; margin-bottom: 3px;
+    font-size: 11px; color: #6E6862; font-family: monospace; margin-bottom: 3px;
   }
   .atel-media-preview__transcript-text { font-size: 13px; line-height: 1.55; color: #F5F0EB; }
   .atel-media-preview__video, .atel-media-preview__image { max-width: 100%; max-height: 70vh; background: #000; }
@@ -3013,7 +3025,7 @@ function injectStyles(): void {
     display: flex; align-items: center; justify-content: space-between; gap: 6px;
   }
   .atel-workspace-sidebar__new-btn--inline {
-    padding: 1px 6px; font-size: 9px; letter-spacing: 0.5px;
+    padding: 1px 6px; font-size: 11px; letter-spacing: 0.5px;
   }
 
   /* NewDocDialog — three-tile picker, slug preview, optional slide toggle. */

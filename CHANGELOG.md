@@ -63,6 +63,16 @@ Owner restart of round 2 made the dropdown + ruler + letterbox visible (verified
 
 Runtime verification pending owner restart again. Tests green: 1212 across 12 packages.
 
+### Polish — v1.0 pre-test sweep (2026-05-28)
+
+A pre-test polish pass closing the small papercuts surfaced during R2/R3 runtime verification, before owner begins manual testing.
+
+- **Typography overhaul** — switched from Cormorant Garamond (editorial serif, hard to read at dense UI sizes per owner feedback) to Inter (UI-optimized variable sans). Bumped body to 15px / 1.45 line-height, sidebar items 12px → 13px, toolbar buttons 12px → 13px, table-of-contents labels +1-2px each. Antialiased font smoothing on macOS Retina. Updated `getInlineHTML` to preload Inter weights 400/500/600/700 from Google Fonts.
+- **`renderVideo` honors `objectFit`** — defaults to `"contain"` (aspect-preserved fit-inside with transparent letterbox) instead of stretching to layer bounds. `"cover"` and `"fill"` work as documented; falls back to fill if the source's intrinsic dimensions can't be read mid-load.
+- **Module-level video cache** — `BrowserVideoFrameProvider`'s video elements moved to a module-level `VIDEO_CACHE` keyed by resolved URL, surviving provider disposal. Workspace-app's initial mount cascade (clearMain → currentStudio.destroy → canvasPanel.destroy → videoProvider.dispose) no longer aborts the in-flight 87MB MOV fetch — `dispose()` now just removes listeners. Runtime-verified: 5 ERR_ABORTED → 3 (remaining 3 are normal Chrome Range-request fragments at page close, not the wasteful re-fetch cascade). New `evictFromCache(resolved)` export for media-delete / media-rename flows that need to invalidate.
+- **Caption cross-fade reordered** — `buildPhraseDeltas` moved fade-in window from `[start - fadeF, start]` (BEFORE the phrase) to `[start, start + fadeF]` (INSIDE the phrase). For touching transcript phrases (`end_N === start_{N+1}`, the common case) cap-N fades out `[88, 90]` and cap-(N+1) fades in `[90, 92]` — no overlap, captions transition discretely instead of the 2-frame cross-fade that produced the "captions stacking" false-bug report (L-2026-05-28-ascend-151000-001). Existing v1.0-composed docs retain their old overlap deltas until re-transcribed.
+- **`import.meta` CJS build warning fixed** — split `cli.ts` and `mcp.ts` entries into ESM-only tsup configs (their binaries are ESM via `dist/cli.js` / `dist/mcp.js`; the `.cjs` builds would crash on `import.meta.url` anyway). Library entry `index.ts` keeps ESM + CJS for `require()` consumers. Build is now warning-free.
+
 ### Team execution
 
 This release was built almost entirely via Paradigm agent orchestration:

@@ -1,164 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779968627010,
+  "lastActivity": 1779982514308,
   "breadcrumbs": [
-    {
-      "timestamp": 1779914335313,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Per-file transcripts + media preview split-pane with click-t"
-    },
-    {
-      "timestamp": 1779918114227,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Studio UX validated end-to-end: drag-drop → per-file transcr"
-    },
-    {
-      "timestamp": 1779918132617,
-      "action": "tool-call",
-      "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=complete, Atelier v1 UX validated end-to-end in the local studio. Drag"
-    },
-    {
-      "timestamp": 1779918434708,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
-    {
-      "timestamp": 1779923206335,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779923271634,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: v1 schema lock + multi-track timeline + carousel/image kinds"
-    },
-    {
-      "timestamp": 1779924432354,
-      "action": "tool-call",
-      "tool": "paradigm_agent_list",
-      "summary": "agent_list"
-    },
-    {
-      "timestamp": 1779927771905,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779928470942,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: v1.0 surface bundle — agent clip tools + image/carousel comp"
-    },
-    {
-      "timestamp": 1779929817253,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
-    {
-      "timestamp": 1779929847215,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779932791836,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779937411326,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
-    {
-      "timestamp": 1779937823744,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Flat-docs pivot — drop manifest concept, fix .atelier/ listi"
-    },
-    {
-      "timestamp": 1779938130294,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779943126222,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
-    {
-      "timestamp": 1779943170325,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779959001486,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: S0 — shared types for media-bin pivot + bottom timeline UI"
-    },
-    {
-      "timestamp": 1779959836279,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Wave A — media-bin backend + bottom timeline UI + studio she"
-    },
-    {
-      "timestamp": 1779960118255,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Wave B — sidebar drag affordance (closes the loop)"
-    },
-    {
-      "timestamp": 1779960981551,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779961092983,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
-    {
-      "timestamp": 1779961146221,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779961289371,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: v1.0 media-bin pivot + bottom timeline — full bundle landed "
-    },
-    {
-      "timestamp": 1779965192222,
-      "action": "tool-call",
-      "tool": "paradigm_reindex",
-      "summary": "Rebuilt static index files"
-    },
-    {
-      "timestamp": 1779965192647,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
     {
       "timestamp": 1779965236914,
       "action": "tool-call",
@@ -302,6 +146,162 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: Runtime verification — R3 video provider paints; \"caption st"
+    },
+    {
+      "timestamp": 1779981956834,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Pre-test polish sweep — typography overhaul + objectFit + vi"
+    },
+    {
+      "timestamp": 1779981976158,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779982016765,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779982431388,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: media-ref-drag-discriminated"
+    },
+    {
+      "timestamp": 1779982431457,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: render-context-no-dom-dependency"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: video-null-provider-retry"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: caption-builder-fade-frame-math"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-localhost-only-bind"
+    },
+    {
+      "timestamp": 1779982431460,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-origin-check-bridge-vs-mcp-split"
+    },
+    {
+      "timestamp": 1779982431460,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-ws-upgrade-rechecks-origin"
+    },
+    {
+      "timestamp": 1779982431461,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-llm-only-broadcast"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: docs-are-flat"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: media-bin-acquire-vs-compose"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: transcribe-on-bin-add"
+    },
+    {
+      "timestamp": 1779982464660,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/canvas/.purpose"
+    },
+    {
+      "timestamp": 1779982467709,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/canvas/.purpose"
+    },
+    {
+      "timestamp": 1779982472515,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982475203,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982479761,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982483321,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982487800,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982493353,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982501930,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982508605,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982514183,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982518330,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [],

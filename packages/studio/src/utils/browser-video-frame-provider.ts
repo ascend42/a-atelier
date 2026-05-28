@@ -20,11 +20,22 @@
  *     re-seek. Below this we trust the already-decoded frame; above this we
  *     issue a fresh seek. Tighter would thrash; looser would visibly lag.
  *
- * Lifecycle:
- *   - Each video element is muted + playsInline + crossOrigin="anonymous" so
- *     it can be drawn to a canvas without taint and without forcing audio.
- *   - `dispose()` removes elements + listeners so studio teardown is clean
- *     (no GC leak via dangling DOM nodes during doc swaps).
+ * Cache lifetime (module-level, see VIDEO_CACHE):
+ *   - The cache is MODULE-LEVEL keyed by RESOLVED url, NOT per-provider —
+ *     workspace-app rebuilds AtelierStudio (and therefore CanvasPanel and
+ *     this provider) every time the user opens a doc, and during initial
+ *     mount the workspace lifecycle disposes + re-creates the studio several
+ *     times for layout settle. If each provider owned its own cache, every
+ *     dispose() would call video.removeAttribute('src') + load(), aborting
+ *     the in-flight 87MB MOV fetch and forcing a re-download on the next
+ *     mount. Module-level caching means the SAME <video> element survives
+ *     across provider lifetimes, the partial download continues uninterrupted,
+ *     and dispose() becomes a no-op for the video itself. Memory cost: one
+ *     detached HTMLVideoElement per UNIQUE resolved URL for the page lifetime
+ *     — bounded by media usage.
+ *   - Listeners are per-provider though (the onReady callback is): we attach
+ *     in `attachListeners()` on get(), and detach in `dispose()` so a stale
+ *     provider's onReady doesn't fire into a destroyed canvas-panel.
  *
  * URL resolution is the CALLER's job — pass `srcResolver` to turn a relative
  * doc-stored path like `media/IMG_7346.MOV` into a fetchable URL like
@@ -39,6 +50,14 @@ interface VideoEntry {
   /** True once metadata loaded — before this drawImage shows nothing. */
   ready: boolean;
 }
+
+/**
+ * Module-level cache, keyed by the RESOLVED url (post srcResolver). Survives
+ * BrowserVideoFrameProvider instances so workspace-app's rebuild cascade
+ * doesn't waste bandwidth re-fetching the same source on every doc-open
+ * cycle. See class-level docstring for the rationale.
+ */
+const VIDEO_CACHE = new Map<string, VideoEntry>();
 
 export interface BrowserVideoFrameProviderOptions {
   /**
@@ -64,9 +83,10 @@ export interface BrowserVideoFrameProviderOptions {
 const SEEK_EPSILON_S = 0.016;
 
 export class BrowserVideoFrameProvider {
-  private entries = new Map<string, VideoEntry>();
   private srcResolver: (src: string) => string;
   private onReady: (() => void) | undefined;
+  /** Per-provider listener registrations so dispose() can detach cleanly. */
+  private listeners: Array<{ video: HTMLVideoElement; handler: () => void }> = [];
 
   constructor(opts: BrowserVideoFrameProviderOptions = {}) {
     this.srcResolver = opts.srcResolver ?? ((s) => s);
@@ -78,12 +98,16 @@ export class BrowserVideoFrameProvider {
    * Bound version is what gets handed to `renderFrame({ videoFrameProvider })`.
    */
   get = (src: string, sourceTime: number, _w: number, _h: number): HTMLVideoElement | null => {
-    let entry = this.entries.get(src);
+    const resolved = this.srcResolver(src);
+    let entry = VIDEO_CACHE.get(resolved);
     if (!entry) {
-      entry = this.create(src);
-      this.entries.set(src, entry);
+      entry = this.create(resolved);
+      VIDEO_CACHE.set(resolved, entry);
       return null; // first call — wait for loadeddata → onReady → re-paint
     }
+    // Cache hit from a prior provider lifetime — ensure THIS provider's
+    // onReady fires on future readiness events. Idempotent via attachListeners.
+    this.attachListeners(entry.video);
     if (!entry.ready) return null;
 
     // Clamp + seek if the requested time moved beyond the epsilon window. We
@@ -105,16 +129,23 @@ export class BrowserVideoFrameProvider {
     return entry.video;
   };
 
-  /** Drop all cached video elements (call on doc unload / studio teardown). */
+  /**
+   * Detach THIS provider's listeners from the shared video elements. The
+   * video elements themselves stay alive in VIDEO_CACHE for the next
+   * provider to reuse — that's the whole point of module-level caching.
+   * If you genuinely need to free a specific video (e.g. media was deleted),
+   * see `evictFromCache` below.
+   */
   dispose(): void {
-    for (const entry of this.entries.values()) {
-      entry.video.removeAttribute("src");
-      entry.video.load(); // forces the media element to release its source
+    for (const { video, handler } of this.listeners) {
+      video.removeEventListener("loadeddata", handler);
+      video.removeEventListener("seeked", handler);
     }
-    this.entries.clear();
+    this.listeners = [];
+    this.onReady = undefined;
   }
 
-  private create(src: string): VideoEntry {
+  private create(resolved: string): VideoEntry {
     const video = document.createElement("video");
     video.muted = true;
     video.playsInline = true;
@@ -122,15 +153,43 @@ export class BrowserVideoFrameProvider {
     video.preload = "auto";
     const entry: VideoEntry = { video, requestedTime: 0, ready: false };
 
-    const markReady = (): void => {
-      if (!entry.ready) entry.ready = true;
-      this.onReady?.();
-    };
-    video.addEventListener("loadeddata", markReady);
-    video.addEventListener("seeked", markReady);
-
-    video.src = this.srcResolver(src);
+    // Listen BEFORE setting src so we don't miss the loadeddata fire that
+    // happens synchronously on cached responses.
+    this.attachListeners(video, entry);
+    video.src = resolved;
     video.load();
     return entry;
   }
+
+  /**
+   * Idempotent listener wiring — bookkeeping via `this.listeners` so dispose()
+   * can detach exactly what was attached. If the video already had this
+   * provider's listener (re-attach attempt within the same provider), no-op.
+   */
+  private attachListeners(video: HTMLVideoElement, entry?: VideoEntry): void {
+    if (this.listeners.some((l) => l.video === video)) return;
+    const cached = entry ?? VIDEO_CACHE.get(video.src);
+    const handler = (): void => {
+      if (cached && !cached.ready) cached.ready = true;
+      this.onReady?.();
+    };
+    video.addEventListener("loadeddata", handler);
+    video.addEventListener("seeked", handler);
+    this.listeners.push({ video, handler });
+  }
+}
+
+/**
+ * Evict a specific cached video — call when the underlying media file has
+ * been deleted or replaced so the next get() re-fetches. Useful for
+ * workspace media-rename / media-delete flows. Returns true if a cached
+ * entry was evicted, false if no cache entry existed.
+ */
+export function evictFromCache(resolved: string): boolean {
+  const entry = VIDEO_CACHE.get(resolved);
+  if (!entry) return false;
+  entry.video.removeAttribute("src");
+  entry.video.load();
+  VIDEO_CACHE.delete(resolved);
+  return true;
 }

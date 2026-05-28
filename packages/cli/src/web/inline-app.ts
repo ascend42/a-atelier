@@ -234,7 +234,7 @@ function bootLegacyApp(config: StudioAppConfig): void {
     const overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:10000";
     const card = document.createElement("div");
-    card.style.cssText = "background:#333;border:1px solid #4A4A4A;border-radius:8px;padding:32px 40px;min-width:360px;color:#F5F0EB;font-family:'Cormorant Garamond',Georgia,serif";
+    card.style.cssText = "background:#333;border:1px solid #4A4A4A;border-radius:8px;padding:32px 40px;min-width:360px;color:#F5F0EB;font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
     overlay.appendChild(card);
     document.body.appendChild(overlay);
 
