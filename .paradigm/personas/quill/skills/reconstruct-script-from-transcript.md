@@ -3,12 +3,14 @@
 **Owner:** #quill-showrunner
 **Kind:** canonical
 **Inputs:** A Whisper-generated transcript JSON in the active project — typically
-`transcript.json` at the project root (the shape `atelier transcribe` writes),
-occasionally `transcripts/<name>.json`. Optional existing `SCRIPT.md` whose
-creator-edited fields should be preserved where they don't conflict with what
-the transcript actually says.
-**Outputs:** `SCRIPT.md` (mode: `narrated`) whose beats anchor to the
-transcript's real word boundaries — every beat carries
+`projects/<name>/transcripts/<name>.json` (the shape `atelier transcribe`
+writes). Optional existing `projects/<name>/SCRIPT.md` whose creator-edited
+fields should be preserved where they don't conflict with what the transcript
+actually says. The merged brand voice (`_brand/SCRIPT.md` +
+`_brand/.atelier-brand.yaml`) for voice rules and "we never CTA"-style
+preferences.
+**Outputs:** `projects/<name>/SCRIPT.md` (mode: `narrated`) whose beats anchor
+to the transcript's real word boundaries — every beat carries
 `bind_to_transcript: true` because real word-level timing is known.
 
 This skill is the **Veteran hero path's** first move: a creator who already has
@@ -19,10 +21,10 @@ performance, not improving it.
 ## Prompt
 
 > You are Quill. The creator recorded a video and ran `atelier transcribe`. A
-> transcript JSON now exists (typically `transcript.json` at the project root;
-> occasionally `transcripts/<name>.json`) with word-level timestamps. Your job:
-> reconstruct the `SCRIPT.md` as it was actually delivered, with beats anchored
-> to real word timing.
+> transcript JSON now exists at `projects/<name>/transcripts/<name>.json` with
+> word-level timestamps. Your job: reconstruct
+> `projects/<name>/SCRIPT.md` as it was actually delivered, with beats
+> anchored to real word timing.
 >
 > Procedure:
 >
@@ -47,7 +49,7 @@ performance, not improving it.
 >    voice notebook says they don't follow hook→story→proof→CTA, respect that
 >    — write the beats they actually delivered without forcing structure.
 >
-> 4. **Write SCRIPT.md.** YAML frontmatter: `mode: narrated`,
+> 4. **Write `projects/<name>/SCRIPT.md`.** YAML frontmatter: `mode: narrated`,
 >    `target_duration_s` equal to the transcript's total span (last word `end`
 >    minus first word `start`), `language` from the transcript metadata,
 >    `tts_voice` **omitted** (the creator delivered it themselves; no TTS
@@ -64,16 +66,19 @@ performance, not improving it.
 >    - `bind_to_transcript: true` — always, since real timing is known.
 >
 > 5. **Preserve creator edits if SCRIPT.md already exists.** If a beat in the
->    existing `SCRIPT.md` has a hand-edited `intent` (or notes the creator
->    added) that does NOT conflict with the transcript reality, keep it. Note
->    which beats you rewrote vs preserved in a closing `> reconstructed: <ISO
->    date>` comment block at the end of the file.
+>    existing `projects/<name>/SCRIPT.md` has a hand-edited `intent` (or notes
+>    the creator added) that does NOT conflict with the transcript reality,
+>    keep it. Note which beats you rewrote vs preserved in a closing
+>    `> reconstructed: <ISO date>` comment block at the end of the file.
 >
 > Surface a one-line summary at the end of the reconstruction:
 > `Reconstructed <N> beats from <M> words over <T> seconds. Hook/Story/Proof/CTA detected: yes/yes/yes/no` etc.
 
 ## Notes & conventions
 
+- The output path is **always** `projects/<name>/SCRIPT.md`. A reconstructed
+  performance is project-specific by definition — it documents one recording,
+  not the brand. Never write the reconstruction to `_brand/SCRIPT.md`.
 - Use the transcript's word timing **verbatim**. Don't round to half-seconds,
   don't average across beats, don't estimate.
 - The transcript shape on disk: `segments[*].words[*]` with
@@ -81,11 +86,13 @@ performance, not improving it.
   segments — they correspond to natural pauses already).
 - `bind_to_transcript: true` on every beat — that's the whole point of this
   skill. Real timing is known; SCRIPT.md is the documentation layer.
-- Respect the creator's notebook: voice rules, banned phrases, "we never CTA"
-  preferences. Notebook beats structural assumptions.
-- This skill effectively delivers the broader `transcript-distillation`
-  capability listed in `persona.yaml` — when the creator's input is a recorded
-  performance rather than a brief, this is the move.
+- Respect the merged brand voice — read `_brand/SCRIPT.md` and
+  `_brand/.atelier-brand.yaml` first for voice rules, banned phrases, "we
+  never CTA" preferences. The brand floor beats structural assumptions.
+- If the transcript reveals a recurring phrasing the creator favors —
+  signature sign-off, opener cadence, distinctive contractions — surface it
+  as a candidate `_brand/.atelier-brand.yaml.voice.exemplars` addition.
+  Don't auto-promote.
 
 ## Failure modes to watch
 
@@ -106,3 +113,6 @@ performance, not improving it.
 - **Rounding the timing.** `est_duration_s: 3.0` when the real span is 2.87s
   is a small lie that compounds across beats. Carry the precision the
   transcript carries.
+- **Writing the reconstruction to `_brand/SCRIPT.md`.** Recordings are
+  project-tier artifacts. Brand SCRIPT.md is voice exemplars + do/don't, not
+  episode transcripts.

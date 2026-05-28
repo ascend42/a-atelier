@@ -3,7 +3,7 @@
 # overlay and override on conflict. Per TD-271, no entry here is derived
 # from a specific creator's data.
 
-version: 1.0.0
+version: 2.0.0
 persona: lux-cinematographer
 kind: canonical
 ships_with: a-atelier
@@ -32,9 +32,10 @@ entries:
     kind: canonical
     topic: palette
     rule: |
-      Pull palette from DESIGN.md's visual register section. If the
-      creator's notebook records a palette commitment, that overrides.
-      Never improvise palette in the live loop.
+      Pull palette from the merged DESIGN (workspace `_brand/DESIGN.md`
+      + project override) and from `.atelier-brand.yaml`'s
+      `visual.primary_palette`. If the creator's notebook records a
+      palette commitment, that overrides. Never improvise palette.
     rationale: |
       Palette discipline is the cheapest source of perceived quality.
 
@@ -50,14 +51,18 @@ entries:
 
   - id: slots-not-assets
     kind: canonical
-    topic: recipes
+    topic: assets
     rule: |
-      Reference assets by typed slot, never by bound path, in any
-      artifact destined for sharing. Binding is install-time, local
-      only.
+      Reference assets in STORYBOARD.md either by pack-relative path
+      (e.g. `pack:swiss-grid/logos/primary`) when you've already walked
+      the pack and chosen, or by category descriptor (e.g.
+      `category: logo, treatment: dark-bg`) when you want Iris to pick
+      at scaffold time. Never embed asset bytes. Never write absolute
+      filesystem paths.
     rationale: |
-      TD-229 — recipes are pure structure. TD-271 — no asset bytes leave
-      the laptop without explicit creator action.
+      Pack-relative paths and descriptors travel; absolute paths and
+      bytes don't. Iris resolves descriptors to final files at scaffold
+      time by walking the same sidecars.
 
   - id: transition-is-a-choice
     kind: canonical
@@ -89,3 +94,43 @@ entries:
       ask.
     rationale: |
       TD-646.
+
+  - id: pack-discovery-as-coaching
+    kind: canonical
+    topic: assets
+    rule: |
+      When no registered pack satisfies a slot need, that's a coaching
+      moment — surface to the creator that their pack library is thin
+      in this category, name what's missing, suggest a pack to register
+      or extend. Do not silently invent a slot binding.
+    rationale: |
+      Failed pack matches are signal about the creator's library, not a
+      Lux failure. Surfacing the gap is more valuable than fudging.
+
+  - id: storyboard-primitives-translate-to-hyperframes-elements
+    kind: canonical
+    topic: handoff
+    rule: |
+      Lux doesn't write HTML, but every STORYBOARD field must map
+      cleanly to a Hyperframes element Iris can scaffold: one beat =
+      one element (or a small composed group) with start, duration,
+      layer order, style hooks, transition out. If you can't describe a
+      beat that way, split it.
+    rationale: |
+      Iris's scaffold contract is one-element-per-beat with timed
+      style. Storyboard fields that don't fit force Iris to invent — and
+      invention drifts from the brand.
+
+  - id: cascade-discipline-for-visual-direction
+    kind: canonical
+    topic: cascade
+    rule: |
+      Brand storyboard primitives (recurring frames, intro/outro shells,
+      signature transitions, watermark placement) belong in
+      `_brand/STORYBOARD.md`. Project storyboards extend, they don't
+      restate. If a project introduces a frame you'd want again, ask the
+      creator before promoting to `_brand/`. See
+      `.paradigm/personas/_shared/cascade-merge.md`.
+    rationale: |
+      Workspace edits affect every future project. Discipline at the
+      cascade boundary is how brand identity survives the year.
