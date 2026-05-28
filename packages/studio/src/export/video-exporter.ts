@@ -421,15 +421,31 @@ async function resolveAudioConfig(audioSourceUrl: string): Promise<{
     extract: async () => {
       const sink = new EncodedPacketSink(audioTrack);
       const packets: Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }> = [];
+      // Some containers (AAC in MOV/MP4) report priming-sample packets with
+      // a small negative timestamp (typically -0.024s for 24ms of encoder
+      // priming). mp4-muxer rejects negative timestamps via "must be a
+      // non-negative real number". We rebase the timestamps so the first
+      // packet sits at 0 — losing the priming offset is acceptable for our
+      // single-source use case where AV-sync is already approximate (no
+      // sub-frame Player-side audio compensation either).
+      let firstTimestampS: number | null = null;
       for await (const packet of sink.packets()) {
+        if (firstTimestampS === null) firstTimestampS = packet.timestamp;
+        // Skip packets with non-finite times (corrupt container or live
+        // stream we're not handling); also skip if duration is NaN/0 since
+        // mp4-muxer needs a real duration for muxing.
+        if (!Number.isFinite(packet.timestamp) || !Number.isFinite(packet.duration)) continue;
+        const rebasedTimestampS = packet.timestamp - firstTimestampS;
+        const tsUs = Math.max(0, Math.round(rebasedTimestampS * 1_000_000));
+        const durUs = Math.max(0, Math.round(packet.duration * 1_000_000));
         packets.push({
           data: packet.data,
           // mp4-muxer treats audio packets uniformly; mediabunny exposes
           // delta/key but for typical AAC every packet is independently
           // decodable so 'key' is the safer default.
           type: "key",
-          timestamp: Math.round(packet.timestamp * 1_000_000),
-          duration: Math.round(packet.duration * 1_000_000),
+          timestamp: tsUs,
+          duration: durUs,
         });
       }
       return packets;
