@@ -1,14 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779984544974,
+  "lastActivity": 1779984565910,
   "breadcrumbs": [
-    {
-      "timestamp": 1779966040645,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
     {
       "timestamp": 1779966144170,
       "action": "tool-call",
@@ -302,6 +296,12 @@
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779986254509,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1.0 export pipeline functional — video + captions + audio i"
     }
   ],
   "symbolsModified": [],

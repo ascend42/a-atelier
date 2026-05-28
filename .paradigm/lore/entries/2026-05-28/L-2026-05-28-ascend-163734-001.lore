@@ -1,0 +1,42 @@
+id: L-2026-05-28-ascend-163734-001
+type: milestone
+timestamp: '2026-05-28T16:37:34.557Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: v1.0 export pipeline functional — video + captions + audio in MP4
+summary: |-
+  After a fresh-build flow (workspace + project + drag-in-video + auto-captions) plus three rounds of export fixes, the studio now produces a playable MP4 with video frames, time-gated captions, AND source audio. Owner confirmed: "OK we are at great success it plays with captions and audio". The export pipeline previously had three compounding bugs surfaced in animation (1).mp4: (1) video frames didn't render because video-exporter passed no VideoFrameProvider to renderFrame, (2) captions stacked frame-over-frame because renderFrame's "clear canvas" was a no-op under default compositing (fillStyle="transparent" + fillRect, which leaves existing pixels untouched), (3) no audio because the export pipeline never demuxed the source video's audio track. Fixed in 3 commits: clearRect on the RenderContext interface for true canvas wipe; BrowserVideoFrameProvider.awaitSeek async resolver wired through ExportDialog → studio.ts for deterministic per-frame seek before encode; Mediabunny added as a dep to demux source-codec AAC packets and mp4-muxer's addAudioChunkRaw to mux them into the output (no decode/re-encode pass — sub-100ms extract for typical clips). One additional fix for AAC priming-sample offset: first packet timestamp is rebased to 0 so mp4-muxer's non-negative timestamp guard doesn't reject. v1.0 creator-flow-v1-prep branch is at 11 commits ahead of where today started, 1212/1212 tests passing, branch is ready for merge to main. Known v1.1 follow-ups: caption text clipping (text width 972 + center align overflows for long phrases — composer bounds tweak), caption placement at y=1632 feels low (composer y-ratio tweak), multi-clip audio mixing (current export muxes only the first video layer's audio), WebM + GIF audio not implemented (MP4 path only), and AAC priming-sample loss (sub-frame, imperceptible).</summary>
+  <parameter name="symbols_touched">["#video-exporter", "#render-frame", "#browser-video-frame-provider", "#canvas-panel", "#atelier-studio", "#export-dialog"]
+symbols_created:
+  - '#video-cache'
+  - '#audio-mux-pipeline'
+learnings:
+  - A renderer's per-frame 'clear canvas' must use clearRect, not fillRect("transparent") — the latter is a NO-OP under default source-over compositing. Latent bugs of this kind are masked by full-canvas visual layers (video drawImage) but explode in headless render contexts (export) where the masking layer doesn't exist.
+  - An async-then-sync bridge is the cleanest way to keep deterministic per-frame seek (export needs awaitSeek) without changing the sync VideoFrameProvider signature (preview path streams). Pre-populate a per-frame cache by awaiting all video seeks BEFORE calling renderFrame, then the sync provider just hands the cache contents back.
+  - Mediabunny's EncodedPacketSink + mp4-muxer's addAudioChunkRaw together give in-codec audio passthrough for ~50 lines of code. No decode/re-encode pass needed when the source codec (AAC) matches the output muxer's accepted set (aac/opus).
+  - AAC streams carry priming-sample packets with small negative timestamps (typically -24ms) that mp4-muxer rejects. Rebase the first packet to t=0 in the extract loop. Loss is sub-frame and imperceptible for non-music content.
+verification:
+  status: pass
+  details:
+    export-runtime: owner confirmed playback with captions + audio
+    build: clean
+    tests: 1212/1212
+tags:
+  - v1.0
+  - milestone
+  - export
+  - audio
+  - video
+  - captions
+  - owner-verified
+linked_lore:
+  - L-2026-05-28-ascend-151000-001
+  - L-2026-05-28-ascend-152556-001
+  - L-2026-05-28-ascend-113321-001
+confidence: 0.95
+git_context:
+  ref: 50296fd2699954719320e13e6fc8e738633bacbb
+  branch: feat/creator-flow-v1-prep
+  dirty: true

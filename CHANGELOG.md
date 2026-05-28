@@ -73,6 +73,41 @@ A pre-test polish pass closing the small papercuts surfaced during R2/R3 runtime
 - **Caption cross-fade reordered** — `buildPhraseDeltas` moved fade-in window from `[start - fadeF, start]` (BEFORE the phrase) to `[start, start + fadeF]` (INSIDE the phrase). For touching transcript phrases (`end_N === start_{N+1}`, the common case) cap-N fades out `[88, 90]` and cap-(N+1) fades in `[90, 92]` — no overlap, captions transition discretely instead of the 2-frame cross-fade that produced the "captions stacking" false-bug report (L-2026-05-28-ascend-151000-001). Existing v1.0-composed docs retain their old overlap deltas until re-transcribed.
 - **`import.meta` CJS build warning fixed** — split `cli.ts` and `mcp.ts` entries into ESM-only tsup configs (their binaries are ESM via `dist/cli.js` / `dist/mcp.js`; the `.cjs` builds would crash on `import.meta.url` anyway). Library entry `index.ts` keeps ESM + CJS for `require()` consumers. Build is now warning-free.
 
+### Fixed — empty-project `stale` blocker (2026-05-28)
+
+Owner cleared `creator/demo/` for a fresh-build test, then dragging media triggered `"No active project — select one in the sidebar first"` despite the sidebar correctly showing `demo ← active`. Root cause: `/api/workspace/active` checked for `<project>/project.atelier` to compute staleness, but the v1.0 flat-docs pivot (Kit-E) intentionally removed that auto-file — so every empty v1.0 project always reported `stale: true`, and workspace-app skipped initializing `activeProjectName`. Staleness check now verifies the project DIRECTORY exists (the only thing that genuinely makes the pointer stale). Empty projects are a valid starting state.
+
+### Fixed — preview-mode video playback + audio (2026-05-28)
+
+After the BrowserVideoFrameProvider landed in R3, playback was choppy ("few frames then skip") and muted. Two issues:
+
+- **Choppy playback** — the provider was always in seek-on-divergence mode. At 30fps each Player tick advanced sourceTime past the 16ms epsilon, triggering `currentTime = sourceTime` which canceled the previous in-flight seek before the `seeked` event could fire. Per-tick seeks fought the async decoder pipeline. Provider now has a `setPlaying(bool)` mode: native `video.play()` drives frame advance during playback (bypass per-tick seeks entirely; drawImage paints whatever the video has decoded); per-tick seeks resume during scrubbing. CanvasPanel wires this from togglePlay / pause / scrubber events.
+- **No audio** — the provider hardcoded `video.muted = true` (autoplay-policy hedge). togglePlay is a user-gesture, so unmuting is permitted. Provider now unmutes when entering playing mode, with a muted-fallback retry catch if autoplay-policy still rejects.
+- **Random audio stutter** — initial fix included a drift-tolerance sync seek (>250ms divergence between Player.frame and video.currentTime) that interrupted the audio decoder. Removed entirely; native decode is the source of truth during playback.
+
+### Fixed — v1.0 export pipeline: video + captions + audio in MP4 (2026-05-28)
+
+Owner exported `animation (1).mp4` — output showed a single static video frame with all 6 captions stacked, no audio. Three compounding bugs across two code paths:
+
+- **Renderer `clear canvas` was a NO-OP under default compositing** — `fillStyle = "transparent"; fillRect(...)` source-over existing pixels = existing pixels unchanged. Latent for ages; masked in the live editor by full-canvas video drawImage but exposed in export where no video painted. Switched to `ctx.clearRect(0, 0, width, height)` which actually resets pixels regardless of compositing. Added `clearRect` to the `RenderContext` interface (both browser Canvas2D and node-canvas implement it).
+- **Export pipeline never wired a VideoFrameProvider** — same trap canvas-panel hit pre-R3. New `ExportOptions.videoSeek` async resolver. New `BrowserVideoFrameProvider.awaitSeek(src, sourceTime)` that returns a Promise resolved on the `seeked` event (distinct from the streaming `get()` which can return null). Export loop awaits the seek for every VideoVisual layer per frame BEFORE calling renderFrame, then a per-frame sync provider hands the seeked frames back to the renderer. MP4 + WebM + GIF paths all updated symmetrically.
+- **No audio in output** — added **`mediabunny`** dependency (pure-TS MP4/MOV/WebM demuxer). New `ExportOptions.audioSource` takes the resolved URL of the first video layer. `mediabunny.EncodedPacketSink` extracts AAC packets IN-CODEC (no decode/re-encode pass — sub-100ms for typical clips), `mp4-muxer.addAudioChunkRaw` muxes them into the output. First packet timestamp rebased to 0 so AAC priming-sample offset (typically -24ms) doesn't trip mp4-muxer's non-negative-timestamp guard. Sub-frame loss is imperceptible.
+
+Limitations (v1.1):
+- MP4 audio only — WebM + GIF audio paths not implemented
+- Single-clip audio — multi-clip mixing is v1.1 scope
+- AAC + Opus source codecs only (mp4-muxer constraint); MP3/FLAC would need a re-encode pass
+- AAC priming-sample offset lost (sub-frame, imperceptible for non-music content)
+
+### Known v1.1 follow-ups
+
+- **Caption text clipping** — long phrases exceed the `width: 972` bounds with center alignment; composer needs a wrap-or-shrink rule
+- **Caption placement** — y=1632 (85% of 1920) feels low per owner; composer y-ratio tweak
+- **Bottom timeline drag-to-reposition + trim** — explicitly deferred to v1.1
+- **Canvas-size custom dimensions** — explicitly deferred to v1.1
+- **Carousel pick-existing tab** — explicitly deferred to v1.1
+- **Audio in WebM + GIF exports**
+
 ### Team execution
 
 This release was built almost entirely via Paradigm agent orchestration:
