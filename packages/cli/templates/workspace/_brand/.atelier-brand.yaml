@@ -1,0 +1,34 @@
+# {{WORKSPACE_NAME}} — structured brand overlay
+#
+# Agents read this for fields the markdown doesn't structure cleanly.
+# DESIGN.md / SCRIPT.md / STORYBOARD.md are the source of truth for prose;
+# this overlay captures the things agents query as data (palette, fonts,
+# whitelists, etc).
+#
+# Cascade: project-tier `projects/<name>/.atelier-overlay.yaml` extends this
+# per `.paradigm/personas/_shared/cascade-merge.md` (lists extend, scalars
+# override, maps override-at-key).
+
+name: "{{WORKSPACE_NAME}}"
+
+voice:
+  register: TODO         # one short phrase, e.g. clinical-editorial
+  tone: TODO             # e.g. confident-not-cocky
+  exemplars: []          # quill mirrors these tonally
+  do: []                 # tonal moves to make
+  dont: []               # tonal moves to never make
+
+visual:
+  primary_palette: [paper, ink, accent]
+  typography:
+    display: Inter
+    body: Inter
+  treatment:
+    photos: TODO         # e.g. high-key, generous negative space
+    motion: TODO         # e.g. gentle ease-out, never bounce
+  aspect: 9:16           # default canvas aspect (1080:1920); override per project
+
+techniques_whitelist:
+  - TODO
+techniques_blacklist:
+  - TODO

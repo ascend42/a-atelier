@@ -1,0 +1,30 @@
+# Atelier v2 workspace .gitignore
+#
+# Track: brand artifacts + workspace config + persona shims + Paradigm scaffold
+# Skip: media (large), transcripts (regenerable), Iris-emitted build artifacts
+
+# Raw media (per-project)
+projects/*/media/
+projects/*/transcripts/
+
+# Iris-emitted build artifacts
+projects/*/index.html
+projects/*/assets/
+projects/*/out/
+
+# Pack assets (often large; pack sidecars + READMEs ARE tracked)
+_packs/*/!(.atelier-pack.yaml|README.md|README)
+
+# Local Paradigm state (notebooks + lore are per-creator)
+.paradigm/sessions/
+.paradigm/conductor/
+.paradigm/sentinel/
+.paradigm/score/
+
+# Per-creator IDE state
+.claude/settings.local.json
+.cursor/state/
+
+# OS junk
+.DS_Store
+Thumbs.db

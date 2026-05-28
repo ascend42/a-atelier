@@ -25,6 +25,7 @@ import { variablesCommand } from "./commands/variables.js";
 import { studioCommand } from "./commands/studio.js";
 import { initCommand } from "./commands/init.js";
 import { mediaCommand } from "./commands/media.js";
+import { workspaceCommand } from "./commands/workspace.js";
 
 const program = new Command();
 
@@ -56,5 +57,6 @@ variablesCommand(program);
 studioCommand(program);
 initCommand(program);
 mediaCommand(program);
+workspaceCommand(program);
 
 program.parse();

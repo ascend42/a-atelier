@@ -1,0 +1,22 @@
+# Atelier v2 workspace manifest.
+# Created by `atelier workspace`. Edit fields freely.
+#
+# A workspace is a brand container. It holds:
+#   - _brand/      brand artifacts (DESIGN/SCRIPT/STORYBOARD + .atelier-brand.yaml)
+#                  inherited by every project
+#   - _packs/      asset packs (folders with .atelier-pack.yaml sidecars)
+#                  visible to every project
+#   - projects/    output series (each a self-contained brief + Hyperframes scaffold)
+#
+# Agents (Quill / Lux / Iris) read the workspace from cwd. There is no
+# `.atelier/active.yaml` in v2 — explicit project arg or cwd determines scope.
+
+version: 2.0.0
+name: "{{WORKSPACE_NAME}}"
+created: "{{ISO_DATE}}"
+
+# External pack pointers — register folders anywhere on disk so agents can
+# resolve them under `_packs/<pack>/`. Add via `atelier pack register <dir>`.
+# (`atelier pack register` ships in a later release; for now edit by hand.)
+packs:
+  external: []
