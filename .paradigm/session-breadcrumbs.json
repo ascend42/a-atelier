@@ -1,26 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779982514308,
+  "lastActivity": 1779984544974,
   "breadcrumbs": [
-    {
-      "timestamp": 1779965236914,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Triage bundle — stale doc fix + canvas aspect-fit + canvas-s"
-    },
-    {
-      "timestamp": 1779965974042,
-      "action": "tool-call",
-      "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=validating, v1.0 media-bin + timeline + sidebar-drag bundle landed acros"
-    },
-    {
-      "timestamp": 1779965989573,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Open bugs after v1.0 media-bin + timeline + triage — handoff"
-    },
     {
       "timestamp": 1779966040645,
       "action": "tool-call",
@@ -299,6 +281,24 @@
     },
     {
       "timestamp": 1779982518330,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779984465988,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779984544575,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: .purpose"
+    },
+    {
+      "timestamp": 1779984565538,
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"

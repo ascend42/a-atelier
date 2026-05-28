@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-28T15:35:18.512Z",
+    "generatedAt": "2026-05-28T16:09:25.833Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 14,
@@ -259,6 +259,196 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/video/.purpose",
       "description": "FFmpeg WASM encoding pipeline skeleton — stable interface for MP4/WebM export from canvas frame sequence; full implementation in T-003",
+      "visualTags": [],
+      "related": []
+    },
+    "#unit-types": {
+      "id": "#unit-types",
+      "name": "#unit Types",
+      "symbol": "##unit-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Pixel, Percentage, and UnitValue type definitions",
+      "visualTags": [],
+      "related": []
+    },
+    "#coordinate-types": {
+      "id": "#coordinate-types",
+      "name": "#coordinate Types",
+      "symbol": "##coordinate-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Frame, Bounds, AnchorPoint spatial types",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-types": {
+      "id": "#color-types",
+      "name": "#color Types",
+      "symbol": "##color-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
+      "visualTags": [],
+      "related": []
+    },
+    "#shape-types": {
+      "id": "#shape-types",
+      "name": "#shape Types",
+      "symbol": "##shape-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
+      "visualTags": [],
+      "related": []
+    },
+    "#layer-types": {
+      "id": "#layer-types",
+      "name": "#layer Types",
+      "symbol": "##layer-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
+      "visualTags": [],
+      "related": []
+    },
+    "#easing-types": {
+      "id": "#easing-types",
+      "name": "#easing Types",
+      "symbol": "##easing-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-types": {
+      "id": "#delta-types",
+      "name": "#delta Types",
+      "symbol": "##delta-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
+      "visualTags": [],
+      "related": []
+    },
+    "#state-types": {
+      "id": "#state-types",
+      "name": "#state Types",
+      "symbol": "##state-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "State (named choreography with duration and deltas)",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-types": {
+      "id": "#document-types",
+      "name": "#document Types",
+      "symbol": "##document-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDocument root type, Canvas config",
+      "visualTags": [],
+      "related": []
+    },
+    "#shadow-types": {
+      "id": "#shadow-types",
+      "name": "#shadow Types",
+      "symbol": "##shadow-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
+      "visualTags": [],
+      "related": []
+    },
+    "#timeline-types": {
+      "id": "#timeline-types",
+      "name": "#timeline Types",
+      "symbol": "##timeline-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Timeline, TimelineTrack, TimelineClip — derived clip-placement summary on video projects (writer-regenerated, reader-tolerant hint)",
+      "visualTags": [],
+      "related": []
+    },
+    "#slides-types": {
+      "id": "#slides-types",
+      "name": "#slides Types",
+      "symbol": "##slides-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "SlideRef, SlideTransition — carousel slide refs pointing at any .atelier in the workspace (cycle-safety is the resolver's responsibility)",
+      "visualTags": [],
+      "related": []
+    },
+    "#design-types": {
+      "id": "#design-types",
+      "name": "#design Types",
+      "symbol": "##design-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDesign, AtelierDesignRelation, DesignTypography, DesignMotion — per-file design block. Self-contained (no auto-cascade); lineage via relatedTo[].",
+      "visualTags": [],
+      "related": []
+    },
+    "#asset-types": {
+      "id": "#asset-types",
+      "name": "#asset Types",
+      "symbol": "##asset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata",
+      "visualTags": [],
+      "related": []
+    },
+    "#variable-types": {
+      "id": "#variable-types",
+      "name": "#variable Types",
+      "symbol": "##variable-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
+      "visualTags": [],
+      "related": []
+    },
+    "#interaction-types": {
+      "id": "#interaction-types",
+      "name": "#interaction Types",
+      "symbol": "##interaction-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
+      "visualTags": [],
+      "related": []
+    },
+    "#preset-types": {
+      "id": "#preset-types",
+      "name": "#preset Types",
+      "symbol": "##preset-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "PresetDelta, Preset — reusable animation delta templates",
+      "visualTags": [],
+      "related": []
+    },
+    "#video-project-types": {
+      "id": "#video-project-types",
+      "name": "#video Project Types",
+      "symbol": "##video-project-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing",
+      "visualTags": [],
+      "related": []
+    },
+    "#recipe-types": {
+      "id": "#recipe-types",
+      "name": "#recipe Types",
+      "symbol": "##recipe-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.",
       "visualTags": [],
       "related": []
     },
@@ -584,196 +774,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
       "description": "Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).",
-      "visualTags": [],
-      "related": []
-    },
-    "#unit-types": {
-      "id": "#unit-types",
-      "name": "#unit Types",
-      "symbol": "##unit-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Pixel, Percentage, and UnitValue type definitions",
-      "visualTags": [],
-      "related": []
-    },
-    "#coordinate-types": {
-      "id": "#coordinate-types",
-      "name": "#coordinate Types",
-      "symbol": "##coordinate-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Frame, Bounds, AnchorPoint spatial types",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-types": {
-      "id": "#color-types",
-      "name": "#color Types",
-      "symbol": "##color-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "RGBAColor, HSLAColor, HexColor, Color union type",
-      "visualTags": [],
-      "related": []
-    },
-    "#shape-types": {
-      "id": "#shape-types",
-      "name": "#shape Types",
-      "symbol": "##shape-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shape primitives (rect, ellipse, path), fill, stroke, text style",
-      "visualTags": [],
-      "related": []
-    },
-    "#layer-types": {
-      "id": "#layer-types",
-      "name": "#layer Types",
-      "symbol": "##layer-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Layer, Visual union (shape, text, image, video, group, ref), VideoVisual (startFrame/sourceOffset/sourceEnd/playbackRate/objectFit), SpritesheetConfig, ImageVisual.sourceRect/spritesheet/frameIndex, Layer.tint",
-      "visualTags": [],
-      "related": []
-    },
-    "#easing-types": {
-      "id": "#easing-types",
-      "name": "#easing Types",
-      "symbol": "##easing-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Easing definitions — linear, cubic-bezier, spring, step, presets",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-types": {
-      "id": "#delta-types",
-      "name": "#delta Types",
-      "symbol": "##delta-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Delta (animation instruction), AnimatableProperty (35 members), FrameRange",
-      "visualTags": [],
-      "related": []
-    },
-    "#state-types": {
-      "id": "#state-types",
-      "name": "#state Types",
-      "symbol": "##state-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "State (named choreography with duration and deltas)",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-types": {
-      "id": "#document-types",
-      "name": "#document Types",
-      "symbol": "##document-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AtelierDocument root type, Canvas config",
-      "visualTags": [],
-      "related": []
-    },
-    "#shadow-types": {
-      "id": "#shadow-types",
-      "name": "#shadow Types",
-      "symbol": "##shadow-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shadow type — drop shadow/glow effect (color, blur, offsetX, offsetY)",
-      "visualTags": [],
-      "related": []
-    },
-    "#timeline-types": {
-      "id": "#timeline-types",
-      "name": "#timeline Types",
-      "symbol": "##timeline-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Timeline, TimelineTrack, TimelineClip — derived clip-placement summary on video projects (writer-regenerated, reader-tolerant hint)",
-      "visualTags": [],
-      "related": []
-    },
-    "#slides-types": {
-      "id": "#slides-types",
-      "name": "#slides Types",
-      "symbol": "##slides-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "SlideRef, SlideTransition — carousel slide refs pointing at any .atelier in the workspace (cycle-safety is the resolver's responsibility)",
-      "visualTags": [],
-      "related": []
-    },
-    "#design-types": {
-      "id": "#design-types",
-      "name": "#design Types",
-      "symbol": "##design-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AtelierDesign, AtelierDesignRelation, DesignTypography, DesignMotion — per-file design block. Self-contained (no auto-cascade); lineage via relatedTo[].",
-      "visualTags": [],
-      "related": []
-    },
-    "#asset-types": {
-      "id": "#asset-types",
-      "name": "#asset Types",
-      "symbol": "##asset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AssetType enum, Asset type — external referenced assets (image, svg, font, animation, audio, video) with optional spritesheet/videoMeta metadata",
-      "visualTags": [],
-      "related": []
-    },
-    "#variable-types": {
-      "id": "#variable-types",
-      "name": "#variable Types",
-      "symbol": "##variable-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VariableType enum, Variable type — template variable slots (string, number, color, asset, boolean)",
-      "visualTags": [],
-      "related": []
-    },
-    "#interaction-types": {
-      "id": "#interaction-types",
-      "name": "#interaction Types",
-      "symbol": "##interaction-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TriggerType, Trigger, ActionType, Action, Interaction — trigger-action bindings for layer interactivity",
-      "visualTags": [],
-      "related": []
-    },
-    "#preset-types": {
-      "id": "#preset-types",
-      "name": "#preset Types",
-      "symbol": "##preset-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "PresetDelta, Preset — reusable animation delta templates",
-      "visualTags": [],
-      "related": []
-    },
-    "#video-project-types": {
-      "id": "#video-project-types",
-      "name": "#video Project Types",
-      "symbol": "##video-project-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VideoProject filesystem types — CutEntry, VideoCutList, TranscriptWord, TranscriptSegment, VideoTranscript, VideoProjectManifest — define the project folder convention for UGC editing",
-      "visualTags": [],
-      "related": []
-    },
-    "#recipe-types": {
-      "id": "#recipe-types",
-      "name": "#recipe Types",
-      "symbol": "##recipe-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Studio Recipe types — StudioRecipe (top-level), SilencePolicy, CaptionStyle, CaptionGrouping (Phase 1), plus Phase 1.5 OverlayRules / OverlayHandleRule / OverlayPageNumberRule / OverlayTextStyle / OverlayAnchor. Other Phase 3 sections (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) parse opaque.",
       "visualTags": [],
       "related": []
     },
@@ -1253,6 +1253,94 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
       "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
       "visualTags": [],
       "related": []
     },
@@ -2105,94 +2193,6 @@
       "visualTags": [],
       "related": []
     },
-    "#lottie-exporter": {
-      "id": "#lottie-exporter",
-      "name": "#lottie Exporter",
-      "symbol": "##lottie-exporter",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers",
-        "#lottie-warnings"
-      ]
-    },
-    "#lottie-types": {
-      "id": "#lottie-types",
-      "name": "#lottie Types",
-      "symbol": "##lottie-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-layers": {
-      "id": "#lottie-map-layers",
-      "name": "#lottie Map Layers",
-      "symbol": "##lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-shapes",
-        "#lottie-map-keyframes",
-        "#lottie-map-colors",
-        "#lottie-map-easing"
-      ]
-    },
-    "#lottie-map-shapes": {
-      "id": "#lottie-map-shapes",
-      "name": "#lottie Map Shapes",
-      "symbol": "##lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-keyframes": {
-      "id": "#lottie-map-keyframes",
-      "name": "#lottie Map Keyframes",
-      "symbol": "##lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-colors": {
-      "id": "#lottie-map-colors",
-      "name": "#lottie Map Colors",
-      "symbol": "##lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-easing": {
-      "id": "#lottie-map-easing",
-      "name": "#lottie Map Easing",
-      "symbol": "##lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-warnings": {
-      "id": "#lottie-warnings",
-      "name": "#lottie Warnings",
-      "symbol": "##lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
-      "visualTags": [],
-      "related": []
-    },
     "svg-shapes": {
       "id": "svg-shapes",
       "name": "Svg Shapes",
@@ -2275,6 +2275,74 @@
       "visualTags": [],
       "related": [
         "#mcp-tool-rename-media"
+      ]
+    },
+    "lottie-map-layers": {
+      "id": "lottie-map-layers",
+      "name": "Lottie Map Layers",
+      "symbol": "#lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-warnings": {
+      "id": "lottie-warnings",
+      "name": "Lottie Warnings",
+      "symbol": "#lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-exporter",
+      "visualTags": [],
+      "related": []
+    },
+    "lottie-map-shapes": {
+      "id": "lottie-map-shapes",
+      "name": "Lottie Map Shapes",
+      "symbol": "#lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-keyframes": {
+      "id": "lottie-map-keyframes",
+      "name": "Lottie Map Keyframes",
+      "symbol": "#lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-colors": {
+      "id": "lottie-map-colors",
+      "name": "Lottie Map Colors",
+      "symbol": "#lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
+      ]
+    },
+    "lottie-map-easing": {
+      "id": "lottie-map-easing",
+      "name": "Lottie Map Easing",
+      "symbol": "#lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Referenced from ##lottie-map-layers",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers"
       ]
     },
     "render-image": {
@@ -2469,74 +2537,6 @@
       "visualTags": [],
       "related": [
         "#render-frame"
-      ]
-    },
-    "lottie-map-layers": {
-      "id": "lottie-map-layers",
-      "name": "Lottie Map Layers",
-      "symbol": "#lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-exporter",
-      "visualTags": [],
-      "related": []
-    },
-    "lottie-warnings": {
-      "id": "lottie-warnings",
-      "name": "Lottie Warnings",
-      "symbol": "#lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-exporter",
-      "visualTags": [],
-      "related": []
-    },
-    "lottie-map-shapes": {
-      "id": "lottie-map-shapes",
-      "name": "Lottie Map Shapes",
-      "symbol": "#lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-keyframes": {
-      "id": "lottie-map-keyframes",
-      "name": "Lottie Map Keyframes",
-      "symbol": "#lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-colors": {
-      "id": "lottie-map-colors",
-      "name": "Lottie Map Colors",
-      "symbol": "#lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
-      ]
-    },
-    "lottie-map-easing": {
-      "id": "lottie-map-easing",
-      "name": "Lottie Map Easing",
-      "symbol": "#lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Referenced from ##lottie-map-layers",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers"
       ]
     }
   },
@@ -3421,6 +3421,224 @@
       "description": "The constructor seeds filename = `export.${format}` and crf = 18 FIRST, then spreads ...options last, so any caller-supplied filename/crf overrides the defaults (spread wins on conflict) while the default filename is always derived from the chosen format. Reverse the spread order and caller overrides would be silently discarded.",
       "related": []
     },
+    "unit-value-pixel-or-percent-string": {
+      "id": "unit-value-pixel-or-percent-string",
+      "name": "Unit Value Pixel Or Percent String",
+      "symbol": "~unit-value-pixel-or-percent-string",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "UnitValue is Pixel (raw number) OR a Percentage template-literal string `${number}%` — so \"50%\" is valid but a bare 50 means 50 pixels, not 50 percent. Anything consuming a UnitValue must branch on typeof to resolve percent against a reference dimension.",
+      "related": []
+    },
+    "frame-bounds-use-unitvalue-anchor-does-not": {
+      "id": "frame-bounds-use-unitvalue-anchor-does-not",
+      "name": "Frame Bounds Use Unitvalue Anchor Does Not",
+      "symbol": "~frame-bounds-use-unitvalue-anchor-does-not",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Frame (x,y) and Bounds (width,height) are UnitValue so they accept percentages, but AnchorPoint (x,y) is a plain number normalized 0-1 (0,0 = top-left, 1,1 = bottom-right) — NOT a UnitValue. Treating anchorPoint as pixels or percent is the classic mistake.",
+      "related": []
+    },
+    "color-union-mixed-channel-ranges": {
+      "id": "color-union-mixed-channel-ranges",
+      "name": "Color Union Mixed Channel Ranges",
+      "symbol": "~color-union-mixed-channel-ranges",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Color is a union of RGBAColor | HSLAColor | HexColor (a plain string), with no discriminant field — callers must structurally sniff (r/g/b vs h/s/l vs string). RGBAColor channels are 0-255 but its alpha a is 0-1, an inconsistent range within the same object.",
+      "related": []
+    },
+    "shape-fill-discriminated-by-type": {
+      "id": "shape-fill-discriminated-by-type",
+      "name": "Shape Fill Discriminated By Type",
+      "symbol": "~shape-fill-discriminated-by-type",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shape (rect|ellipse|path) and Fill (solid|linear-gradient|radial-gradient) are both discriminated unions on a `type` string literal. RectShape.cornerRadius is either one number (uniform) or a 4-tuple of numbers (per-corner); PathShape requires points and only PathShape carries them.",
+      "related": []
+    },
+    "shape-normalized-and-unit-fields": {
+      "id": "shape-normalized-and-unit-fields",
+      "name": "Shape Normalized And Unit Fields",
+      "symbol": "~shape-normalized-and-unit-fields",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "GradientStop.offset, Stroke.strokeStart (default 0) and Stroke.strokeEnd (default 1) are all 0-1 normalized fractions, while LinearGradientFill.angle is degrees and Stroke.width is pixels — mixed units across the shape module. RadialGradientFill center/radius are UnitValue (percent-capable).",
+      "related": []
+    },
+    "text-style-required-fields": {
+      "id": "text-style-required-fields",
+      "name": "Text Style Required Fields",
+      "symbol": "~text-style-required-fields",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TextStyle requires fontFamily, fontSize, and color; everything else (fontWeight, fontStyle, textAlign, lineHeight, letterSpacing) is optional. fontWeight accepts a number OR the strings \"normal\"/\"bold\" — a mixed-type field a renderer must handle both ways.",
+      "related": []
+    },
+    "visual-discriminated-six-variants": {
+      "id": "visual-discriminated-six-variants",
+      "name": "Visual Discriminated Six Variants",
+      "symbol": "~visual-discriminated-six-variants",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Visual is a 6-way discriminated union on `type` (shape|text|image|video|group|ref). Adding a new visual kind requires editing this union AND every exhaustive switch over Visual.type across the codebase — the type is the single source for \"what can a layer be\".",
+      "related": []
+    },
+    "video-visual-frames-vs-seconds": {
+      "id": "video-visual-frames-vs-seconds",
+      "name": "Video Visual Frames Vs Seconds",
+      "symbol": "~video-visual-frames-vs-seconds",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VideoVisual mixes time units in one object — startFrame is COMPOSITION FRAMES (when the clip enters the timeline) while sourceOffset and sourceEnd are SECONDS into the source media, and sourceEnd must exceed sourceOffset to play any range. volume is 0-1, playbackRate defaults to 1.0. Confusing frames and seconds here silently mis-times video.",
+      "related": []
+    },
+    "layer-normalized-transform-fields": {
+      "id": "layer-normalized-transform-fields",
+      "name": "Layer Normalized Transform Fields",
+      "symbol": "~layer-normalized-transform-fields",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Layer.opacity is 0-1, rotation is degrees, scale is a {x,y} factor (1 = unchanged), and only frame/bounds are UnitValue. tint is {color: string, amount: number} where amount is the 0-1 blend strength. visible defaults to true when omitted; visual/frame/bounds are the only required Layer fields.",
+      "related": []
+    },
+    "easing-objects-or-preset-string": {
+      "id": "easing-objects-or-preset-string",
+      "name": "Easing Objects Or Preset String",
+      "symbol": "~easing-objects-or-preset-string",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Easing is EITHER a discriminated object (linear|cubic-bezier|spring|step keyed by type) OR a bare preset string (linear|ease-in|ease-out|ease-in-out) — note \"linear\" exists in BOTH forms. SpringEasing fields are all optional (engine defaults), but CubicBezier requires x1/y1/x2/y2 and StepEasing requires steps.",
+      "related": []
+    },
+    "animatable-property-closed-dotpath-union": {
+      "id": "animatable-property-closed-dotpath-union",
+      "name": "Animatable Property Closed Dotpath Union",
+      "symbol": "~animatable-property-closed-dotpath-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AnimatableProperty is a CLOSED union of ~35 dot-path string literals (e.g. \"frame.x\", \"visual.fill.color\", \"tint.amount\"). Animating a property not listed here is a type error; adding a new animatable property means editing this union AND the runtime Zod source in @a-company/atelier-schema (noted in the file comment).",
+      "related": []
+    },
+    "delta-range-inclusive-from-to-unknown": {
+      "id": "delta-range-inclusive-from-to-unknown",
+      "name": "Delta Range Inclusive From To Unknown",
+      "symbol": "~delta-range-inclusive-from-to-unknown",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "FrameRange is a [start, end] tuple that is INCLUSIVE and 0-based. Delta.from and Delta.to are typed `unknown` — the value type is implied by the property being animated (number, color, boolean, string), so consumers must coerce/validate at runtime; the type system will not catch a mismatched from/to.",
+      "related": []
+    },
+    "state-duration-required-parent-overrides": {
+      "id": "state-duration-required-parent-overrides",
+      "name": "State Duration Required Parent Overrides",
+      "symbol": "~state-duration-required-parent-overrides",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "State.duration (frames) and State.deltas are required; parent is a state-name string whose deltas are inherited with CHILD-OVERRIDES-WIN semantics. transitions is a map keyed by TARGET state name, each value a StateTransitionConfig whose duration is in frames.",
+      "related": []
+    },
+    "document-canvas-and-keyed-maps": {
+      "id": "document-canvas-and-keyed-maps",
+      "name": "Document Canvas And Keyed Maps",
+      "symbol": "~document-canvas-and-keyed-maps",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "AtelierDocument requires version, name, canvas, layers (array) and states. states/variables/assets/presets are RECORDs keyed by id, but layers is an ARRAY (order matters for z-stacking). Canvas requires width, height, fps; background is optional.",
+      "related": []
+    },
+    "shadow-color-and-blur-required": {
+      "id": "shadow-color-and-blur-required",
+      "name": "Shadow Color And Blur Required",
+      "symbol": "~shadow-color-and-blur-required",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Shadow requires color (a full Color union value) and blur (pixels); offsetX/offsetY are optional and default to 0 (a centered glow). Reusing the Color union means a shadow color can itself be RGBA, HSLA, or a hex string.",
+      "related": []
+    },
+    "audiovisual-layer-not-state-scoped": {
+      "id": "audiovisual-layer-not-state-scoped",
+      "name": "Audiovisual Layer Not State Scoped",
+      "symbol": "~audiovisual-layer-not-state-scoped",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "v1.0: audio is a first-class AudioVisual layer (type: \"audio\"), not a per-state field. Mixes time units like VideoVisual — sourceOffset/sourceEnd in SECONDS into the source; startFrame in COMPOSITION FRAMES; fadeIn/fadeOut in seconds at layer edges. State.audio was REMOVED in v1.0; pre-v1 docs strip the field on read (Zod default strip-unknown-keys).",
+      "related": []
+    },
+    "asset-videometa-required-for-video-gate": {
+      "id": "asset-videometa-required-for-video-gate",
+      "name": "Asset Videometa Required For Video Gate",
+      "symbol": "~asset-videometa-required-for-video-gate",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Asset.type is a 6-value closed enum (image|svg|font|animation|audio|video). videoMeta is OPTIONAL in TypeScript but REQUIRED at validation time for the ^valid-video-layer gate (per the field comment) — a video asset without videoMeta type-checks yet fails the gate. spritesheet metadata is image-only.",
+      "related": [
+        "^valid-video-layer"
+      ]
+    },
+    "variable-type-enum-default-unknown": {
+      "id": "variable-type-enum-default-unknown",
+      "name": "Variable Type Enum Default Unknown",
+      "symbol": "~variable-type-enum-default-unknown",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "VariableType is a 5-value closed enum (string|number|color|asset|boolean). Variable.default is typed `unknown` — its real type is implied by Variable.type, so binding/validation must reconcile the declared type against the default at runtime; the type system will not enforce it.",
+      "related": []
+    },
+    "interaction-trigger-action-discriminants": {
+      "id": "interaction-trigger-action-discriminants",
+      "name": "Interaction Trigger Action Discriminants",
+      "symbol": "~interaction-trigger-action-discriminants",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TriggerType (6 values) and ActionType (4 values) are closed unions, and Trigger/Action use a discriminated-by-type shape where the OTHER fields are conditionally meaningful — e.g. Trigger.delay only for \"timer\", Action.state only for \"go-to-state\", Action.value (unknown) only for \"set-variable\". An Interaction binds exactly one trigger to one action and requires id.",
+      "related": []
+    },
+    "preset-delta-omits-layer-offset-relative": {
+      "id": "preset-delta-omits-layer-offset-relative",
+      "name": "Preset Delta Omits Layer Offset Relative",
+      "symbol": "~preset-delta-omits-layer-offset-relative",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "PresetDelta deliberately has NO `layer` field — the target layer is supplied at application time, which is what makes a Preset reusable across layers. Its offset is a RELATIVE [start,end] tuple measured from the application point, not absolute composition frames; from/to are unknown like Delta.",
+      "related": []
+    },
+    "video-project-parametric-cuts-v11-migration": {
+      "id": "video-project-parametric-cuts-v11-migration",
+      "name": "Video Project Parametric Cuts V11 Migration",
+      "symbol": "~video-project-parametric-cuts-v11-migration",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "CutEntry stores immutable detected boundaries (rawStart/rawEnd, seconds) separately from user-tunable paddingPre/paddingPost (seconds) — effective span = rawStart - paddingPre / rawEnd + paddingPost, clamped to source. VideoCutList version is \"1.1\"; loaders migrate flat 1.0 {start,end} on read but writers always emit 1.1.",
+      "related": []
+    },
+    "transcript-editable-words-preserve-flags": {
+      "id": "transcript-editable-words-preserve-flags",
+      "name": "Transcript Editable Words Preserve Flags",
+      "symbol": "~transcript-editable-words-preserve-flags",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "TranscriptWord splits detected (immutable Whisper output) from text (user-overridable render value); userEdited/userAdded/hidden flags SURVIVE re-transcribe by matching on timing + detected text. start/end are SECONDS and audio-anchored — they never move on text edits. VideoTranscript version is \"1.1\" with 1.0→1.1 migration on load.",
+      "related": []
+    },
+    "recipe-typed-phase1-vs-opaque-phase3": {
+      "id": "recipe-typed-phase1-vs-opaque-phase3",
+      "name": "Recipe Typed Phase1 Vs Opaque Phase3",
+      "symbol": "~recipe-typed-phase1-vs-opaque-phase3",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "StudioRecipe has only version + name required; silence_policy / caption_style / caption_grouping (Phase 1) and overlay_rules (Phase 1.5) are fully typed, but caption_highlight / transition_kit / palette / audio_policy / aspect_targets are typed `unknown`/`unknown[]` so Phase 1 recipes stay forward-compatible with Phase 3 without schema changes.",
+      "related": []
+    },
+    "recipe-snakecase-and-unit-conventions": {
+      "id": "recipe-snakecase-and-unit-conventions",
+      "name": "Recipe Snakecase And Unit Conventions",
+      "symbol": "~recipe-snakecase-and-unit-conventions",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
+      "description": "Recipe fields use snake_case (not the camelCase of the core types), and units differ by block — SilencePolicy paddings/min_silence/match_tolerance are SECONDS, CaptionStyle y_ratio/width_ratio are 0-1 ratios of canvas, fade_seconds is seconds, CaptionGrouping pause_gap is seconds. OverlayRules use anchor (corner enum) + margin (px), NOT y_ratio.",
+      "related": []
+    },
     "declarative-string-vs-imperative-ctx": {
       "id": "declarative-string-vs-imperative-ctx",
       "name": "Declarative String Vs Imperative Ctx",
@@ -4109,224 +4327,6 @@
       "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
       "related": []
     },
-    "unit-value-pixel-or-percent-string": {
-      "id": "unit-value-pixel-or-percent-string",
-      "name": "Unit Value Pixel Or Percent String",
-      "symbol": "~unit-value-pixel-or-percent-string",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "UnitValue is Pixel (raw number) OR a Percentage template-literal string `${number}%` — so \"50%\" is valid but a bare 50 means 50 pixels, not 50 percent. Anything consuming a UnitValue must branch on typeof to resolve percent against a reference dimension.",
-      "related": []
-    },
-    "frame-bounds-use-unitvalue-anchor-does-not": {
-      "id": "frame-bounds-use-unitvalue-anchor-does-not",
-      "name": "Frame Bounds Use Unitvalue Anchor Does Not",
-      "symbol": "~frame-bounds-use-unitvalue-anchor-does-not",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Frame (x,y) and Bounds (width,height) are UnitValue so they accept percentages, but AnchorPoint (x,y) is a plain number normalized 0-1 (0,0 = top-left, 1,1 = bottom-right) — NOT a UnitValue. Treating anchorPoint as pixels or percent is the classic mistake.",
-      "related": []
-    },
-    "color-union-mixed-channel-ranges": {
-      "id": "color-union-mixed-channel-ranges",
-      "name": "Color Union Mixed Channel Ranges",
-      "symbol": "~color-union-mixed-channel-ranges",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Color is a union of RGBAColor | HSLAColor | HexColor (a plain string), with no discriminant field — callers must structurally sniff (r/g/b vs h/s/l vs string). RGBAColor channels are 0-255 but its alpha a is 0-1, an inconsistent range within the same object.",
-      "related": []
-    },
-    "shape-fill-discriminated-by-type": {
-      "id": "shape-fill-discriminated-by-type",
-      "name": "Shape Fill Discriminated By Type",
-      "symbol": "~shape-fill-discriminated-by-type",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shape (rect|ellipse|path) and Fill (solid|linear-gradient|radial-gradient) are both discriminated unions on a `type` string literal. RectShape.cornerRadius is either one number (uniform) or a 4-tuple of numbers (per-corner); PathShape requires points and only PathShape carries them.",
-      "related": []
-    },
-    "shape-normalized-and-unit-fields": {
-      "id": "shape-normalized-and-unit-fields",
-      "name": "Shape Normalized And Unit Fields",
-      "symbol": "~shape-normalized-and-unit-fields",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "GradientStop.offset, Stroke.strokeStart (default 0) and Stroke.strokeEnd (default 1) are all 0-1 normalized fractions, while LinearGradientFill.angle is degrees and Stroke.width is pixels — mixed units across the shape module. RadialGradientFill center/radius are UnitValue (percent-capable).",
-      "related": []
-    },
-    "text-style-required-fields": {
-      "id": "text-style-required-fields",
-      "name": "Text Style Required Fields",
-      "symbol": "~text-style-required-fields",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TextStyle requires fontFamily, fontSize, and color; everything else (fontWeight, fontStyle, textAlign, lineHeight, letterSpacing) is optional. fontWeight accepts a number OR the strings \"normal\"/\"bold\" — a mixed-type field a renderer must handle both ways.",
-      "related": []
-    },
-    "visual-discriminated-six-variants": {
-      "id": "visual-discriminated-six-variants",
-      "name": "Visual Discriminated Six Variants",
-      "symbol": "~visual-discriminated-six-variants",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Visual is a 6-way discriminated union on `type` (shape|text|image|video|group|ref). Adding a new visual kind requires editing this union AND every exhaustive switch over Visual.type across the codebase — the type is the single source for \"what can a layer be\".",
-      "related": []
-    },
-    "video-visual-frames-vs-seconds": {
-      "id": "video-visual-frames-vs-seconds",
-      "name": "Video Visual Frames Vs Seconds",
-      "symbol": "~video-visual-frames-vs-seconds",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VideoVisual mixes time units in one object — startFrame is COMPOSITION FRAMES (when the clip enters the timeline) while sourceOffset and sourceEnd are SECONDS into the source media, and sourceEnd must exceed sourceOffset to play any range. volume is 0-1, playbackRate defaults to 1.0. Confusing frames and seconds here silently mis-times video.",
-      "related": []
-    },
-    "layer-normalized-transform-fields": {
-      "id": "layer-normalized-transform-fields",
-      "name": "Layer Normalized Transform Fields",
-      "symbol": "~layer-normalized-transform-fields",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Layer.opacity is 0-1, rotation is degrees, scale is a {x,y} factor (1 = unchanged), and only frame/bounds are UnitValue. tint is {color: string, amount: number} where amount is the 0-1 blend strength. visible defaults to true when omitted; visual/frame/bounds are the only required Layer fields.",
-      "related": []
-    },
-    "easing-objects-or-preset-string": {
-      "id": "easing-objects-or-preset-string",
-      "name": "Easing Objects Or Preset String",
-      "symbol": "~easing-objects-or-preset-string",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Easing is EITHER a discriminated object (linear|cubic-bezier|spring|step keyed by type) OR a bare preset string (linear|ease-in|ease-out|ease-in-out) — note \"linear\" exists in BOTH forms. SpringEasing fields are all optional (engine defaults), but CubicBezier requires x1/y1/x2/y2 and StepEasing requires steps.",
-      "related": []
-    },
-    "animatable-property-closed-dotpath-union": {
-      "id": "animatable-property-closed-dotpath-union",
-      "name": "Animatable Property Closed Dotpath Union",
-      "symbol": "~animatable-property-closed-dotpath-union",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AnimatableProperty is a CLOSED union of ~35 dot-path string literals (e.g. \"frame.x\", \"visual.fill.color\", \"tint.amount\"). Animating a property not listed here is a type error; adding a new animatable property means editing this union AND the runtime Zod source in @a-company/atelier-schema (noted in the file comment).",
-      "related": []
-    },
-    "delta-range-inclusive-from-to-unknown": {
-      "id": "delta-range-inclusive-from-to-unknown",
-      "name": "Delta Range Inclusive From To Unknown",
-      "symbol": "~delta-range-inclusive-from-to-unknown",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "FrameRange is a [start, end] tuple that is INCLUSIVE and 0-based. Delta.from and Delta.to are typed `unknown` — the value type is implied by the property being animated (number, color, boolean, string), so consumers must coerce/validate at runtime; the type system will not catch a mismatched from/to.",
-      "related": []
-    },
-    "state-duration-required-parent-overrides": {
-      "id": "state-duration-required-parent-overrides",
-      "name": "State Duration Required Parent Overrides",
-      "symbol": "~state-duration-required-parent-overrides",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "State.duration (frames) and State.deltas are required; parent is a state-name string whose deltas are inherited with CHILD-OVERRIDES-WIN semantics. transitions is a map keyed by TARGET state name, each value a StateTransitionConfig whose duration is in frames.",
-      "related": []
-    },
-    "document-canvas-and-keyed-maps": {
-      "id": "document-canvas-and-keyed-maps",
-      "name": "Document Canvas And Keyed Maps",
-      "symbol": "~document-canvas-and-keyed-maps",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "AtelierDocument requires version, name, canvas, layers (array) and states. states/variables/assets/presets are RECORDs keyed by id, but layers is an ARRAY (order matters for z-stacking). Canvas requires width, height, fps; background is optional.",
-      "related": []
-    },
-    "shadow-color-and-blur-required": {
-      "id": "shadow-color-and-blur-required",
-      "name": "Shadow Color And Blur Required",
-      "symbol": "~shadow-color-and-blur-required",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Shadow requires color (a full Color union value) and blur (pixels); offsetX/offsetY are optional and default to 0 (a centered glow). Reusing the Color union means a shadow color can itself be RGBA, HSLA, or a hex string.",
-      "related": []
-    },
-    "audiovisual-layer-not-state-scoped": {
-      "id": "audiovisual-layer-not-state-scoped",
-      "name": "Audiovisual Layer Not State Scoped",
-      "symbol": "~audiovisual-layer-not-state-scoped",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "v1.0: audio is a first-class AudioVisual layer (type: \"audio\"), not a per-state field. Mixes time units like VideoVisual — sourceOffset/sourceEnd in SECONDS into the source; startFrame in COMPOSITION FRAMES; fadeIn/fadeOut in seconds at layer edges. State.audio was REMOVED in v1.0; pre-v1 docs strip the field on read (Zod default strip-unknown-keys).",
-      "related": []
-    },
-    "asset-videometa-required-for-video-gate": {
-      "id": "asset-videometa-required-for-video-gate",
-      "name": "Asset Videometa Required For Video Gate",
-      "symbol": "~asset-videometa-required-for-video-gate",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Asset.type is a 6-value closed enum (image|svg|font|animation|audio|video). videoMeta is OPTIONAL in TypeScript but REQUIRED at validation time for the ^valid-video-layer gate (per the field comment) — a video asset without videoMeta type-checks yet fails the gate. spritesheet metadata is image-only.",
-      "related": [
-        "^valid-video-layer"
-      ]
-    },
-    "variable-type-enum-default-unknown": {
-      "id": "variable-type-enum-default-unknown",
-      "name": "Variable Type Enum Default Unknown",
-      "symbol": "~variable-type-enum-default-unknown",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "VariableType is a 5-value closed enum (string|number|color|asset|boolean). Variable.default is typed `unknown` — its real type is implied by Variable.type, so binding/validation must reconcile the declared type against the default at runtime; the type system will not enforce it.",
-      "related": []
-    },
-    "interaction-trigger-action-discriminants": {
-      "id": "interaction-trigger-action-discriminants",
-      "name": "Interaction Trigger Action Discriminants",
-      "symbol": "~interaction-trigger-action-discriminants",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TriggerType (6 values) and ActionType (4 values) are closed unions, and Trigger/Action use a discriminated-by-type shape where the OTHER fields are conditionally meaningful — e.g. Trigger.delay only for \"timer\", Action.state only for \"go-to-state\", Action.value (unknown) only for \"set-variable\". An Interaction binds exactly one trigger to one action and requires id.",
-      "related": []
-    },
-    "preset-delta-omits-layer-offset-relative": {
-      "id": "preset-delta-omits-layer-offset-relative",
-      "name": "Preset Delta Omits Layer Offset Relative",
-      "symbol": "~preset-delta-omits-layer-offset-relative",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "PresetDelta deliberately has NO `layer` field — the target layer is supplied at application time, which is what makes a Preset reusable across layers. Its offset is a RELATIVE [start,end] tuple measured from the application point, not absolute composition frames; from/to are unknown like Delta.",
-      "related": []
-    },
-    "video-project-parametric-cuts-v11-migration": {
-      "id": "video-project-parametric-cuts-v11-migration",
-      "name": "Video Project Parametric Cuts V11 Migration",
-      "symbol": "~video-project-parametric-cuts-v11-migration",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "CutEntry stores immutable detected boundaries (rawStart/rawEnd, seconds) separately from user-tunable paddingPre/paddingPost (seconds) — effective span = rawStart - paddingPre / rawEnd + paddingPost, clamped to source. VideoCutList version is \"1.1\"; loaders migrate flat 1.0 {start,end} on read but writers always emit 1.1.",
-      "related": []
-    },
-    "transcript-editable-words-preserve-flags": {
-      "id": "transcript-editable-words-preserve-flags",
-      "name": "Transcript Editable Words Preserve Flags",
-      "symbol": "~transcript-editable-words-preserve-flags",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "TranscriptWord splits detected (immutable Whisper output) from text (user-overridable render value); userEdited/userAdded/hidden flags SURVIVE re-transcribe by matching on timing + detected text. start/end are SECONDS and audio-anchored — they never move on text edits. VideoTranscript version is \"1.1\" with 1.0→1.1 migration on load.",
-      "related": []
-    },
-    "recipe-typed-phase1-vs-opaque-phase3": {
-      "id": "recipe-typed-phase1-vs-opaque-phase3",
-      "name": "Recipe Typed Phase1 Vs Opaque Phase3",
-      "symbol": "~recipe-typed-phase1-vs-opaque-phase3",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "StudioRecipe has only version + name required; silence_policy / caption_style / caption_grouping (Phase 1) and overlay_rules (Phase 1.5) are fully typed, but caption_highlight / transition_kit / palette / audio_policy / aspect_targets are typed `unknown`/`unknown[]` so Phase 1 recipes stay forward-compatible with Phase 3 without schema changes.",
-      "related": []
-    },
-    "recipe-snakecase-and-unit-conventions": {
-      "id": "recipe-snakecase-and-unit-conventions",
-      "name": "Recipe Snakecase And Unit Conventions",
-      "symbol": "~recipe-snakecase-and-unit-conventions",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/types/.purpose",
-      "description": "Recipe fields use snake_case (not the camelCase of the core types), and units differ by block — SilencePolicy paddings/min_silence/match_tolerance are SECONDS, CaptionStyle y_ratio/width_ratio are 0-1 ratios of canvas, fade_seconds is seconds, CaptionGrouping pause_gap is seconds. OverlayRules use anchor (corner enum) + margin (px), NOT y_ratio.",
-      "related": []
-    },
     "canvas-intrinsic-not-css-size": {
       "id": "canvas-intrinsic-not-css-size",
       "name": "Canvas Intrinsic Not Css Size",
@@ -4961,6 +4961,195 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
       "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
+      "related": []
+    },
+    "pinned-lottie-version": {
+      "id": "pinned-lottie-version",
+      "name": "Pinned Lottie Version",
+      "symbol": "~pinned-lottie-version",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
+      "related": []
+    },
+    "default-first-state": {
+      "id": "default-first-state",
+      "name": "Default First State",
+      "symbol": "~default-first-state",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
+      "related": []
+    },
+    "warning-dedup-collapse": {
+      "id": "warning-dedup-collapse",
+      "name": "Warning Dedup Collapse",
+      "symbol": "~warning-dedup-collapse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
+      "related": []
+    },
+    "image-asset-fixed-dimensions": {
+      "id": "image-asset-fixed-dimensions",
+      "name": "Image Asset Fixed Dimensions",
+      "symbol": "~image-asset-fixed-dimensions",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
+      "related": []
+    },
+    "numeric-layer-type-discriminant": {
+      "id": "numeric-layer-type-discriminant",
+      "name": "Numeric Layer Type Discriminant",
+      "symbol": "~numeric-layer-type-discriminant",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
+      "related": []
+    },
+    "bezier-handles-as-xy-objects": {
+      "id": "bezier-handles-as-xy-objects",
+      "name": "Bezier Handles As Xy Objects",
+      "symbol": "~bezier-handles-as-xy-objects",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
+      "related": []
+    },
+    "percentage-units-collapse-to-zero": {
+      "id": "percentage-units-collapse-to-zero",
+      "name": "Percentage Units Collapse To Zero",
+      "symbol": "~percentage-units-collapse-to-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
+      "related": []
+    },
+    "layer-index-is-parent-pointer": {
+      "id": "layer-index-is-parent-pointer",
+      "name": "Layer Index Is Parent Pointer",
+      "symbol": "~layer-index-is-parent-pointer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
+      "related": []
+    },
+    "opacity-and-scale-percent-rescale": {
+      "id": "opacity-and-scale-percent-rescale",
+      "name": "Opacity And Scale Percent Rescale",
+      "symbol": "~opacity-and-scale-percent-rescale",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
+      "related": []
+    },
+    "max-frame-fallback-sixty": {
+      "id": "max-frame-fallback-sixty",
+      "name": "Max Frame Fallback Sixty",
+      "symbol": "~max-frame-fallback-sixty",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
+      "related": []
+    },
+    "rect-centered-radial-fixed": {
+      "id": "rect-centered-radial-fixed",
+      "name": "Rect Centered Radial Fixed",
+      "symbol": "~rect-centered-radial-fixed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
+      "related": []
+    },
+    "gradient-stop-stride-no-alpha": {
+      "id": "gradient-stop-stride-no-alpha",
+      "name": "Gradient Stop Stride No Alpha",
+      "symbol": "~gradient-stop-stride-no-alpha",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
+      "related": []
+    },
+    "unknown-fill-black-fallback": {
+      "id": "unknown-fill-black-fallback",
+      "name": "Unknown Fill Black Fallback",
+      "symbol": "~unknown-fill-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
+      "related": []
+    },
+    "expression-short-circuits-static-zero": {
+      "id": "expression-short-circuits-static-zero",
+      "name": "Expression Short Circuits Static Zero",
+      "symbol": "~expression-short-circuits-static-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
+      "related": []
+    },
+    "position-z-zero-easing-from-x": {
+      "id": "position-z-zero-easing-from-x",
+      "name": "Position Z Zero Easing From X",
+      "symbol": "~position-z-zero-easing-from-x",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
+      "related": []
+    },
+    "keyframe-hold-last-completed": {
+      "id": "keyframe-hold-last-completed",
+      "name": "Keyframe Hold Last Completed",
+      "symbol": "~keyframe-hold-last-completed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
+      "related": []
+    },
+    "rgb-normalize-255-to-unit": {
+      "id": "rgb-normalize-255-to-unit",
+      "name": "Rgb Normalize 255 To Unit",
+      "symbol": "~rgb-normalize-255-to-unit",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
+      "related": []
+    },
+    "hex-shorthand-and-black-fallback": {
+      "id": "hex-shorthand-and-black-fallback",
+      "name": "Hex Shorthand And Black Fallback",
+      "symbol": "~hex-shorthand-and-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
+      "related": []
+    },
+    "easing-handles-swapped-and-inverted": {
+      "id": "easing-handles-swapped-and-inverted",
+      "name": "Easing Handles Swapped And Inverted",
+      "symbol": "~easing-handles-swapped-and-inverted",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
+      "related": []
+    },
+    "lossy-easing-approximations": {
+      "id": "lossy-easing-approximations",
+      "name": "Lossy Easing Approximations",
+      "symbol": "~lossy-easing-approximations",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
+      "related": []
+    },
+    "unsupported-feature-catalog": {
+      "id": "unsupported-feature-catalog",
+      "name": "Unsupported Feature Catalog",
+      "symbol": "~unsupported-feature-catalog",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
       "related": []
     },
     "frame-resolution-determinism": {
@@ -6172,195 +6361,6 @@
       "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
       "related": []
     },
-    "pinned-lottie-version": {
-      "id": "pinned-lottie-version",
-      "name": "Pinned Lottie Version",
-      "symbol": "~pinned-lottie-version",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
-      "related": []
-    },
-    "default-first-state": {
-      "id": "default-first-state",
-      "name": "Default First State",
-      "symbol": "~default-first-state",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
-      "related": []
-    },
-    "warning-dedup-collapse": {
-      "id": "warning-dedup-collapse",
-      "name": "Warning Dedup Collapse",
-      "symbol": "~warning-dedup-collapse",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
-      "related": []
-    },
-    "image-asset-fixed-dimensions": {
-      "id": "image-asset-fixed-dimensions",
-      "name": "Image Asset Fixed Dimensions",
-      "symbol": "~image-asset-fixed-dimensions",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
-      "related": []
-    },
-    "numeric-layer-type-discriminant": {
-      "id": "numeric-layer-type-discriminant",
-      "name": "Numeric Layer Type Discriminant",
-      "symbol": "~numeric-layer-type-discriminant",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
-      "related": []
-    },
-    "bezier-handles-as-xy-objects": {
-      "id": "bezier-handles-as-xy-objects",
-      "name": "Bezier Handles As Xy Objects",
-      "symbol": "~bezier-handles-as-xy-objects",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
-      "related": []
-    },
-    "percentage-units-collapse-to-zero": {
-      "id": "percentage-units-collapse-to-zero",
-      "name": "Percentage Units Collapse To Zero",
-      "symbol": "~percentage-units-collapse-to-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
-      "related": []
-    },
-    "layer-index-is-parent-pointer": {
-      "id": "layer-index-is-parent-pointer",
-      "name": "Layer Index Is Parent Pointer",
-      "symbol": "~layer-index-is-parent-pointer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
-      "related": []
-    },
-    "opacity-and-scale-percent-rescale": {
-      "id": "opacity-and-scale-percent-rescale",
-      "name": "Opacity And Scale Percent Rescale",
-      "symbol": "~opacity-and-scale-percent-rescale",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
-      "related": []
-    },
-    "max-frame-fallback-sixty": {
-      "id": "max-frame-fallback-sixty",
-      "name": "Max Frame Fallback Sixty",
-      "symbol": "~max-frame-fallback-sixty",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
-      "related": []
-    },
-    "rect-centered-radial-fixed": {
-      "id": "rect-centered-radial-fixed",
-      "name": "Rect Centered Radial Fixed",
-      "symbol": "~rect-centered-radial-fixed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
-      "related": []
-    },
-    "gradient-stop-stride-no-alpha": {
-      "id": "gradient-stop-stride-no-alpha",
-      "name": "Gradient Stop Stride No Alpha",
-      "symbol": "~gradient-stop-stride-no-alpha",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
-      "related": []
-    },
-    "unknown-fill-black-fallback": {
-      "id": "unknown-fill-black-fallback",
-      "name": "Unknown Fill Black Fallback",
-      "symbol": "~unknown-fill-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
-      "related": []
-    },
-    "expression-short-circuits-static-zero": {
-      "id": "expression-short-circuits-static-zero",
-      "name": "Expression Short Circuits Static Zero",
-      "symbol": "~expression-short-circuits-static-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
-      "related": []
-    },
-    "position-z-zero-easing-from-x": {
-      "id": "position-z-zero-easing-from-x",
-      "name": "Position Z Zero Easing From X",
-      "symbol": "~position-z-zero-easing-from-x",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
-      "related": []
-    },
-    "keyframe-hold-last-completed": {
-      "id": "keyframe-hold-last-completed",
-      "name": "Keyframe Hold Last Completed",
-      "symbol": "~keyframe-hold-last-completed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
-      "related": []
-    },
-    "rgb-normalize-255-to-unit": {
-      "id": "rgb-normalize-255-to-unit",
-      "name": "Rgb Normalize 255 To Unit",
-      "symbol": "~rgb-normalize-255-to-unit",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
-      "related": []
-    },
-    "hex-shorthand-and-black-fallback": {
-      "id": "hex-shorthand-and-black-fallback",
-      "name": "Hex Shorthand And Black Fallback",
-      "symbol": "~hex-shorthand-and-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
-      "related": []
-    },
-    "easing-handles-swapped-and-inverted": {
-      "id": "easing-handles-swapped-and-inverted",
-      "name": "Easing Handles Swapped And Inverted",
-      "symbol": "~easing-handles-swapped-and-inverted",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
-      "related": []
-    },
-    "lossy-easing-approximations": {
-      "id": "lossy-easing-approximations",
-      "name": "Lossy Easing Approximations",
-      "symbol": "~lossy-easing-approximations",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
-      "related": []
-    },
-    "unsupported-feature-catalog": {
-      "id": "unsupported-feature-catalog",
-      "name": "Unsupported Feature Catalog",
-      "symbol": "~unsupported-feature-catalog",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
-      "related": []
-    },
     "ingest-dispatch-doc-target.": {
       "id": "ingest-dispatch-doc-target.",
       "name": "Ingest Dispatch Doc Target.",
@@ -6490,6 +6490,82 @@
       "category": "components",
       "id": "#ffmpeg-encoder"
     },
+    "##unit-types": {
+      "category": "components",
+      "id": "#unit-types"
+    },
+    "##coordinate-types": {
+      "category": "components",
+      "id": "#coordinate-types"
+    },
+    "##color-types": {
+      "category": "components",
+      "id": "#color-types"
+    },
+    "##shape-types": {
+      "category": "components",
+      "id": "#shape-types"
+    },
+    "##layer-types": {
+      "category": "components",
+      "id": "#layer-types"
+    },
+    "##easing-types": {
+      "category": "components",
+      "id": "#easing-types"
+    },
+    "##delta-types": {
+      "category": "components",
+      "id": "#delta-types"
+    },
+    "##state-types": {
+      "category": "components",
+      "id": "#state-types"
+    },
+    "##document-types": {
+      "category": "components",
+      "id": "#document-types"
+    },
+    "##shadow-types": {
+      "category": "components",
+      "id": "#shadow-types"
+    },
+    "##timeline-types": {
+      "category": "components",
+      "id": "#timeline-types"
+    },
+    "##slides-types": {
+      "category": "components",
+      "id": "#slides-types"
+    },
+    "##design-types": {
+      "category": "components",
+      "id": "#design-types"
+    },
+    "##asset-types": {
+      "category": "components",
+      "id": "#asset-types"
+    },
+    "##variable-types": {
+      "category": "components",
+      "id": "#variable-types"
+    },
+    "##interaction-types": {
+      "category": "components",
+      "id": "#interaction-types"
+    },
+    "##preset-types": {
+      "category": "components",
+      "id": "#preset-types"
+    },
+    "##video-project-types": {
+      "category": "components",
+      "id": "#video-project-types"
+    },
+    "##recipe-types": {
+      "category": "components",
+      "id": "#recipe-types"
+    },
     "##svg-renderer": {
       "category": "components",
       "id": "#svg-renderer"
@@ -6605,82 +6681,6 @@
     "##artifact-schemas": {
       "category": "components",
       "id": "#artifact-schemas"
-    },
-    "##unit-types": {
-      "category": "components",
-      "id": "#unit-types"
-    },
-    "##coordinate-types": {
-      "category": "components",
-      "id": "#coordinate-types"
-    },
-    "##color-types": {
-      "category": "components",
-      "id": "#color-types"
-    },
-    "##shape-types": {
-      "category": "components",
-      "id": "#shape-types"
-    },
-    "##layer-types": {
-      "category": "components",
-      "id": "#layer-types"
-    },
-    "##easing-types": {
-      "category": "components",
-      "id": "#easing-types"
-    },
-    "##delta-types": {
-      "category": "components",
-      "id": "#delta-types"
-    },
-    "##state-types": {
-      "category": "components",
-      "id": "#state-types"
-    },
-    "##document-types": {
-      "category": "components",
-      "id": "#document-types"
-    },
-    "##shadow-types": {
-      "category": "components",
-      "id": "#shadow-types"
-    },
-    "##timeline-types": {
-      "category": "components",
-      "id": "#timeline-types"
-    },
-    "##slides-types": {
-      "category": "components",
-      "id": "#slides-types"
-    },
-    "##design-types": {
-      "category": "components",
-      "id": "#design-types"
-    },
-    "##asset-types": {
-      "category": "components",
-      "id": "#asset-types"
-    },
-    "##variable-types": {
-      "category": "components",
-      "id": "#variable-types"
-    },
-    "##interaction-types": {
-      "category": "components",
-      "id": "#interaction-types"
-    },
-    "##preset-types": {
-      "category": "components",
-      "id": "#preset-types"
-    },
-    "##video-project-types": {
-      "category": "components",
-      "id": "#video-project-types"
-    },
-    "##recipe-types": {
-      "category": "components",
-      "id": "#recipe-types"
     },
     "#animation": {
       "category": "components",
@@ -6857,6 +6857,38 @@
     "##color-math": {
       "category": "components",
       "id": "#color-math"
+    },
+    "##lottie-exporter": {
+      "category": "components",
+      "id": "#lottie-exporter"
+    },
+    "##lottie-types": {
+      "category": "components",
+      "id": "#lottie-types"
+    },
+    "##lottie-map-layers": {
+      "category": "components",
+      "id": "#lottie-map-layers"
+    },
+    "##lottie-map-shapes": {
+      "category": "components",
+      "id": "#lottie-map-shapes"
+    },
+    "##lottie-map-keyframes": {
+      "category": "components",
+      "id": "#lottie-map-keyframes"
+    },
+    "##lottie-map-colors": {
+      "category": "components",
+      "id": "#lottie-map-colors"
+    },
+    "##lottie-map-easing": {
+      "category": "components",
+      "id": "#lottie-map-easing"
+    },
+    "##lottie-warnings": {
+      "category": "components",
+      "id": "#lottie-warnings"
     },
     "##frame-resolver": {
       "category": "components",
@@ -7158,38 +7190,6 @@
       "category": "components",
       "id": "canvas-styles"
     },
-    "##lottie-exporter": {
-      "category": "components",
-      "id": "#lottie-exporter"
-    },
-    "##lottie-types": {
-      "category": "components",
-      "id": "#lottie-types"
-    },
-    "##lottie-map-layers": {
-      "category": "components",
-      "id": "#lottie-map-layers"
-    },
-    "##lottie-map-shapes": {
-      "category": "components",
-      "id": "#lottie-map-shapes"
-    },
-    "##lottie-map-keyframes": {
-      "category": "components",
-      "id": "#lottie-map-keyframes"
-    },
-    "##lottie-map-colors": {
-      "category": "components",
-      "id": "#lottie-map-colors"
-    },
-    "##lottie-map-easing": {
-      "category": "components",
-      "id": "#lottie-map-easing"
-    },
-    "##lottie-warnings": {
-      "category": "components",
-      "id": "#lottie-warnings"
-    },
     "^^valid-document": {
       "category": "gates",
       "id": "^valid-document"
@@ -7381,6 +7381,102 @@
     "~ffmpeg-defaults-then-spread": {
       "category": "aspects",
       "id": "ffmpeg-defaults-then-spread"
+    },
+    "~unit-value-pixel-or-percent-string": {
+      "category": "aspects",
+      "id": "unit-value-pixel-or-percent-string"
+    },
+    "~frame-bounds-use-unitvalue-anchor-does-not": {
+      "category": "aspects",
+      "id": "frame-bounds-use-unitvalue-anchor-does-not"
+    },
+    "~color-union-mixed-channel-ranges": {
+      "category": "aspects",
+      "id": "color-union-mixed-channel-ranges"
+    },
+    "~shape-fill-discriminated-by-type": {
+      "category": "aspects",
+      "id": "shape-fill-discriminated-by-type"
+    },
+    "~shape-normalized-and-unit-fields": {
+      "category": "aspects",
+      "id": "shape-normalized-and-unit-fields"
+    },
+    "~text-style-required-fields": {
+      "category": "aspects",
+      "id": "text-style-required-fields"
+    },
+    "~visual-discriminated-six-variants": {
+      "category": "aspects",
+      "id": "visual-discriminated-six-variants"
+    },
+    "~video-visual-frames-vs-seconds": {
+      "category": "aspects",
+      "id": "video-visual-frames-vs-seconds"
+    },
+    "~layer-normalized-transform-fields": {
+      "category": "aspects",
+      "id": "layer-normalized-transform-fields"
+    },
+    "~easing-objects-or-preset-string": {
+      "category": "aspects",
+      "id": "easing-objects-or-preset-string"
+    },
+    "~animatable-property-closed-dotpath-union": {
+      "category": "aspects",
+      "id": "animatable-property-closed-dotpath-union"
+    },
+    "~delta-range-inclusive-from-to-unknown": {
+      "category": "aspects",
+      "id": "delta-range-inclusive-from-to-unknown"
+    },
+    "~state-duration-required-parent-overrides": {
+      "category": "aspects",
+      "id": "state-duration-required-parent-overrides"
+    },
+    "~document-canvas-and-keyed-maps": {
+      "category": "aspects",
+      "id": "document-canvas-and-keyed-maps"
+    },
+    "~shadow-color-and-blur-required": {
+      "category": "aspects",
+      "id": "shadow-color-and-blur-required"
+    },
+    "~audiovisual-layer-not-state-scoped": {
+      "category": "aspects",
+      "id": "audiovisual-layer-not-state-scoped"
+    },
+    "~asset-videometa-required-for-video-gate": {
+      "category": "aspects",
+      "id": "asset-videometa-required-for-video-gate"
+    },
+    "~variable-type-enum-default-unknown": {
+      "category": "aspects",
+      "id": "variable-type-enum-default-unknown"
+    },
+    "~interaction-trigger-action-discriminants": {
+      "category": "aspects",
+      "id": "interaction-trigger-action-discriminants"
+    },
+    "~preset-delta-omits-layer-offset-relative": {
+      "category": "aspects",
+      "id": "preset-delta-omits-layer-offset-relative"
+    },
+    "~video-project-parametric-cuts-v11-migration": {
+      "category": "aspects",
+      "id": "video-project-parametric-cuts-v11-migration"
+    },
+    "~transcript-editable-words-preserve-flags": {
+      "category": "aspects",
+      "id": "transcript-editable-words-preserve-flags"
+    },
+    "~recipe-typed-phase1-vs-opaque-phase3": {
+      "category": "aspects",
+      "id": "recipe-typed-phase1-vs-opaque-phase3"
+    },
+    "~recipe-snakecase-and-unit-conventions": {
+      "category": "aspects",
+      "id": "recipe-snakecase-and-unit-conventions"
     },
     "~declarative-string-vs-imperative-ctx": {
       "category": "aspects",
@@ -7678,102 +7774,6 @@
       "category": "aspects",
       "id": "yaml-safe-by-default-data-only"
     },
-    "~unit-value-pixel-or-percent-string": {
-      "category": "aspects",
-      "id": "unit-value-pixel-or-percent-string"
-    },
-    "~frame-bounds-use-unitvalue-anchor-does-not": {
-      "category": "aspects",
-      "id": "frame-bounds-use-unitvalue-anchor-does-not"
-    },
-    "~color-union-mixed-channel-ranges": {
-      "category": "aspects",
-      "id": "color-union-mixed-channel-ranges"
-    },
-    "~shape-fill-discriminated-by-type": {
-      "category": "aspects",
-      "id": "shape-fill-discriminated-by-type"
-    },
-    "~shape-normalized-and-unit-fields": {
-      "category": "aspects",
-      "id": "shape-normalized-and-unit-fields"
-    },
-    "~text-style-required-fields": {
-      "category": "aspects",
-      "id": "text-style-required-fields"
-    },
-    "~visual-discriminated-six-variants": {
-      "category": "aspects",
-      "id": "visual-discriminated-six-variants"
-    },
-    "~video-visual-frames-vs-seconds": {
-      "category": "aspects",
-      "id": "video-visual-frames-vs-seconds"
-    },
-    "~layer-normalized-transform-fields": {
-      "category": "aspects",
-      "id": "layer-normalized-transform-fields"
-    },
-    "~easing-objects-or-preset-string": {
-      "category": "aspects",
-      "id": "easing-objects-or-preset-string"
-    },
-    "~animatable-property-closed-dotpath-union": {
-      "category": "aspects",
-      "id": "animatable-property-closed-dotpath-union"
-    },
-    "~delta-range-inclusive-from-to-unknown": {
-      "category": "aspects",
-      "id": "delta-range-inclusive-from-to-unknown"
-    },
-    "~state-duration-required-parent-overrides": {
-      "category": "aspects",
-      "id": "state-duration-required-parent-overrides"
-    },
-    "~document-canvas-and-keyed-maps": {
-      "category": "aspects",
-      "id": "document-canvas-and-keyed-maps"
-    },
-    "~shadow-color-and-blur-required": {
-      "category": "aspects",
-      "id": "shadow-color-and-blur-required"
-    },
-    "~audiovisual-layer-not-state-scoped": {
-      "category": "aspects",
-      "id": "audiovisual-layer-not-state-scoped"
-    },
-    "~asset-videometa-required-for-video-gate": {
-      "category": "aspects",
-      "id": "asset-videometa-required-for-video-gate"
-    },
-    "~variable-type-enum-default-unknown": {
-      "category": "aspects",
-      "id": "variable-type-enum-default-unknown"
-    },
-    "~interaction-trigger-action-discriminants": {
-      "category": "aspects",
-      "id": "interaction-trigger-action-discriminants"
-    },
-    "~preset-delta-omits-layer-offset-relative": {
-      "category": "aspects",
-      "id": "preset-delta-omits-layer-offset-relative"
-    },
-    "~video-project-parametric-cuts-v11-migration": {
-      "category": "aspects",
-      "id": "video-project-parametric-cuts-v11-migration"
-    },
-    "~transcript-editable-words-preserve-flags": {
-      "category": "aspects",
-      "id": "transcript-editable-words-preserve-flags"
-    },
-    "~recipe-typed-phase1-vs-opaque-phase3": {
-      "category": "aspects",
-      "id": "recipe-typed-phase1-vs-opaque-phase3"
-    },
-    "~recipe-snakecase-and-unit-conventions": {
-      "category": "aspects",
-      "id": "recipe-snakecase-and-unit-conventions"
-    },
     "~canvas-intrinsic-not-css-size": {
       "category": "aspects",
       "id": "canvas-intrinsic-not-css-size"
@@ -8053,6 +8053,90 @@
     "~hsl-zero-saturation-guard": {
       "category": "aspects",
       "id": "hsl-zero-saturation-guard"
+    },
+    "~pinned-lottie-version": {
+      "category": "aspects",
+      "id": "pinned-lottie-version"
+    },
+    "~default-first-state": {
+      "category": "aspects",
+      "id": "default-first-state"
+    },
+    "~warning-dedup-collapse": {
+      "category": "aspects",
+      "id": "warning-dedup-collapse"
+    },
+    "~image-asset-fixed-dimensions": {
+      "category": "aspects",
+      "id": "image-asset-fixed-dimensions"
+    },
+    "~numeric-layer-type-discriminant": {
+      "category": "aspects",
+      "id": "numeric-layer-type-discriminant"
+    },
+    "~bezier-handles-as-xy-objects": {
+      "category": "aspects",
+      "id": "bezier-handles-as-xy-objects"
+    },
+    "~percentage-units-collapse-to-zero": {
+      "category": "aspects",
+      "id": "percentage-units-collapse-to-zero"
+    },
+    "~layer-index-is-parent-pointer": {
+      "category": "aspects",
+      "id": "layer-index-is-parent-pointer"
+    },
+    "~opacity-and-scale-percent-rescale": {
+      "category": "aspects",
+      "id": "opacity-and-scale-percent-rescale"
+    },
+    "~max-frame-fallback-sixty": {
+      "category": "aspects",
+      "id": "max-frame-fallback-sixty"
+    },
+    "~rect-centered-radial-fixed": {
+      "category": "aspects",
+      "id": "rect-centered-radial-fixed"
+    },
+    "~gradient-stop-stride-no-alpha": {
+      "category": "aspects",
+      "id": "gradient-stop-stride-no-alpha"
+    },
+    "~unknown-fill-black-fallback": {
+      "category": "aspects",
+      "id": "unknown-fill-black-fallback"
+    },
+    "~expression-short-circuits-static-zero": {
+      "category": "aspects",
+      "id": "expression-short-circuits-static-zero"
+    },
+    "~position-z-zero-easing-from-x": {
+      "category": "aspects",
+      "id": "position-z-zero-easing-from-x"
+    },
+    "~keyframe-hold-last-completed": {
+      "category": "aspects",
+      "id": "keyframe-hold-last-completed"
+    },
+    "~rgb-normalize-255-to-unit": {
+      "category": "aspects",
+      "id": "rgb-normalize-255-to-unit"
+    },
+    "~hex-shorthand-and-black-fallback": {
+      "category": "aspects",
+      "id": "hex-shorthand-and-black-fallback"
+    },
+    "~easing-handles-swapped-and-inverted": {
+      "category": "aspects",
+      "id": "easing-handles-swapped-and-inverted"
+    },
+    "~lossy-easing-approximations": {
+      "category": "aspects",
+      "id": "lossy-easing-approximations"
+    },
+    "~unsupported-feature-catalog": {
+      "category": "aspects",
+      "id": "unsupported-feature-catalog"
     },
     "~frame-resolution-determinism": {
       "category": "aspects",
@@ -8574,90 +8658,6 @@
       "category": "aspects",
       "id": "gradient-geometry-from-bounds"
     },
-    "~pinned-lottie-version": {
-      "category": "aspects",
-      "id": "pinned-lottie-version"
-    },
-    "~default-first-state": {
-      "category": "aspects",
-      "id": "default-first-state"
-    },
-    "~warning-dedup-collapse": {
-      "category": "aspects",
-      "id": "warning-dedup-collapse"
-    },
-    "~image-asset-fixed-dimensions": {
-      "category": "aspects",
-      "id": "image-asset-fixed-dimensions"
-    },
-    "~numeric-layer-type-discriminant": {
-      "category": "aspects",
-      "id": "numeric-layer-type-discriminant"
-    },
-    "~bezier-handles-as-xy-objects": {
-      "category": "aspects",
-      "id": "bezier-handles-as-xy-objects"
-    },
-    "~percentage-units-collapse-to-zero": {
-      "category": "aspects",
-      "id": "percentage-units-collapse-to-zero"
-    },
-    "~layer-index-is-parent-pointer": {
-      "category": "aspects",
-      "id": "layer-index-is-parent-pointer"
-    },
-    "~opacity-and-scale-percent-rescale": {
-      "category": "aspects",
-      "id": "opacity-and-scale-percent-rescale"
-    },
-    "~max-frame-fallback-sixty": {
-      "category": "aspects",
-      "id": "max-frame-fallback-sixty"
-    },
-    "~rect-centered-radial-fixed": {
-      "category": "aspects",
-      "id": "rect-centered-radial-fixed"
-    },
-    "~gradient-stop-stride-no-alpha": {
-      "category": "aspects",
-      "id": "gradient-stop-stride-no-alpha"
-    },
-    "~unknown-fill-black-fallback": {
-      "category": "aspects",
-      "id": "unknown-fill-black-fallback"
-    },
-    "~expression-short-circuits-static-zero": {
-      "category": "aspects",
-      "id": "expression-short-circuits-static-zero"
-    },
-    "~position-z-zero-easing-from-x": {
-      "category": "aspects",
-      "id": "position-z-zero-easing-from-x"
-    },
-    "~keyframe-hold-last-completed": {
-      "category": "aspects",
-      "id": "keyframe-hold-last-completed"
-    },
-    "~rgb-normalize-255-to-unit": {
-      "category": "aspects",
-      "id": "rgb-normalize-255-to-unit"
-    },
-    "~hex-shorthand-and-black-fallback": {
-      "category": "aspects",
-      "id": "hex-shorthand-and-black-fallback"
-    },
-    "~easing-handles-swapped-and-inverted": {
-      "category": "aspects",
-      "id": "easing-handles-swapped-and-inverted"
-    },
-    "~lossy-easing-approximations": {
-      "category": "aspects",
-      "id": "lossy-easing-approximations"
-    },
-    "~unsupported-feature-catalog": {
-      "category": "aspects",
-      "id": "unsupported-feature-catalog"
-    },
     "#svg-shapes": {
       "category": "components",
       "id": "svg-shapes"
@@ -8733,6 +8733,30 @@
     "^doc-path-inside-project.": {
       "category": "gates",
       "id": "doc-path-inside-project."
+    },
+    "#lottie-map-layers": {
+      "category": "components",
+      "id": "lottie-map-layers"
+    },
+    "#lottie-warnings": {
+      "category": "components",
+      "id": "lottie-warnings"
+    },
+    "#lottie-map-shapes": {
+      "category": "components",
+      "id": "lottie-map-shapes"
+    },
+    "#lottie-map-keyframes": {
+      "category": "components",
+      "id": "lottie-map-keyframes"
+    },
+    "#lottie-map-colors": {
+      "category": "components",
+      "id": "lottie-map-colors"
+    },
+    "#lottie-map-easing": {
+      "category": "components",
+      "id": "lottie-map-easing"
     },
     "^valid-document": {
       "category": "gates",
@@ -8853,30 +8877,6 @@
     "#frame-resolver": {
       "category": "components",
       "id": "frame-resolver"
-    },
-    "#lottie-map-layers": {
-      "category": "components",
-      "id": "lottie-map-layers"
-    },
-    "#lottie-warnings": {
-      "category": "components",
-      "id": "lottie-warnings"
-    },
-    "#lottie-map-shapes": {
-      "category": "components",
-      "id": "lottie-map-shapes"
-    },
-    "#lottie-map-keyframes": {
-      "category": "components",
-      "id": "lottie-map-keyframes"
-    },
-    "#lottie-map-colors": {
-      "category": "components",
-      "id": "lottie-map-colors"
-    },
-    "#lottie-map-easing": {
-      "category": "components",
-      "id": "lottie-map-easing"
     },
     "^no-overlap": {
       "category": "gates",

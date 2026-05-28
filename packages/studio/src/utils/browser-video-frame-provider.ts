@@ -189,19 +189,18 @@ export class BrowserVideoFrameProvider {
     this.attachListeners(entry.video);
     if (!entry.ready) return null;
 
-    // PLAYING mode: trust native decode. Only issue a sync seek when drift
-    // exceeds PLAY_SYNC_TOLERANCE_S (a Player-side seek, loop wrap, or long
-    // playback drift). Otherwise return the video — drawImage paints whatever
-    // frame is currently decoded. This is the only way to get smooth 30fps
-    // playback; per-tick seeks fight the seeked-event callback and produce
-    // the visible "few frames then skip" chop.
-    if (this.playing) {
-      if (Math.abs(entry.video.currentTime - sourceTime) > PLAY_SYNC_TOLERANCE_S) {
-        entry.requestedTime = sourceTime;
-        try { entry.video.currentTime = sourceTime; } catch { /* swallow OOB */ }
-      }
-      return entry.video;
-    }
+    // PLAYING mode: trust native decode COMPLETELY — no per-tick sync seek.
+    // An earlier version sync-seeked on drift > 250ms to keep Player.frame
+    // aligned with video.currentTime, but a seek mid-playback interrupts the
+    // audio decoder pipeline, producing the random audio stutter owner heard.
+    // Drift is acceptable: video.loop=true handles end-of-clip wrap natively,
+    // requestAnimationFrame jitter accumulates to <100ms over an 8s clip, and
+    // captions gated by Player.frame remain visible-window-correct because
+    // their visible windows are measured in seconds, not frames. If a user
+    // SEEKS during playback (scrubber), the scrubber-mouseup → syncTo path
+    // re-anchors explicitly; if the Player WRAPS (end of comp), that's also
+    // handled by video.loop. Net: native playback runs unbroken end-to-end.
+    if (this.playing) return entry.video;
 
     // PAUSED / SCRUBBING: clamp + seek if the requested time moved beyond the
     // epsilon window. We compare against requestedTime (what we LAST asked
