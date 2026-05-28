@@ -1849,7 +1849,13 @@ function attachMediaRefDropTarget(
 
     try {
       const url = `/api/media/ingest?targetDocPath=${encodeURIComponent(docPath)}&source=existing&path=${encodeURIComponent(payload.path)}`;
-      const res = await fetch(url, { method: "POST" });
+      // The server's media-ingest handler requires x-atelier-project to know
+      // which project the request targets — same contract as the file-drop
+      // path in DropZone. The `?source=existing` branch was missing it.
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "x-atelier-project": projectName },
+      });
       if (!res.ok) {
         const errBody = await res.text().catch(() => "");
         alert(`Failed to add media: ${errBody || `HTTP ${res.status}`}`);

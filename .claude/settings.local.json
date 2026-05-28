@@ -173,7 +173,8 @@
       "Bash(kill 63309)",
       "Bash(awk '/^export function findWorkspace/,/^}/' packages/cli/src/lib/workspace.ts)",
       "Bash(awk '/^function injectStyles/,/^}/' packages/cli/src/web/workspace-app.ts)",
-      "Bash(awk 'NR>=2659 && NR<=3022' packages/cli/src/web/workspace-app.ts)"
+      "Bash(awk 'NR>=2659 && NR<=3022' packages/cli/src/web/workspace-app.ts)",
+      "Bash(pkill -f \"node.*cli.js studio\")"
     ]
   },
   "enableAllProjectMcpServers": true,

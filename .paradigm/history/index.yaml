@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T09:53:21.839Z'
+generated: '2026-05-28T10:25:07.491Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3259,11 +3259,32 @@ by_symbol:
       agent: []
   '#studio-inline-app':
     symbol: '#studio-inline-app'
-    total_changes: 3
-    last_modified: '2026-05-28T09:53:18Z'
+    total_changes: 4
+    last_modified: '2026-05-28T10:25:06Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_58
+        id: h0092
+        ts: '2026-05-28T10:25:06Z'
+        type: implement
+        symbols:
+          - '#studio-inline-app'
+          - '#workspace-app'
+        author:
+          type: human
+          id: ascend
+        commit: fef8c15b045109deb7a1a3e75fe4926ba6f4753e
+        intent: fix
+        files:
+          - .claude/settings.local.json
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - packages/cli/src/web/workspace-app.ts
+          - packages/studio/.purpose
+        description: 'fix(#workspace-app): unescaped backticks in CSS comment broke template literal → silent fallback to inline-app'
       - *ref_41
       - *ref_37
       - id: h0066
@@ -4495,7 +4516,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_58
+      - &ref_59
         id: h0089
         ts: '2026-05-28T09:28:22Z'
         type: implement
@@ -4525,12 +4546,13 @@ by_symbol:
       agent: []
   '#workspace-app':
     symbol: '#workspace-app'
-    total_changes: 1
-    last_modified: '2026-05-28T09:28:22Z'
+    total_changes: 2
+    last_modified: '2026-05-28T10:25:06Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_58
+      - *ref_59
     contributors:
       human:
         - ascend
