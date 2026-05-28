@@ -42,6 +42,16 @@ export interface IngestRoute {
   target: "compose-video" | "compose-image" | "add-audio-clip" | "reject";
   /** When target === "reject", the human-readable reason. */
   error?: string;
+  /**
+   * When set, the project-relative `.atelier` doc path the route resolved
+   * to. Populated by `routeIngestWithTarget` for explicit canvas drops so the
+   * server-side handler can pass it straight to the composer / audio-add path
+   * without re-deriving via `computeIngestDocPath` or `findSingleVideoDoc`.
+   *
+   * Always undefined for the free `routeIngest` (no target) — that path keeps
+   * the legacy "scaffold a fresh <slug>.atelier" semantics.
+   */
+  docPath?: string;
 }
 
 const VIDEO_EXTS = new Set([".mp4", ".mov", ".webm", ".mkv", ".avi"]);
@@ -151,6 +161,89 @@ export function routeIngest(
     target: "reject",
     error:
       "audio cannot create a project; drag audio into an existing video project",
+  };
+}
+
+/**
+ * Routing matrix for explicit "add to this specific doc" drops (canvas-area
+ * drag-drop, post-pivot). When the browser knows which doc is loaded in the
+ * canvas, it sends `targetDocPath` + the target doc's `kind`; the routing
+ * decision is then governed by the TARGET doc's kind — not the project's
+ * inferred kind — because the user picked a specific doc.
+ *
+ *   file kind   target doc kind  →  target
+ *   ─────────────────────────────────────
+ *   video       video            →  compose-video    (docPath = targetDocPath)
+ *   audio       video            →  add-audio-clip   (docPath = targetDocPath)
+ *   image       *                →  reject (v1)
+ *   video       image / carousel →  reject
+ *   audio       image / carousel →  reject
+ *   unsupported *                →  reject
+ *
+ * Pure / synchronous. The caller is responsible for verifying the target doc
+ * exists on disk and reading its kind — this function only encodes the
+ * compatibility matrix and produces the route decision.
+ */
+export function routeIngestWithTarget(
+  filename: string,
+  projectKind: ProjectKind | undefined,
+  targetDocPath: string | undefined,
+  targetDocKind: ProjectKind | undefined,
+): IngestRoute {
+  // Fall through to the no-target routing when the caller didn't pick a doc.
+  if (targetDocPath === undefined) {
+    return routeIngest(filename, projectKind);
+  }
+
+  const kind = classifyMediaFile(filename);
+
+  if (kind === "unsupported") {
+    return { kind, target: "reject", error: "file type not supported" };
+  }
+
+  // Caller must supply the target doc's kind once a path is set.
+  if (targetDocKind === undefined) {
+    return {
+      kind,
+      target: "reject",
+      error: "target doc kind unresolved",
+    };
+  }
+
+  if (kind === "video") {
+    if (targetDocKind === "video") {
+      return { kind, target: "compose-video", docPath: targetDocPath };
+    }
+    return {
+      kind,
+      target: "reject",
+      error:
+        targetDocKind === "image"
+          ? "cannot add video clip to an image doc"
+          : "cannot add video clip to a carousel doc",
+    };
+  }
+
+  if (kind === "audio") {
+    if (targetDocKind === "video") {
+      return { kind, target: "add-audio-clip", docPath: targetDocPath };
+    }
+    return {
+      kind,
+      target: "reject",
+      error:
+        targetDocKind === "image"
+          ? "cannot add audio to an image doc"
+          : "cannot add audio to a carousel doc",
+    };
+  }
+
+  // image — out of scope for v1 explicit-target drops; the user can swap an
+  // image doc's source via rename, or compose a carousel via the slides API.
+  return {
+    kind,
+    target: "reject",
+    error: "image drag-drop into an existing doc not supported in v1",
   };
 }
 

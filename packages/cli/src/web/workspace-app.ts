@@ -1488,31 +1488,117 @@ class TranscriptViewer {
 
 interface DropZoneCallbacks {
   getActiveProject: () => string | null;
+  /**
+   * Project-relative path of the .atelier doc currently loaded in the canvas,
+   * or `null` when nothing is loaded. The drop zone uses this to decide
+   * whether a canvas-area drop attaches to the loaded doc (`?targetDocPath=`)
+   * or falls back to the legacy "scaffold a new <slug>.atelier" path.
+   */
+  getCurrentDocPath: () => string | null;
+  /**
+   * Bounding-rect refs for the two visual drop targets. The DropZone reads
+   * these once per drag-enter to position the canvas vs sidebar highlight
+   * panes and to decide which target absorbed the drop. Returning the
+   * elements (instead of cached rects) keeps the position fresh across
+   * sidebar resize / scroll without re-binding callbacks.
+   */
+  getSidebarElement: () => HTMLElement | null;
+  getCanvasElement: () => HTMLElement | null;
   onIngestStart: (filename: string) => void;
   onIngestProgress: (phase: string, info?: { received?: number; total?: number | null; error?: string }) => void;
   onIngestDone: (filename: string) => void;
 }
 
+/**
+ * Full-window drag-and-drop overlay with TWO visual targets:
+ *
+ *   1. **Canvas pane** — when the user has a doc loaded, dropping here
+ *      POSTs `?targetDocPath=<currentDocPath>` so the media is appended to
+ *      the loaded doc (compose-video adds a clip; audio adds an AudioVisual
+ *      layer). Image-into-loaded-doc is rejected by the server (v1).
+ *   2. **Sidebar pane** — drops here ALWAYS scaffold a new <slug>.atelier
+ *      (legacy / page-level behaviour). No `targetDocPath` is sent.
+ *
+ * When no doc is loaded, the canvas pane silently degrades to the
+ * sidebar-style "new doc" behaviour so the page-level UX stays familiar.
+ *
+ * The split is driven by `e.clientX/clientY` against the sidebar's bounding
+ * rect — cursor in the sidebar bounds at drop time → sidebar route, else
+ * canvas route. We keep ONE global drag tracker so the overlay appears
+ * reliably regardless of where the cursor lands first.
+ */
 class DropZone {
   readonly el: HTMLElement;
   private hoverDepth = 0;
+  private sidebarPane: HTMLElement;
+  private canvasPane: HTMLElement;
 
   constructor(private cb: DropZoneCallbacks) {
     this.el = document.createElement("div");
     this.el.className = "atel-drop-zone";
     this.el.innerHTML = `
-      <div class="atel-drop-zone__inner">
-        <div class="atel-drop-zone__icon">⤓</div>
-        <div class="atel-drop-zone__title">Drop to add to <span class="atel-drop-zone__project">…</span></div>
-        <div class="atel-drop-zone__hint">Video / image / audio</div>
+      <div class="atel-drop-zone__pane atel-drop-zone__pane--sidebar">
+        <div class="atel-drop-zone__inner">
+          <div class="atel-drop-zone__icon">＋</div>
+          <div class="atel-drop-zone__title">New doc in <span class="atel-drop-zone__project">…</span></div>
+          <div class="atel-drop-zone__hint">Drop here to create a new doc</div>
+        </div>
+      </div>
+      <div class="atel-drop-zone__pane atel-drop-zone__pane--canvas">
+        <div class="atel-drop-zone__inner">
+          <div class="atel-drop-zone__icon">⤓</div>
+          <div class="atel-drop-zone__title atel-drop-zone__title--canvas">…</div>
+          <div class="atel-drop-zone__hint atel-drop-zone__hint--canvas">Drop video / audio to extend</div>
+        </div>
       </div>
     `;
     document.body.appendChild(this.el);
+    this.sidebarPane = this.el.querySelector(".atel-drop-zone__pane--sidebar") as HTMLElement;
+    this.canvasPane = this.el.querySelector(".atel-drop-zone__pane--canvas") as HTMLElement;
 
     window.addEventListener("dragenter", (e) => this.onDragEnter(e));
     window.addEventListener("dragover", (e) => this.onDragOver(e));
     window.addEventListener("dragleave", (e) => this.onDragLeave(e));
     window.addEventListener("drop", (e) => { void this.onDrop(e); });
+  }
+
+  /** Read the current sidebar / canvas rects and position the highlight panes. */
+  private layoutPanes(): void {
+    const sidebarEl = this.cb.getSidebarElement();
+    const canvasEl = this.cb.getCanvasElement();
+    if (sidebarEl) {
+      const r = sidebarEl.getBoundingClientRect();
+      Object.assign(this.sidebarPane.style, {
+        left: `${r.left}px`, top: `${r.top}px`,
+        width: `${r.width}px`, height: `${r.height}px`,
+      });
+      this.sidebarPane.style.display = "flex";
+    } else {
+      this.sidebarPane.style.display = "none";
+    }
+    if (canvasEl) {
+      const r = canvasEl.getBoundingClientRect();
+      Object.assign(this.canvasPane.style, {
+        left: `${r.left}px`, top: `${r.top}px`,
+        width: `${r.width}px`, height: `${r.height}px`,
+      });
+      this.canvasPane.style.display = "flex";
+    } else {
+      this.canvasPane.style.display = "none";
+    }
+
+    // Canvas pane label reflects the loaded-doc state — "Add to <doc>" when a
+    // doc is loaded; "New doc here" otherwise (degraded mode).
+    const docPath = this.cb.getCurrentDocPath();
+    const titleEl = this.canvasPane.querySelector(".atel-drop-zone__title--canvas") as HTMLElement;
+    const hintEl = this.canvasPane.querySelector(".atel-drop-zone__hint--canvas") as HTMLElement;
+    if (docPath) {
+      titleEl.textContent = `Add to ${docPath}`;
+      hintEl.textContent = "Video clip → appended · audio → music layer";
+    } else {
+      titleEl.textContent = "New doc";
+      hintEl.textContent = "No doc loaded — drop creates a new <slug>.atelier";
+    }
   }
 
   private onDragEnter(e: DragEvent): void {
@@ -1521,22 +1607,47 @@ class DropZone {
     const project = this.cb.getActiveProject();
     if (!project) return;
     (this.el.querySelector(".atel-drop-zone__project") as HTMLElement).textContent = project;
+    this.layoutPanes();
     this.el.classList.add("atel-drop-zone--visible");
   }
 
   private onDragOver(e: DragEvent): void {
     if (!e.dataTransfer?.types.includes("Files")) return;
     e.preventDefault();
+    // Highlight whichever pane the cursor is over right now.
+    this.updateHover(e.clientX, e.clientY);
   }
 
   private onDragLeave(_e: DragEvent): void {
     this.hoverDepth = Math.max(0, this.hoverDepth - 1);
-    if (this.hoverDepth === 0) this.el.classList.remove("atel-drop-zone--visible");
+    if (this.hoverDepth === 0) {
+      this.el.classList.remove("atel-drop-zone--visible");
+      this.clearHover();
+    }
+  }
+
+  /** Add `--active` to the pane the cursor is over; remove from the other. */
+  private updateHover(x: number, y: number): void {
+    const inSidebar = this.pointInRect(x, y, this.cb.getSidebarElement());
+    this.sidebarPane.classList.toggle("atel-drop-zone__pane--active", inSidebar);
+    this.canvasPane.classList.toggle("atel-drop-zone__pane--active", !inSidebar);
+  }
+
+  private clearHover(): void {
+    this.sidebarPane.classList.remove("atel-drop-zone__pane--active");
+    this.canvasPane.classList.remove("atel-drop-zone__pane--active");
+  }
+
+  private pointInRect(x: number, y: number, el: HTMLElement | null): boolean {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return x >= r.left && x < r.right && y >= r.top && y < r.bottom;
   }
 
   private async onDrop(e: DragEvent): Promise<void> {
     this.hoverDepth = 0;
     this.el.classList.remove("atel-drop-zone--visible");
+    this.clearHover();
     if (!e.dataTransfer?.files || e.dataTransfer.files.length === 0) return;
     e.preventDefault();
 
@@ -1545,10 +1656,21 @@ class DropZone {
       alert("No active project — select one in the sidebar first.");
       return;
     }
+
+    // Sidebar drop → new doc (no targetDocPath). Canvas drop with a loaded
+    // doc → attach to that doc. Canvas drop with no loaded doc → fall through
+    // to the new-doc path (preserve legacy "drop anywhere" behaviour).
+    const droppedInSidebar = this.pointInRect(e.clientX, e.clientY, this.cb.getSidebarElement());
+    const currentDocPath = this.cb.getCurrentDocPath();
+    const useTarget = !droppedInSidebar && currentDocPath !== null;
+
     const file = e.dataTransfer.files[0];
     this.cb.onIngestStart(file.name);
     try {
-      const res = await fetch("/api/media/ingest", {
+      const url = useTarget
+        ? `/api/media/ingest?targetDocPath=${encodeURIComponent(currentDocPath!)}`
+        : "/api/media/ingest";
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/octet-stream",
@@ -2064,8 +2186,18 @@ export async function bootWorkspaceApp(): Promise<void> {
   }
 
   // ─── Drag-and-drop ingest ─────────────────────────────────
+  //
+  // Two visual targets:
+  //   - **Sidebar** drop → always creates a new <slug>.atelier (legacy).
+  //   - **Canvas** drop with a loaded doc → POSTs `?targetDocPath=` so the
+  //     media attaches to the loaded doc. With no loaded doc, the canvas
+  //     pane degrades to the sidebar behaviour (new doc) — preserving the
+  //     "drop anywhere" UX from before the canvas split.
   const dropZone = new DropZone({
     getActiveProject: () => activeProjectName,
+    getCurrentDocPath: () => currentDocPath,
+    getSidebarElement: () => sidebar.el,
+    getCanvasElement: () => mainBody,
     onIngestStart: (filename) => {
       statusBar.textContent = `Ingesting ${filename}…`;
     },
@@ -2500,21 +2632,35 @@ function injectStyles(): void {
   .atel-context-menu__item--destructive { color: #E07B5C; }
   .atel-context-menu__item--destructive:hover { background: #3A1F1A; color: #F5F0EB; }
 
-  /* Drop zone overlay */
+  /* Drop zone overlay — split into sidebar + canvas highlight panes.
+     The outer .atel-drop-zone is a transparent click-through layer; the
+     two .atel-drop-zone__pane children own the visual targets. Each pane is
+     absolutely positioned over its underlying element (sidebar / mainBody)
+     and toggled with --active as the cursor hovers it. */
   .atel-drop-zone {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000;
-    display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9000;
     pointer-events: none; opacity: 0; transition: opacity 150ms ease;
   }
   .atel-drop-zone--visible { opacity: 1; pointer-events: auto; }
-  .atel-drop-zone__inner {
-    border: 3px dashed #C75B39; border-radius: 16px; padding: 60px 80px; text-align: center;
-    background: #2C2C2C;
+  .atel-drop-zone__pane {
+    position: fixed; display: flex; align-items: center; justify-content: center;
+    background: rgba(20,20,20,0.55);
+    border: 3px dashed rgba(199, 91, 57, 0.45);
+    transition: background 120ms ease, border-color 120ms ease;
+    box-sizing: border-box;
   }
-  .atel-drop-zone__icon { font-size: 48px; color: #C75B39; }
-  .atel-drop-zone__title { font-size: 20px; margin-top: 16px; color: #F5F0EB; }
+  .atel-drop-zone__pane--active {
+    background: rgba(199, 91, 57, 0.18);
+    border-color: #C75B39;
+  }
+  .atel-drop-zone__inner {
+    border-radius: 12px; padding: 32px 36px; text-align: center;
+    background: #2C2C2C; max-width: 80%;
+  }
+  .atel-drop-zone__icon { font-size: 40px; color: #C75B39; }
+  .atel-drop-zone__title { font-size: 16px; margin-top: 12px; color: #F5F0EB; }
   .atel-drop-zone__project { color: #C75B39; font-family: monospace; }
-  .atel-drop-zone__hint { font-size: 12px; color: #A89F95; margin-top: 6px; }
+  .atel-drop-zone__hint { font-size: 11px; color: #A89F95; margin-top: 6px; }
   `;
   document.head.appendChild(style);
 }

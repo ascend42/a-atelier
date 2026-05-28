@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T04:19:39.550Z'
+generated: '2026-05-28T04:28:27.762Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3732,12 +3732,34 @@ by_symbol:
       agent: []
   '#compose-video-project':
     symbol: '#compose-video-project'
-    total_changes: 2
-    last_modified: '2026-05-28T03:04:27Z'
+    total_changes: 3
+    last_modified: '2026-05-28T04:28:24Z'
     stability_score: 1
     fragility: low
     recent:
       - &ref_48
+        id: h0084
+        ts: '2026-05-28T04:28:24Z'
+        type: implement
+        symbols:
+          - '#compose-video-project'
+          - '#transcribe-orchestrator'
+        author:
+          type: human
+          id: ascend
+        commit: abf97cc2d3994a742f310d62cbed19fbcb2bc4b3
+        intent: fix
+        files:
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .purpose
+          - packages/cli/.purpose
+          - packages/cli/src/lib/compose-video-project.ts
+          - packages/cli/src/workspace-ui.test.ts
+        description: 'fix(#compose-video-project): skip legacy caption-rewrite on transcribe (ENOENT fix)'
+      - &ref_49
         id: h0082
         ts: '2026-05-28T03:04:27Z'
         type: implement
@@ -3806,11 +3828,12 @@ by_symbol:
       agent: []
   '#transcribe-orchestrator':
     symbol: '#transcribe-orchestrator'
-    total_changes: 1
-    last_modified: '2026-05-27T21:45:44Z'
+    total_changes: 2
+    last_modified: '2026-05-28T04:28:24Z'
     stability_score: 1
     fragility: low
     recent:
+      - *ref_48
       - *ref_47
     contributors:
       human:
@@ -3835,7 +3858,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_52
+      - &ref_53
         id: h0083
         ts: '2026-05-28T04:19:36Z'
         type: implement
@@ -3881,8 +3904,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_48
-      - &ref_51
+      - *ref_49
+      - &ref_52
         id: h0081
         ts: '2026-05-28T01:47:58Z'
         type: implement
@@ -3934,7 +3957,7 @@ by_symbol:
           - packages/studio/src/panels/layer-panel.ts
           - portal.yaml
         description: 'feat(#doc-management): + new doc UI + duplicate + delete + 4 MCP tools — doc-management v1.0.x'
-      - &ref_50
+      - &ref_51
         id: h0080
         ts: '2026-05-28T00:33:07Z'
         type: implement
@@ -3997,7 +4020,7 @@ by_symbol:
           - packages/types/.purpose
           - portal.yaml
         description: 'feat(#atelier-v1-surface): agent clip tools + image/carousel compose + rename cascade — v1.0 surface bundle'
-      - &ref_49
+      - &ref_50
         id: h0079
         ts: '2026-05-27T23:05:38Z'
         type: implement
@@ -4060,7 +4083,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4072,7 +4095,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4084,7 +4107,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4096,7 +4119,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_49
+      - *ref_50
     contributors:
       human:
         - ascend
@@ -4108,7 +4131,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4120,7 +4143,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4132,7 +4155,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4144,7 +4167,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_50
+      - *ref_51
     contributors:
       human:
         - ascend
@@ -4156,8 +4179,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_48
-      - *ref_51
+      - *ref_49
+      - *ref_52
     contributors:
       human:
         - ascend
@@ -4169,8 +4192,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_48
-      - *ref_51
+      - *ref_49
+      - *ref_52
     contributors:
       human:
         - ascend
@@ -4182,7 +4205,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_51
+      - *ref_52
     contributors:
       human:
         - ascend
@@ -4194,7 +4217,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_52
+      - *ref_53
     contributors:
       human:
         - ascend
@@ -4206,7 +4229,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_52
+      - *ref_53
     contributors:
       human:
         - ascend

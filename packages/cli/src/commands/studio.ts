@@ -52,7 +52,7 @@ import {
 } from "../lib/workspace-project-info.js";
 import { composeVideoProject, readAtelierDoc, slugifyBasename } from "../lib/compose-video-project.js";
 import { composeImageProject } from "../lib/compose-image-project.js";
-import { routeIngest, computeIngestDocPath, findSingleVideoDoc } from "../lib/ingest-dispatch.js";
+import { routeIngest, routeIngestWithTarget, computeIngestDocPath, findSingleVideoDoc } from "../lib/ingest-dispatch.js";
 import {
   AUDIO_TRACK_ID,
   ensureClipLayer,
@@ -1839,6 +1839,18 @@ export function handleMediaIngestRequest(
   const filename = headerString(req, "x-atelier-filename");
   const modelHeader = headerString(req, "x-atelier-model") ?? "base.en";
 
+  // Optional `?targetDocPath=<relative>` — set by the canvas-area drop zone
+  // when the user has a doc loaded and expects the upload to attach to it
+  // (not scaffold a new <slug>.atelier). Parsed BEFORE we touch the disk so a
+  // malformed traversal fails fast with a 400. URL constructor decodes once.
+  let targetDocPathRaw: string | null = null;
+  try {
+    const parsed = new URL(req.url ?? "/", "http://localhost");
+    targetDocPathRaw = parsed.searchParams.get("targetDocPath");
+  } catch {
+    targetDocPathRaw = null;
+  }
+
   if (!isValidProjectName(projectName)) {
     res.statusCode = 400;
     res.setHeader("Content-Type", "application/json");
@@ -1943,7 +1955,85 @@ export function handleMediaIngestRequest(
       }
     }
 
-    const route = routeIngest(filename, currentProjectKind);
+    // ── Resolve explicit `?targetDocPath=` (canvas-area drop) ───────
+    //
+    // When the client picked a specific doc, three checks gate dispatch:
+    //   1. Path-traversal validation — same rules as elsewhere in the API.
+    //      We re-encode the already-decoded query value before reusing
+    //      `validateProjectRelativeDocPath` so its internal decode is a
+    //      no-op on safe inputs (containment + control-byte rules still
+    //      apply unchanged).
+    //   2. The file exists on disk (404 otherwise — a stale doc path).
+    //   3. The doc parses and exposes a `kind` — the dispatcher needs it
+    //      to encode the explicit-target compatibility matrix.
+    //
+    // When targetDocPath is set, the lenient `findSingleVideoDoc` fallback
+    // is intentionally bypassed: the caller knows which doc they want, so
+    // we route deterministically.
+    let resolvedTargetDocPath: string | undefined;
+    let resolvedTargetDocKind: ProjectKind | undefined;
+    if (targetDocPathRaw !== null) {
+      const v = validateProjectRelativeDocPath(
+        encodeURIComponent(targetDocPathRaw),
+        projectDir,
+      );
+      if (!v.ok) {
+        try { rmSync(destPath, { force: true }); } catch { /* non-fatal */ }
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: v.error,
+        });
+        res.statusCode = 400;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: v.error }));
+        return;
+      }
+      const targetAbs = join(projectDir, v.decoded);
+      if (!existsSync(targetAbs)) {
+        try { rmSync(destPath, { force: true }); } catch { /* non-fatal */ }
+        const errorMsg = `target doc not found: ${v.decoded}`;
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: errorMsg,
+        });
+        res.statusCode = 404;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: errorMsg }));
+        return;
+      }
+      try {
+        const targetDoc = readAtelierDoc(targetAbs);
+        resolvedTargetDocKind = targetDoc.kind;
+      } catch (err) {
+        try { rmSync(destPath, { force: true }); } catch { /* non-fatal */ }
+        const errorMsg = `target doc unparseable: ${err instanceof Error ? err.message : String(err)}`;
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: errorMsg,
+        });
+        res.statusCode = 400;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: errorMsg }));
+        return;
+      }
+      resolvedTargetDocPath = v.decoded;
+      // Audio-add path uses the explicit target verbatim — overrides the
+      // legacy `findSingleVideoDoc` heuristic.
+      audioTargetDocPath = v.decoded;
+    }
+
+    const route = resolvedTargetDocPath !== undefined
+      ? routeIngestWithTarget(filename, currentProjectKind, resolvedTargetDocPath, resolvedTargetDocKind)
+      : routeIngest(filename, currentProjectKind);
 
     // ── Reject path ─────────────────────────────────────────────────
     if (route.target === "reject") {
@@ -1996,10 +2086,13 @@ export function handleMediaIngestRequest(
         }
       }
 
-      // Post-pivot: each drag-drop targets its OWN .atelier doc derived from
-      // the source filename (`IMG_7346.MOV` → `img-7346.atelier`). Collision
-      // suffixes (`-1`, `-2`, ...) on existing doc names. See #ingest-dispatch.
-      const ingestVideoDocPath = computeIngestDocPath(projectDir, filename);
+      // Canvas-area drop carries an explicit `targetDocPath` — attach to the
+      // already-loaded video doc instead of scaffolding a new <slug>.atelier.
+      // Falls back to the post-pivot per-source slug for sidebar/page-level
+      // drops (no target) — preserves the "drop anywhere creates a new doc"
+      // behaviour. See #ingest-dispatch.
+      const ingestVideoDocPath = route.docPath
+        ?? computeIngestDocPath(projectDir, filename);
       composeVideoProject({
         projectDir,
         docPath: ingestVideoDocPath,
