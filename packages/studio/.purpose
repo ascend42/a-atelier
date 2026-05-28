@@ -14,9 +14,13 @@ components:
       - '#property-panel'
       - '#delta-panel'
       - '#yaml-panel'
+      - '#canvas-size-presets'
     file: src/studio.ts
   canvas-panel:
-    description: Canvas rendering and playback panel with play/pause/scrub controls
+    description: Canvas rendering and playback panel with play/pause/scrub controls and letterbox-fit display sizing via ResizeObserver
+    file: src/panels/canvas-panel.ts
+  compute-letterbox-fit:
+    description: Pure helper that returns the largest aspect-preserving scale of a canvas inside a parent rect, with zero/negative inputs collapsing to zeros
     file: src/panels/canvas-panel.ts
   layer-panel:
     description: Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder
@@ -46,6 +50,9 @@ components:
   yaml-panel:
     description: Read-only YAML viewer with syntax highlighting and copy-to-clipboard
     file: src/panels/yaml-panel.ts
+  canvas-size-presets:
+    description: Closed list of 4 canvas-size presets (portrait/landscape/square/feed) and a findPresetMatch helper, consumed by the studio toolbar dropdown to mutate doc.canvas.width/height; non-preset dimensions surface as a disabled "Custom — W×H" entry. Captions baked at compose-time may need re-position after a resize — the toolbar shows a muted inline warning when any layer carries the "caption" tag.
+    file: src/panels/canvas-size-presets.ts
   number-input:
     description: Labeled number input control with optional step, min, max, suffix
     file: src/controls/number-input.ts
@@ -144,6 +151,18 @@ aspects:
       - packages/studio/src/player.ts:49-54
       - packages/studio/src/player.ts:68-83
     enforcement: clamp to total-1 + loop wrap
+    appliesTo: ["#canvas-panel"]
+  canvas-letterbox-fit-observes-panel:
+    description: 'CanvasPanel uses ResizeObserver on this.el (the outer panel) — NOT this.canvas.parentElement (which is .atel-canvas-wrap, flex-shrink:0 and shrink-fits the canvas, so observing it would either be a no-op or a feedback loop). applyLetterboxFit subtracts the .atel-canvas-panel padding (16*2), the playback row height, and the column gap (12) from the panel rect to derive the available area, then computeLetterboxFit picks min(availW/canvasW, availH/canvasH) so the canvas display size always fits with aspect preserved. Raster dimensions (canvas.width/.height) stay pinned to doc.canvas.width/.height — only CSS sizing scales. loadDocument calls applyLetterboxFit explicitly so the first frame paints correctly before the observer fires; destroy() disconnects the observer.'
+    tags:
+      - core-invariant
+      - layout
+      - gotcha
+    anchors:
+      - packages/studio/src/panels/canvas-panel.ts:34-58
+      - packages/studio/src/panels/canvas-panel.ts:178-198
+      - packages/studio/src/panels/canvas-panel.ts:283-307
+    enforcement: observe this.el + subtract padding/gap/playback height + min-of-ratios
     appliesTo: ["#canvas-panel"]
   scrub-pause-resume:
     description: 'Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.'
@@ -394,6 +413,16 @@ aspects:
       - packages/studio/src/utils/drag-reorder.ts:79-98
     enforcement: midpoint hit-test + source-removal index adjust
     appliesTo: ["#drag-reorder"]
+  canvas-size-dropdown-routes-through-onDocChange:
+    description: 'The toolbar canvas-size dropdown writes width/height onto this.doc.canvas and then calls onDocChange — the same path every other mutation uses — so the change snapshots history (Cmd-Z reverts), refreshes every panel, and notifies the host (autosave + WS bridge). It deliberately does NOT call canvas-panel directly: canvas-panel''s ResizeObserver-driven letterbox fit picks up the new dimensions on the next refresh, keeping the resize a pure doc-mutation. refreshCanvasSizeUI re-syncs the select value + the caption-reposition warning on every panel-reload path (loadDocument, applyMutation, reloadPanels, onDocChange), and a stale-Custom option from a prior non-preset size is stripped each call so the list never accumulates orphans.'
+    tags:
+      - core-invariant
+      - history
+      - bridge
+    anchors:
+      - packages/studio/src/studio.ts
+    enforcement: doc mutation + onDocChange, no direct canvas-panel call; stale Custom option stripped
+    appliesTo: ["#atelier-studio", "#canvas-size-presets"]
   drag-reorder-aborts-clean:
     description: 'All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.'
     tags:

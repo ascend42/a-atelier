@@ -1,26 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779961146562,
+  "lastActivity": 1779965192725,
   "breadcrumbs": [
-    {
-      "timestamp": 1779745464436,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
-    {
-      "timestamp": 1779745661296,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1779757762595,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Atelier creator-flow: image generation stays pure now, wrapp"
-    },
     {
       "timestamp": 1779757765854,
       "action": "tool-call",
@@ -302,6 +284,24 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: v1.0 media-bin pivot + bottom timeline — full bundle landed "
+    },
+    {
+      "timestamp": 1779965192222,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779965192647,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779965236914,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Triage bundle — stale doc fix + canvas aspect-fit + canvas-s"
     }
   ],
   "symbolsModified": [],

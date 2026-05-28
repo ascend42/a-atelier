@@ -2565,8 +2565,16 @@ export async function bootWorkspaceApp(): Promise<void> {
       // Wire LLM mutation through to the active doc (workspace mode preserves
       // the live loop the legacy single-doc mode already had).
       const e = env as { documentId: string; doc: unknown; source?: string };
-      if (activeProjectName && e.documentId === `${activeProjectName}/project.atelier`) {
+      // Match WHICHEVER doc is currently loaded (post flat-docs pivot the
+      // active doc isn't always `project.atelier`). Without this, mutations
+      // for non-`project.atelier` docs were silently dropped, so the layers
+      // panel + timeline only refreshed on a panel-switch reload.
+      if (activeProjectName && currentDocPath && e.documentId === `${activeProjectName}/${currentDocPath}`) {
         currentStudio.applyMutation({ type: "doc:replace", doc: e.doc as never, source: (e.source as never) ?? "llm" });
+        // Keep the timeline lane in sync with the layers panel. `applyMutation`
+        // updates the studio component but the TimelineView has its own
+        // `setDoc` cache that needs the same poke.
+        timelineView?.setDoc(e.doc as never);
       }
     }
   });

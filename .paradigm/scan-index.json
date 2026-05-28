@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-28T09:39:06.477Z",
+    "generatedAt": "2026-05-28T10:46:32.535Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 14,
@@ -208,7 +208,8 @@
         "#layer-panel",
         "#property-panel",
         "#delta-panel",
-        "#yaml-panel"
+        "#yaml-panel",
+        "#canvas-size-presets"
       ]
     },
     "atelier-mcp": {
@@ -451,13 +452,100 @@
       "visualTags": [],
       "related": []
     },
+    "#svg-renderer": {
+      "id": "#svg-renderer",
+      "name": "#svg Renderer",
+      "symbol": "##svg-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
+      "visualTags": [],
+      "related": [
+        "#svg-shapes",
+        "#svg-text",
+        "#svg-gradients",
+        "#svg-filters",
+        "#svg-clip",
+        "#svg-properties"
+      ]
+    },
+    "#svg-shapes": {
+      "id": "#svg-shapes",
+      "name": "#svg Shapes",
+      "symbol": "##svg-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-text": {
+      "id": "#svg-text",
+      "name": "#svg Text",
+      "symbol": "##svg-text",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-gradients": {
+      "id": "#svg-gradients",
+      "name": "#svg Gradients",
+      "symbol": "##svg-gradients",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-filters": {
+      "id": "#svg-filters",
+      "name": "#svg Filters",
+      "symbol": "##svg-filters",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-clip": {
+      "id": "#svg-clip",
+      "name": "#svg Clip",
+      "symbol": "##svg-clip",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
+      "visualTags": [],
+      "related": []
+    },
+    "#svg-properties": {
+      "id": "#svg-properties",
+      "name": "#svg Properties",
+      "symbol": "##svg-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
+      "visualTags": [],
+      "related": []
+    },
     "canvas-panel": {
       "id": "canvas-panel",
       "name": "Canvas Panel",
       "symbol": "#canvas-panel",
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
-      "description": "Canvas rendering and playback panel with play/pause/scrub controls",
+      "description": "Canvas rendering and playback panel with play/pause/scrub controls and letterbox-fit display sizing via ResizeObserver",
+      "visualTags": [],
+      "related": []
+    },
+    "compute-letterbox-fit": {
+      "id": "compute-letterbox-fit",
+      "name": "Compute Letterbox Fit",
+      "symbol": "#compute-letterbox-fit",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Pure helper that returns the largest aspect-preserving scale of a canvas inside a parent rect, with zero/negative inputs collapsing to zeros",
       "visualTags": [],
       "related": []
     },
@@ -514,6 +602,16 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Read-only YAML viewer with syntax highlighting and copy-to-clipboard",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-size-presets": {
+      "id": "canvas-size-presets",
+      "name": "Canvas Size Presets",
+      "symbol": "#canvas-size-presets",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "Closed list of 4 canvas-size presets (portrait/landscape/square/feed) and a findPresetMatch helper, consumed by the studio toolbar dropdown to mutate doc.canvas.width/height; non-preset dimensions surface as a disabled \"Custom — W×H\" entry. Captions baked at compose-time may need re-position after a resize — the toolbar shows a muted inline warning when any layer carries the \"caption\" tag.",
       "visualTags": [],
       "related": []
     },
@@ -591,83 +689,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-renderer": {
-      "id": "#svg-renderer",
-      "name": "#svg Renderer",
-      "symbol": "##svg-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderFrameSVG — main entry point, renders resolved frame as complete SVG string with defs, layers, transforms",
-      "visualTags": [],
-      "related": [
-        "#svg-shapes",
-        "#svg-text",
-        "#svg-gradients",
-        "#svg-filters",
-        "#svg-clip",
-        "#svg-properties"
-      ]
-    },
-    "#svg-shapes": {
-      "id": "#svg-shapes",
-      "name": "#svg Shapes",
-      "symbol": "##svg-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderShapeSVG — renders rect, ellipse, path visuals with fills, strokes, gradients, dash arrays",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-text": {
-      "id": "#svg-text",
-      "name": "#svg Text",
-      "symbol": "##svg-text",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderTextSVG — renders text visuals with font attributes, color, alignment, letter-spacing",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-gradients": {
-      "id": "#svg-gradients",
-      "name": "#svg Gradients",
-      "symbol": "##svg-gradients",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildGradientDef, colorToCSS — generates SVG linear/radial gradient defs with deterministic IDs",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-filters": {
-      "id": "#svg-filters",
-      "name": "#svg Filters",
-      "symbol": "##svg-filters",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildShadowFilter — generates SVG drop shadow filter defs with offset, blur, color",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-clip": {
-      "id": "#svg-clip",
-      "name": "#svg Clip",
-      "symbol": "##svg-clip",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildClipPathDef — generates clipPath defs supporting rect, ellipse, and cubic bezier paths",
-      "visualTags": [],
-      "related": []
-    },
-    "#svg-properties": {
-      "id": "#svg-properties",
-      "name": "#svg Properties",
-      "symbol": "##svg-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "buildTransform, buildStyleAttrs, escapeXml — SVG transform matrices, opacity/blend-mode, XML escaping",
       "visualTags": [],
       "related": []
     },
@@ -799,6 +820,134 @@
       "visualTags": [],
       "related": [],
       "componentType": "service"
+    },
+    "#easing-functions": {
+      "id": "#easing-functions",
+      "name": "#easing Functions",
+      "symbol": "##easing-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
+      "visualTags": [],
+      "related": []
+    },
+    "#spring-solver": {
+      "id": "#spring-solver",
+      "name": "#spring Solver",
+      "symbol": "##spring-solver",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
+      "visualTags": [],
+      "related": []
+    },
+    "#lerp-functions": {
+      "id": "#lerp-functions",
+      "name": "#lerp Functions",
+      "symbol": "##lerp-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Linear interpolation, clamp, array lerp, range remap",
+      "visualTags": [],
+      "related": []
+    },
+    "#color-math": {
+      "id": "#color-math",
+      "name": "#color Math",
+      "symbol": "##color-math",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
+      "visualTags": [],
+      "related": []
     },
     "mcp-store": {
       "id": "mcp-store",
@@ -1194,134 +1343,6 @@
       "related": [
         "~no-manifest-doc"
       ]
-    },
-    "#easing-functions": {
-      "id": "#easing-functions",
-      "name": "#easing Functions",
-      "symbol": "##easing-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear, cubic-bezier, ease-in/out/in-out presets, step easing",
-      "visualTags": [],
-      "related": []
-    },
-    "#spring-solver": {
-      "id": "#spring-solver",
-      "name": "#spring Solver",
-      "symbol": "##spring-solver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Damped harmonic oscillator spring physics — underdamped, critically damped, overdamped",
-      "visualTags": [],
-      "related": []
-    },
-    "#lerp-functions": {
-      "id": "#lerp-functions",
-      "name": "#lerp Functions",
-      "symbol": "##lerp-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Linear interpolation, clamp, array lerp, range remap",
-      "visualTags": [],
-      "related": []
-    },
-    "#color-math": {
-      "id": "#color-math",
-      "name": "#color Math",
-      "symbol": "##color-math",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Hex parsing, RGBA/HSLA conversion, color interpolation with shortest hue path",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-exporter": {
-      "id": "#lottie-exporter",
-      "name": "#lottie Exporter",
-      "symbol": "##lottie-exporter",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers",
-        "#lottie-warnings"
-      ]
-    },
-    "#lottie-types": {
-      "id": "#lottie-types",
-      "name": "#lottie Types",
-      "symbol": "##lottie-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-layers": {
-      "id": "#lottie-map-layers",
-      "name": "#lottie Map Layers",
-      "symbol": "##lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-shapes",
-        "#lottie-map-keyframes",
-        "#lottie-map-colors",
-        "#lottie-map-easing"
-      ]
-    },
-    "#lottie-map-shapes": {
-      "id": "#lottie-map-shapes",
-      "name": "#lottie Map Shapes",
-      "symbol": "##lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-keyframes": {
-      "id": "#lottie-map-keyframes",
-      "name": "#lottie Map Keyframes",
-      "symbol": "##lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-colors": {
-      "id": "#lottie-map-colors",
-      "name": "#lottie Map Colors",
-      "symbol": "##lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-easing": {
-      "id": "#lottie-map-easing",
-      "name": "#lottie Map Easing",
-      "symbol": "##lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-warnings": {
-      "id": "#lottie-warnings",
-      "name": "#lottie Warnings",
-      "symbol": "##lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
-      "visualTags": [],
-      "related": []
     },
     "#frame-resolver": {
       "id": "#frame-resolver",
@@ -2244,18 +2265,6 @@
         "#svg-renderer"
       ]
     },
-    "rename-media": {
-      "id": "rename-media",
-      "name": "Rename Media",
-      "symbol": "#rename-media",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Referenced from #mcp-tool-rename-media",
-      "visualTags": [],
-      "related": [
-        "#mcp-tool-rename-media"
-      ]
-    },
     "lottie-map-layers": {
       "id": "lottie-map-layers",
       "name": "Lottie Map Layers",
@@ -2322,6 +2331,18 @@
       "visualTags": [],
       "related": [
         "#lottie-map-layers"
+      ]
+    },
+    "rename-media": {
+      "id": "rename-media",
+      "name": "Rename Media",
+      "symbol": "#rename-media",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-rename-media",
+      "visualTags": [],
+      "related": [
+        "#mcp-tool-rename-media"
       ]
     },
     "render-image": {
@@ -3618,6 +3639,177 @@
       "description": "Recipe fields use snake_case (not the camelCase of the core types), and units differ by block — SilencePolicy paddings/min_silence/match_tolerance are SECONDS, CaptionStyle y_ratio/width_ratio are 0-1 ratios of canvas, fade_seconds is seconds, CaptionGrouping pause_gap is seconds. OverlayRules use anchor (corner enum) + margin (px), NOT y_ratio.",
       "related": []
     },
+    "declarative-string-vs-imperative-ctx": {
+      "id": "declarative-string-vs-imperative-ctx",
+      "name": "Declarative String Vs Imperative Ctx",
+      "symbol": "~declarative-string-vs-imperative-ctx",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "The SVG renderer accumulates content as STRINGS — sub-renderers return markup, defs and layer elements collect into arrays, and the whole document is assembled with lines.join(\"\\n\") at the end. There is no imperative draw context like the canvas renderer's ctx.fill/ctx.stroke; output is a single self-contained SVG string with all <defs> emitted before the layer <g> elements, so refs resolve regardless of layer order.",
+      "related": []
+    },
+    "id-counter-reset-determinism": {
+      "id": "id-counter-reset-determinism",
+      "name": "Id Counter Reset Determinism",
+      "symbol": "~id-counter-reset-determinism",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "All three id counters (gradient, filter, clip) are reset at the very top of renderFrameSVG before anything is resolved or emitted, so a given frame always produces identical grad-/filter-/clip- ids. Skip the reset and ids drift upward across successive renders, defeating snapshot stability and risking duplicate ids if two renders are concatenated.",
+      "related": []
+    },
+    "early-skip-and-asset-mutation": {
+      "id": "early-skip-and-asset-mutation",
+      "name": "Early Skip And Asset Mutation",
+      "symbol": "~early-skip-and-asset-mutation",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "A layer is skipped before any markup when !eff.visible OR eff.opacity <= 0, matching the canvas guard. For image layers the resolver MUTATES the asset src onto eff.visual in place (assetId → doc.assets[assetId].src) — eff.visual is the buildEffectiveLayer copy, but this is still in-place mutation of the effective visual rather than a pure return.",
+      "related": []
+    },
+    "combined-shadow-tint-drops-tint": {
+      "id": "combined-shadow-tint-drops-tint",
+      "name": "Combined Shadow Tint Drops Tint",
+      "symbol": "~combined-shadow-tint-drops-tint",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "When a layer has BOTH a shadow filter and a tint filter, only the shadow filterRef is actually applied to the group — the tint is silently dropped (the comment promises a nested-group wrap that is never emitted). Shadow-only or tint-only layers apply correctly. This is a known incomplete branch, not a coincidence; a maintainer adding combined filters must implement the nested wrap here.",
+      "related": []
+    },
+    "image-crop-via-nested-svg-viewbox": {
+      "id": "image-crop-via-nested-svg-viewbox",
+      "name": "Image Crop Via Nested Svg Viewbox",
+      "symbol": "~image-crop-via-nested-svg-viewbox",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Unlike the canvas renderer's 5-arg/9-arg drawImage cropping, sourceRect and spritesheet crops are emitted as a nested <svg viewBox=\"sx sy w h\"> wrapping a full-size <image> — the viewBox windows the visible region declaratively. Spritesheet frameIndex is floored and clamped to maxFrames-1 (frameCount ?? columns*rows), with col=idx%columns and row=floor(idx/columns).",
+      "related": []
+    },
+    "ref-cycle-and-depth-guards": {
+      "id": "ref-cycle-and-depth-guards",
+      "name": "Ref Cycle And Depth Guards",
+      "symbol": "~ref-cycle-and-depth-guards",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "renderRefSVG guards recursion two ways — a depth counter capped at maxRefDepth (default 4) emits a MAX DEPTH placeholder, and a visitedRefs Set keyed by visual.src emits a CYCLE placeholder before recursing into an already-visited doc. The src is added to the set before recursing and deleted after, so sibling refs to the same doc are allowed while true cycles are blocked. Missing resolver / not-found / empty-states each fall back to a distinct dashed placeholder rect.",
+      "related": []
+    },
+    "bezier-only-with-handle-pair": {
+      "id": "bezier-only-with-handle-pair",
+      "name": "Bezier Only With Handle Pair",
+      "symbol": "~bezier-only-with-handle-pair",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "A path segment is emitted as a cubic C command only when prev.out AND curr.in both exist (handles are relative offsets added to the anchor: prev.x+prev.out.x etc.); otherwise it degrades to a straight L lineTo. The path returns an empty string entirely when fewer than 2 points, and Z is appended only when shape.closed.",
+      "related": []
+    },
+    "corner-radius-array-first-only": {
+      "id": "corner-radius-array-first-only",
+      "name": "Corner Radius Array First Only",
+      "symbol": "~corner-radius-array-first-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "rect rounding emits a single rx/ry pair using only index [0] of a cornerRadius array (or the scalar when not an array) — per-corner radii are NOT supported in SVG output, so a four-value cornerRadius silently collapses to uniform corners. Stroke attrs are space-joined and appended only when present.",
+      "related": []
+    },
+    "text-align-to-text-anchor": {
+      "id": "text-align-to-text-anchor",
+      "name": "Text Align To Text Anchor",
+      "symbol": "~text-align-to-text-anchor",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Canvas textAlign maps to SVG text-anchor declaratively — left→start (x=0), center→middle (x=width/2), right→end (x=width). The X offset keeps text inside the layer box exactly like the canvas renderer's offset, but here the anchor attribute does the work instead of an imperative align call. fontFamily and content are both run through escapeXml.",
+      "related": []
+    },
+    "hanging-baseline-for-top-edge": {
+      "id": "hanging-baseline-for-top-edge",
+      "name": "Hanging Baseline For Top Edge",
+      "symbol": "~hanging-baseline-for-top-edge",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "dominant-baseline=\"hanging\" is always emitted so y=0 is the TOP edge of the text box, matching the layer coordinate system — the SVG analog of the canvas renderer forcing textBaseline=\"top\" against SVG's default alphabetic baseline. font-weight/font-style are only emitted when not \"normal\".",
+      "related": []
+    },
+    "gradient-id-uniqueness-per-render": {
+      "id": "gradient-id-uniqueness-per-render",
+      "name": "Gradient Id Uniqueness Per Render",
+      "symbol": "~gradient-id-uniqueness-per-render",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Every gradient def gets a fresh id via grad-${++gradientIdCounter}, so two gradients in one frame never collide — but uniqueness ACROSS frames depends entirely on resetGradientCounter() at render entry. Reuse the same id across two concatenated SVGs and the second gradient inherits the first's stops. Linear and radial share the same counter.",
+      "related": []
+    },
+    "gradient-coordinate-spaces-differ": {
+      "id": "gradient-coordinate-spaces-differ",
+      "name": "Gradient Coordinate Spaces Differ",
+      "symbol": "~gradient-coordinate-spaces-differ",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Linear gradients map fill.angle to x1/y1/x2/y2 in 0..1 objectBoundingBox unit space (0.5 ± cos/sin * 0.5), so they auto-scale to any layer size. Radial gradients instead use gradientUnits=\"userSpaceOnUse\" with center/radius resolved to pixels (percent radius against max(width,height)). Mixing the two coordinate models is intentional and must not be unified.",
+      "related": []
+    },
+    "color-css-dispatch-black-fallback": {
+      "id": "color-css-dispatch-black-fallback",
+      "name": "Color Css Dispatch Black Fallback",
+      "symbol": "~color-css-dispatch-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "colorToCSS dispatches on shape — a string passes through literally, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything unrecognized falls back to #000000 rather than throwing, so a malformed color renders black.",
+      "related": []
+    },
+    "shadow-filter-region-and-blur-map": {
+      "id": "shadow-filter-region-and-blur-map",
+      "name": "Shadow Filter Region And Blur Map",
+      "symbol": "~shadow-filter-region-and-blur-map",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "The shadow filter region is expanded to x/y=-50% width/height=200% so the drop shadow can bleed OUTSIDE the layer bounds without being clipped (the SVG default filter region is only -10%..110%). stdDeviation is set to blur/2 to roughly match the canvas renderer's shadowBlur appearance — a deliberate approximation, not an exact equivalence.",
+      "related": []
+    },
+    "filters-share-one-counter": {
+      "id": "filters-share-one-counter",
+      "name": "Filters Share One Counter",
+      "symbol": "~filters-share-one-counter",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Both buildShadowFilter and buildTintFilter draw ids from the SAME filterIdCounter, so shadow and tint filters are never assigned the same id within a render. Tint is skipped entirely when amount <= 0; tint is implemented as feFlood (color at flood-opacity=amount) blended over SourceGraphic with mode=\"multiply\".",
+      "related": []
+    },
+    "clip-counter-isolated-and-path-dup": {
+      "id": "clip-counter-isolated-and-path-dup",
+      "name": "Clip Counter Isolated And Path Dup",
+      "symbol": "~clip-counter-isolated-and-path-dup",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "clipIdCounter is a SEPARATE counter from gradient/filter ids, so clip ids never collide with them and have their own reset. The path-shape branch DUPLICATES the moveTo/cubic/lineTo/close emission logic from svg-shapes (handle-pair → C else L, Z on closed) rather than sharing it — keep both copies in sync when path emission changes. A path with fewer than 2 points returns empty defs and empty clipRef, so the caller skips the clip-path attribute.",
+      "related": []
+    },
+    "transform-anchor-order-as-string": {
+      "id": "transform-anchor-order-as-string",
+      "name": "Transform Anchor Order As String",
+      "symbol": "~transform-anchor-order-as-string",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "Transform parts are emitted as a string in the order translate(pos) → translate(anchor) → rotate → scale → translate(-anchor), so rotation/scale pivot around the anchor point (anchorX*width, anchorY*height) — the same composition as the canvas transform stack but serialized to an SVG transform attribute. The rotate/scale block is skipped entirely when totalRotation (rotation+motionPathAngle) is 0 AND both scales are 1, and translate(pos) is skipped when x and y are both 0.",
+      "related": []
+    },
+    "style-attrs-conditional-and-blend-inline": {
+      "id": "style-attrs-conditional-and-blend-inline",
+      "name": "Style Attrs Conditional And Blend Inline",
+      "symbol": "~style-attrs-conditional-and-blend-inline",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "opacity is emitted as an attribute only when eff.opacity < 1, and blendMode is emitted only when not \"normal\" — and crucially as an inline style=\"mix-blend-mode: ...\" rather than a presentation attribute, because mix-blend-mode has no attribute form in SVG. Both omitted means buildStyleAttrs returns an empty string and the <g> carries no style.",
+      "related": []
+    },
+    "escape-xml-five-entities": {
+      "id": "escape-xml-five-entities",
+      "name": "Escape Xml Five Entities",
+      "symbol": "~escape-xml-five-entities",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
+      "description": "escapeXml replaces exactly five entities — & < > \" ' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.",
+      "related": []
+    },
     "apply-mutation-one-tick-suppress": {
       "id": "apply-mutation-one-tick-suppress",
       "name": "Apply Mutation One Tick Suppress",
@@ -3679,6 +3871,15 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "The Player accumulator advances currentFrame by whole frames of 1000/fps elapsed time; on reaching totalFrames it wraps to 0 when loop, else clamps to totalFrames-1 and pauses. seek clamps to [0, totalFrames-1] and setTotalFrames resets currentFrame to 0 only if it now exceeds the new total. CanvasPanel drives all playback through this.",
+      "related": []
+    },
+    "canvas-letterbox-fit-observes-panel": {
+      "id": "canvas-letterbox-fit-observes-panel",
+      "name": "Canvas Letterbox Fit Observes Panel",
+      "symbol": "~canvas-letterbox-fit-observes-panel",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "CanvasPanel uses ResizeObserver on this.el (the outer panel) — NOT this.canvas.parentElement (which is .atel-canvas-wrap, flex-shrink:0 and shrink-fits the canvas, so observing it would either be a no-op or a feedback loop). applyLetterboxFit subtracts the .atel-canvas-panel padding (16*2), the playback row height, and the column gap (12) from the panel rect to derive the available area, then computeLetterboxFit picks min(availW/canvasW, availH/canvasH) so the canvas display size always fits with aspect preserved. Raster dimensions (canvas.width/.height) stay pinned to doc.canvas.width/.height — only CSS sizing scales. loadDocument calls applyLetterboxFit explicitly so the first frame paints correctly before the observer fires; destroy() disconnects the observer.",
       "related": []
     },
     "scrub-pause-resume": {
@@ -3897,6 +4098,15 @@
       "description": "On drop the target index is computed from the cursor position relative to the row midpoint (below the midpoint inserts after), then decremented when fromIndex < toIndex to account for the source being spliced out first — the off-by-one fix that makes downward drags land where the indicator showed. No reorder fires when from === to.",
       "related": []
     },
+    "canvas-size-dropdown-routes-through-onDocChange": {
+      "id": "canvas-size-dropdown-routes-through-onDocChange",
+      "name": "Canvas Size Dropdown Routes Through OnDocChange",
+      "symbol": "~canvas-size-dropdown-routes-through-onDocChange",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
+      "description": "The toolbar canvas-size dropdown writes width/height onto this.doc.canvas and then calls onDocChange — the same path every other mutation uses — so the change snapshots history (Cmd-Z reverts), refreshes every panel, and notifies the host (autosave + WS bridge). It deliberately does NOT call canvas-panel directly: canvas-panel's ResizeObserver-driven letterbox fit picks up the new dimensions on the next refresh, keeping the resize a pure doc-mutation. refreshCanvasSizeUI re-syncs the select value + the caption-reposition warning on every panel-reload path (loadDocument, applyMutation, reloadPanels, onDocChange), and a stale-Custom option from a prior non-preset size is stripped each call so the list never accumulates orphans.",
+      "related": []
+    },
     "drag-reorder-aborts-clean": {
       "id": "drag-reorder-aborts-clean",
       "name": "Drag Reorder Aborts Clean",
@@ -3904,177 +4114,6 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.",
-      "related": []
-    },
-    "declarative-string-vs-imperative-ctx": {
-      "id": "declarative-string-vs-imperative-ctx",
-      "name": "Declarative String Vs Imperative Ctx",
-      "symbol": "~declarative-string-vs-imperative-ctx",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "The SVG renderer accumulates content as STRINGS — sub-renderers return markup, defs and layer elements collect into arrays, and the whole document is assembled with lines.join(\"\\n\") at the end. There is no imperative draw context like the canvas renderer's ctx.fill/ctx.stroke; output is a single self-contained SVG string with all <defs> emitted before the layer <g> elements, so refs resolve regardless of layer order.",
-      "related": []
-    },
-    "id-counter-reset-determinism": {
-      "id": "id-counter-reset-determinism",
-      "name": "Id Counter Reset Determinism",
-      "symbol": "~id-counter-reset-determinism",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "All three id counters (gradient, filter, clip) are reset at the very top of renderFrameSVG before anything is resolved or emitted, so a given frame always produces identical grad-/filter-/clip- ids. Skip the reset and ids drift upward across successive renders, defeating snapshot stability and risking duplicate ids if two renders are concatenated.",
-      "related": []
-    },
-    "early-skip-and-asset-mutation": {
-      "id": "early-skip-and-asset-mutation",
-      "name": "Early Skip And Asset Mutation",
-      "symbol": "~early-skip-and-asset-mutation",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "A layer is skipped before any markup when !eff.visible OR eff.opacity <= 0, matching the canvas guard. For image layers the resolver MUTATES the asset src onto eff.visual in place (assetId → doc.assets[assetId].src) — eff.visual is the buildEffectiveLayer copy, but this is still in-place mutation of the effective visual rather than a pure return.",
-      "related": []
-    },
-    "combined-shadow-tint-drops-tint": {
-      "id": "combined-shadow-tint-drops-tint",
-      "name": "Combined Shadow Tint Drops Tint",
-      "symbol": "~combined-shadow-tint-drops-tint",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "When a layer has BOTH a shadow filter and a tint filter, only the shadow filterRef is actually applied to the group — the tint is silently dropped (the comment promises a nested-group wrap that is never emitted). Shadow-only or tint-only layers apply correctly. This is a known incomplete branch, not a coincidence; a maintainer adding combined filters must implement the nested wrap here.",
-      "related": []
-    },
-    "image-crop-via-nested-svg-viewbox": {
-      "id": "image-crop-via-nested-svg-viewbox",
-      "name": "Image Crop Via Nested Svg Viewbox",
-      "symbol": "~image-crop-via-nested-svg-viewbox",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Unlike the canvas renderer's 5-arg/9-arg drawImage cropping, sourceRect and spritesheet crops are emitted as a nested <svg viewBox=\"sx sy w h\"> wrapping a full-size <image> — the viewBox windows the visible region declaratively. Spritesheet frameIndex is floored and clamped to maxFrames-1 (frameCount ?? columns*rows), with col=idx%columns and row=floor(idx/columns).",
-      "related": []
-    },
-    "ref-cycle-and-depth-guards": {
-      "id": "ref-cycle-and-depth-guards",
-      "name": "Ref Cycle And Depth Guards",
-      "symbol": "~ref-cycle-and-depth-guards",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "renderRefSVG guards recursion two ways — a depth counter capped at maxRefDepth (default 4) emits a MAX DEPTH placeholder, and a visitedRefs Set keyed by visual.src emits a CYCLE placeholder before recursing into an already-visited doc. The src is added to the set before recursing and deleted after, so sibling refs to the same doc are allowed while true cycles are blocked. Missing resolver / not-found / empty-states each fall back to a distinct dashed placeholder rect.",
-      "related": []
-    },
-    "bezier-only-with-handle-pair": {
-      "id": "bezier-only-with-handle-pair",
-      "name": "Bezier Only With Handle Pair",
-      "symbol": "~bezier-only-with-handle-pair",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "A path segment is emitted as a cubic C command only when prev.out AND curr.in both exist (handles are relative offsets added to the anchor: prev.x+prev.out.x etc.); otherwise it degrades to a straight L lineTo. The path returns an empty string entirely when fewer than 2 points, and Z is appended only when shape.closed.",
-      "related": []
-    },
-    "corner-radius-array-first-only": {
-      "id": "corner-radius-array-first-only",
-      "name": "Corner Radius Array First Only",
-      "symbol": "~corner-radius-array-first-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "rect rounding emits a single rx/ry pair using only index [0] of a cornerRadius array (or the scalar when not an array) — per-corner radii are NOT supported in SVG output, so a four-value cornerRadius silently collapses to uniform corners. Stroke attrs are space-joined and appended only when present.",
-      "related": []
-    },
-    "text-align-to-text-anchor": {
-      "id": "text-align-to-text-anchor",
-      "name": "Text Align To Text Anchor",
-      "symbol": "~text-align-to-text-anchor",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Canvas textAlign maps to SVG text-anchor declaratively — left→start (x=0), center→middle (x=width/2), right→end (x=width). The X offset keeps text inside the layer box exactly like the canvas renderer's offset, but here the anchor attribute does the work instead of an imperative align call. fontFamily and content are both run through escapeXml.",
-      "related": []
-    },
-    "hanging-baseline-for-top-edge": {
-      "id": "hanging-baseline-for-top-edge",
-      "name": "Hanging Baseline For Top Edge",
-      "symbol": "~hanging-baseline-for-top-edge",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "dominant-baseline=\"hanging\" is always emitted so y=0 is the TOP edge of the text box, matching the layer coordinate system — the SVG analog of the canvas renderer forcing textBaseline=\"top\" against SVG's default alphabetic baseline. font-weight/font-style are only emitted when not \"normal\".",
-      "related": []
-    },
-    "gradient-id-uniqueness-per-render": {
-      "id": "gradient-id-uniqueness-per-render",
-      "name": "Gradient Id Uniqueness Per Render",
-      "symbol": "~gradient-id-uniqueness-per-render",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Every gradient def gets a fresh id via grad-${++gradientIdCounter}, so two gradients in one frame never collide — but uniqueness ACROSS frames depends entirely on resetGradientCounter() at render entry. Reuse the same id across two concatenated SVGs and the second gradient inherits the first's stops. Linear and radial share the same counter.",
-      "related": []
-    },
-    "gradient-coordinate-spaces-differ": {
-      "id": "gradient-coordinate-spaces-differ",
-      "name": "Gradient Coordinate Spaces Differ",
-      "symbol": "~gradient-coordinate-spaces-differ",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Linear gradients map fill.angle to x1/y1/x2/y2 in 0..1 objectBoundingBox unit space (0.5 ± cos/sin * 0.5), so they auto-scale to any layer size. Radial gradients instead use gradientUnits=\"userSpaceOnUse\" with center/radius resolved to pixels (percent radius against max(width,height)). Mixing the two coordinate models is intentional and must not be unified.",
-      "related": []
-    },
-    "color-css-dispatch-black-fallback": {
-      "id": "color-css-dispatch-black-fallback",
-      "name": "Color Css Dispatch Black Fallback",
-      "symbol": "~color-css-dispatch-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "colorToCSS dispatches on shape — a string passes through literally, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything unrecognized falls back to #000000 rather than throwing, so a malformed color renders black.",
-      "related": []
-    },
-    "shadow-filter-region-and-blur-map": {
-      "id": "shadow-filter-region-and-blur-map",
-      "name": "Shadow Filter Region And Blur Map",
-      "symbol": "~shadow-filter-region-and-blur-map",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "The shadow filter region is expanded to x/y=-50% width/height=200% so the drop shadow can bleed OUTSIDE the layer bounds without being clipped (the SVG default filter region is only -10%..110%). stdDeviation is set to blur/2 to roughly match the canvas renderer's shadowBlur appearance — a deliberate approximation, not an exact equivalence.",
-      "related": []
-    },
-    "filters-share-one-counter": {
-      "id": "filters-share-one-counter",
-      "name": "Filters Share One Counter",
-      "symbol": "~filters-share-one-counter",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Both buildShadowFilter and buildTintFilter draw ids from the SAME filterIdCounter, so shadow and tint filters are never assigned the same id within a render. Tint is skipped entirely when amount <= 0; tint is implemented as feFlood (color at flood-opacity=amount) blended over SourceGraphic with mode=\"multiply\".",
-      "related": []
-    },
-    "clip-counter-isolated-and-path-dup": {
-      "id": "clip-counter-isolated-and-path-dup",
-      "name": "Clip Counter Isolated And Path Dup",
-      "symbol": "~clip-counter-isolated-and-path-dup",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "clipIdCounter is a SEPARATE counter from gradient/filter ids, so clip ids never collide with them and have their own reset. The path-shape branch DUPLICATES the moveTo/cubic/lineTo/close emission logic from svg-shapes (handle-pair → C else L, Z on closed) rather than sharing it — keep both copies in sync when path emission changes. A path with fewer than 2 points returns empty defs and empty clipRef, so the caller skips the clip-path attribute.",
-      "related": []
-    },
-    "transform-anchor-order-as-string": {
-      "id": "transform-anchor-order-as-string",
-      "name": "Transform Anchor Order As String",
-      "symbol": "~transform-anchor-order-as-string",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "Transform parts are emitted as a string in the order translate(pos) → translate(anchor) → rotate → scale → translate(-anchor), so rotation/scale pivot around the anchor point (anchorX*width, anchorY*height) — the same composition as the canvas transform stack but serialized to an SVG transform attribute. The rotate/scale block is skipped entirely when totalRotation (rotation+motionPathAngle) is 0 AND both scales are 1, and translate(pos) is skipped when x and y are both 0.",
-      "related": []
-    },
-    "style-attrs-conditional-and-blend-inline": {
-      "id": "style-attrs-conditional-and-blend-inline",
-      "name": "Style Attrs Conditional And Blend Inline",
-      "symbol": "~style-attrs-conditional-and-blend-inline",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "opacity is emitted as an attribute only when eff.opacity < 1, and blendMode is emitted only when not \"normal\" — and crucially as an inline style=\"mix-blend-mode: ...\" rather than a presentation attribute, because mix-blend-mode has no attribute form in SVG. Both omitted means buildStyleAttrs returns an empty string and the <g> carries no style.",
-      "related": []
-    },
-    "escape-xml-five-entities": {
-      "id": "escape-xml-five-entities",
-      "name": "Escape Xml Five Entities",
-      "symbol": "~escape-xml-five-entities",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose",
-      "description": "escapeXml replaces exactly five entities — & < > \" ' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.",
       "related": []
     },
     "document-shape-asymmetry": {
@@ -4374,6 +4413,339 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose",
       "description": "The ImageCache onLoad callback re-invokes renderCurrentFrame, so async-loaded images repaint the current frame once decoded even when playback is paused — without this, a paused first frame referencing a not-yet-loaded image would stay blank. renderCurrentFrame also silently returns if getContext(\"2d\") yields null.",
+      "related": []
+    },
+    "bezier-binary-search-not-newton": {
+      "id": "bezier-binary-search-not-newton",
+      "name": "Bezier Binary Search Not Newton",
+      "symbol": "~bezier-binary-search-not-newton",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "cubicBezier solves for the parametric t via BINARY SEARCH (not Newton-Raphson) — a fixed 20-iteration loop that bisects [0,1] until sampleBezier x is within epsilon 1e-6 of the input t, then samples the y axis. Iteration count and epsilon are hard-coded magic numbers, so accuracy never adapts to the curve.",
+      "related": []
+    },
+    "easing-endpoint-snap": {
+      "id": "easing-endpoint-snap",
+      "name": "Easing Endpoint Snap",
+      "symbol": "~easing-endpoint-snap",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "Every easing closure short-circuits the endpoints — cubicBezier and step both return exactly 0 for t <= 0 and exactly 1 for t >= 1 before any interpolation, so out-of-range input is clamped to the unit interval rather than extrapolated.",
+      "related": []
+    },
+    "css-preset-control-points": {
+      "id": "css-preset-control-points",
+      "name": "Css Preset Control Points",
+      "symbol": "~css-preset-control-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "The easeIn/easeOut/easeInOut presets are fixed CSS-standard cubic-bezier control points (0.42,0,1,1 / 0,0,0.58,1 / 0.42,0,0.58,1). These exact magic numbers are what make the presets match browser CSS keyword timing.",
+      "related": []
+    },
+    "step-position-asymmetry": {
+      "id": "step-position-asymmetry",
+      "name": "Step Position Asymmetry",
+      "symbol": "~step-position-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "step easing is asymmetric at t <= 0 — position \"start\" returns 1/steps (the first riser has already fired) while \"end\" returns 0; mid-range \"start\" floors to (s+1)/steps capped at 1 and \"end\" floors to s/steps. Confusing start vs end shifts the whole staircase by one step.",
+      "related": []
+    },
+    "spring-default-config": {
+      "id": "spring-default-config",
+      "name": "Spring Default Config",
+      "symbol": "~spring-default-config",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "spring() defaults are mass=1, stiffness=100, damping=10, velocity=0 when the corresponding config field is omitted. These defaults define the out-of-the-box underdamped feel (with stiffness=100/damping=10 the damping ratio zeta is 0.5).",
+      "related": []
+    },
+    "spring-closed-form-three-regimes": {
+      "id": "spring-closed-form-three-regimes",
+      "name": "Spring Closed Form Three Regimes",
+      "symbol": "~spring-closed-form-three-regimes",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "The spring value is an ANALYTIC closed-form of the damped harmonic oscillator — there is no integration loop or rest-threshold check. It branches on the damping ratio zeta: underdamped (zeta < 1) uses damped sin/cos, critically damped (zeta === 1) uses the (1 + ...)*t form, overdamped (zeta > 1) uses two real exponentials. Misclassifying the regime produces NaN from the sqrt of a negative.",
+      "related": []
+    },
+    "spring-settle-time-heuristic": {
+      "id": "spring-settle-time-heuristic",
+      "name": "Spring Settle Time Heuristic",
+      "symbol": "~spring-settle-time-heuristic",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "duration is a HEURISTIC settle-time estimate used only to normalize t into seconds, not a runtime rest threshold — overdamped/critical use 10/(zeta*w0) and underdamped uses ln(1000)/(zeta*w0) (the time to decay within ~0.1% of target). Changing these formulas rescales the entire spring timeline.",
+      "related": []
+    },
+    "spring-endpoint-snap": {
+      "id": "spring-endpoint-snap",
+      "name": "Spring Endpoint Snap",
+      "symbol": "~spring-endpoint-snap",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "spring forces exact 0 at t <= 0 and exact 1 at t >= 1 before evaluating the oscillator, so even though the underlying physics overshoots, the start and end frames always land precisely on target.",
+      "related": []
+    },
+    "lerp-is-unclamped": {
+      "id": "lerp-is-unclamped",
+      "name": "Lerp Is Unclamped",
+      "symbol": "~lerp-is-unclamped",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerp(a,b,t) = a + (b-a)*t is intentionally UNCLAMPED — t outside [0,1] extrapolates beyond the endpoints. Callers needing bounded output must wrap with clamp(); contrast clamp() which uses Math.min(Math.max(...)).",
+      "related": []
+    },
+    "lerp-array-no-length-guard": {
+      "id": "lerp-array-no-length-guard",
+      "name": "Lerp Array No Length Guard",
+      "symbol": "~lerp-array-no-length-guard",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpArray maps over a only and reads b[i] with no length check — if b is shorter than a the missing indices read undefined and produce NaN, and extra elements of b are silently ignored. Equal length is an unenforced caller contract.",
+      "related": []
+    },
+    "remap-divide-by-zero": {
+      "id": "remap-divide-by-zero",
+      "name": "Remap Divide By Zero",
+      "symbol": "~remap-divide-by-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "remap divides by (inMax - inMin) with no guard, so a degenerate input range where inMin === inMax yields NaN or Infinity for t and therefore for the result. Zero-width input ranges are undefined behavior.",
+      "related": []
+    },
+    "hex-alpha-defaults-ff": {
+      "id": "hex-alpha-defaults-ff",
+      "name": "Hex Alpha Defaults Ff",
+      "symbol": "~hex-alpha-defaults-ff",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "hexToRgba normalizes shorthand and missing alpha to opaque — 3-char #RGB and 6-char #RRGGBB get \"ff\" appended, 4-char #RGBA doubles each nibble, before parsing each channel as base-16. Alpha is divided by 255 to land in 0-1 while r/g/b stay 0-255.",
+      "related": []
+    },
+    "rgba-to-hex-clamp-and-omit-ff": {
+      "id": "rgba-to-hex-clamp-and-omit-ff",
+      "name": "Rgba To Hex Clamp And Omit Ff",
+      "symbol": "~rgba-to-hex-clamp-and-omit-ff",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "rgbaToHex rounds and clamps each channel to 0-255, pads each to 2 hex digits, and OMITS the alpha pair entirely when it rounds to \"ff\" — so fully opaque colors serialize to the short #RRGGBB form rather than #RRGGBBff.",
+      "related": []
+    },
+    "rgba-interpolation-is-unrounded": {
+      "id": "rgba-interpolation-is-unrounded",
+      "name": "Rgba Interpolation Is Unrounded",
+      "symbol": "~rgba-interpolation-is-unrounded",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpRgba interpolates in RGB space and leaves channels as raw floats (no rounding), unlike hslaToRgba which Math.round-s r/g/b to integers. Chained RGBA interpolations therefore stay precise; rounding only happens at hex serialization.",
+      "related": []
+    },
+    "hsla-shortest-hue-path": {
+      "id": "hsla-shortest-hue-path",
+      "name": "Hsla Shortest Hue Path",
+      "symbol": "~hsla-shortest-hue-path",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "lerpHsla interpolates hue along the SHORTEST arc — the raw hue delta is wrapped into -180..180 (subtract/add 360) before lerping, then the result is euclidean-mod normalized via (((x % 360) + 360) % 360) to stay 0-360. Without this, a 350→10 transition would sweep the long way round.",
+      "related": []
+    },
+    "hsl-zero-saturation-guard": {
+      "id": "hsl-zero-saturation-guard",
+      "name": "Hsl Zero Saturation Guard",
+      "symbol": "~hsl-zero-saturation-guard",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
+      "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
+      "related": []
+    },
+    "pinned-lottie-version": {
+      "id": "pinned-lottie-version",
+      "name": "Pinned Lottie Version",
+      "symbol": "~pinned-lottie-version",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
+      "related": []
+    },
+    "default-first-state": {
+      "id": "default-first-state",
+      "name": "Default First State",
+      "symbol": "~default-first-state",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
+      "related": []
+    },
+    "warning-dedup-collapse": {
+      "id": "warning-dedup-collapse",
+      "name": "Warning Dedup Collapse",
+      "symbol": "~warning-dedup-collapse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
+      "related": []
+    },
+    "image-asset-fixed-dimensions": {
+      "id": "image-asset-fixed-dimensions",
+      "name": "Image Asset Fixed Dimensions",
+      "symbol": "~image-asset-fixed-dimensions",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
+      "related": []
+    },
+    "numeric-layer-type-discriminant": {
+      "id": "numeric-layer-type-discriminant",
+      "name": "Numeric Layer Type Discriminant",
+      "symbol": "~numeric-layer-type-discriminant",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
+      "related": []
+    },
+    "bezier-handles-as-xy-objects": {
+      "id": "bezier-handles-as-xy-objects",
+      "name": "Bezier Handles As Xy Objects",
+      "symbol": "~bezier-handles-as-xy-objects",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
+      "related": []
+    },
+    "percentage-units-collapse-to-zero": {
+      "id": "percentage-units-collapse-to-zero",
+      "name": "Percentage Units Collapse To Zero",
+      "symbol": "~percentage-units-collapse-to-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
+      "related": []
+    },
+    "layer-index-is-parent-pointer": {
+      "id": "layer-index-is-parent-pointer",
+      "name": "Layer Index Is Parent Pointer",
+      "symbol": "~layer-index-is-parent-pointer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
+      "related": []
+    },
+    "opacity-and-scale-percent-rescale": {
+      "id": "opacity-and-scale-percent-rescale",
+      "name": "Opacity And Scale Percent Rescale",
+      "symbol": "~opacity-and-scale-percent-rescale",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
+      "related": []
+    },
+    "max-frame-fallback-sixty": {
+      "id": "max-frame-fallback-sixty",
+      "name": "Max Frame Fallback Sixty",
+      "symbol": "~max-frame-fallback-sixty",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
+      "related": []
+    },
+    "rect-centered-radial-fixed": {
+      "id": "rect-centered-radial-fixed",
+      "name": "Rect Centered Radial Fixed",
+      "symbol": "~rect-centered-radial-fixed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
+      "related": []
+    },
+    "gradient-stop-stride-no-alpha": {
+      "id": "gradient-stop-stride-no-alpha",
+      "name": "Gradient Stop Stride No Alpha",
+      "symbol": "~gradient-stop-stride-no-alpha",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
+      "related": []
+    },
+    "unknown-fill-black-fallback": {
+      "id": "unknown-fill-black-fallback",
+      "name": "Unknown Fill Black Fallback",
+      "symbol": "~unknown-fill-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
+      "related": []
+    },
+    "expression-short-circuits-static-zero": {
+      "id": "expression-short-circuits-static-zero",
+      "name": "Expression Short Circuits Static Zero",
+      "symbol": "~expression-short-circuits-static-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
+      "related": []
+    },
+    "position-z-zero-easing-from-x": {
+      "id": "position-z-zero-easing-from-x",
+      "name": "Position Z Zero Easing From X",
+      "symbol": "~position-z-zero-easing-from-x",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
+      "related": []
+    },
+    "keyframe-hold-last-completed": {
+      "id": "keyframe-hold-last-completed",
+      "name": "Keyframe Hold Last Completed",
+      "symbol": "~keyframe-hold-last-completed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
+      "related": []
+    },
+    "rgb-normalize-255-to-unit": {
+      "id": "rgb-normalize-255-to-unit",
+      "name": "Rgb Normalize 255 To Unit",
+      "symbol": "~rgb-normalize-255-to-unit",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
+      "related": []
+    },
+    "hex-shorthand-and-black-fallback": {
+      "id": "hex-shorthand-and-black-fallback",
+      "name": "Hex Shorthand And Black Fallback",
+      "symbol": "~hex-shorthand-and-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
+      "related": []
+    },
+    "easing-handles-swapped-and-inverted": {
+      "id": "easing-handles-swapped-and-inverted",
+      "name": "Easing Handles Swapped And Inverted",
+      "symbol": "~easing-handles-swapped-and-inverted",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
+      "related": []
+    },
+    "lossy-easing-approximations": {
+      "id": "lossy-easing-approximations",
+      "name": "Lossy Easing Approximations",
+      "symbol": "~lossy-easing-approximations",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
+      "related": []
+    },
+    "unsupported-feature-catalog": {
+      "id": "unsupported-feature-catalog",
+      "name": "Unsupported Feature Catalog",
+      "symbol": "~unsupported-feature-catalog",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
       "related": []
     },
     "store-synchronous-registration-order-emit": {
@@ -4759,339 +5131,6 @@
       "related": [
         "#ref-cycle"
       ]
-    },
-    "bezier-binary-search-not-newton": {
-      "id": "bezier-binary-search-not-newton",
-      "name": "Bezier Binary Search Not Newton",
-      "symbol": "~bezier-binary-search-not-newton",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "cubicBezier solves for the parametric t via BINARY SEARCH (not Newton-Raphson) — a fixed 20-iteration loop that bisects [0,1] until sampleBezier x is within epsilon 1e-6 of the input t, then samples the y axis. Iteration count and epsilon are hard-coded magic numbers, so accuracy never adapts to the curve.",
-      "related": []
-    },
-    "easing-endpoint-snap": {
-      "id": "easing-endpoint-snap",
-      "name": "Easing Endpoint Snap",
-      "symbol": "~easing-endpoint-snap",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "Every easing closure short-circuits the endpoints — cubicBezier and step both return exactly 0 for t <= 0 and exactly 1 for t >= 1 before any interpolation, so out-of-range input is clamped to the unit interval rather than extrapolated.",
-      "related": []
-    },
-    "css-preset-control-points": {
-      "id": "css-preset-control-points",
-      "name": "Css Preset Control Points",
-      "symbol": "~css-preset-control-points",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "The easeIn/easeOut/easeInOut presets are fixed CSS-standard cubic-bezier control points (0.42,0,1,1 / 0,0,0.58,1 / 0.42,0,0.58,1). These exact magic numbers are what make the presets match browser CSS keyword timing.",
-      "related": []
-    },
-    "step-position-asymmetry": {
-      "id": "step-position-asymmetry",
-      "name": "Step Position Asymmetry",
-      "symbol": "~step-position-asymmetry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "step easing is asymmetric at t <= 0 — position \"start\" returns 1/steps (the first riser has already fired) while \"end\" returns 0; mid-range \"start\" floors to (s+1)/steps capped at 1 and \"end\" floors to s/steps. Confusing start vs end shifts the whole staircase by one step.",
-      "related": []
-    },
-    "spring-default-config": {
-      "id": "spring-default-config",
-      "name": "Spring Default Config",
-      "symbol": "~spring-default-config",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "spring() defaults are mass=1, stiffness=100, damping=10, velocity=0 when the corresponding config field is omitted. These defaults define the out-of-the-box underdamped feel (with stiffness=100/damping=10 the damping ratio zeta is 0.5).",
-      "related": []
-    },
-    "spring-closed-form-three-regimes": {
-      "id": "spring-closed-form-three-regimes",
-      "name": "Spring Closed Form Three Regimes",
-      "symbol": "~spring-closed-form-three-regimes",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "The spring value is an ANALYTIC closed-form of the damped harmonic oscillator — there is no integration loop or rest-threshold check. It branches on the damping ratio zeta: underdamped (zeta < 1) uses damped sin/cos, critically damped (zeta === 1) uses the (1 + ...)*t form, overdamped (zeta > 1) uses two real exponentials. Misclassifying the regime produces NaN from the sqrt of a negative.",
-      "related": []
-    },
-    "spring-settle-time-heuristic": {
-      "id": "spring-settle-time-heuristic",
-      "name": "Spring Settle Time Heuristic",
-      "symbol": "~spring-settle-time-heuristic",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "duration is a HEURISTIC settle-time estimate used only to normalize t into seconds, not a runtime rest threshold — overdamped/critical use 10/(zeta*w0) and underdamped uses ln(1000)/(zeta*w0) (the time to decay within ~0.1% of target). Changing these formulas rescales the entire spring timeline.",
-      "related": []
-    },
-    "spring-endpoint-snap": {
-      "id": "spring-endpoint-snap",
-      "name": "Spring Endpoint Snap",
-      "symbol": "~spring-endpoint-snap",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "spring forces exact 0 at t <= 0 and exact 1 at t >= 1 before evaluating the oscillator, so even though the underlying physics overshoots, the start and end frames always land precisely on target.",
-      "related": []
-    },
-    "lerp-is-unclamped": {
-      "id": "lerp-is-unclamped",
-      "name": "Lerp Is Unclamped",
-      "symbol": "~lerp-is-unclamped",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerp(a,b,t) = a + (b-a)*t is intentionally UNCLAMPED — t outside [0,1] extrapolates beyond the endpoints. Callers needing bounded output must wrap with clamp(); contrast clamp() which uses Math.min(Math.max(...)).",
-      "related": []
-    },
-    "lerp-array-no-length-guard": {
-      "id": "lerp-array-no-length-guard",
-      "name": "Lerp Array No Length Guard",
-      "symbol": "~lerp-array-no-length-guard",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpArray maps over a only and reads b[i] with no length check — if b is shorter than a the missing indices read undefined and produce NaN, and extra elements of b are silently ignored. Equal length is an unenforced caller contract.",
-      "related": []
-    },
-    "remap-divide-by-zero": {
-      "id": "remap-divide-by-zero",
-      "name": "Remap Divide By Zero",
-      "symbol": "~remap-divide-by-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "remap divides by (inMax - inMin) with no guard, so a degenerate input range where inMin === inMax yields NaN or Infinity for t and therefore for the result. Zero-width input ranges are undefined behavior.",
-      "related": []
-    },
-    "hex-alpha-defaults-ff": {
-      "id": "hex-alpha-defaults-ff",
-      "name": "Hex Alpha Defaults Ff",
-      "symbol": "~hex-alpha-defaults-ff",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "hexToRgba normalizes shorthand and missing alpha to opaque — 3-char #RGB and 6-char #RRGGBB get \"ff\" appended, 4-char #RGBA doubles each nibble, before parsing each channel as base-16. Alpha is divided by 255 to land in 0-1 while r/g/b stay 0-255.",
-      "related": []
-    },
-    "rgba-to-hex-clamp-and-omit-ff": {
-      "id": "rgba-to-hex-clamp-and-omit-ff",
-      "name": "Rgba To Hex Clamp And Omit Ff",
-      "symbol": "~rgba-to-hex-clamp-and-omit-ff",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "rgbaToHex rounds and clamps each channel to 0-255, pads each to 2 hex digits, and OMITS the alpha pair entirely when it rounds to \"ff\" — so fully opaque colors serialize to the short #RRGGBB form rather than #RRGGBBff.",
-      "related": []
-    },
-    "rgba-interpolation-is-unrounded": {
-      "id": "rgba-interpolation-is-unrounded",
-      "name": "Rgba Interpolation Is Unrounded",
-      "symbol": "~rgba-interpolation-is-unrounded",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpRgba interpolates in RGB space and leaves channels as raw floats (no rounding), unlike hslaToRgba which Math.round-s r/g/b to integers. Chained RGBA interpolations therefore stay precise; rounding only happens at hex serialization.",
-      "related": []
-    },
-    "hsla-shortest-hue-path": {
-      "id": "hsla-shortest-hue-path",
-      "name": "Hsla Shortest Hue Path",
-      "symbol": "~hsla-shortest-hue-path",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "lerpHsla interpolates hue along the SHORTEST arc — the raw hue delta is wrapped into -180..180 (subtract/add 360) before lerping, then the result is euclidean-mod normalized via (((x % 360) + 360) % 360) to stay 0-360. Without this, a 350→10 transition would sweep the long way round.",
-      "related": []
-    },
-    "hsl-zero-saturation-guard": {
-      "id": "hsl-zero-saturation-guard",
-      "name": "Hsl Zero Saturation Guard",
-      "symbol": "~hsl-zero-saturation-guard",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose",
-      "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
-      "related": []
-    },
-    "pinned-lottie-version": {
-      "id": "pinned-lottie-version",
-      "name": "Pinned Lottie Version",
-      "symbol": "~pinned-lottie-version",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
-      "related": []
-    },
-    "default-first-state": {
-      "id": "default-first-state",
-      "name": "Default First State",
-      "symbol": "~default-first-state",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
-      "related": []
-    },
-    "warning-dedup-collapse": {
-      "id": "warning-dedup-collapse",
-      "name": "Warning Dedup Collapse",
-      "symbol": "~warning-dedup-collapse",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
-      "related": []
-    },
-    "image-asset-fixed-dimensions": {
-      "id": "image-asset-fixed-dimensions",
-      "name": "Image Asset Fixed Dimensions",
-      "symbol": "~image-asset-fixed-dimensions",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
-      "related": []
-    },
-    "numeric-layer-type-discriminant": {
-      "id": "numeric-layer-type-discriminant",
-      "name": "Numeric Layer Type Discriminant",
-      "symbol": "~numeric-layer-type-discriminant",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
-      "related": []
-    },
-    "bezier-handles-as-xy-objects": {
-      "id": "bezier-handles-as-xy-objects",
-      "name": "Bezier Handles As Xy Objects",
-      "symbol": "~bezier-handles-as-xy-objects",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
-      "related": []
-    },
-    "percentage-units-collapse-to-zero": {
-      "id": "percentage-units-collapse-to-zero",
-      "name": "Percentage Units Collapse To Zero",
-      "symbol": "~percentage-units-collapse-to-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
-      "related": []
-    },
-    "layer-index-is-parent-pointer": {
-      "id": "layer-index-is-parent-pointer",
-      "name": "Layer Index Is Parent Pointer",
-      "symbol": "~layer-index-is-parent-pointer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
-      "related": []
-    },
-    "opacity-and-scale-percent-rescale": {
-      "id": "opacity-and-scale-percent-rescale",
-      "name": "Opacity And Scale Percent Rescale",
-      "symbol": "~opacity-and-scale-percent-rescale",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
-      "related": []
-    },
-    "max-frame-fallback-sixty": {
-      "id": "max-frame-fallback-sixty",
-      "name": "Max Frame Fallback Sixty",
-      "symbol": "~max-frame-fallback-sixty",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
-      "related": []
-    },
-    "rect-centered-radial-fixed": {
-      "id": "rect-centered-radial-fixed",
-      "name": "Rect Centered Radial Fixed",
-      "symbol": "~rect-centered-radial-fixed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
-      "related": []
-    },
-    "gradient-stop-stride-no-alpha": {
-      "id": "gradient-stop-stride-no-alpha",
-      "name": "Gradient Stop Stride No Alpha",
-      "symbol": "~gradient-stop-stride-no-alpha",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
-      "related": []
-    },
-    "unknown-fill-black-fallback": {
-      "id": "unknown-fill-black-fallback",
-      "name": "Unknown Fill Black Fallback",
-      "symbol": "~unknown-fill-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
-      "related": []
-    },
-    "expression-short-circuits-static-zero": {
-      "id": "expression-short-circuits-static-zero",
-      "name": "Expression Short Circuits Static Zero",
-      "symbol": "~expression-short-circuits-static-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
-      "related": []
-    },
-    "position-z-zero-easing-from-x": {
-      "id": "position-z-zero-easing-from-x",
-      "name": "Position Z Zero Easing From X",
-      "symbol": "~position-z-zero-easing-from-x",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
-      "related": []
-    },
-    "keyframe-hold-last-completed": {
-      "id": "keyframe-hold-last-completed",
-      "name": "Keyframe Hold Last Completed",
-      "symbol": "~keyframe-hold-last-completed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
-      "related": []
-    },
-    "rgb-normalize-255-to-unit": {
-      "id": "rgb-normalize-255-to-unit",
-      "name": "Rgb Normalize 255 To Unit",
-      "symbol": "~rgb-normalize-255-to-unit",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
-      "related": []
-    },
-    "hex-shorthand-and-black-fallback": {
-      "id": "hex-shorthand-and-black-fallback",
-      "name": "Hex Shorthand And Black Fallback",
-      "symbol": "~hex-shorthand-and-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
-      "related": []
-    },
-    "easing-handles-swapped-and-inverted": {
-      "id": "easing-handles-swapped-and-inverted",
-      "name": "Easing Handles Swapped And Inverted",
-      "symbol": "~easing-handles-swapped-and-inverted",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
-      "related": []
-    },
-    "lossy-easing-approximations": {
-      "id": "lossy-easing-approximations",
-      "name": "Lossy Easing Approximations",
-      "symbol": "~lossy-easing-approximations",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
-      "related": []
-    },
-    "unsupported-feature-catalog": {
-      "id": "unsupported-feature-catalog",
-      "name": "Unsupported Feature Catalog",
-      "symbol": "~unsupported-feature-catalog",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
-      "related": []
     },
     "frame-resolution-determinism": {
       "id": "frame-resolution-determinism",
@@ -6507,9 +6546,41 @@
       "category": "components",
       "id": "#recipe-types"
     },
+    "##svg-renderer": {
+      "category": "components",
+      "id": "#svg-renderer"
+    },
+    "##svg-shapes": {
+      "category": "components",
+      "id": "#svg-shapes"
+    },
+    "##svg-text": {
+      "category": "components",
+      "id": "#svg-text"
+    },
+    "##svg-gradients": {
+      "category": "components",
+      "id": "#svg-gradients"
+    },
+    "##svg-filters": {
+      "category": "components",
+      "id": "#svg-filters"
+    },
+    "##svg-clip": {
+      "category": "components",
+      "id": "#svg-clip"
+    },
+    "##svg-properties": {
+      "category": "components",
+      "id": "#svg-properties"
+    },
     "#canvas-panel": {
       "category": "components",
       "id": "canvas-panel"
+    },
+    "#compute-letterbox-fit": {
+      "category": "components",
+      "id": "compute-letterbox-fit"
     },
     "#layer-panel": {
       "category": "components",
@@ -6526,6 +6597,10 @@
     "#yaml-panel": {
       "category": "components",
       "id": "yaml-panel"
+    },
+    "#canvas-size-presets": {
+      "category": "components",
+      "id": "canvas-size-presets"
     },
     "#number-input": {
       "category": "components",
@@ -6554,34 +6629,6 @@
     "#drag-reorder": {
       "category": "components",
       "id": "drag-reorder"
-    },
-    "##svg-renderer": {
-      "category": "components",
-      "id": "#svg-renderer"
-    },
-    "##svg-shapes": {
-      "category": "components",
-      "id": "#svg-shapes"
-    },
-    "##svg-text": {
-      "category": "components",
-      "id": "#svg-text"
-    },
-    "##svg-gradients": {
-      "category": "components",
-      "id": "#svg-gradients"
-    },
-    "##svg-filters": {
-      "category": "components",
-      "id": "#svg-filters"
-    },
-    "##svg-clip": {
-      "category": "components",
-      "id": "#svg-clip"
-    },
-    "##svg-properties": {
-      "category": "components",
-      "id": "#svg-properties"
     },
     "##document-schema": {
       "category": "components",
@@ -6630,6 +6677,54 @@
     "#animation-player": {
       "category": "components",
       "id": "animation-player"
+    },
+    "##easing-functions": {
+      "category": "components",
+      "id": "#easing-functions"
+    },
+    "##spring-solver": {
+      "category": "components",
+      "id": "#spring-solver"
+    },
+    "##lerp-functions": {
+      "category": "components",
+      "id": "#lerp-functions"
+    },
+    "##color-math": {
+      "category": "components",
+      "id": "#color-math"
+    },
+    "##lottie-exporter": {
+      "category": "components",
+      "id": "#lottie-exporter"
+    },
+    "##lottie-types": {
+      "category": "components",
+      "id": "#lottie-types"
+    },
+    "##lottie-map-layers": {
+      "category": "components",
+      "id": "#lottie-map-layers"
+    },
+    "##lottie-map-shapes": {
+      "category": "components",
+      "id": "#lottie-map-shapes"
+    },
+    "##lottie-map-keyframes": {
+      "category": "components",
+      "id": "#lottie-map-keyframes"
+    },
+    "##lottie-map-colors": {
+      "category": "components",
+      "id": "#lottie-map-colors"
+    },
+    "##lottie-map-easing": {
+      "category": "components",
+      "id": "#lottie-map-easing"
+    },
+    "##lottie-warnings": {
+      "category": "components",
+      "id": "#lottie-warnings"
     },
     "#mcp-store": {
       "category": "components",
@@ -6774,54 +6869,6 @@
     "#mcp-lib-doc-management-types": {
       "category": "components",
       "id": "mcp-lib-doc-management-types"
-    },
-    "##easing-functions": {
-      "category": "components",
-      "id": "#easing-functions"
-    },
-    "##spring-solver": {
-      "category": "components",
-      "id": "#spring-solver"
-    },
-    "##lerp-functions": {
-      "category": "components",
-      "id": "#lerp-functions"
-    },
-    "##color-math": {
-      "category": "components",
-      "id": "#color-math"
-    },
-    "##lottie-exporter": {
-      "category": "components",
-      "id": "#lottie-exporter"
-    },
-    "##lottie-types": {
-      "category": "components",
-      "id": "#lottie-types"
-    },
-    "##lottie-map-layers": {
-      "category": "components",
-      "id": "#lottie-map-layers"
-    },
-    "##lottie-map-shapes": {
-      "category": "components",
-      "id": "#lottie-map-shapes"
-    },
-    "##lottie-map-keyframes": {
-      "category": "components",
-      "id": "#lottie-map-keyframes"
-    },
-    "##lottie-map-colors": {
-      "category": "components",
-      "id": "#lottie-map-colors"
-    },
-    "##lottie-map-easing": {
-      "category": "components",
-      "id": "#lottie-map-easing"
-    },
-    "##lottie-warnings": {
-      "category": "components",
-      "id": "#lottie-warnings"
     },
     "##frame-resolver": {
       "category": "components",
@@ -7411,6 +7458,82 @@
       "category": "aspects",
       "id": "recipe-snakecase-and-unit-conventions"
     },
+    "~declarative-string-vs-imperative-ctx": {
+      "category": "aspects",
+      "id": "declarative-string-vs-imperative-ctx"
+    },
+    "~id-counter-reset-determinism": {
+      "category": "aspects",
+      "id": "id-counter-reset-determinism"
+    },
+    "~early-skip-and-asset-mutation": {
+      "category": "aspects",
+      "id": "early-skip-and-asset-mutation"
+    },
+    "~combined-shadow-tint-drops-tint": {
+      "category": "aspects",
+      "id": "combined-shadow-tint-drops-tint"
+    },
+    "~image-crop-via-nested-svg-viewbox": {
+      "category": "aspects",
+      "id": "image-crop-via-nested-svg-viewbox"
+    },
+    "~ref-cycle-and-depth-guards": {
+      "category": "aspects",
+      "id": "ref-cycle-and-depth-guards"
+    },
+    "~bezier-only-with-handle-pair": {
+      "category": "aspects",
+      "id": "bezier-only-with-handle-pair"
+    },
+    "~corner-radius-array-first-only": {
+      "category": "aspects",
+      "id": "corner-radius-array-first-only"
+    },
+    "~text-align-to-text-anchor": {
+      "category": "aspects",
+      "id": "text-align-to-text-anchor"
+    },
+    "~hanging-baseline-for-top-edge": {
+      "category": "aspects",
+      "id": "hanging-baseline-for-top-edge"
+    },
+    "~gradient-id-uniqueness-per-render": {
+      "category": "aspects",
+      "id": "gradient-id-uniqueness-per-render"
+    },
+    "~gradient-coordinate-spaces-differ": {
+      "category": "aspects",
+      "id": "gradient-coordinate-spaces-differ"
+    },
+    "~color-css-dispatch-black-fallback": {
+      "category": "aspects",
+      "id": "color-css-dispatch-black-fallback"
+    },
+    "~shadow-filter-region-and-blur-map": {
+      "category": "aspects",
+      "id": "shadow-filter-region-and-blur-map"
+    },
+    "~filters-share-one-counter": {
+      "category": "aspects",
+      "id": "filters-share-one-counter"
+    },
+    "~clip-counter-isolated-and-path-dup": {
+      "category": "aspects",
+      "id": "clip-counter-isolated-and-path-dup"
+    },
+    "~transform-anchor-order-as-string": {
+      "category": "aspects",
+      "id": "transform-anchor-order-as-string"
+    },
+    "~style-attrs-conditional-and-blend-inline": {
+      "category": "aspects",
+      "id": "style-attrs-conditional-and-blend-inline"
+    },
+    "~escape-xml-five-entities": {
+      "category": "aspects",
+      "id": "escape-xml-five-entities"
+    },
     "~apply-mutation-one-tick-suppress": {
       "category": "aspects",
       "id": "apply-mutation-one-tick-suppress"
@@ -7438,6 +7561,10 @@
     "~player-loop-and-clamp": {
       "category": "aspects",
       "id": "player-loop-and-clamp"
+    },
+    "~canvas-letterbox-fit-observes-panel": {
+      "category": "aspects",
+      "id": "canvas-letterbox-fit-observes-panel"
     },
     "~scrub-pause-resume": {
       "category": "aspects",
@@ -7535,85 +7662,13 @@
       "category": "aspects",
       "id": "drag-reorder-index-adjust"
     },
+    "~canvas-size-dropdown-routes-through-onDocChange": {
+      "category": "aspects",
+      "id": "canvas-size-dropdown-routes-through-onDocChange"
+    },
     "~drag-reorder-aborts-clean": {
       "category": "aspects",
       "id": "drag-reorder-aborts-clean"
-    },
-    "~declarative-string-vs-imperative-ctx": {
-      "category": "aspects",
-      "id": "declarative-string-vs-imperative-ctx"
-    },
-    "~id-counter-reset-determinism": {
-      "category": "aspects",
-      "id": "id-counter-reset-determinism"
-    },
-    "~early-skip-and-asset-mutation": {
-      "category": "aspects",
-      "id": "early-skip-and-asset-mutation"
-    },
-    "~combined-shadow-tint-drops-tint": {
-      "category": "aspects",
-      "id": "combined-shadow-tint-drops-tint"
-    },
-    "~image-crop-via-nested-svg-viewbox": {
-      "category": "aspects",
-      "id": "image-crop-via-nested-svg-viewbox"
-    },
-    "~ref-cycle-and-depth-guards": {
-      "category": "aspects",
-      "id": "ref-cycle-and-depth-guards"
-    },
-    "~bezier-only-with-handle-pair": {
-      "category": "aspects",
-      "id": "bezier-only-with-handle-pair"
-    },
-    "~corner-radius-array-first-only": {
-      "category": "aspects",
-      "id": "corner-radius-array-first-only"
-    },
-    "~text-align-to-text-anchor": {
-      "category": "aspects",
-      "id": "text-align-to-text-anchor"
-    },
-    "~hanging-baseline-for-top-edge": {
-      "category": "aspects",
-      "id": "hanging-baseline-for-top-edge"
-    },
-    "~gradient-id-uniqueness-per-render": {
-      "category": "aspects",
-      "id": "gradient-id-uniqueness-per-render"
-    },
-    "~gradient-coordinate-spaces-differ": {
-      "category": "aspects",
-      "id": "gradient-coordinate-spaces-differ"
-    },
-    "~color-css-dispatch-black-fallback": {
-      "category": "aspects",
-      "id": "color-css-dispatch-black-fallback"
-    },
-    "~shadow-filter-region-and-blur-map": {
-      "category": "aspects",
-      "id": "shadow-filter-region-and-blur-map"
-    },
-    "~filters-share-one-counter": {
-      "category": "aspects",
-      "id": "filters-share-one-counter"
-    },
-    "~clip-counter-isolated-and-path-dup": {
-      "category": "aspects",
-      "id": "clip-counter-isolated-and-path-dup"
-    },
-    "~transform-anchor-order-as-string": {
-      "category": "aspects",
-      "id": "transform-anchor-order-as-string"
-    },
-    "~style-attrs-conditional-and-blend-inline": {
-      "category": "aspects",
-      "id": "style-attrs-conditional-and-blend-inline"
-    },
-    "~escape-xml-five-entities": {
-      "category": "aspects",
-      "id": "escape-xml-five-entities"
     },
     "~document-shape-asymmetry": {
       "category": "aspects",
@@ -7746,6 +7801,154 @@
     "~image-load-triggers-rerender": {
       "category": "aspects",
       "id": "image-load-triggers-rerender"
+    },
+    "~bezier-binary-search-not-newton": {
+      "category": "aspects",
+      "id": "bezier-binary-search-not-newton"
+    },
+    "~easing-endpoint-snap": {
+      "category": "aspects",
+      "id": "easing-endpoint-snap"
+    },
+    "~css-preset-control-points": {
+      "category": "aspects",
+      "id": "css-preset-control-points"
+    },
+    "~step-position-asymmetry": {
+      "category": "aspects",
+      "id": "step-position-asymmetry"
+    },
+    "~spring-default-config": {
+      "category": "aspects",
+      "id": "spring-default-config"
+    },
+    "~spring-closed-form-three-regimes": {
+      "category": "aspects",
+      "id": "spring-closed-form-three-regimes"
+    },
+    "~spring-settle-time-heuristic": {
+      "category": "aspects",
+      "id": "spring-settle-time-heuristic"
+    },
+    "~spring-endpoint-snap": {
+      "category": "aspects",
+      "id": "spring-endpoint-snap"
+    },
+    "~lerp-is-unclamped": {
+      "category": "aspects",
+      "id": "lerp-is-unclamped"
+    },
+    "~lerp-array-no-length-guard": {
+      "category": "aspects",
+      "id": "lerp-array-no-length-guard"
+    },
+    "~remap-divide-by-zero": {
+      "category": "aspects",
+      "id": "remap-divide-by-zero"
+    },
+    "~hex-alpha-defaults-ff": {
+      "category": "aspects",
+      "id": "hex-alpha-defaults-ff"
+    },
+    "~rgba-to-hex-clamp-and-omit-ff": {
+      "category": "aspects",
+      "id": "rgba-to-hex-clamp-and-omit-ff"
+    },
+    "~rgba-interpolation-is-unrounded": {
+      "category": "aspects",
+      "id": "rgba-interpolation-is-unrounded"
+    },
+    "~hsla-shortest-hue-path": {
+      "category": "aspects",
+      "id": "hsla-shortest-hue-path"
+    },
+    "~hsl-zero-saturation-guard": {
+      "category": "aspects",
+      "id": "hsl-zero-saturation-guard"
+    },
+    "~pinned-lottie-version": {
+      "category": "aspects",
+      "id": "pinned-lottie-version"
+    },
+    "~default-first-state": {
+      "category": "aspects",
+      "id": "default-first-state"
+    },
+    "~warning-dedup-collapse": {
+      "category": "aspects",
+      "id": "warning-dedup-collapse"
+    },
+    "~image-asset-fixed-dimensions": {
+      "category": "aspects",
+      "id": "image-asset-fixed-dimensions"
+    },
+    "~numeric-layer-type-discriminant": {
+      "category": "aspects",
+      "id": "numeric-layer-type-discriminant"
+    },
+    "~bezier-handles-as-xy-objects": {
+      "category": "aspects",
+      "id": "bezier-handles-as-xy-objects"
+    },
+    "~percentage-units-collapse-to-zero": {
+      "category": "aspects",
+      "id": "percentage-units-collapse-to-zero"
+    },
+    "~layer-index-is-parent-pointer": {
+      "category": "aspects",
+      "id": "layer-index-is-parent-pointer"
+    },
+    "~opacity-and-scale-percent-rescale": {
+      "category": "aspects",
+      "id": "opacity-and-scale-percent-rescale"
+    },
+    "~max-frame-fallback-sixty": {
+      "category": "aspects",
+      "id": "max-frame-fallback-sixty"
+    },
+    "~rect-centered-radial-fixed": {
+      "category": "aspects",
+      "id": "rect-centered-radial-fixed"
+    },
+    "~gradient-stop-stride-no-alpha": {
+      "category": "aspects",
+      "id": "gradient-stop-stride-no-alpha"
+    },
+    "~unknown-fill-black-fallback": {
+      "category": "aspects",
+      "id": "unknown-fill-black-fallback"
+    },
+    "~expression-short-circuits-static-zero": {
+      "category": "aspects",
+      "id": "expression-short-circuits-static-zero"
+    },
+    "~position-z-zero-easing-from-x": {
+      "category": "aspects",
+      "id": "position-z-zero-easing-from-x"
+    },
+    "~keyframe-hold-last-completed": {
+      "category": "aspects",
+      "id": "keyframe-hold-last-completed"
+    },
+    "~rgb-normalize-255-to-unit": {
+      "category": "aspects",
+      "id": "rgb-normalize-255-to-unit"
+    },
+    "~hex-shorthand-and-black-fallback": {
+      "category": "aspects",
+      "id": "hex-shorthand-and-black-fallback"
+    },
+    "~easing-handles-swapped-and-inverted": {
+      "category": "aspects",
+      "id": "easing-handles-swapped-and-inverted"
+    },
+    "~lossy-easing-approximations": {
+      "category": "aspects",
+      "id": "lossy-easing-approximations"
+    },
+    "~unsupported-feature-catalog": {
+      "category": "aspects",
+      "id": "unsupported-feature-catalog"
     },
     "~store-synchronous-registration-order-emit": {
       "category": "aspects",
@@ -7914,154 +8117,6 @@
     "~doc-cycle-v1-simple-check": {
       "category": "aspects",
       "id": "doc-cycle-v1-simple-check"
-    },
-    "~bezier-binary-search-not-newton": {
-      "category": "aspects",
-      "id": "bezier-binary-search-not-newton"
-    },
-    "~easing-endpoint-snap": {
-      "category": "aspects",
-      "id": "easing-endpoint-snap"
-    },
-    "~css-preset-control-points": {
-      "category": "aspects",
-      "id": "css-preset-control-points"
-    },
-    "~step-position-asymmetry": {
-      "category": "aspects",
-      "id": "step-position-asymmetry"
-    },
-    "~spring-default-config": {
-      "category": "aspects",
-      "id": "spring-default-config"
-    },
-    "~spring-closed-form-three-regimes": {
-      "category": "aspects",
-      "id": "spring-closed-form-three-regimes"
-    },
-    "~spring-settle-time-heuristic": {
-      "category": "aspects",
-      "id": "spring-settle-time-heuristic"
-    },
-    "~spring-endpoint-snap": {
-      "category": "aspects",
-      "id": "spring-endpoint-snap"
-    },
-    "~lerp-is-unclamped": {
-      "category": "aspects",
-      "id": "lerp-is-unclamped"
-    },
-    "~lerp-array-no-length-guard": {
-      "category": "aspects",
-      "id": "lerp-array-no-length-guard"
-    },
-    "~remap-divide-by-zero": {
-      "category": "aspects",
-      "id": "remap-divide-by-zero"
-    },
-    "~hex-alpha-defaults-ff": {
-      "category": "aspects",
-      "id": "hex-alpha-defaults-ff"
-    },
-    "~rgba-to-hex-clamp-and-omit-ff": {
-      "category": "aspects",
-      "id": "rgba-to-hex-clamp-and-omit-ff"
-    },
-    "~rgba-interpolation-is-unrounded": {
-      "category": "aspects",
-      "id": "rgba-interpolation-is-unrounded"
-    },
-    "~hsla-shortest-hue-path": {
-      "category": "aspects",
-      "id": "hsla-shortest-hue-path"
-    },
-    "~hsl-zero-saturation-guard": {
-      "category": "aspects",
-      "id": "hsl-zero-saturation-guard"
-    },
-    "~pinned-lottie-version": {
-      "category": "aspects",
-      "id": "pinned-lottie-version"
-    },
-    "~default-first-state": {
-      "category": "aspects",
-      "id": "default-first-state"
-    },
-    "~warning-dedup-collapse": {
-      "category": "aspects",
-      "id": "warning-dedup-collapse"
-    },
-    "~image-asset-fixed-dimensions": {
-      "category": "aspects",
-      "id": "image-asset-fixed-dimensions"
-    },
-    "~numeric-layer-type-discriminant": {
-      "category": "aspects",
-      "id": "numeric-layer-type-discriminant"
-    },
-    "~bezier-handles-as-xy-objects": {
-      "category": "aspects",
-      "id": "bezier-handles-as-xy-objects"
-    },
-    "~percentage-units-collapse-to-zero": {
-      "category": "aspects",
-      "id": "percentage-units-collapse-to-zero"
-    },
-    "~layer-index-is-parent-pointer": {
-      "category": "aspects",
-      "id": "layer-index-is-parent-pointer"
-    },
-    "~opacity-and-scale-percent-rescale": {
-      "category": "aspects",
-      "id": "opacity-and-scale-percent-rescale"
-    },
-    "~max-frame-fallback-sixty": {
-      "category": "aspects",
-      "id": "max-frame-fallback-sixty"
-    },
-    "~rect-centered-radial-fixed": {
-      "category": "aspects",
-      "id": "rect-centered-radial-fixed"
-    },
-    "~gradient-stop-stride-no-alpha": {
-      "category": "aspects",
-      "id": "gradient-stop-stride-no-alpha"
-    },
-    "~unknown-fill-black-fallback": {
-      "category": "aspects",
-      "id": "unknown-fill-black-fallback"
-    },
-    "~expression-short-circuits-static-zero": {
-      "category": "aspects",
-      "id": "expression-short-circuits-static-zero"
-    },
-    "~position-z-zero-easing-from-x": {
-      "category": "aspects",
-      "id": "position-z-zero-easing-from-x"
-    },
-    "~keyframe-hold-last-completed": {
-      "category": "aspects",
-      "id": "keyframe-hold-last-completed"
-    },
-    "~rgb-normalize-255-to-unit": {
-      "category": "aspects",
-      "id": "rgb-normalize-255-to-unit"
-    },
-    "~hex-shorthand-and-black-fallback": {
-      "category": "aspects",
-      "id": "hex-shorthand-and-black-fallback"
-    },
-    "~easing-handles-swapped-and-inverted": {
-      "category": "aspects",
-      "id": "easing-handles-swapped-and-inverted"
-    },
-    "~lossy-easing-approximations": {
-      "category": "aspects",
-      "id": "lossy-easing-approximations"
-    },
-    "~unsupported-feature-catalog": {
-      "category": "aspects",
-      "id": "unsupported-feature-catalog"
     },
     "~frame-resolution-determinism": {
       "category": "aspects",
@@ -8615,6 +8670,30 @@
       "category": "gates",
       "id": "valid-recipe"
     },
+    "#lottie-map-layers": {
+      "category": "components",
+      "id": "lottie-map-layers"
+    },
+    "#lottie-warnings": {
+      "category": "components",
+      "id": "lottie-warnings"
+    },
+    "#lottie-map-shapes": {
+      "category": "components",
+      "id": "lottie-map-shapes"
+    },
+    "#lottie-map-keyframes": {
+      "category": "components",
+      "id": "lottie-map-keyframes"
+    },
+    "#lottie-map-colors": {
+      "category": "components",
+      "id": "lottie-map-colors"
+    },
+    "#lottie-map-easing": {
+      "category": "components",
+      "id": "lottie-map-easing"
+    },
     "!doc-change": {
       "category": "signals",
       "id": "doc-change"
@@ -8658,30 +8737,6 @@
     "^doc-path-inside-project.": {
       "category": "gates",
       "id": "doc-path-inside-project."
-    },
-    "#lottie-map-layers": {
-      "category": "components",
-      "id": "lottie-map-layers"
-    },
-    "#lottie-warnings": {
-      "category": "components",
-      "id": "lottie-warnings"
-    },
-    "#lottie-map-shapes": {
-      "category": "components",
-      "id": "lottie-map-shapes"
-    },
-    "#lottie-map-keyframes": {
-      "category": "components",
-      "id": "lottie-map-keyframes"
-    },
-    "#lottie-map-colors": {
-      "category": "components",
-      "id": "lottie-map-colors"
-    },
-    "#lottie-map-easing": {
-      "category": "components",
-      "id": "lottie-map-easing"
     },
     "^valid-document": {
       "category": "gates",

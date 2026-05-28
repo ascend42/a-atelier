@@ -20,17 +20,44 @@ export interface CanvasPanelOptions {
   onDocumentChange?: () => void;
 }
 
+/**
+ * Compute the largest scale factor that fits `canvasW × canvasH` inside
+ * `parentW × parentH` while preserving aspect ratio. Returns the scaled
+ * pixel dimensions to apply to the canvas style.
+ *
+ * Edge cases — any non-positive dimension collapses to zero. Otherwise
+ * pick the limiting axis (min of the two ratios) so the canvas always
+ * fits AND keeps aspect; both up- and down-scaling are allowed (no
+ * minimum/maximum clamp). The caller is responsible for clamping to
+ * sane on-screen sizes if it wants to avoid scaling a tiny canvas to
+ * the entire viewport.
+ */
+export function computeLetterboxFit(
+  canvasW: number,
+  canvasH: number,
+  parentW: number,
+  parentH: number,
+): { width: number; height: number; scale: number } {
+  if (canvasW <= 0 || canvasH <= 0 || parentW <= 0 || parentH <= 0) {
+    return { width: 0, height: 0, scale: 0 };
+  }
+  const scale = Math.min(parentW / canvasW, parentH / canvasH);
+  return { width: canvasW * scale, height: canvasH * scale, scale };
+}
+
 export class CanvasPanel {
   readonly el: HTMLElement;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private player: Player | null = null;
   private playBtn: HTMLButtonElement;
+  private playback: HTMLDivElement;
   private scrubber: HTMLInputElement;
   private frameDisplay: HTMLSpanElement;
   private doc: AtelierDocument | null = null;
   private stateName = "";
   private imageCache: ImageCache;
+  private resizeObserver: ResizeObserver | undefined;
 
   constructor(parent: HTMLElement, private opts: CanvasPanelOptions = {}) {
     this.el = document.createElement("div");
@@ -96,6 +123,7 @@ export class CanvasPanel {
     // Playback controls
     const playback = document.createElement("div");
     playback.className = "atel-playback";
+    this.playback = playback;
 
     this.playBtn = document.createElement("button");
     this.playBtn.className = "atel-playback__btn";
@@ -137,6 +165,23 @@ export class CanvasPanel {
         this.updatePlayBtn();
       }
     });
+
+    // ─── Letterbox-fit on container resize ─────────────────────────
+    //
+    // The canvas's CSS dimensions are recomputed from the panel's
+    // current available area whenever the panel resizes (window
+    // resize, dock toggle, side-panel collapse). The raster
+    // dimensions (`canvas.width / .height`) stay pinned to the
+    // document's canvas size — only the display size changes.
+    // Observing `this.el` (not the wrap) avoids a feedback loop:
+    // the wrap shrink-fits the canvas, so observing it would either
+    // never change or oscillate.
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(() => {
+        if (this.doc) this.applyLetterboxFit();
+      });
+      this.resizeObserver.observe(this.el);
+    }
   }
 
   loadDocument(doc: AtelierDocument, stateName?: string): void {
@@ -148,16 +193,12 @@ export class CanvasPanel {
     this.canvas.width = doc.canvas.width;
     this.canvas.height = doc.canvas.height;
 
-    // Scale canvas to fit container
-    const maxWidth = 500;
-    if (doc.canvas.width > maxWidth) {
-      const scale = maxWidth / doc.canvas.width;
-      this.canvas.style.width = `${doc.canvas.width * scale}px`;
-      this.canvas.style.height = `${doc.canvas.height * scale}px`;
-    } else {
-      this.canvas.style.width = "";
-      this.canvas.style.height = "";
-    }
+    // Letterbox-fit the canvas display size to the panel's available
+    // area. ResizeObserver keeps it in sync afterward, but a one-shot
+    // call here paints the correct size on the very first frame
+    // (before the observer's initial fire) so we don't flash at the
+    // pre-doc default 600×400.
+    this.applyLetterboxFit();
 
     const totalFrames = state.duration;
     this.scrubber.max = String(totalFrames - 1);
@@ -232,6 +273,37 @@ export class CanvasPanel {
 
   destroy(): void {
     this.player?.destroy();
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+  }
+
+  /**
+   * Recompute the canvas's CSS dimensions to letterbox-fit the panel's
+   * current available area. Subtracts the panel padding, the playback
+   * row, and the column gap from the panel's bounding rect so the
+   * canvas never overflows into the playback lane (the visual bug
+   * that caused tall portrait canvases to push text off-screen).
+   *
+   * The CSS pads/gap MUST stay in sync with .atel-canvas-panel in
+   * styles.css — padding: 16px; gap: 12px.
+   */
+  private applyLetterboxFit(): void {
+    if (!this.doc) return;
+    const panelRect = this.el.getBoundingClientRect();
+    const playbackH = this.playback.getBoundingClientRect().height;
+    const padX = 16 * 2;
+    const padY = 16 * 2;
+    const gap = 12;
+    const availW = panelRect.width - padX;
+    const availH = panelRect.height - padY - playbackH - gap;
+    const fit = computeLetterboxFit(
+      this.doc.canvas.width,
+      this.doc.canvas.height,
+      availW,
+      availH,
+    );
+    this.canvas.style.width = `${fit.width}px`;
+    this.canvas.style.height = `${fit.height}px`;
   }
 
   /**

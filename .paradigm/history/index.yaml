@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T10:25:07.491Z'
+generated: '2026-05-28T10:29:32.457Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3264,7 +3264,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_58
+      - &ref_59
         id: h0092
         ts: '2026-05-28T10:25:06Z'
         type: implement
@@ -4487,11 +4487,30 @@ by_symbol:
       agent: []
   '#handle-no-target-bin-add':
     symbol: '#handle-no-target-bin-add'
-    total_changes: 1
-    last_modified: '2026-05-28T09:17:38Z'
+    total_changes: 2
+    last_modified: '2026-05-28T10:29:31Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_58
+        id: h0093
+        ts: '2026-05-28T10:29:31Z'
+        type: implement
+        symbols:
+          - '#handle-no-target-bin-add'
+          - '#media-ref-drop-target'
+        author:
+          type: human
+          id: ascend
+        commit: 4a61c470e61aa1ee7da8a3750969e179d2511724
+        intent: fix
+        files:
+          - .claude/settings.local.json
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - packages/cli/src/web/workspace-app.ts
+        description: 'fix(#media-ref-drop-target): sidebar-drag fetch missing x-atelier-project header'
       - *ref_53
     contributors:
       human:
@@ -4511,12 +4530,13 @@ by_symbol:
       agent: []
   '#media-ref-drop-target':
     symbol: '#media-ref-drop-target'
-    total_changes: 1
-    last_modified: '2026-05-28T09:28:22Z'
+    total_changes: 2
+    last_modified: '2026-05-28T10:29:31Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_59
+      - *ref_58
+      - &ref_60
         id: h0089
         ts: '2026-05-28T09:28:22Z'
         type: implement
@@ -4551,8 +4571,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_58
       - *ref_59
+      - *ref_60
     contributors:
       human:
         - ascend

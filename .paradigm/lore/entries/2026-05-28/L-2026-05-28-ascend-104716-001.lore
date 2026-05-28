@@ -1,0 +1,47 @@
+id: L-2026-05-28-ascend-104716-001
+type: milestone
+timestamp: '2026-05-28T10:47:16.919Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Triage bundle — stale doc fix + canvas aspect-fit + canvas-size dropdown
+summary: 'Three parallel Kits fixed real bugs surfaced by owner testing the media-bin + timeline pivot. Kit-α: sidebar→canvas media drag wasn''t refreshing the layers panel + timeline — server''s ?source=existing path now emits llm:mutation, and the browser WS filter is no longer pinned to project.atelier (latent flat-docs-pivot bug). Kit-β: canvas was width-only scaled at maxWidth=500 — replaced with computeLetterboxFit helper + ResizeObserver, captions no longer overflow into the timeline lane. Kit-γ: new canvas-size dropdown in the toolbar with 4 presets (1080×1920, 1920×1080, 1080×1080, 1080×1350) — creators can switch aspect ratios; inline warning when caption layers exist (re-position is v1.1). Workspace tests 1189→1212.'
+symbols_touched:
+  - '#handle-no-target-bin-add'
+  - '#workspace-app'
+  - '#canvas-panel'
+  - '#atelier-studio'
+  - '#studio'
+symbols_created:
+  - '#compute-letterbox-fit'
+  - '#canvas-size-presets'
+decisions:
+  - id: TD-2026-05-28-llm-mutation-on-existing-source
+    decision: Server emits llm:mutation envelope after ?source=existing compose-success; browser WS filter loosened from hardcoded project.atelier to ${activeProjectName}/${currentDocPath}
+    rationale: Envelope-driven refresh is the studio's established pattern; alternative (browser explicit reload) would create two refresh paths. Filter loosening also fixes a latent flat-docs-pivot bug affecting any MCP tool mutation against non-project.atelier docs.
+  - id: TD-2026-05-28-canvas-letterbox-fit
+    decision: Canvas letterbox-fits the available container area via computeLetterboxFit + ResizeObserver; native pixel dimensions stay at doc.canvas.width/height; only CSS sizing scales
+    rationale: Preserves raster fidelity for export while letting any aspect ratio (portrait/landscape/square) fit the available area without overflow. ResizeObserver handles panel reflow + window resize. observe(this.el) not parentElement to avoid feedback loop.
+  - id: TD-2026-05-28-canvas-size-presets-v1
+    decision: v1.0 ships 4 closed presets (1080×1920, 1920×1080, 1080×1080, 1080×1350); Custom… is v1.1; existing captions show inline warning but resize is not blocked
+    rationale: Smallest viable surface that covers 95% of social-content aspect ratios. Custom is a dialog with bounds validation (v1.1). Auto-recompose captions on resize would require transcript + clip metadata at toolbar layer (much larger refactor) — warn-but-allow keeps the affordance usable for empty-or-track-only docs (the common case).
+verification:
+  status: pass
+  details:
+    workspace_tests: 1189 → 1212 (+23)
+    tsc_workspace: exit 0
+    compliance_portal: compliant
+    aspect_drift: 0 (auto-healed)
+tags:
+  - v1.0
+  - triage
+  - stale-doc-fix
+  - canvas-aspect-fit
+  - canvas-size-control
+  - team-orchestrated
+confidence: 0.9
+git_context:
+  ref: 4a61c470e61aa1ee7da8a3750969e179d2511724
+  branch: feat/creator-flow-v1-prep
+  dirty: true

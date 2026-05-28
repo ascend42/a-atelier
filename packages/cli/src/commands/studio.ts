@@ -2525,6 +2525,17 @@ function handleExistingSourceIngest(args: {
           file: filename,
           phase: "done",
         });
+        // Push the post-compose doc out as an llm:mutation envelope so the
+        // browser's layers panel + timeline refresh in lockstep with the
+        // ingest-progress `done`. Without this the user has to click away and
+        // back to see the new clip (latent flat-docs-pivot bug — Arky's spot).
+        broadcastIngest(bridgeClients, {
+          type: "llm:mutation",
+          documentId: `${projectName}/${resolvedTargetDocPath}`,
+          doc: result.doc,
+          source: "system",
+          toolName: "media:ingest:existing",
+        });
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify({
@@ -2586,7 +2597,7 @@ function handleExistingSourceIngest(args: {
       });
       working = recomputeTimeline(ensured.doc);
       writeFileSync(audioDocAbs, JSON.stringify(working, null, 2), "utf-8");
-      return { addedLayer: ensured.addedLayer, clipLayerId };
+      return { addedLayer: ensured.addedLayer, clipLayerId, doc: working };
     })()
       .then((result) => {
         broadcastIngest(bridgeClients, {
@@ -2594,6 +2605,15 @@ function handleExistingSourceIngest(args: {
           projectName,
           file: filename,
           phase: "done",
+        });
+        // Symmetric with the compose-video branch — emit the post-add doc so
+        // the layers panel + timeline refresh without a panel-switch reload.
+        broadcastIngest(bridgeClients, {
+          type: "llm:mutation",
+          documentId: `${projectName}/${resolvedTargetDocPath}`,
+          doc: result.doc,
+          source: "system",
+          toolName: "media:ingest:existing",
         });
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
