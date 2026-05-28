@@ -553,6 +553,15 @@ function hasNonManifestAtelierDoc(dir: string): boolean {
  * UI shows the pointer differently in that case (typically "the active
  * project was deleted; pick another"). Returns 200 with `body: null` when
  * no active project is set.
+ *
+ * Staleness check: the project DIRECTORY must exist. The pre-v1.0 check
+ * verified `<project>/project.atelier` existed, but the flat-docs pivot
+ * (Kit-E, TD-2026-05-27) removed the auto-`project.atelier` so every empty
+ * v1.0 project would look stale — workspace-app then skipped initializing
+ * `activeProjectName`, blocking drag-to-canvas with a misleading "No active
+ * project" alert. A project is stale only if its dir was deleted; an empty
+ * project (no docs, no media, no artifacts) is a valid starting state
+ * waiting for the creator to drop something in.
  */
 export function buildActiveProject(cwd: string): WorkspaceApiResult {
   const ws = findWorkspace(cwd);
@@ -563,7 +572,8 @@ export function buildActiveProject(cwd: string): WorkspaceApiResult {
   if (!active) {
     return { status: 200, body: null };
   }
-  const stale = !existsSync(join(ws.workspaceDir, active.name, "project.atelier"));
+  const projectDir = join(ws.workspaceDir, active.name);
+  const stale = !existsSync(projectDir) || !statSync(projectDir).isDirectory();
   return {
     status: 200,
     body: stale ? { ...active, stale: true } : active,
