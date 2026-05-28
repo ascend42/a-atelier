@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779959001653,
+  "lastActivity": 1779959836454,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -272,6 +272,12 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: Wave A — media-bin backend + bottom timeline UI + studio she"
+    },
+    {
+      "timestamp": 1779960118255,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Wave B — sidebar drag affordance (closes the loop)"
     }
   ],
   "symbolsModified": [],

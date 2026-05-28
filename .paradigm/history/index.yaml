@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T09:05:04.168Z'
+generated: '2026-05-28T09:17:39.516Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -2512,7 +2512,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_54
+      - &ref_55
         id: h0086
         ts: '2026-05-28T04:54:33Z'
         type: implement
@@ -3919,11 +3919,44 @@ by_symbol:
       agent: []
   '':
     symbol: ''
-    total_changes: 4
-    last_modified: '2026-05-28T03:04:27Z'
+    total_changes: 5
+    last_modified: '2026-05-28T09:17:38Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_53
+        id: h0088
+        ts: '2026-05-28T09:17:38Z'
+        type: implement
+        symbols:
+          - ''
+          - '#handle-no-target-bin-add'
+          - '#ingest-dispatch'
+          - '#transcribe-media-to-bin'
+        author:
+          type: human
+          id: ascend
+        commit: 1c1f806d07356880494454ce4d5d81a6a251f749
+        intent: feature
+        files:
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-091716-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.ts
+          - packages/cli/src/lib/ingest-dispatch.test.ts
+          - packages/cli/src/lib/ingest-dispatch.ts
+          - packages/cli/src/lib/transcribe-orchestrator.ts
+          - packages/cli/src/web/timeline-view.test.ts
+          - packages/cli/src/web/timeline-view.ts
+          - packages/cli/src/web/workspace-app.ts
+          - packages/cli/src/workspace-ui.test.ts
+        description: 'feat(#ingest-dispatch,#timeline-view,#workspace-app): Wave A — media-bin pivot + bottom timeline UI + shell rework'
       - *ref_48
       - &ref_51
         id: h0081
@@ -4237,7 +4270,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_53
+      - &ref_54
         id: h0085
         ts: '2026-05-28T04:38:14Z'
         type: implement
@@ -4278,12 +4311,13 @@ by_symbol:
       agent: []
   '#ingest-dispatch':
     symbol: '#ingest-dispatch'
-    total_changes: 1
-    last_modified: '2026-05-28T04:38:14Z'
+    total_changes: 2
+    last_modified: '2026-05-28T09:17:38Z'
     stability_score: 1
     fragility: low
     recent:
       - *ref_53
+      - *ref_54
     contributors:
       human:
         - ascend
@@ -4295,7 +4329,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_53
+      - *ref_54
     contributors:
       human:
         - ascend
@@ -4307,7 +4341,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_54
+      - *ref_55
     contributors:
       human:
         - ascend
@@ -4319,7 +4353,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_54
+      - *ref_55
     contributors:
       human:
         - ascend
@@ -4331,7 +4365,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_55
+      - &ref_56
         id: h0087
         ts: '2026-05-28T09:05:03Z'
         type: implement
@@ -4369,7 +4403,31 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_55
+      - *ref_56
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#handle-no-target-bin-add':
+    symbol: '#handle-no-target-bin-add'
+    total_changes: 1
+    last_modified: '2026-05-28T09:17:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_53
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#transcribe-media-to-bin':
+    symbol: '#transcribe-media-to-bin'
+    total_changes: 1
+    last_modified: '2026-05-28T09:17:38Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_53
     contributors:
       human:
         - ascend

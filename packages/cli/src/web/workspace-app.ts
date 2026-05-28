@@ -29,6 +29,10 @@ import { TimelineView } from "./timeline-view.js";
 import type { TimelineSelection } from "./timeline-state-types.js";
 // ── end v1.0 bottom timeline (Kit-B) ──
 
+// ── v1.0 sidebar drag (Kit-D) ──
+import { type MediaRefPayload, isValidMediaRefPath } from "../lib/ingest-bin-types.js";
+// ── end v1.0 sidebar drag (Kit-D) ──
+
 type AtelierDoc = import("@a-company/atelier-types").AtelierDocument;
 
 // ─── Server-side type shapes (mirrors `workspace-project-info.ts`) ──
@@ -474,6 +478,33 @@ class WorkspaceSidebar {
             },
           ]);
         });
+        // ── v1.0 sidebar drag (Kit-D) ──
+        // Make the row draggable; on dragstart, stash a MediaRefPayload so the
+        // canvas / timeline drop targets can POST to the ?source=existing
+        // endpoint (Kit-A) without uploading. Only video/image/audio kinds are
+        // transferable into a doc (font/other are sidebar-only entries).
+        const kindForPayload: MediaRefPayload["kind"] | null =
+          m.kind === "video" || m.kind === "image" || m.kind === "audio" ? m.kind : null;
+        if (kindForPayload !== null) {
+          item.draggable = true;
+          item.addEventListener("dragstart", (e) => {
+            const payload: MediaRefPayload = {
+              path: `media/${m.name}`,
+              kind: kindForPayload,
+            };
+            e.dataTransfer?.setData("application/x-atelier-media-ref", JSON.stringify(payload));
+            // Fallback for browsers that strip custom MIME types from
+            // dataTransfer.types until the drop event fires (some Firefox
+            // builds). The canvas/timeline target prefers the typed payload.
+            e.dataTransfer?.setData("text/plain", payload.path);
+            if (e.dataTransfer) e.dataTransfer.effectAllowed = "copy";
+            item.classList.add("atel-media-row--dragging");
+          });
+          item.addEventListener("dragend", () => {
+            item.classList.remove("atel-media-row--dragging");
+          });
+        }
+        // ── end v1.0 sidebar drag (Kit-D) ──
         group.appendChild(item);
       }
       children.appendChild(group);
@@ -1755,6 +1786,83 @@ class ToastHost {
 }
 // ── end Kit-C ──
 
+// ── v1.0 sidebar drag (Kit-D) ──
+/**
+ * Attach drop-target handlers for the sidebar→canvas / sidebar→timeline
+ * media-ref handoff to an element. Discriminates by `dataTransfer.types` so
+ * the existing FILE-drop DropZone (which looks for the `"Files"` type) is
+ * untouched: this handler only engages when the drag carries the custom
+ * `"application/x-atelier-media-ref"` type set by the draggable MEDIA rows.
+ *
+ * On drop, parses the payload, validates the path via `isValidMediaRefPath`
+ * (defense-in-depth — Kit-A's server endpoint validates again), and POSTs
+ * to `/api/media/ingest?source=existing` with the current doc as target.
+ * The server's WS `doc-mutated` envelope drives the canvas refresh; no
+ * manual reload is needed here.
+ */
+function attachMediaRefDropTarget(
+  el: HTMLElement,
+  getActiveProject: () => string | null,
+  getCurrentDocPath: () => string | null,
+): void {
+  el.addEventListener("dragenter", (e) => {
+    if (!e.dataTransfer?.types.includes("application/x-atelier-media-ref")) return;
+    e.preventDefault();
+    el.classList.add("atel-media-ref-drop-target");
+  });
+  el.addEventListener("dragover", (e) => {
+    if (!e.dataTransfer?.types.includes("application/x-atelier-media-ref")) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  });
+  el.addEventListener("dragleave", (e) => {
+    if (!e.dataTransfer?.types.includes("application/x-atelier-media-ref")) return;
+    el.classList.remove("atel-media-ref-drop-target");
+  });
+  el.addEventListener("drop", async (e) => {
+    if (!e.dataTransfer?.types.includes("application/x-atelier-media-ref")) return;
+    e.preventDefault();
+    el.classList.remove("atel-media-ref-drop-target");
+
+    const raw = e.dataTransfer.getData("application/x-atelier-media-ref");
+    let payload: MediaRefPayload;
+    try {
+      payload = JSON.parse(raw) as MediaRefPayload;
+    } catch {
+      alert("Invalid media drag payload");
+      return;
+    }
+    if (!isValidMediaRefPath(payload.path)) {
+      alert(`Invalid media path: ${payload.path}`);
+      return;
+    }
+    const projectName = getActiveProject();
+    const docPath = getCurrentDocPath();
+    if (!projectName) {
+      alert("No active project");
+      return;
+    }
+    if (!docPath) {
+      alert("Open a doc first to add this media to it");
+      return;
+    }
+
+    try {
+      const url = `/api/media/ingest?targetDocPath=${encodeURIComponent(docPath)}&source=existing&path=${encodeURIComponent(payload.path)}`;
+      const res = await fetch(url, { method: "POST" });
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => "");
+        alert(`Failed to add media: ${errBody || `HTTP ${res.status}`}`);
+        return;
+      }
+      // doc-mutated WS envelope will trigger canvas refresh; no manual refresh needed.
+    } catch (err) {
+      alert("Failed to add media: " + (err instanceof Error ? err.message : err));
+    }
+  });
+}
+// ── end v1.0 sidebar drag (Kit-D) ──
+
 // ─── App shell ──────────────────────────────────────────────────────
 
 export async function bootWorkspaceApp(): Promise<void> {
@@ -2373,6 +2481,14 @@ export async function bootWorkspaceApp(): Promise<void> {
   });
   void dropZone;
 
+  // ── v1.0 sidebar drag (Kit-D) ──
+  // Wire the sidebar→canvas / sidebar→timeline media-ref handoff. These
+  // handlers discriminate on `dataTransfer.types` so they don't clash with
+  // the DropZone above (which handles OS-file drops via the "Files" type).
+  attachMediaRefDropTarget(canvasMount, () => activeProjectName, () => currentDocPath);
+  attachMediaRefDropTarget(timelineMount, () => activeProjectName, () => currentDocPath);
+  // ── end v1.0 sidebar drag (Kit-D) ──
+
   // ─── WS bridge for live updates ─────────────────────────
   connectBridge((env) => {
     if (env.type === "media:list:changed" || env.type === "transcript:added") {
@@ -2632,6 +2748,21 @@ function injectStyles(): void {
     overflow: hidden;
   }
   /* ── end Kit-C ── */
+
+  /* ── v1.0 sidebar drag (Kit-D) ──
+     - Dim the dragged MEDIA row while a drag is in-flight (mirrors the
+       OS-native ghost more cleanly than a transform).
+     - When a media-ref drag is over the canvas or timeline drop target,
+       paint an inset dashed accent outline + accent-tinted background so
+       the creator can see where the drop will land. The class is applied
+       in dragenter and removed in dragleave/drop. */
+  .atel-media-row--dragging { opacity: 0.5; }
+  .atel-media-ref-drop-target {
+    outline: 2px dashed var(--atel-accent, #C75B39);
+    outline-offset: -4px;
+    background: rgba(199, 91, 57, 0.08);
+  }
+  /* ── end v1.0 sidebar drag (Kit-D) ── */
 
   /* Markdown view */
   .atel-markdown-view { padding: 20px 32px; max-width: 880px; margin: 0 auto; color: #F5F0EB; }

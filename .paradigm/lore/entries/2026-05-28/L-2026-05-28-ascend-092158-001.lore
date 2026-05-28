@@ -1,0 +1,33 @@
+id: L-2026-05-28-ascend-092158-001
+type: milestone
+timestamp: '2026-05-28T09:21:58.264Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Wave B — sidebar drag affordance (closes the loop)
+summary: Final piece of the v1.0 media-bin + timeline bundle. Made MEDIA sidebar rows draggable with a typed MediaRefPayload (`application/x-atelier-media-ref`). Attached drop targets to canvasMount AND timelineMount that POST `/api/media/ingest?targetDocPath=…&source=existing&path=media/…` to compose with the existing media (no file re-upload). Discriminates from file-drop via dataTransfer.types so the DropZone overlay stays intact. Kind-guarded — only video/image/audio rows draggable; font/other rows non-draggable since they can't compose. Tests still 1189, tsc clean.
+symbols_touched:
+  - '#workspace-app'
+  - '#ingest-bin-types'
+symbols_created:
+  - '#media-ref-drop-target'
+files_modified:
+  - packages/cli/src/web/workspace-app.ts
+verification:
+  status: pass
+  details:
+    workspace_tests: 1189 (stable)
+    tsc_workspace: exit 0
+tags:
+  - v1.0
+  - media-bin
+  - sidebar-drag
+  - wave-B
+linked_lore:
+  - L-2026-05-28-ascend-091716-001
+confidence: 0.9
+git_context:
+  ref: 1c1f806d07356880494454ce4d5d81a6a251f749
+  branch: feat/creator-flow-v1-prep
+  dirty: true
