@@ -221,10 +221,20 @@ export async function composeVideoProject(
   let mirroredTranscriptPath: string | undefined;
   const shouldTranscribe = opts.transcribe !== false;
   if (shouldTranscribe) {
+    // POST-FLAT-DOCS-PIVOT: project.atelier may not exist (projects are
+    // identified by `.atelier/` metadata, the canonical manifest file is
+    // optional). The legacy `transcribeProject` reads project.atelier when
+    // !noCaptions to run `rewriteCaptionLayers` — that ENOENTs here. We
+    // ALWAYS pass `noCaptions: true` because compose-video-project does
+    // its own parented + clip-local caption rebuild below (step 5). The
+    // legacy unparented `caption-N` layers were never wanted; skipping
+    // their write side-steps the file-existence issue entirely.
+    const noCaptionsOverride = { noCaptions: true } as const;
     if (opts.mediaBasename) {
       // Multi-media projects — additive per-file mirror via #transcribe-orchestrator.
       const result = await transcribeMediaFile(projectDir, opts.mediaBasename, {
         ...(opts.transcribeOptions ?? {}),
+        ...noCaptionsOverride,
         ...(opts.transcribeFn !== undefined ? { transcribeFn: opts.transcribeFn } : {}),
       });
       transcribeResult = result;
@@ -232,7 +242,10 @@ export async function composeVideoProject(
     } else {
       // Single-source legacy path — only the root transcript is written.
       const fn = opts.transcribeFn ?? transcribeProject;
-      transcribeResult = await fn(projectDir, opts.transcribeOptions ?? {});
+      transcribeResult = await fn(projectDir, {
+        ...(opts.transcribeOptions ?? {}),
+        ...noCaptionsOverride,
+      });
     }
   }
 

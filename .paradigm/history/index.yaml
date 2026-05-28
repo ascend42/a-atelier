@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T03:15:55.554Z'
+generated: '2026-05-28T04:19:39.550Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3830,11 +3830,33 @@ by_symbol:
       agent: []
   '#workspace-delete':
     symbol: '#workspace-delete'
-    total_changes: 1
-    last_modified: '2026-05-27T21:45:44Z'
+    total_changes: 2
+    last_modified: '2026-05-28T04:19:36Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_52
+        id: h0083
+        ts: '2026-05-28T04:19:36Z'
+        type: implement
+        symbols:
+          - '#studio-doc-endpoints'
+          - '#workspace-create-project'
+          - '#workspace-delete'
+        author:
+          type: human
+          id: ascend
+        commit: 73674c1149e369c16092f836993ed894d37e46a3
+        intent: fix
+        files:
+          - .claude/settings.local.json
+          - .paradigm/.purpose-paths
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/lib/workspace-delete.test.ts
+          - packages/cli/src/workspace-ui.test.ts
+        description: 'fix(#studio-doc-endpoints): resolveProjectInWorkspace accepts .atelier/-only projects'
       - *ref_47
     contributors:
       human:
@@ -4161,6 +4183,30 @@ by_symbol:
     fragility: low
     recent:
       - *ref_51
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-doc-endpoints':
+    symbol: '#studio-doc-endpoints'
+    total_changes: 1
+    last_modified: '2026-05-28T04:19:36Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_52
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-create-project':
+    symbol: '#workspace-create-project'
+    total_changes: 1
+    last_modified: '2026-05-28T04:19:36Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_52
     contributors:
       human:
         - ascend

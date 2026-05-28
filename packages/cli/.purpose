@@ -839,8 +839,8 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:255-270
-      - packages/cli/src/commands/studio.ts:1790-1810
+      - packages/cli/src/commands/studio.ts:256-271
+      - packages/cli/src/commands/studio.ts:1798-1818
     enforcement: explicit 127.0.0.1 host bind
     appliesTo: ["#cli-studio"]
   studio-origin-check-bridge-vs-mcp-split:
@@ -850,8 +850,8 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:255-275
-      - packages/cli/src/commands/studio.ts:2760-2785
+      - packages/cli/src/commands/studio.ts:256-276
+      - packages/cli/src/commands/studio.ts:2768-2793
     enforcement: strict origin for bridge, tolerant for mcp
     appliesTo: ["#cli-studio"]
   studio-ws-upgrade-rechecks-origin:
@@ -861,7 +861,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:2745-2790
+      - packages/cli/src/commands/studio.ts:2753-2798
     enforcement: re-run origin check on WS upgrade
     appliesTo: ["#cli-studio"]
   studio-llm-only-broadcast:
@@ -871,8 +871,8 @@ aspects:
       - attribution
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:280-295
-      - packages/cli/src/commands/studio.ts:2275-2295
+      - packages/cli/src/commands/studio.ts:281-296
+      - packages/cli/src/commands/studio.ts:2283-2303
     enforcement: broadcast/persist only source === llm
     appliesTo: ["#cli-studio"]
   studio-contained-path-guard:
@@ -882,7 +882,7 @@ aspects:
       - path-traversal
       - edge-case
     anchors:
-      - packages/cli/src/commands/studio.ts:120-140
+      - packages/cli/src/commands/studio.ts:121-141
     enforcement: resolved-containment prefix check
     appliesTo: ["#cli-studio"]
   recipe-lib-resolution-chain:

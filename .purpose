@@ -119,8 +119,8 @@ aspects:
       - packages/mcp/src/store.ts:17
       - packages/mcp/src/store.ts:62-65
       - packages/mcp/src/store.ts:114-127
-      - packages/cli/src/commands/studio.ts:122-124
-      - packages/cli/src/commands/studio.ts:538-556
+      - packages/cli/src/commands/studio.ts:123-125
+      - packages/cli/src/commands/studio.ts:539-557
       - packages/studio/src/studio.ts:239-294
     tags:
       - convention

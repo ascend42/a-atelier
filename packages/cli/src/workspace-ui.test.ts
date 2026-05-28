@@ -233,6 +233,59 @@ describe("composeVideoProject", () => {
     });
   });
 
+  // Regression: user dragged a media file into a freshly-created project
+  // and got: "Failed to create doc: project not found" OR an ENOENT on
+  // project.atelier from inside the transcribe step. Post-pivot, projects
+  // can exist with .atelier/ metadata only (no project.atelier). The
+  // ingest must write its OWN docPath (e.g. img-7346.atelier) and the
+  // transcribe step must NOT try to readComposition(project.atelier) when
+  // it doesn't exist. Lock the invariant.
+  it("works on a project with NO project.atelier (post-flat-docs-pivot)", async () => {
+    // Tear down the seeded project.atelier so we simulate the post-pivot
+    // empty-project state (only .atelier/ metadata exists in real flow,
+    // but for this test the directory alone is enough since composeVideoProject
+    // only cares about the docPath target).
+    rmSync(join(projectDir, "project.atelier"));
+
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+    const fileA = join(projectDir, "media", "IMG_7346.MOV");
+    writeFileSync(fileA, "fakeA");
+
+    const transcribeFn = vi.fn(async (dir: string, opts?: { dryRun?: boolean; noCaptions?: boolean }) => {
+      // Critical assertion: composeVideoProject MUST pass noCaptions:true
+      // to the legacy transcribeProject so it doesn't try to readComposition.
+      expect(opts?.noCaptions).toBe(true);
+      writeFileSync(join(dir, "transcript.json"), JSON.stringify({
+        version: "1.1",
+        language: "en",
+        segments: [{ text: "hi", start: 0, end: 0.5, words: [{ detected: "hi", text: "hi", start: 0, end: 0.5 }] }],
+      }));
+      return {
+        projectDir: dir,
+        backend: "whisper-cpp",
+        transcript: { version: "1.1", language: "en", segments: [] },
+        wordCount: 1,
+        captionsGenerated: false,
+      };
+    });
+
+    // The compose call that previously ENOENT'd on project.atelier.
+    const result = await composeVideoProject({
+      projectDir,
+      docPath: "img-7346.atelier",
+      sourceFile: fileA,
+      mediaBasename: "IMG_7346.MOV",
+      transcribeFn,
+      probeDurationFn: async () => 2.0,
+    });
+
+    expect(result.addedVideoLayer).toBe(true);
+    expect(result.clipLayerId).toBe("clip-img-7346");
+    // The doc was written to docPath, NOT project.atelier.
+    expect(existsSync(join(projectDir, "img-7346.atelier"))).toBe(true);
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
+  });
+
   it("two sequential ingests produce two clip layers parented to track-video-1", async () => {
     // Seed two source files inside media/ and a fresh project.atelier.
     mkdirSync(join(projectDir, "media"), { recursive: true });
