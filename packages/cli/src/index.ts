@@ -144,12 +144,16 @@ export {
   type ComposeCarouselProjectResult,
 } from "./lib/compose-carousel-project.js";
 
-// Drag-drop ingest dispatcher (B3) — classify file + route to a composer.
+// Drag-drop ingest dispatcher — classify file + route.
+// Post-pivot (Kit-A): `routeIngest` returns `BinIngestRoute` (no-target media
+// bin add); `routeIngestWithTarget` handles canvas-area drops with composition.
 export {
   classifyMediaFile,
   routeIngest,
+  routeIngestWithTarget,
   type IngestKind,
   type IngestRoute,
+  type BinIngestRoute,
 } from "./lib/ingest-dispatch.js";
 
 // ── doc-management (v1.0.x) ──────────────────────────────────────

@@ -24,6 +24,11 @@ import { AtelierStudio } from "@a-company/atelier-studio";
 import "@a-company/atelier-studio/styles.css";
 import { parseAtelier, serializeAtelier } from "@a-company/atelier-schema";
 
+// ── v1.0 bottom timeline (Kit-B) ──
+import { TimelineView } from "./timeline-view.js";
+import type { TimelineSelection } from "./timeline-state-types.js";
+// ── end v1.0 bottom timeline (Kit-B) ──
+
 type AtelierDoc = import("@a-company/atelier-types").AtelierDocument;
 
 // ─── Server-side type shapes (mirrors `workspace-project-info.ts`) ──
@@ -414,7 +419,19 @@ class WorkspaceSidebar {
       if (docs.length === 0) {
         const empty = document.createElement("div");
         empty.className = "atel-workspace-sidebar__empty";
-        empty.textContent = "No documents yet. Click + new doc to create one.";
+        // ── v1.0 UI shell rework (Kit-C) ──
+        // When the project has media but no docs yet, nudge the creator
+        // toward the explicit "compose a doc" step (post-pivot, drops add
+        // to media/ rather than auto-creating a doc).
+        const mediaCount = detail?.media?.length ?? 0;
+        if (mediaCount > 0) {
+          empty.textContent =
+            `You have ${mediaCount} media file${mediaCount === 1 ? "" : "s"} in this project. ` +
+            `Click + new doc to compose.`;
+        } else {
+          empty.textContent = "No documents yet. Click + new doc to create one.";
+        }
+        // ── end Kit-C ──
         group.appendChild(empty);
       } else {
         for (const d of docs) {
@@ -1540,8 +1557,10 @@ class DropZone {
       <div class="atel-drop-zone__pane atel-drop-zone__pane--sidebar">
         <div class="atel-drop-zone__inner">
           <div class="atel-drop-zone__icon">＋</div>
-          <div class="atel-drop-zone__title">New doc in <span class="atel-drop-zone__project">…</span></div>
-          <div class="atel-drop-zone__hint">Drop here to create a new doc</div>
+          <!-- ── v1.0 UI shell rework (Kit-C) ── sidebar half: media-bin ingest -->
+          <div class="atel-drop-zone__title">Add to media</div>
+          <div class="atel-drop-zone__hint">Drop files into the project's media bin</div>
+          <!-- ── end Kit-C ── -->
         </div>
       </div>
       <div class="atel-drop-zone__pane atel-drop-zone__pane--canvas">
@@ -1606,7 +1625,10 @@ class DropZone {
     this.hoverDepth++;
     const project = this.cb.getActiveProject();
     if (!project) return;
-    (this.el.querySelector(".atel-drop-zone__project") as HTMLElement).textContent = project;
+    // ── v1.0 UI shell rework (Kit-C) ──
+    // Sidebar-half label is now project-agnostic ("Add to media"); the
+    // legacy per-project span has been removed, so no interpolation here.
+    // ── end Kit-C ──
     this.layoutPanes();
     this.el.classList.add("atel-drop-zone--visible");
   }
@@ -1693,6 +1715,46 @@ class DropZone {
   }
 }
 
+// ── v1.0 UI shell rework (Kit-C) ──
+// Transient toast helper — small dark card with an `--atel-accent` left border,
+// auto-dismissed after 4s. Stacks vertically in a fixed bottom-right container
+// (sits ABOVE the status bar visually because the container is anchored at
+// `bottom: 48px` which clears the 32px status bar plus a 16px breath).
+//
+// Used to surface no-target media-ingest results without thrashing the status
+// bar (which other ops — ingest progress, doc cascades — already churn). The
+// status bar still gets the canvas-attach progress envelopes; this is only for
+// the "drop file into sidebar → goes to media/" success path.
+class ToastHost {
+  private static instance: ToastHost | null = null;
+  private readonly stack: HTMLElement;
+
+  static show(message: string): void {
+    if (!ToastHost.instance) ToastHost.instance = new ToastHost();
+    ToastHost.instance.push(message);
+  }
+
+  private constructor() {
+    this.stack = document.createElement("div");
+    this.stack.className = "atel-toast-stack";
+    document.body.appendChild(this.stack);
+  }
+
+  private push(message: string): void {
+    const card = document.createElement("div");
+    card.className = "atel-toast";
+    card.textContent = message;
+    this.stack.appendChild(card);
+    // Trigger enter transition on next frame.
+    requestAnimationFrame(() => card.classList.add("atel-toast--visible"));
+    window.setTimeout(() => {
+      card.classList.remove("atel-toast--visible");
+      window.setTimeout(() => card.remove(), 200);
+    }, 4000);
+  }
+}
+// ── end Kit-C ──
+
 // ─── App shell ──────────────────────────────────────────────────────
 
 export async function bootWorkspaceApp(): Promise<void> {
@@ -1716,6 +1778,23 @@ export async function bootWorkspaceApp(): Promise<void> {
 
   const mainBody = document.createElement("div");
   mainBody.className = "atel-workspace-body";
+
+  // ── v1.0 UI shell rework (Kit-C) ──
+  // Vertical split: canvasMount (1fr, scrollable, positioned for overlays)
+  // takes the old `mainBody` role; timelineMount (fixed 120px) is a sibling
+  // below it for Kit-B's TimelineView. `mainBody` is now a flex column
+  // container — never receives content directly. All previous mount sites
+  // (AtelierStudio, MarkdownView, MediaPreview, TranscriptViewer, empty
+  // canvas, error HTML, "+ add slide" overlay, DropZone canvas rect) now
+  // target `canvasMount`.
+  const canvasMount = document.createElement("div");
+  canvasMount.className = "atel-workspace-canvas";
+  const timelineMount = document.createElement("div");
+  timelineMount.className = "atel-workspace-timeline";
+  // Expose for Kit-B's TimelineView (new TimelineView({ container: timelineMount, ... })).
+  mainBody.appendChild(canvasMount);
+  mainBody.appendChild(timelineMount);
+  // ── end Kit-C ──
 
   mainPanel.appendChild(statusBar);
   mainPanel.appendChild(mainBody);
@@ -1934,12 +2013,65 @@ export async function bootWorkspaceApp(): Promise<void> {
   let currentMedia: MediaPreview | null = null;
   let currentTranscript: TranscriptViewer | null = null;
 
+  // ── v1.0 bottom timeline (Kit-B) ──
+  // Persistent TimelineView mounted into the timelineMount sibling (created
+  // by Kit-C's vertical split). The view is instantiated once and reused
+  // across panel switches — `setDoc(null)` clears its lane to the "No clips"
+  // placeholder when no doc is loaded.
+  //
+  // v1.0 wiring scope (read-only viewer):
+  //   - Doc → timeline: `openProjectDoc` calls `timelineView.setDoc(doc)`
+  //     after `loadDocument`; non-doc panels and `showEmptyCanvas` call
+  //     `setDoc(null)` so the lane reverts to the empty state.
+  //   - Clip click → layer-panel selection: AtelierStudio does NOT expose a
+  //     layer-panel selection API in its current published surface
+  //     (StudioOptions: mode/initialTab/allowSave/onDocumentChange/onSave
+  //     only — see node_modules/.../atelier-studio/dist/index.d.ts). v1.1
+  //     follow-up: pipe the selection into the AtelierStudio surface once it
+  //     ships a layer-panel selection method. For now we surface the choice
+  //     as a debug breadcrumb on the status bar.
+  //   - Ruler click → studio scrubber: AtelierStudio exposes no `seekTo`
+  //     method publicly (the canvas-panel's playback head is internal). v1.1
+  //     follow-up: wire through once a public seek API lands. The timeline
+  //     still updates its own playhead so the click visually registers.
+  //   - Scrubber → timeline playhead: AtelierStudio exposes no
+  //     `onFrameChange` callback in its public StudioOptions (the canvas-
+  //     panel emits one internally but it's not surfaced). v1.1 follow-up:
+  //     subscribe once exposed; the playhead stays at frame 0 in v1.0
+  //     unless the creator clicks the ruler.
+  const timelineView = new TimelineView({
+    container: timelineMount,
+    onSelectClip: (selection: TimelineSelection | null) => {
+      // v1.1 follow-up: forward to AtelierStudio's layer-panel selection API
+      // when the studio package exposes one. v1.0 surfaces it on the status
+      // bar so the click is observable (and so manual QA can confirm the
+      // click-to-select path fires).
+      if (selection) {
+        statusBar.textContent =
+          `Selected clip ${selection.layerId} on ${selection.trackId} ` +
+          `(layer-panel sync is v1.1)`;
+      } else {
+        statusBar.textContent = "Selection cleared";
+      }
+    },
+    onSeek: (frame: number) => {
+      // v1.1 follow-up: call into AtelierStudio's seek API when one lands.
+      // The TimelineView already updated its own playhead before this fires.
+      statusBar.textContent = `Seek → frame ${frame} (canvas sync is v1.1)`;
+    },
+  });
+  timelineView.mount();
+  // ── end v1.0 bottom timeline (Kit-B) ──
+
   const clearMain = (): void => {
     if (currentStudio) { currentStudio.destroy(); currentStudio = null; }
     if (currentMedia) { currentMedia.destroy(); currentMedia = null; }
     currentMarkdown = null;
     currentTranscript = null;
-    mainBody.innerHTML = "";
+    // ── v1.0 UI shell rework (Kit-C) ── only clear the canvas half;
+    // timelineMount lives below and is owned by Kit-B's TimelineView.
+    canvasMount.innerHTML = "";
+    // ── end Kit-C ──
     // Reset doc-kind metadata too — `openProjectDoc` resets it on the very
     // next line for the doc-load path, but non-doc panels (markdown / media /
     // transcript) leave the canvas without any doc loaded, so the stale kind
@@ -2003,7 +2135,10 @@ export async function bootWorkspaceApp(): Promise<void> {
       "or use <span style=\"font-family:" + theme.fontMono + ";color:var(--atel-text, #F5F0EB)\">+ new doc</span> to create one.";
     empty.appendChild(body);
 
-    mainBody.appendChild(empty);
+    // ── v1.0 UI shell rework (Kit-C) ── mount in canvasMount (the canvas half
+    //   of the vertical split), not mainBody (the flex container).
+    canvasMount.appendChild(empty);
+    // ── end Kit-C ──
   }
 
   async function openProjectDoc(name: string, docPath?: string): Promise<void> {
@@ -2035,12 +2170,15 @@ export async function bootWorkspaceApp(): Promise<void> {
       const content = await fetchText("/api/file?path=" + encodeURIComponent(path));
       const parsed = parseAtelier(content);
       if (!parsed.success) {
-        mainBody.innerHTML = `<div style="padding:24px;color:#E25C5C">Parse error: ${escapeHtml(parsed.errors.map(e => e.path + ": " + e.message).join("; "))}</div>`;
+        // ── v1.0 UI shell rework (Kit-C) ── canvas half, not the flex container.
+        canvasMount.innerHTML = `<div style="padding:24px;color:#E25C5C">Parse error: ${escapeHtml(parsed.errors.map(e => e.path + ": " + e.message).join("; "))}</div>`;
+        // ── end Kit-C ──
         return;
       }
       // Save indicator + debounced save inline; matches inline-app.ts pattern.
       let saveTimer: ReturnType<typeof setTimeout> | null = null;
-      currentStudio = new AtelierStudio(mainBody, {
+      // ── v1.0 UI shell rework (Kit-C) ── mount studio in canvasMount.
+      currentStudio = new AtelierStudio(canvasMount, {
         mode: "full",
         initialTab: "editor",
         allowSave: true,
@@ -2064,7 +2202,9 @@ export async function bootWorkspaceApp(): Promise<void> {
         mountAddSlideButton(name, resolvedDocPath);
       }
     } catch (err) {
-      mainBody.innerHTML = `<div style="padding:24px;color:#E25C5C">Failed to load: ${escapeHtml(err instanceof Error ? err.message : String(err))}</div>`;
+      // ── v1.0 UI shell rework (Kit-C) ── canvas half, not the flex container.
+      canvasMount.innerHTML = `<div style="padding:24px;color:#E25C5C">Failed to load: ${escapeHtml(err instanceof Error ? err.message : String(err))}</div>`;
+      // ── end Kit-C ──
     }
   }
 
@@ -2135,20 +2275,26 @@ export async function bootWorkspaceApp(): Promise<void> {
         alert("Failed to add slide: " + (err instanceof Error ? err.message : err));
       }
     });
-    mainBody.appendChild(btn);
+    // ── v1.0 UI shell rework (Kit-C) ── overlay anchors to canvasMount; the
+    // mount is position:relative so absolute children pin correctly. mainBody
+    // is the flex column and would put the button alongside the timeline.
+    canvasMount.appendChild(btn);
+    // ── end Kit-C ──
   }
 
   function openMarkdown(path: string): void {
     clearMain();
     statusBar.textContent = path;
-    currentMarkdown = new MarkdownView(mainBody);
+    // ── v1.0 UI shell rework (Kit-C) ── mount in canvasMount.
+    currentMarkdown = new MarkdownView(canvasMount);
     void currentMarkdown.load(path);
   }
 
   function openMedia(entry: ProjectMediaEntry): void {
     clearMain();
     statusBar.textContent = entry.path;
-    currentMedia = new MediaPreview(mainBody);
+    // ── v1.0 UI shell rework (Kit-C) ── mount in canvasMount.
+    currentMedia = new MediaPreview(canvasMount);
     currentMedia.load(entry);
     // Inline delete affordance on the preview header — discoverable without
     // needing the sidebar right-click.
@@ -2185,7 +2331,8 @@ export async function bootWorkspaceApp(): Promise<void> {
   function openTranscript(entry: ProjectTranscriptEntry): void {
     clearMain();
     statusBar.textContent = entry.path;
-    currentTranscript = new TranscriptViewer(mainBody);
+    // ── v1.0 UI shell rework (Kit-C) ── mount in canvasMount.
+    currentTranscript = new TranscriptViewer(canvasMount);
     void currentTranscript.load(entry.path, entry);
   }
 
@@ -2201,7 +2348,11 @@ export async function bootWorkspaceApp(): Promise<void> {
     getActiveProject: () => activeProjectName,
     getCurrentDocPath: () => currentDocPath,
     getSidebarElement: () => sidebar.el,
-    getCanvasElement: () => mainBody,
+    // ── v1.0 UI shell rework (Kit-C) ── canvas overlay sizes to the canvas
+    // half only — the timeline (Kit-B) lives in its own sibling and isn't a
+    // drop target for the canvas-attach path.
+    getCanvasElement: () => canvasMount,
+    // ── end Kit-C ──
     onIngestStart: (filename) => {
       statusBar.textContent = `Ingesting ${filename}…`;
     },
@@ -2254,15 +2405,40 @@ export async function bootWorkspaceApp(): Promise<void> {
         })();
       }
     } else if (env.type === "media:ingest:progress") {
-      const e = env as { phase: string; file: string; error?: string; received?: number; total?: number | null };
+      // ── v1.0 UI shell rework (Kit-C) ──
+      // Pivot model: no-target ingests (the sidebar-half drop) now land in
+      // `media/` and emit a `phase: "done"` envelope carrying `mediaPath` +
+      // `fileKind` + `transcribePending`. Discriminator: presence of
+      // `mediaPath` AND absence of `targetDocPath`. Surface those as a toast
+      // (status bar is already noisy with other ops). Target-drop progress
+      // (the canvas-half drop) keeps its existing status-bar behaviour.
+      const e = env as {
+        phase: string;
+        file: string;
+        error?: string;
+        received?: number;
+        total?: number | null;
+        mediaPath?: string;
+        fileKind?: string;
+        transcribePending?: boolean;
+        targetDocPath?: string;
+      };
       if (e.phase === "error") {
         statusBar.textContent = `Ingest failed (${e.file}): ${e.error ?? "(unknown)"}`;
       } else if (e.phase === "model:download" && e.received !== undefined && e.total) {
         const pct = ((e.received / e.total) * 100).toFixed(1);
         statusBar.textContent = `Downloading model: ${pct}%`;
+      } else if (e.phase === "done" && e.mediaPath && !e.targetDocPath) {
+        // Basename: strip any path segments from mediaPath; fall back to `file`.
+        const baseName = (e.mediaPath.split("/").pop() ?? e.file) || e.file;
+        const msg = e.transcribePending
+          ? `Added ${baseName} to media. Transcribing in background…`
+          : `Added ${baseName} to media.`;
+        ToastHost.show(msg);
       } else {
         statusBar.textContent = `Ingest ${e.file}: ${e.phase}`;
       }
+      // ── end Kit-C ──
     } else if (env.type === "llm:mutation" && currentStudio) {
       // Wire LLM mutation through to the active doc (workspace mode preserves
       // the live loop the legacy single-doc mode already had).
@@ -2435,7 +2611,27 @@ function injectStyles(): void {
     background: #333; border-bottom: 1px solid #4A4A4A;
     font-size: 11px; color: #A89F95; font-family: 'SF Mono', 'Fira Code', monospace;
   }
-  .atel-workspace-body { flex: 1; overflow: auto; position: relative; }
+  /* ── v1.0 UI shell rework (Kit-C) ──
+     mainBody (.atel-workspace-body) is the vertical flex container:
+       - canvasMount (.atel-workspace-canvas) inherits the legacy body role —
+         scrollable, position:relative for overlays (drop zone, + add slide).
+       - timelineMount (.atel-workspace-timeline) is a 120px sibling at the
+         bottom for Kit-B's TimelineView. */
+  .atel-workspace-body {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
+  }
+  .atel-workspace-canvas {
+    flex: 1 1 auto; min-height: 0;
+    overflow: auto; position: relative;
+  }
+  .atel-workspace-timeline {
+    flex: 0 0 120px; height: 120px;
+    border-top: 1px solid var(--atel-border, #4A4A4A);
+    background: var(--atel-bg-2, #1f1f1f);
+    overflow: hidden;
+  }
+  /* ── end Kit-C ── */
 
   /* Markdown view */
   .atel-markdown-view { padding: 20px 32px; max-width: 880px; margin: 0 auto; color: #F5F0EB; }
@@ -2665,6 +2861,34 @@ function injectStyles(): void {
   .atel-drop-zone__title { font-size: 16px; margin-top: 12px; color: #F5F0EB; }
   .atel-drop-zone__project { color: #C75B39; font-family: monospace; }
   .atel-drop-zone__hint { font-size: 11px; color: #A89F95; margin-top: 6px; }
+
+  /* ── v1.0 UI shell rework (Kit-C) ──
+     Toast host — bottom-right column above the 32px status bar. Each
+     `.atel-toast` is a small dark card with an accent left border, fades in
+     for ~140ms, lives 4s, fades out for ~200ms before removal. Stacks vertically
+     when multiple drops happen in quick succession. */
+  .atel-toast-stack {
+    position: fixed; right: 16px; bottom: 48px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 9400; pointer-events: none;
+    max-width: 360px;
+  }
+  .atel-toast {
+    background: var(--atel-bg-2, #1F1B17);
+    color: var(--atel-text, #F5F0EB);
+    border: 1px solid var(--atel-border, #3A3530);
+    border-left: 3px solid var(--atel-accent, #C75B39);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 12px; line-height: 1.45;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 140ms ease, transform 140ms ease;
+    pointer-events: auto;
+  }
+  .atel-toast--visible { opacity: 1; transform: translateY(0); }
+  /* ── end Kit-C ── */
   `;
   document.head.appendChild(style);
 }

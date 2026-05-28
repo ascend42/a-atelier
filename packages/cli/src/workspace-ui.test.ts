@@ -25,6 +25,7 @@ import {
 
 import {
   transcribeMediaFile,
+  transcribeMediaToBin,
 } from "./lib/transcribe-orchestrator.js";
 
 import {
@@ -589,6 +590,84 @@ describe("transcribeMediaFile", () => {
   });
 });
 
+// ── v1.0 media-bin pivot (Kit-A) ──
+// transcribeMediaToBin — pure media-side transcription, no doc/compose touch.
+
+describe("transcribeMediaToBin", () => {
+  let projectDir: string;
+
+  beforeEach(() => {
+    projectDir = mkdtempSync(join(tmpdir(), "atelier-bin-tx-"));
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+    writeFileSync(join(projectDir, "media", "clip.mp4"), "fake-video-bytes");
+  });
+
+  afterEach(() => {
+    rmSync(projectDir, { recursive: true, force: true });
+  });
+
+  it("writes transcripts/<stem>.json and does NOT touch project.atelier", async () => {
+    // Seed an existing project.atelier so we can verify untouched-after.
+    const sentinelDoc = JSON.stringify({
+      version: "1.0",
+      name: "x",
+      kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [],
+      states: { default: { duration: 0, deltas: [] } },
+    });
+    writeFileSync(join(projectDir, "project.atelier"), sentinelDoc);
+
+    const fakeTranscribe = vi.fn(async (dir: string) => ({
+      projectDir: dir,
+      backend: "whisper-cpp",
+      transcript: { language: "en", segments: [{ words: [] }] } as never,
+      wordCount: 0,
+      captionsGenerated: false,
+    }));
+
+    const result = await transcribeMediaToBin(projectDir, "clip.mp4", {
+      transcribeFn: fakeTranscribe,
+    });
+
+    expect(result.mediaStem).toBe("clip");
+    expect(result.mirroredTranscriptPath).toBe(
+      join(projectDir, "transcripts", "clip.json"),
+    );
+    expect(existsSync(result.mirroredTranscriptPath)).toBe(true);
+
+    // project.atelier untouched.
+    expect(readFileSync(join(projectDir, "project.atelier"), "utf-8")).toBe(sentinelDoc);
+    // No root transcript.json artifact left behind either.
+    expect(existsSync(join(projectDir, "transcript.json"))).toBe(false);
+  });
+
+  it("is idempotent: second call no-ops when transcript already exists", async () => {
+    // Pre-write the mirror to simulate a prior successful run.
+    mkdirSync(join(projectDir, "transcripts"), { recursive: true });
+    writeFileSync(
+      join(projectDir, "transcripts", "clip.json"),
+      JSON.stringify({ language: "en", segments: [{ cached: true }] }),
+    );
+
+    const fakeTranscribe = vi.fn(async (dir: string) => ({
+      projectDir: dir,
+      backend: "whisper-cpp",
+      transcript: { language: "en", segments: [] } as never,
+      wordCount: 0,
+      captionsGenerated: false,
+    }));
+
+    const result = await transcribeMediaToBin(projectDir, "clip.mp4", {
+      transcribeFn: fakeTranscribe,
+    });
+
+    // Stub MUST NOT be called — the existing mirror short-circuits.
+    expect(fakeTranscribe).not.toHaveBeenCalled();
+    expect(result.backend).toBe("cached");
+  });
+});
+
 // ─── workspace-project-info pure helpers ────────────────────────────
 
 describe("workspace-project-info helpers", () => {
@@ -866,20 +945,18 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
     rmSync(workspaceDir, { recursive: true, force: true });
   });
 
-  it("fresh project + image drag → scaffolds kind:'image' with an ImageVisual layer", async () => {
-    // No project dir exists yet — the handler must create it from scratch.
+  // ── v1.0 media-bin pivot (Kit-A) ──
+  // Post-TD-2026-05-28: no-target drops NEVER create docs. Files land in
+  // media/ only. Composition happens later via sidebar→canvas drag.
+
+  it("no-target image drop → file lands in media/, NO doc created", async () => {
     const projectName = "demo-img";
     const fakePng = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     const req = makeMockReq(
-      {
-        "x-atelier-project": projectName,
-        "x-atelier-filename": "photo.png",
-      },
+      { "x-atelier-project": projectName, "x-atelier-filename": "photo.png" },
       fakePng,
     );
     const res = makeMockRes();
-    // Cast: our EventEmitter mock satisfies the bits handleMediaIngestRequest
-    // actually reads (headers + 'data' / 'end' / 'error' events).
     handleMediaIngestRequest(
       req as unknown as import("node:http").IncomingMessage,
       res as unknown as import("node:http").ServerResponse,
@@ -891,34 +968,30 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
 
     const projectDir = join(workspaceDir, projectName);
 
-    // Post-pivot (TD-2026-05-27): drag-drop ingest targets `<slug>.atelier`
-    // — derived from the source basename — not the legacy `project.atelier`.
-    // `photo.png` → `photo.atelier`.
-    const compositionPath = join(projectDir, "photo.atelier");
-    expect(existsSync(compositionPath)).toBe(true);
-    // And the legacy path is NOT created.
+    // No .atelier docs scaffolded — composition is explicit.
+    expect(existsSync(join(projectDir, "photo.atelier"))).toBe(false);
     expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
 
-    const doc = JSON.parse(readFileSync(compositionPath, "utf-8")) as AtelierDocument;
-    expect(doc.kind).toBe("image");
-
-    const imageLayers = doc.layers.filter((l) => l.visual.type === "image");
-    expect(imageLayers.length).toBe(1);
-    expect((imageLayers[0]!.visual as { src?: string }).src).toBe("media/photo.png");
-
-    // The dropped file is preserved at media/photo.png.
+    // File preserved at media/<filename>, basename intact (no slug rename).
     expect(existsSync(join(projectDir, "media", "photo.png"))).toBe(true);
 
-    // Response shape — handler writes ok:true + kind:"image".
+    // Response shape — bin-add envelope.
     expect(res.statusCode).toBe(200);
-    const body = JSON.parse(res.body) as { ok: boolean; kind: string; addedImageLayer: boolean };
+    const body = JSON.parse(res.body) as {
+      ok: boolean;
+      mediaPath: string;
+      fileKind: string;
+      transcribePending: boolean;
+    };
     expect(body.ok).toBe(true);
-    expect(body.kind).toBe("image");
-    expect(body.addedImageLayer).toBe(true);
+    expect(body.mediaPath).toBe("media/photo.png");
+    expect(body.fileKind).toBe("image");
+    expect(body.transcribePending).toBe(false);
   });
 
-  it("image-into-video-project rejects with 400, error message, and removes the uploaded file", async () => {
-    // Seed an EXISTING kind:"video" project — image drag must be refused.
+  it("no-target video drop into existing video project → lands in media/, project.atelier untouched", async () => {
+    // Seed an existing kind:"video" project. Post-pivot this does NOT cause
+    // the no-target drop to reject — project kind is irrelevant for bin-add.
     const projectName = "demo-vid";
     const projectDir = join(workspaceDir, projectName);
     mkdirSync(projectDir, { recursive: true });
@@ -932,13 +1005,10 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
     };
     writeFileSync(join(projectDir, "project.atelier"), JSON.stringify(videoDoc, null, 2));
 
-    const fakePng = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+    const fakeMp4 = Buffer.from([0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70]);
     const req = makeMockReq(
-      {
-        "x-atelier-project": projectName,
-        "x-atelier-filename": "intruder.png",
-      },
-      fakePng,
+      { "x-atelier-project": projectName, "x-atelier-filename": "clip.mp4" },
+      fakeMp4,
     );
     const res = makeMockRes();
     handleMediaIngestRequest(
@@ -950,21 +1020,43 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
     await res.ended;
     await flushAsync();
 
-    // Status + body.
-    expect(res.statusCode).toBe(400);
-    const body = JSON.parse(res.body) as { ok: boolean; error: string };
-    expect(body.ok).toBe(false);
-    expect(typeof body.error).toBe("string");
-    expect(body.error.length).toBeGreaterThan(0);
-
-    // Critical invariant: the uploaded file must NOT linger in media/.
-    const uploadedPath = join(projectDir, "media", "intruder.png");
-    expect(existsSync(uploadedPath)).toBe(false);
-
-    // The pre-existing project.atelier must be untouched — no spurious layer.
+    // File lands in media/, project.atelier is NOT mutated.
+    expect(existsSync(join(projectDir, "media", "clip.mp4"))).toBe(true);
     const persisted = JSON.parse(readFileSync(join(projectDir, "project.atelier"), "utf-8")) as AtelierDocument;
     expect(persisted.kind).toBe("video");
     expect(persisted.layers.length).toBe(0);
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body) as { ok: boolean; fileKind: string; transcribePending: boolean };
+    expect(body.ok).toBe(true);
+    expect(body.fileKind).toBe("video");
+    // Video kicks off background transcription (kind === video).
+    expect(body.transcribePending).toBe(true);
+  });
+
+  it("no-target unsupported file → 400 + error, no media/ entry", async () => {
+    const projectName = "demo-bad";
+    const req = makeMockReq(
+      { "x-atelier-project": projectName, "x-atelier-filename": "notes.txt" },
+      Buffer.from("hello"),
+    );
+    const res = makeMockRes();
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    expect(res.statusCode).toBe(400);
+    const body = JSON.parse(res.body) as { ok: boolean; error: string };
+    expect(body.ok).toBe(false);
+    expect(body.error).toContain("not supported");
+
+    // File was written to media/ pre-dispatch then cleaned up on reject.
+    expect(existsSync(join(workspaceDir, projectName, "media", "notes.txt"))).toBe(false);
   });
 
   // ── targetDocPath canvas-area drop (TD-2026-05-27 follow-up) ──────────
@@ -1163,6 +1255,118 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
     // Whether transcription stubs out or 500s, the routing decision is what
     // we're verifying: NO new <slug>.atelier scaffolded.
     expect(existsSync(join(projectDir, "extra.atelier"))).toBe(false);
+  });
+
+  // ── v1.0 media-bin pivot (Kit-A) — ?source=existing branch ──────────
+  //
+  // Sidebar→canvas drag handoff: the file is already in media/. Server
+  // skips the upload and dispatches via routeIngestWithTarget so compose
+  // happens against the on-disk source.
+
+  it("source=existing audio drop on a video doc → adds AudioVisual, no body required", async () => {
+    const projectName = "demo-existing-audio";
+    const projectDir = join(workspaceDir, projectName);
+    mkdirSync(projectDir, { recursive: true });
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+
+    // Pre-seed the media file on disk — this is the whole point of source=existing.
+    writeFileSync(join(projectDir, "media", "score.mp3"), Buffer.from([0x49, 0x44, 0x33]));
+
+    const videoDoc: AtelierDocument = {
+      version: "1.0",
+      name: projectName,
+      kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [],
+      states: { default: { duration: 0, deltas: [] } },
+    };
+    writeFileSync(join(projectDir, "vid.atelier"), JSON.stringify(videoDoc, null, 2));
+
+    const req = makeMockReq(
+      { "x-atelier-project": projectName },
+      Buffer.alloc(0),
+      `/api/media/ingest?targetDocPath=${encodeURIComponent("vid.atelier")}&source=existing&path=${encodeURIComponent("media/score.mp3")}`,
+    );
+    const res = makeMockRes();
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body) as { ok: boolean; kind: string; mediaPath: string };
+    expect(body.ok).toBe(true);
+    expect(body.kind).toBe("audio");
+    expect(body.mediaPath).toBe("media/score.mp3");
+
+    // No new <slug>.atelier — the clip went into vid.atelier.
+    expect(existsSync(join(projectDir, "score.atelier"))).toBe(false);
+    const persisted = JSON.parse(readFileSync(join(projectDir, "vid.atelier"), "utf-8")) as AtelierDocument;
+    const audioLayers = persisted.layers.filter((l) => l.visual.type === "audio");
+    expect(audioLayers.length).toBe(1);
+  });
+
+  it("source=existing with path traversal → 400", async () => {
+    const projectName = "demo-existing-trav";
+    const projectDir = join(workspaceDir, projectName);
+    mkdirSync(projectDir, { recursive: true });
+
+    const req = makeMockReq(
+      { "x-atelier-project": projectName },
+      Buffer.alloc(0),
+      `/api/media/ingest?targetDocPath=${encodeURIComponent("vid.atelier")}&source=existing&path=${encodeURIComponent("media/../etc/passwd")}`,
+    );
+    const res = makeMockRes();
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    expect(res.statusCode).toBe(400);
+    const body = JSON.parse(res.body) as { ok: boolean; error: string };
+    expect(body.ok).toBe(false);
+    expect(body.error).toMatch(/invalid path/);
+  });
+
+  it("source=existing referencing non-existent media file → 404", async () => {
+    const projectName = "demo-existing-missing";
+    const projectDir = join(workspaceDir, projectName);
+    mkdirSync(projectDir, { recursive: true });
+    mkdirSync(join(projectDir, "media"), { recursive: true });
+    // Seed a target doc so the missing-source error is the one we hit.
+    writeFileSync(join(projectDir, "vid.atelier"), JSON.stringify({
+      version: "1.0", name: projectName, kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [], states: { default: { duration: 0, deltas: [] } },
+    }));
+
+    const req = makeMockReq(
+      { "x-atelier-project": projectName },
+      Buffer.alloc(0),
+      `/api/media/ingest?targetDocPath=${encodeURIComponent("vid.atelier")}&source=existing&path=${encodeURIComponent("media/ghost.mp3")}`,
+    );
+    const res = makeMockRes();
+    handleMediaIngestRequest(
+      req as unknown as import("node:http").IncomingMessage,
+      res as unknown as import("node:http").ServerResponse,
+      workspaceDir,
+      new Set(),
+    );
+    await res.ended;
+    await flushAsync();
+
+    expect(res.statusCode).toBe(404);
+    const body = JSON.parse(res.body) as { ok: boolean; error: string };
+    expect(body.ok).toBe(false);
+    expect(body.error).toMatch(/media file not found/);
   });
 });
 

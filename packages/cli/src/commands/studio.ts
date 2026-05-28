@@ -51,8 +51,10 @@ import {
   projectNameFromPath,
 } from "../lib/workspace-project-info.js";
 import { composeVideoProject, readAtelierDoc, slugifyBasename } from "../lib/compose-video-project.js";
-import { composeImageProject } from "../lib/compose-image-project.js";
-import { routeIngest, routeIngestWithTarget, computeIngestDocPath, findSingleVideoDoc } from "../lib/ingest-dispatch.js";
+import { routeIngest, routeIngestWithTarget } from "../lib/ingest-dispatch.js";
+// ── v1.0 media-bin pivot (Kit-A) ──
+import { isValidMediaRefPath } from "../lib/ingest-bin-types.js";
+import { transcribeMediaToBin } from "../lib/transcribe-orchestrator.js";
 import {
   AUDIO_TRACK_ID,
   ensureClipLayer,
@@ -1844,11 +1846,21 @@ export function handleMediaIngestRequest(
   // (not scaffold a new <slug>.atelier). Parsed BEFORE we touch the disk so a
   // malformed traversal fails fast with a 400. URL constructor decodes once.
   let targetDocPathRaw: string | null = null;
+  // ── v1.0 media-bin pivot (Kit-A) ──
+  // `?source=existing&path=media/<basename>` lets the sidebar→canvas drop
+  // skip the upload — the file is already in media/. Both query params are
+  // parsed up front so we can short-circuit the body-reading entirely.
+  let sourceParam: string | null = null;
+  let existingPathParam: string | null = null;
   try {
     const parsed = new URL(req.url ?? "/", "http://localhost");
     targetDocPathRaw = parsed.searchParams.get("targetDocPath");
+    sourceParam = parsed.searchParams.get("source");
+    existingPathParam = parsed.searchParams.get("path");
   } catch {
     targetDocPathRaw = null;
+    sourceParam = null;
+    existingPathParam = null;
   }
 
   if (!isValidProjectName(projectName)) {
@@ -1857,6 +1869,20 @@ export function handleMediaIngestRequest(
     res.end(JSON.stringify({ error: "missing or invalid x-atelier-project header" }));
     return;
   }
+
+  // ── v1.0 media-bin pivot (Kit-A) ──────────────────────────────────
+  // `?source=existing` short-circuit: the file is already in media/. No body
+  // to stream — we route straight to composeVideoProject / audio-add using
+  // the on-disk source. Sidebar→canvas drag handoff lives here.
+  if (sourceParam === "existing") {
+    handleExistingSourceIngest({
+      req, res, cwd, projectName, projectDir: join(resolve(cwd), projectName),
+      existingPathParam, targetDocPathRaw, modelHeader, bridgeClients,
+    });
+    return;
+  }
+  // ──────────────────────────────────────────────────────────────────
+
   if (!filename || filename.includes("/") || filename.includes("\\") || filename.startsWith(".")) {
     res.statusCode = 400;
     res.setHeader("Content-Type", "application/json");
@@ -1920,59 +1946,34 @@ export function handleMediaIngestRequest(
       return;
     }
 
-    // Determine the current project kind (if any) so the dispatcher can
-    // pick the correct composer. The legacy single-source layout had a
-    // canonical `project.atelier` whose top-level `kind` field told us the
-    // project's kind. Post-pivot (TD-2026-05-27) a project is just a folder
-    // of .atelier docs — there is no single project-level kind. We preserve
-    // backwards-compat for the legacy `project.atelier` AND fall back to
-    // inferring kind from a unique video doc (so audio drops into a project
-    // with one `<slug>.atelier` of kind:"video" still route correctly).
-    const compositionPath = join(projectDir, "project.atelier");
-    let currentProjectKind: ProjectKind | undefined;
-    let audioTargetDocPath: string | undefined;
-    if (existsSync(compositionPath)) {
-      try {
-        const existingDoc = readAtelierDoc(compositionPath);
-        currentProjectKind = existingDoc.kind;
-        if (currentProjectKind === "video") {
-          audioTargetDocPath = "project.atelier";
-        }
-      } catch {
-        currentProjectKind = undefined;
-      }
-    }
-    if (currentProjectKind === undefined) {
-      // Post-pivot fallback: peek at the project's .atelier docs. If exactly
-      // one is kind:"video" we let audio drops route to `add-audio-clip` and
-      // target that doc. Anything else (zero/multiple video docs, or only
-      // image/carousel docs) leaves `currentProjectKind` undefined so the
-      // dispatcher rejects audio with a clear "open a video doc first" hint.
-      const found = findSingleVideoDoc(projectDir);
-      if (found !== null) {
-        currentProjectKind = "video";
-        audioTargetDocPath = found;
-      }
+    // ── v1.0 media-bin pivot (Kit-A) ────────────────────────────────
+    //
+    // Two routing paths post-TD-2026-05-28:
+    //   1. NO-TARGET (`?targetDocPath` absent): file just lands in media/.
+    //      No doc creation. Composition is explicit later via sidebar drag.
+    //      Background transcription kicks off for video/audio.
+    //   2. TARGET-SET (`?targetDocPath=<doc>`): legacy canvas-drop behaviour
+    //      — attach to the loaded doc via compose-video / add-audio-clip.
+
+    if (targetDocPathRaw === null) {
+      handleNoTargetBinAdd({
+        res, projectName, projectDir, filename, destPath,
+        totalBytes, modelHeader, bridgeClients,
+      });
+      return;
     }
 
     // ── Resolve explicit `?targetDocPath=` (canvas-area drop) ───────
     //
     // When the client picked a specific doc, three checks gate dispatch:
     //   1. Path-traversal validation — same rules as elsewhere in the API.
-    //      We re-encode the already-decoded query value before reusing
-    //      `validateProjectRelativeDocPath` so its internal decode is a
-    //      no-op on safe inputs (containment + control-byte rules still
-    //      apply unchanged).
     //   2. The file exists on disk (404 otherwise — a stale doc path).
     //   3. The doc parses and exposes a `kind` — the dispatcher needs it
     //      to encode the explicit-target compatibility matrix.
-    //
-    // When targetDocPath is set, the lenient `findSingleVideoDoc` fallback
-    // is intentionally bypassed: the caller knows which doc they want, so
-    // we route deterministically.
     let resolvedTargetDocPath: string | undefined;
     let resolvedTargetDocKind: ProjectKind | undefined;
-    if (targetDocPathRaw !== null) {
+    let audioTargetDocPath: string | undefined;
+    {
       const v = validateProjectRelativeDocPath(
         encodeURIComponent(targetDocPathRaw),
         projectDir,
@@ -2026,14 +2027,14 @@ export function handleMediaIngestRequest(
         return;
       }
       resolvedTargetDocPath = v.decoded;
-      // Audio-add path uses the explicit target verbatim — overrides the
-      // legacy `findSingleVideoDoc` heuristic.
       audioTargetDocPath = v.decoded;
     }
 
-    const route = resolvedTargetDocPath !== undefined
-      ? routeIngestWithTarget(filename, currentProjectKind, resolvedTargetDocPath, resolvedTargetDocKind)
-      : routeIngest(filename, currentProjectKind);
+    const route = routeIngestWithTarget(
+      filename,
+      resolvedTargetDocPath,
+      resolvedTargetDocKind,
+    );
 
     // ── Reject path ─────────────────────────────────────────────────
     if (route.target === "reject") {
@@ -2086,13 +2087,11 @@ export function handleMediaIngestRequest(
         }
       }
 
-      // Canvas-area drop carries an explicit `targetDocPath` — attach to the
-      // already-loaded video doc instead of scaffolding a new <slug>.atelier.
-      // Falls back to the post-pivot per-source slug for sidebar/page-level
-      // drops (no target) — preserves the "drop anywhere creates a new doc"
-      // behaviour. See #ingest-dispatch.
-      const ingestVideoDocPath = route.docPath
-        ?? computeIngestDocPath(projectDir, filename);
+      // ── v1.0 media-bin pivot (Kit-A) ──
+      // Target-set compose-video always carries `route.docPath` (set by
+      // `routeIngestWithTarget`). The no-target / bin-add path does not
+      // reach this branch.
+      const ingestVideoDocPath = route.docPath ?? resolvedTargetDocPath ?? "project.atelier";
       composeVideoProject({
         projectDir,
         docPath: ingestVideoDocPath,
@@ -2158,56 +2157,10 @@ export function handleMediaIngestRequest(
       return;
     }
 
-    // ── Image path (compose-image, no transcribe) ───────────────────
-    if (route.target === "compose-image") {
-      broadcastIngest(bridgeClients, {
-        type: "media:ingest:progress",
-        projectName,
-        file: filename,
-        phase: "composing",
-      });
-      // Post-pivot: image drag targets `<slug>.atelier` (e.g. `photo.atelier`)
-      // — never `project.atelier`. See #ingest-dispatch.
-      const ingestImageDocPath = computeIngestDocPath(projectDir, filename);
-      composeImageProject({
-        projectDir,
-        docPath: ingestImageDocPath,
-        sourceFile: destPath,
-        mediaBasename: filename,
-      })
-        .then((result) => {
-          broadcastIngest(bridgeClients, {
-            type: "media:ingest:progress",
-            projectName,
-            file: filename,
-            phase: "done",
-          });
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify({
-            ok: true,
-            projectName,
-            file: filename,
-            bytes: totalBytes,
-            kind: "image",
-            addedImageLayer: result.addedImageLayer,
-            layerId: result.layerId,
-          }));
-        })
-        .catch((err: unknown) => {
-          const msg = err instanceof Error ? err.message : String(err);
-          broadcastIngest(bridgeClients, {
-            type: "media:ingest:progress",
-            projectName,
-            file: filename,
-            phase: "error",
-            error: msg,
-          });
-          res.statusCode = 500;
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify({ ok: false, error: msg }));
-        });
-      return;
-    }
+    // ── v1.0 media-bin pivot (Kit-A) ──
+    // (compose-image branch removed — target-set routing never returns
+    // compose-image; image+target always rejects. The bin-add path handles
+    // image drops without doc creation.)
 
     // ── Audio path (add-audio-clip, in-process) ─────────────────────
     if (route.target === "add-audio-clip") {
@@ -2217,12 +2170,11 @@ export function handleMediaIngestRequest(
         file: filename,
         phase: "composing",
       });
-      // Audio path is only reachable when projectKind === "video", which
-      // means a target video doc already exists. Post-pivot we resolved the
-      // target during dispatch (`audioTargetDocPath`) — either the legacy
-      // `project.atelier` OR the unique kind:"video" doc found by
-      // `findSingleVideoDoc`. We trust that here — the dispatcher would have
-      // rejected the upload otherwise.
+      // ── v1.0 media-bin pivot (Kit-A) ──
+      // Audio-add only runs when the caller supplied a target doc that
+      // resolves to kind:"video" — the routing matrix rejects everything
+      // else. `audioTargetDocPath` was populated alongside the target
+      // resolution above.
       const audioDocAbs = join(projectDir, audioTargetDocPath ?? "project.atelier");
       (async () => {
         const doc = readAtelierDoc(audioDocAbs);
@@ -2293,6 +2245,378 @@ export function handleMediaIngestRequest(
     res.end(JSON.stringify({ ok: false, error: `internal: unhandled dispatch target "${String(route.target)}"` }));
   });
 }
+
+// ── v1.0 media-bin pivot (Kit-A) ──────────────────────────────────────
+/**
+ * Handle a no-target ingest: file lands in `media/`, transcription kicks off
+ * for video/audio in the background, no doc creation.
+ *
+ * Post-pivot (TD-2026-05-28): the dispatcher's no-target branch collapses to
+ * a kind classify + bin add. Composition is explicit downstream — `+ new
+ * doc` then sidebar-drag-to-canvas (which hits `?source=existing`).
+ *
+ * Response shape: `{ ok, mediaPath, fileKind, transcribePending }`.
+ */
+function handleNoTargetBinAdd(args: {
+  res: import("node:http").ServerResponse;
+  projectName: string;
+  projectDir: string;
+  filename: string;
+  destPath: string;
+  totalBytes: number;
+  modelHeader: string;
+  bridgeClients: Set<WsWebSocket>;
+}): void {
+  const { res, projectName, projectDir, filename, destPath, totalBytes, modelHeader, bridgeClients } = args;
+  const route = routeIngest(filename);
+  if (route.target === "reject") {
+    try { rmSync(destPath, { force: true }); } catch { /* non-fatal */ }
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "error",
+      error: route.error ?? "ingest rejected",
+    });
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: route.error ?? "ingest rejected" }));
+    return;
+  }
+
+  // File is in media/ — broadcast and (for video/audio) kick off background
+  // transcription. Image drops finish immediately.
+  broadcastIngest(bridgeClients, {
+    type: "media:list:changed",
+    projectName,
+  });
+
+  const fileKind = route.kind as "video" | "image" | "audio";
+  const needsTranscribe = fileKind === "video" || fileKind === "audio";
+  const transcribePending = needsTranscribe;
+
+  if (needsTranscribe) {
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "transcribing",
+    });
+    // Fire-and-forget background transcribe. The HTTP response returns
+    // synchronously below; bridge envelopes carry progress. Idempotent via
+    // transcribeMediaToBin's existing-mirror short-circuit.
+    transcribeMediaToBin(projectDir, filename, {
+      model: modelHeader as never,
+      sourcePath: destPath,
+    })
+      .then(() => {
+        const stem = filename.replace(/\.[^./\\]+$/, "");
+        broadcastIngest(bridgeClients, {
+          type: "transcript:added",
+          projectName,
+          transcriptPath: `${projectName}/transcripts/${stem}.json`,
+        });
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "done",
+        });
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: msg,
+        });
+      });
+  } else {
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "done",
+    });
+  }
+
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({
+    ok: true,
+    projectName,
+    file: filename,
+    bytes: totalBytes,
+    mediaPath: `media/${filename}`,
+    fileKind,
+    transcribePending,
+  }));
+}
+
+/**
+ * Handle a `?source=existing` ingest — the sidebar→canvas drag handoff.
+ *
+ * The file is already in `<projectDir>/<path>` (typically `media/<basename>`).
+ * We skip the upload step entirely, validate the path + the target doc, then
+ * dispatch through `routeIngestWithTarget` so the existing compose paths
+ * (compose-video, add-audio-clip) handle the actual composition.
+ *
+ * Validation:
+ *   - `path` query must satisfy `isValidMediaRefPath` (under media/, no
+ *     traversal, no nulls).
+ *   - The source file must exist on disk (404 otherwise).
+ *   - The target doc path goes through the standard
+ *     `validateProjectRelativeDocPath` + existence + parse checks.
+ *
+ * Notably: NO file cleanup on rejection — the source file already existed in
+ * media/ before this request; we never created it.
+ */
+function handleExistingSourceIngest(args: {
+  req: import("node:http").IncomingMessage;
+  res: import("node:http").ServerResponse;
+  cwd: string;
+  projectName: string;
+  projectDir: string;
+  existingPathParam: string | null;
+  targetDocPathRaw: string | null;
+  modelHeader: string;
+  bridgeClients: Set<WsWebSocket>;
+}): void {
+  const {
+    res, cwd, projectName, projectDir, existingPathParam,
+    targetDocPathRaw, bridgeClients,
+  } = args;
+  void args.req; // body is intentionally unread
+
+  if (!existsSync(resolve(cwd))) {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: `workspace not found: ${cwd}` }));
+    return;
+  }
+  if (!existsSync(projectDir)) {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: `project not found: ${projectName}` }));
+    return;
+  }
+
+  // Path validation — must be a real media-ref ("media/<basename>", no
+  // traversal). The same predicate the sidebar drag payload uses.
+  if (!isValidMediaRefPath(existingPathParam)) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: "invalid path: must be a media/ ref" }));
+    return;
+  }
+  const sourceRel = existingPathParam; // string narrowed by predicate
+  const sourceAbs = join(projectDir, sourceRel);
+  if (!existsSync(sourceAbs)) {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: `media file not found: ${sourceRel}` }));
+    return;
+  }
+
+  // Derive a stable basename for routing + broadcast. We trust the file on
+  // disk; `isValidMediaRefPath` already rejected slashes after the prefix.
+  const filename = sourceRel.slice("media/".length);
+
+  // Target doc path is required for the existing-source path — without it
+  // the operation reduces to "do nothing", which is never what the caller
+  // wanted. Surface the bad request explicitly.
+  if (targetDocPathRaw === null) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: "targetDocPath required for source=existing" }));
+    return;
+  }
+  const v = validateProjectRelativeDocPath(
+    encodeURIComponent(targetDocPathRaw),
+    projectDir,
+  );
+  if (!v.ok) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: v.error }));
+    return;
+  }
+  const targetAbs = join(projectDir, v.decoded);
+  if (!existsSync(targetAbs)) {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: `target doc not found: ${v.decoded}` }));
+    return;
+  }
+  let resolvedTargetDocKind: ProjectKind | undefined;
+  try {
+    const targetDoc = readAtelierDoc(targetAbs);
+    resolvedTargetDocKind = targetDoc.kind;
+  } catch (err) {
+    const errorMsg = `target doc unparseable: ${err instanceof Error ? err.message : String(err)}`;
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: errorMsg }));
+    return;
+  }
+  const resolvedTargetDocPath = v.decoded;
+
+  broadcastIngest(bridgeClients, {
+    type: "media:ingest:progress",
+    projectName,
+    file: filename,
+    phase: "start",
+  });
+
+  const route = routeIngestWithTarget(
+    filename,
+    resolvedTargetDocPath,
+    resolvedTargetDocKind,
+  );
+
+  if (route.target === "reject") {
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "error",
+      error: route.error ?? "ingest rejected",
+    });
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: false, error: route.error ?? "ingest rejected" }));
+    return;
+  }
+
+  if (route.target === "compose-video") {
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "composing",
+    });
+    const docPath = route.docPath ?? resolvedTargetDocPath;
+    composeVideoProject({
+      projectDir,
+      docPath,
+      sourceFile: sourceAbs,
+      mediaBasename: filename,
+      transcribeOptions: { model: args.modelHeader as never, sourcePath: sourceAbs },
+    })
+      .then((result) => {
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "done",
+        });
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({
+          ok: true,
+          projectName,
+          file: filename,
+          mediaPath: sourceRel,
+          kind: "video",
+          addedVideoLayer: result.addedVideoLayer,
+          targetStateName: result.targetStateName,
+          targetDurationSeconds: result.targetDurationSeconds,
+        }));
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: msg,
+        });
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: msg }));
+      });
+    return;
+  }
+
+  if (route.target === "add-audio-clip") {
+    broadcastIngest(bridgeClients, {
+      type: "media:ingest:progress",
+      projectName,
+      file: filename,
+      phase: "composing",
+    });
+    const audioDocAbs = join(projectDir, resolvedTargetDocPath);
+    (async () => {
+      const doc = readAtelierDoc(audioDocAbs);
+      let clipDurationSeconds = 0;
+      try {
+        clipDurationSeconds = await probeDuration(sourceAbs);
+      } catch {
+        clipDurationSeconds = 0;
+      }
+      const fps = doc.canvas.fps;
+      const clipDurationFrames = Math.max(1, Math.round(clipDurationSeconds * fps));
+      const slug = slugifyBasename(filename);
+      if (!slug) throw new Error(`cannot derive a slug from "${filename}"`);
+      const clipLayerId = `aud-${slug}`;
+      let working: AtelierDocument = doc;
+      const ensured = ensureClipLayer(working, {
+        clipLayerId,
+        trackId: AUDIO_TRACK_ID,
+        sourceName: `media/${filename}`,
+        clipDurationSeconds,
+        clipDurationFrames,
+        kind: "audio",
+      });
+      working = recomputeTimeline(ensured.doc);
+      writeFileSync(audioDocAbs, JSON.stringify(working, null, 2), "utf-8");
+      return { addedLayer: ensured.addedLayer, clipLayerId };
+    })()
+      .then((result) => {
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "done",
+        });
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({
+          ok: true,
+          projectName,
+          file: filename,
+          mediaPath: sourceRel,
+          kind: "audio",
+          addedAudioLayer: result.addedLayer,
+          layerId: result.clipLayerId,
+        }));
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        broadcastIngest(bridgeClients, {
+          type: "media:ingest:progress",
+          projectName,
+          file: filename,
+          phase: "error",
+          error: msg,
+        });
+        res.statusCode = 500;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ ok: false, error: msg }));
+      });
+    return;
+  }
+
+  // Defensive: routeIngestWithTarget never returns compose-image under
+  // current v1 rules (image+target always rejects).
+  res.statusCode = 500;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ ok: false, error: `internal: unhandled dispatch target "${String(route.target)}"` }));
+}
+// ──────────────────────────────────────────────────────────────────────
 
 /** Pull a single string header from an IncomingMessage, lowercased lookup. */
 function headerString(

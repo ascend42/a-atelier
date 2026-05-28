@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T04:54:36.696Z'
+generated: '2026-05-28T09:05:04.168Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -4320,6 +4320,56 @@ by_symbol:
     fragility: low
     recent:
       - *ref_54
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#ingest-bin-types':
+    symbol: '#ingest-bin-types'
+    total_changes: 1
+    last_modified: '2026-05-28T09:05:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_55
+        id: h0087
+        ts: '2026-05-28T09:05:03Z'
+        type: implement
+        symbols:
+          - '#ingest-bin-types'
+          - '#timeline-state-types'
+        author:
+          type: human
+          id: ascend
+        commit: 5655e2228974b0ae064a1fd385d1799b575dfd2d
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-090321-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+          - packages/cli/src/lib/ingest-bin-types.test.ts
+          - packages/cli/src/lib/ingest-bin-types.ts
+          - packages/cli/src/web/timeline-state-types.ts
+        description: 'feat(#ingest-bin-types,#timeline-state-types): S0 — shared types for media-bin pivot + bottom timeline UI'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#timeline-state-types':
+    symbol: '#timeline-state-types'
+    total_changes: 1
+    last_modified: '2026-05-28T09:05:03Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_55
     contributors:
       human:
         - ascend

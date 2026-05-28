@@ -28,6 +28,11 @@ import {
   type TranscribeOptions,
   type TranscribeResult,
 } from "../commands/transcribe.js";
+import {
+  probeWhisper,
+  runWhisperCpp,
+  parseWhisperCppJson,
+} from "./whisper.js";
 
 /** Result of `transcribeMediaFile` — extends the base result with the mirror path. */
 export interface TranscribeMediaFileResult extends TranscribeResult {
@@ -143,3 +148,146 @@ function stripExt(name: string): string {
   if (!ext) return name;
   return name.slice(0, -ext.length);
 }
+
+// ── v1.0 media-bin pivot (Kit-A) ──────────────────────────────────────
+/**
+ * Run transcription on a media file in isolation — no doc, no compose.
+ *
+ * Used by the media-bin add path (post-pivot, TD-2026-05-28): when a creator
+ * drops a video into the bin we want the transcript ready by the time they
+ * compose with it.
+ *
+ * Behaviour:
+ *   - Writes `<projectDir>/transcripts/<stem>.json` (canonical per-file
+ *     location matching the existing convention).
+ *   - Does NOT touch project.atelier or any compose target. Pure media-side.
+ *   - Idempotent: if the transcript already exists, no-op (background work
+ *     skips duplicates).
+ *
+ * The legacy `transcribeMediaFile` is left intact for the compose-time path
+ * (`composeVideoProject` still calls it). This function bypasses
+ * `transcribeProject` entirely so we don't trip the root-transcript +
+ * caption-rebuild side effects.
+ */
+export async function transcribeMediaToBin(
+  projectDir: string,
+  mediaBasename: string,
+  options: TranscribeMediaFileOptions = {},
+): Promise<TranscribeMediaFileResult> {
+  const absProject = resolve(projectDir);
+  const stem = stripExt(basename(mediaBasename));
+  if (!stem) {
+    throw new Error(
+      `transcribeMediaToBin: invalid mediaBasename "${mediaBasename}" — derived stem is empty`,
+    );
+  }
+
+  const transcriptsDir = join(absProject, "transcripts");
+  const mirroredTranscriptPath = join(transcriptsDir, `${stem}.json`);
+
+  // Idempotency guard — background workers running multiple times for the
+  // same media file must no-op once the transcript exists.
+  if (existsSync(mirroredTranscriptPath)) {
+    let cached: unknown = null;
+    try {
+      cached = JSON.parse(readFileSync(mirroredTranscriptPath, "utf-8"));
+    } catch {
+      cached = null;
+    }
+    return {
+      projectDir: absProject,
+      backend: "cached",
+      transcript: cached as never,
+      wordCount: 0,
+      captionsGenerated: false,
+      mirroredTranscriptPath,
+      mediaStem: stem,
+    };
+  }
+
+  const { transcribeFn, dryRun, model, modelPath, language, sourcePath } = options;
+  const mediaPath = sourcePath ?? join(absProject, "media", mediaBasename);
+
+  // Test injection: when a stub `transcribeFn` is supplied, reuse it so unit
+  // tests don't need a real whisper binary. The stub's result shape matches
+  // production runWhisperCpp + parseWhisperCppJson once we mirror it.
+  if (transcribeFn) {
+    const result = await transcribeFn(absProject, { dryRun, model, modelPath, language, sourcePath: mediaPath });
+    if (dryRun) {
+      return {
+        ...result,
+        mirroredTranscriptPath,
+        mediaStem: stem,
+      };
+    }
+    // The stub may have written transcript.json to satisfy
+    // transcribeProject's legacy contract — for the bin path we MUST NOT keep
+    // it around. Mirror it (if present) then remove.
+    const rootTranscript = join(absProject, "transcript.json");
+    if (existsSync(rootTranscript)) {
+      if (!existsSync(transcriptsDir)) {
+        mkdirSync(transcriptsDir, { recursive: true });
+      }
+      copyFileSync(rootTranscript, mirroredTranscriptPath);
+      try { rmSync(rootTranscript); } catch { /* swallow */ }
+    } else {
+      // No legacy artifact — write the transcript object directly. Stubs that
+      // skip the root-write path still need the mirror produced.
+      if (!existsSync(transcriptsDir)) {
+        mkdirSync(transcriptsDir, { recursive: true });
+      }
+      writeFileSync(
+        mirroredTranscriptPath,
+        JSON.stringify(result.transcript ?? {}, null, 2),
+        "utf-8",
+      );
+    }
+    return {
+      ...result,
+      mirroredTranscriptPath,
+      mediaStem: stem,
+    };
+  }
+
+  // Production path: probe whisper, run it directly, parse, write mirror.
+  // We bypass transcribeProject entirely so neither root transcript.json nor
+  // project.atelier are touched.
+  const backend = await probeWhisper();
+  if (backend === "none") {
+    throw new Error(
+      "No Whisper backend available. Install whisper.cpp (brew install whisper-cpp).",
+    );
+  }
+  if (backend === "openai-api") {
+    throw new Error(
+      "OpenAI API backend is not yet implemented for bin-side transcription.",
+    );
+  }
+
+  const rawJson = await runWhisperCpp(mediaPath, {
+    model,
+    modelPath,
+    language,
+  });
+  const transcript = parseWhisperCppJson(rawJson);
+  const wordCount = transcript.segments.reduce((n, s) => n + s.words.length, 0);
+
+  const result: TranscribeMediaFileResult = {
+    projectDir: absProject,
+    backend,
+    transcript,
+    wordCount,
+    captionsGenerated: false,
+    mirroredTranscriptPath,
+    mediaStem: stem,
+  };
+
+  if (dryRun) return result;
+
+  if (!existsSync(transcriptsDir)) {
+    mkdirSync(transcriptsDir, { recursive: true });
+  }
+  writeFileSync(mirroredTranscriptPath, JSON.stringify(transcript, null, 2), "utf-8");
+  return result;
+}
+// ──────────────────────────────────────────────────────────────────────

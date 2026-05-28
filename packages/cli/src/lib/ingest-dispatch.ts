@@ -1,32 +1,33 @@
-// #ingest-dispatch — classify drag-drop media + route to the right composer.
+// #ingest-dispatch — classify drag-drop media + route to the right destination.
 //
 // The studio HTTP server accepts an arbitrary file via `POST /api/media/ingest`
-// (see #studio). Before slice B3 every upload went straight to
-// `composeVideoProject`, which is wrong for images and audio. This module is
-// the kind-aware dispatcher that decides, given (filename, currentProjectKind),
-// which composer to invoke — or whether to reject the upload outright.
+// (see #studio). Two routing pathways live here:
+//
+// ── v1.0 media-bin pivot (Kit-A) ──────────────────────────────────────
+// `routeIngest(filename)` — NO TARGET path. Post-pivot (TD-2026-05-28) a drop
+// onto the sidebar / page level NO LONGER auto-creates a doc. Files land in
+// `media/` only; composition is explicit (`+ new doc` then sidebar-drag-to-
+// canvas). The dispatcher collapses to a 4-cell truth table:
+//
+//   file kind     →  target
+//   ──────────────────────────────
+//   video         →  add-to-bin
+//   image         →  add-to-bin
+//   audio         →  add-to-bin
+//   unsupported   →  reject
+//
+// Project kind no longer matters for the no-target ingest — the file is the
+// file. Composition decisions happen later via the canvas-area drop (which is
+// the target-set path below).
+// ──────────────────────────────────────────────────────────────────────
+//
+// `routeIngestWithTarget(filename, targetDocPath, targetDocKind)` — TARGET-SET
+// path. The browser canvas drop carries the loaded doc's path; routing is
+// then governed by the TARGET doc's kind. Unchanged by the pivot — this is
+// where actual composition happens.
 //
 // Pure / synchronous / no fs — the caller wires the routing decision to its
-// own composer calls and broadcast envelopes. Keeping the routing matrix in a
-// pure helper makes it cheap to test the full 12-cell truth table without
-// standing up the HTTP server.
-//
-// Routing matrix (see ingest-dispatch.test.ts for the table-driven tests):
-//
-//   file kind   project kind  →  target
-//   ───────────────────────────────────
-//   video       video/undef   →  compose-video
-//   video       image         →  reject
-//   video       carousel      →  reject
-//   image       video         →  reject
-//   image       image         →  reject
-//   image       carousel      →  reject
-//   image       undefined     →  compose-image
-//   audio       video         →  add-audio-clip
-//   audio       image         →  reject
-//   audio       carousel      →  reject
-//   audio       undefined     →  reject
-//   unsupported *             →  reject
+// own composer calls and broadcast envelopes.
 
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
@@ -36,7 +37,26 @@ import { readAtelierDoc, slugifyBasename } from "./compose-video-project.js";
 /** Classification result for a media filename. */
 export type IngestKind = "video" | "image" | "audio" | "unsupported";
 
-/** Routing decision produced by `routeIngest`. */
+/**
+ * Routing decision for a no-target ingest (file lands in the media bin).
+ *
+ * Post-pivot (TD-2026-05-28): either the file is a supported media kind and
+ * goes to `add-to-bin`, or it's unsupported and we reject. Project kind no
+ * longer factors in — composition is a separate, explicit step.
+ */
+export interface BinIngestRoute {
+  kind: IngestKind;
+  target: "add-to-bin" | "reject";
+  /** When target === "reject", the human-readable reason. */
+  error?: string;
+}
+
+/**
+ * Routing decision for an explicit-target ingest (canvas-area drop).
+ *
+ * The target-set path still uses the legacy four-way target enum since it
+ * really does dispatch to compose-video / add-audio-clip / etc.
+ */
 export interface IngestRoute {
   kind: IngestKind;
   target: "compose-video" | "compose-image" | "add-audio-clip" | "reject";
@@ -46,10 +66,7 @@ export interface IngestRoute {
    * When set, the project-relative `.atelier` doc path the route resolved
    * to. Populated by `routeIngestWithTarget` for explicit canvas drops so the
    * server-side handler can pass it straight to the composer / audio-add path
-   * without re-deriving via `computeIngestDocPath` or `findSingleVideoDoc`.
-   *
-   * Always undefined for the free `routeIngest` (no target) — that path keeps
-   * the legacy "scaffold a fresh <slug>.atelier" semantics.
+   * without re-deriving.
    */
   docPath?: string;
 }
@@ -73,96 +90,25 @@ export function classifyMediaFile(filename: string): IngestKind {
   return "unsupported";
 }
 
+// ── v1.0 media-bin pivot (Kit-A) ──────────────────────────────────────
 /**
- * Decide which composer (if any) should handle a drag-drop upload.
+ * Route a no-target ingest into the project's media bin.
  *
- * `projectKind === undefined` means "no project.atelier exists yet — the
- * caller should scaffold a fresh project of the appropriate kind." Only
- * video+undefined and image+undefined are valid scaffold-on-ingest paths;
- * audio cannot establish a project on its own because it has no visual.
+ * Post-pivot (TD-2026-05-28) the no-target path doesn't care about project
+ * kind — supported media always goes to `add-to-bin`, unsupported types are
+ * rejected. Composition is a separate explicit step downstream.
+ *
+ * Mirrors `classifyMediaFile` for the kind detection; the routing decision is
+ * a pure function of the filename.
  */
-export function routeIngest(
-  filename: string,
-  projectKind: ProjectKind | undefined,
-): IngestRoute {
+export function routeIngest(filename: string): BinIngestRoute {
   const kind = classifyMediaFile(filename);
-
   if (kind === "unsupported") {
     return { kind, target: "reject", error: "file type not supported" };
   }
-
-  if (kind === "video") {
-    if (projectKind === undefined || projectKind === "video") {
-      return { kind, target: "compose-video" };
-    }
-    if (projectKind === "image") {
-      return {
-        kind,
-        target: "reject",
-        error: "image projects are single-image; create a carousel to combine",
-      };
-    }
-    // carousel
-    return {
-      kind,
-      target: "reject",
-      error: "carousel slides are added via the slides API, not drag-drop",
-    };
-  }
-
-  if (kind === "image") {
-    if (projectKind === undefined) {
-      return { kind, target: "compose-image" };
-    }
-    if (projectKind === "video") {
-      return {
-        kind,
-        target: "reject",
-        error: "image drag-drop into video projects not supported in v1",
-      };
-    }
-    if (projectKind === "image") {
-      return {
-        kind,
-        target: "reject",
-        error:
-          "image project already has its image; use rename or delete first",
-      };
-    }
-    // carousel
-    return {
-      kind,
-      target: "reject",
-      error: "carousel slides are added via the slides API, not drag-drop",
-    };
-  }
-
-  // audio
-  if (projectKind === "video") {
-    return { kind, target: "add-audio-clip" };
-  }
-  if (projectKind === "image") {
-    return {
-      kind,
-      target: "reject",
-      error: "cannot add audio to image project",
-    };
-  }
-  if (projectKind === "carousel") {
-    return {
-      kind,
-      target: "reject",
-      error: "cannot add audio to carousel project directly",
-    };
-  }
-  // undefined
-  return {
-    kind,
-    target: "reject",
-    error:
-      "audio cannot create a project; drag audio into an existing video project",
-  };
+  return { kind, target: "add-to-bin" };
 }
+// ──────────────────────────────────────────────────────────────────────
 
 /**
  * Routing matrix for explicit "add to this specific doc" drops (canvas-area
@@ -186,15 +132,9 @@ export function routeIngest(
  */
 export function routeIngestWithTarget(
   filename: string,
-  projectKind: ProjectKind | undefined,
-  targetDocPath: string | undefined,
+  targetDocPath: string,
   targetDocKind: ProjectKind | undefined,
 ): IngestRoute {
-  // Fall through to the no-target routing when the caller didn't pick a doc.
-  if (targetDocPath === undefined) {
-    return routeIngest(filename, projectKind);
-  }
-
   const kind = classifyMediaFile(filename);
 
   if (kind === "unsupported") {
