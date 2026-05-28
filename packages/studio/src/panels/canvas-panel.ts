@@ -180,14 +180,22 @@ export class CanvasPanel {
     this.scrubber.addEventListener("mousedown", () => {
       wasPlaying = this.player?.isPlaying ?? false;
       this.player?.pause();
+      // Drop the provider into seek-mode + mute so the scrub paints
+      // crisp seeked frames instead of fighting native playback.
+      this.videoProvider.setPlaying(false);
       this.updatePlayBtn();
     });
     this.scrubber.addEventListener("input", () => {
       this.player?.seek(Number(this.scrubber.value));
     });
     this.scrubber.addEventListener("mouseup", () => {
-      if (wasPlaying) {
-        this.player?.play();
+      if (wasPlaying && this.player) {
+        // Anchor the video to the player's scrubbed frame BEFORE flipping
+        // back to native playback — otherwise video.play() resumes from
+        // the last seeked target, ignoring where the scrubber landed.
+        this.syncVideoLayersToFrame(this.player.frame);
+        this.player.play();
+        this.videoProvider.setPlaying(true);
         this.updatePlayBtn();
       }
     });
@@ -236,6 +244,13 @@ export class CanvasPanel {
     this.renderAt(0);
     if (this.opts.autoplay) {
       this.player.play();
+      // Mirror togglePlay() — flip the provider into native-decode mode so
+      // autoplay flows (showcase) get smooth video + audio too. Note that
+      // unmuted autoplay without a user gesture will be silently rejected
+      // by Chrome's autoplay policy and the provider's catch will fall
+      // back to muted playback — visuals still advance.
+      this.videoProvider.setPlaying(true);
+      this.syncVideoLayersToFrame(0);
     }
     this.updatePlayBtn();
   }
@@ -276,7 +291,18 @@ export class CanvasPanel {
   }
 
   togglePlay(): void {
-    this.player?.toggle();
+    if (!this.player) return;
+    this.player.toggle();
+    // Hand the play/pause state to the video provider so it can switch
+    // between native-decode-driven playback (smooth + audio) and
+    // seek-on-divergence scrubbing. Must run AFTER player.toggle so we
+    // pick up the new state. This is also the user-gesture entry point \u2014
+    // Chrome's autoplay policy permits unmuted video.play() because the
+    // call stack originates from a click/keypress.
+    this.videoProvider.setPlaying(this.player.isPlaying);
+    // Sync the video to the player's current frame so playback resumes
+    // at the right position (not wherever video.currentTime happened to be).
+    if (this.player.isPlaying) this.syncVideoLayersToFrame(this.player.frame);
     this.updatePlayBtn();
   }
 
@@ -302,7 +328,34 @@ export class CanvasPanel {
 
   pause(): void {
     this.player?.pause();
+    // Flip the provider back to seek-mode + mute so audio stops the moment
+    // playback ends, not whenever the next render tick lands.
+    this.videoProvider.setPlaying(false);
     this.updatePlayBtn();
+  }
+
+  /**
+   * Push the player's current frame into every VideoVisual layer's underlying
+   * <video> element. Used at play-resume and at scrubber-mouseup to anchor
+   * native playback to the doc-intended sourceTime \u2014 otherwise pressing Play
+   * after scrubbing would resume from wherever video.currentTime happened to
+   * be when paused (often the LAST seeked target, which lags the scrub).
+   */
+  private syncVideoLayersToFrame(frame: number): void {
+    if (!this.doc) return;
+    const fps = this.doc.canvas.fps;
+    for (const layer of this.doc.layers) {
+      if (layer.visual.type !== "video") continue;
+      const v = layer.visual;
+      const startFrame = v.startFrame ?? 0;
+      const sourceOffset = v.sourceOffset ?? 0;
+      const playbackRate = v.playbackRate ?? 1.0;
+      const relFrame = Math.max(0, frame - startFrame);
+      let sourceTime = (relFrame / fps) * playbackRate + sourceOffset;
+      if (v.sourceEnd !== undefined) sourceTime = Math.min(sourceTime, v.sourceEnd);
+      const src = v.src ?? (v.assetId && this.doc.assets?.[v.assetId]?.src) ?? null;
+      if (src) this.videoProvider.syncTo(src, sourceTime);
+    }
   }
 
   destroy(): void {

@@ -6,14 +6,27 @@
  * renderer. The export pipeline uses a Mediabunny/WebCodecs-backed provider
  * for deterministic frame extraction; this one is the live editor's pair.
  *
+ * TWO MODES — controlled by `setPlaying()`:
+ *
+ *   PAUSED / SCRUBBING (default): seek-on-divergence. When the requested
+ *     sourceTime moves beyond SEEK_EPSILON_S from the last asked-for time,
+ *     issue `currentTime = sourceTime` and return null. The async `seeked`
+ *     event fires `onReady` so canvas-panel re-paints with the freshly
+ *     decoded frame. Without this, drawing a scrub would smear stale pixels.
+ *
+ *   PLAYING: native `video.play()` drives frame advance. Per-tick seeks are
+ *     SKIPPED entirely — drawImage always grabs whatever frame the video has
+ *     currently decoded. This is the only sustainable way to do 30fps video
+ *     in a canvas; per-frame seeks at 30fps would race the seeked-event
+ *     callback against the next tick (~33ms), producing the choppy
+ *     "few-frames-then-skip" pattern owner saw before this lived. Audio plays
+ *     unmuted in this mode — Play is a user gesture so Chrome permits it.
+ *
  * Why a class (not a stateless function):
  *   - We must reuse the same HTMLVideoElement per src across calls; creating
  *     one per render tick would re-download the file every paint.
- *   - We need to debounce `currentTime` seeks — Canvas2D's `drawImage` of a
- *     <video> draws the LAST seeked frame, so naive every-tick seeks leave
- *     drawImage drawing stale pixels until the asynchronous `seeked` event
- *     resolves. We hold the request, seek, return null, and notify the
- *     canvas-panel via `onReady` when the new frame is actually decoded.
+ *   - We need to debounce `currentTime` seeks during scrubbing.
+ *   - We need to flip between play/pause/seek modes coherently.
  *
  * Threshold tuning:
  *   - 16ms (≈ one frame at 60fps) is the "close enough" window for skipping a
@@ -82,15 +95,81 @@ export interface BrowserVideoFrameProviderOptions {
  */
 const SEEK_EPSILON_S = 0.016;
 
+/**
+ * Drift tolerance for play-mode sync. If the requested sourceTime differs
+ * from the video's actual currentTime by more than this, we issue a one-shot
+ * sync seek to re-anchor (e.g. after a loop wrap, or when the player and
+ * video clock drift over a long playback). Set generously (250ms) so normal
+ * decode lag never triggers a thrash — only real loss-of-sync events.
+ */
+const PLAY_SYNC_TOLERANCE_S = 0.25;
+
 export class BrowserVideoFrameProvider {
   private srcResolver: (src: string) => string;
   private onReady: (() => void) | undefined;
   /** Per-provider listener registrations so dispose() can detach cleanly. */
   private listeners: Array<{ video: HTMLVideoElement; handler: () => void }> = [];
+  /** Mode flag — switched by setPlaying(). See top-of-file mode docs. */
+  private playing = false;
 
   constructor(opts: BrowserVideoFrameProviderOptions = {}) {
     this.srcResolver = opts.srcResolver ?? ((s) => s);
     this.onReady = opts.onReady;
+  }
+
+  /**
+   * Toggle between PAUSED/SCRUBBING and PLAYING mode.
+   *
+   *   true  → unmute every cached video, call video.play() so native decode
+   *           drives frame advance, set video.loop=true so a Player-side loop
+   *           doesn't desync (both Player.frame and video.currentTime wrap
+   *           independently to 0). Per-tick seeks in get() are bypassed.
+   *
+   *   false → video.pause() on every cached video and re-mute. Per-tick seeks
+   *           resume so scrubbing the timeline feels live.
+   *
+   * Must be called from a user-gesture handler the first time (e.g. inside
+   * the Play button's click handler) — otherwise Chrome's autoplay policy
+   * silently rejects the play() call for unmuted audio. CanvasPanel wires
+   * this from its `playBtn.click` listener and from `Space` keypress.
+   */
+  setPlaying(playing: boolean): void {
+    if (this.playing === playing) return;
+    this.playing = playing;
+    for (const entry of VIDEO_CACHE.values()) {
+      if (playing) {
+        entry.video.muted = false;
+        entry.video.loop = true;
+        // play() returns a Promise that may reject if autoplay is blocked.
+        // Catch and re-mute so we don't crash; the user can re-press Play
+        // after granting permission. Without the catch, an unhandled
+        // promise rejection bubbles into the console as a red error.
+        void entry.video.play().catch(() => {
+          entry.video.muted = true;
+          // Retry muted — at least the visuals will advance even if audio
+          // permission was denied. Better than a frozen first frame.
+          void entry.video.play().catch(() => { /* give up silently */ });
+        });
+      } else {
+        entry.video.pause();
+        entry.video.muted = true;
+      }
+    }
+  }
+
+  /**
+   * Explicit one-shot sync — used by canvas-panel when the Player wraps to
+   * a new frame (e.g. seek during pause, or loop wrap from end-of-clip back
+   * to 0). Aligns the video's currentTime to the new sourceTime so the next
+   * native-decoded frame matches the composition's intent.
+   */
+  syncTo(src: string, sourceTime: number): void {
+    const resolved = this.srcResolver(src);
+    const entry = VIDEO_CACHE.get(resolved);
+    if (!entry || !entry.ready) return;
+    if (Math.abs(entry.video.currentTime - sourceTime) <= SEEK_EPSILON_S) return;
+    entry.requestedTime = sourceTime;
+    try { entry.video.currentTime = sourceTime; } catch { /* swallow OOB */ }
   }
 
   /**
@@ -110,10 +189,25 @@ export class BrowserVideoFrameProvider {
     this.attachListeners(entry.video);
     if (!entry.ready) return null;
 
-    // Clamp + seek if the requested time moved beyond the epsilon window. We
-    // compare against requestedTime (what we LAST asked for), not the video's
-    // own currentTime — the latter may not have caught up if a seek is still
-    // in flight, and we'd spuriously re-issue the same seek.
+    // PLAYING mode: trust native decode. Only issue a sync seek when drift
+    // exceeds PLAY_SYNC_TOLERANCE_S (a Player-side seek, loop wrap, or long
+    // playback drift). Otherwise return the video — drawImage paints whatever
+    // frame is currently decoded. This is the only way to get smooth 30fps
+    // playback; per-tick seeks fight the seeked-event callback and produce
+    // the visible "few frames then skip" chop.
+    if (this.playing) {
+      if (Math.abs(entry.video.currentTime - sourceTime) > PLAY_SYNC_TOLERANCE_S) {
+        entry.requestedTime = sourceTime;
+        try { entry.video.currentTime = sourceTime; } catch { /* swallow OOB */ }
+      }
+      return entry.video;
+    }
+
+    // PAUSED / SCRUBBING: clamp + seek if the requested time moved beyond the
+    // epsilon window. We compare against requestedTime (what we LAST asked
+    // for), not the video's own currentTime — the latter may not have caught
+    // up if a seek is still in flight, and we'd spuriously re-issue the same
+    // seek.
     if (Math.abs(sourceTime - entry.requestedTime) > SEEK_EPSILON_S) {
       entry.requestedTime = sourceTime;
       try {
@@ -134,9 +228,17 @@ export class BrowserVideoFrameProvider {
    * video elements themselves stay alive in VIDEO_CACHE for the next
    * provider to reuse — that's the whole point of module-level caching.
    * If you genuinely need to free a specific video (e.g. media was deleted),
-   * see `evictFromCache` below.
+   * see `evictFromCache` below. Also pauses any playing videos so a stale
+   * provider doesn't leave audio running into a destroyed canvas-panel.
    */
   dispose(): void {
+    if (this.playing) {
+      for (const entry of VIDEO_CACHE.values()) {
+        entry.video.pause();
+        entry.video.muted = true;
+      }
+      this.playing = false;
+    }
     for (const { video, handler } of this.listeners) {
       video.removeEventListener("loadeddata", handler);
       video.removeEventListener("seeked", handler);
