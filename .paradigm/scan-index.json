@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-28T10:46:32.535Z",
+    "generatedAt": "2026-05-28T11:43:17.004Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 14,
@@ -861,94 +861,6 @@
       "visualTags": [],
       "related": []
     },
-    "#lottie-exporter": {
-      "id": "#lottie-exporter",
-      "name": "#lottie Exporter",
-      "symbol": "##lottie-exporter",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-layers",
-        "#lottie-warnings"
-      ]
-    },
-    "#lottie-types": {
-      "id": "#lottie-types",
-      "name": "#lottie Types",
-      "symbol": "##lottie-types",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-layers": {
-      "id": "#lottie-map-layers",
-      "name": "#lottie Map Layers",
-      "symbol": "##lottie-map-layers",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
-      "visualTags": [],
-      "related": [
-        "#lottie-map-shapes",
-        "#lottie-map-keyframes",
-        "#lottie-map-colors",
-        "#lottie-map-easing"
-      ]
-    },
-    "#lottie-map-shapes": {
-      "id": "#lottie-map-shapes",
-      "name": "#lottie Map Shapes",
-      "symbol": "##lottie-map-shapes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-keyframes": {
-      "id": "#lottie-map-keyframes",
-      "name": "#lottie Map Keyframes",
-      "symbol": "##lottie-map-keyframes",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-colors": {
-      "id": "#lottie-map-colors",
-      "name": "#lottie Map Colors",
-      "symbol": "##lottie-map-colors",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-map-easing": {
-      "id": "#lottie-map-easing",
-      "name": "#lottie Map Easing",
-      "symbol": "##lottie-map-easing",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
-      "visualTags": [],
-      "related": []
-    },
-    "#lottie-warnings": {
-      "id": "#lottie-warnings",
-      "name": "#lottie Warnings",
-      "symbol": "##lottie-warnings",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
-      "visualTags": [],
-      "related": []
-    },
     "mcp-store": {
       "id": "mcp-store",
       "name": "Mcp Store",
@@ -1344,6 +1256,94 @@
         "~no-manifest-doc"
       ]
     },
+    "#lottie-exporter": {
+      "id": "#lottie-exporter",
+      "name": "#lottie Exporter",
+      "symbol": "##lottie-exporter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "exportToLottie — main entry point, converts AtelierDocument to Lottie JSON with warnings",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-layers",
+        "#lottie-warnings"
+      ]
+    },
+    "#lottie-types": {
+      "id": "#lottie-types",
+      "name": "#lottie Types",
+      "symbol": "##lottie-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieAnimation, LottieLayer, LottieTransform, LottieKeyframe — TypeScript interfaces for Lottie JSON format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-layers": {
+      "id": "#lottie-map-layers",
+      "name": "#lottie Map Layers",
+      "symbol": "##lottie-map-layers",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapLayers — converts Atelier layers to Lottie layers with transforms, text, images, blend modes, parenting",
+      "visualTags": [],
+      "related": [
+        "#lottie-map-shapes",
+        "#lottie-map-keyframes",
+        "#lottie-map-colors",
+        "#lottie-map-easing"
+      ]
+    },
+    "#lottie-map-shapes": {
+      "id": "#lottie-map-shapes",
+      "name": "#lottie Map Shapes",
+      "symbol": "##lottie-map-shapes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapShapeVisual — converts shape visuals (rect, ellipse, path) to Lottie shape items with fills and strokes",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-keyframes": {
+      "id": "#lottie-map-keyframes",
+      "name": "#lottie Map Keyframes",
+      "symbol": "##lottie-map-keyframes",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapDeltasToAnimated, mapPositionDeltas — converts Atelier deltas to Lottie animated values",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-colors": {
+      "id": "#lottie-map-colors",
+      "name": "#lottie Map Colors",
+      "symbol": "##lottie-map-colors",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "colorToLottie — converts hex, RGBA, HSLA colors to Lottie normalized [r,g,b,a] format",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-map-easing": {
+      "id": "#lottie-map-easing",
+      "name": "#lottie Map Easing",
+      "symbol": "##lottie-map-easing",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapEasing, isLossyEasing — converts Atelier easing to Lottie bezier curves, flags lossy conversions",
+      "visualTags": [],
+      "related": []
+    },
+    "#lottie-warnings": {
+      "id": "#lottie-warnings",
+      "name": "#lottie Warnings",
+      "symbol": "##lottie-warnings",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "collectUnsupportedWarnings — scans for unsupported Lottie features and generates user-facing warnings",
+      "visualTags": [],
+      "related": []
+    },
     "#frame-resolver": {
       "id": "#frame-resolver",
       "name": "#frame Resolver",
@@ -1451,6 +1451,72 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
       "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
+      "visualTags": [],
+      "related": []
+    },
+    "render-frame": {
+      "id": "render-frame",
+      "name": "Render Frame",
+      "symbol": "#render-frame",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer",
+      "visualTags": [],
+      "related": [
+        "#frame-resolver",
+        "#apply-properties",
+        "#shape-renderer",
+        "#text-renderer",
+        "#video-renderer"
+      ]
+    },
+    "shape-renderer": {
+      "id": "shape-renderer",
+      "name": "Shape Renderer",
+      "symbol": "#shape-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
+      "visualTags": [],
+      "related": []
+    },
+    "text-renderer": {
+      "id": "text-renderer",
+      "name": "Text Renderer",
+      "symbol": "#text-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders text layers with font building, fill color, and alignment",
+      "visualTags": [],
+      "related": []
+    },
+    "video-renderer": {
+      "id": "video-renderer",
+      "name": "Video Renderer",
+      "symbol": "#video-renderer",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)",
+      "visualTags": [],
+      "related": []
+    },
+    "apply-properties": {
+      "id": "apply-properties",
+      "name": "Apply Properties",
+      "symbol": "#apply-properties",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
+      "visualTags": [],
+      "related": []
+    },
+    "canvas-styles": {
+      "id": "canvas-styles",
+      "name": "Canvas Styles",
+      "symbol": "#canvas-styles",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
       "visualTags": [],
       "related": []
     },
@@ -2127,72 +2193,6 @@
         "^valid-doc-name"
       ]
     },
-    "render-frame": {
-      "id": "render-frame",
-      "name": "Render Frame",
-      "symbol": "#render-frame",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Main entry — clears canvas, iterates layers (painters algorithm), applies transform stack, dispatches to renderers; tracks videoSourceTime per layer",
-      "visualTags": [],
-      "related": [
-        "#frame-resolver",
-        "#apply-properties",
-        "#shape-renderer",
-        "#text-renderer",
-        "#video-renderer"
-      ]
-    },
-    "shape-renderer": {
-      "id": "shape-renderer",
-      "name": "Shape Renderer",
-      "symbol": "#shape-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders rect (with cornerRadius/roundRect), ellipse, and path (with bezier curves) shapes; includes perimeter calculations for stroke trim",
-      "visualTags": [],
-      "related": []
-    },
-    "text-renderer": {
-      "id": "text-renderer",
-      "name": "Text Renderer",
-      "symbol": "#text-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders text layers with font building, fill color, and alignment",
-      "visualTags": [],
-      "related": []
-    },
-    "video-renderer": {
-      "id": "video-renderer",
-      "name": "Video Renderer",
-      "symbol": "#video-renderer",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renders video layers via injected VideoFrameProvider — returns without drawing if provider returns null (caller retries)",
-      "visualTags": [],
-      "related": []
-    },
-    "apply-properties": {
-      "id": "apply-properties",
-      "name": "Apply Properties",
-      "symbol": "#apply-properties",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Merges computed animation properties over layer defaults, resolves percentage units to pixels",
-      "visualTags": [],
-      "related": []
-    },
-    "canvas-styles": {
-      "id": "canvas-styles",
-      "name": "Canvas Styles",
-      "symbol": "#canvas-styles",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
-      "visualTags": [],
-      "related": []
-    },
     "svg-shapes": {
       "id": "svg-shapes",
       "name": "Svg Shapes",
@@ -2265,6 +2265,18 @@
         "#svg-renderer"
       ]
     },
+    "rename-media": {
+      "id": "rename-media",
+      "name": "Rename Media",
+      "symbol": "#rename-media",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-rename-media",
+      "visualTags": [],
+      "related": [
+        "#mcp-tool-rename-media"
+      ]
+    },
     "lottie-map-layers": {
       "id": "lottie-map-layers",
       "name": "Lottie Map Layers",
@@ -2333,16 +2345,16 @@
         "#lottie-map-layers"
       ]
     },
-    "rename-media": {
-      "id": "rename-media",
-      "name": "Rename Media",
-      "symbol": "#rename-media",
+    "frame-resolver": {
+      "id": "frame-resolver",
+      "name": "Frame Resolver",
+      "symbol": "#frame-resolver",
       "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Referenced from #mcp-tool-rename-media",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Referenced from #render-frame",
       "visualTags": [],
       "related": [
-        "#mcp-tool-rename-media"
+        "#render-frame"
       ]
     },
     "render-image": {
@@ -2526,18 +2538,6 @@
         "button"
       ],
       "related": []
-    },
-    "frame-resolver": {
-      "id": "frame-resolver",
-      "name": "Frame Resolver",
-      "symbol": "#frame-resolver",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Referenced from #render-frame",
-      "visualTags": [],
-      "related": [
-        "#render-frame"
-      ]
     }
   },
   "features": {},
@@ -3817,7 +3817,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "applyMutation sets suppressNotify=true then clears it on the NEXT microtask via queueMicrotask, so the panel re-renders it triggers do not echo back to opts.onDocumentChange. The window is exactly one task: any human edit after the microtask drains resumes normal notification. This is what stops an LLM op from round-tripping through the file-save loop and re-entering the WS bridge as a \"human\" edit (feedback loop).",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "apply-mutation-preserves-state-and-selection": {
       "id": "apply-mutation-preserves-state-and-selection",
@@ -3826,7 +3828,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Unlike loadDocument (which resets to the first state and clears selection), applyMutation keeps the current stateName and selectedLayerId when they still exist in the replacement doc, only falling back to first-state / no-selection when the prior value was deleted. This prevents the editor from teleporting on every LLM op while the human is mid-edit.",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "llm-op-is-undoable": {
       "id": "llm-op-is-undoable",
@@ -3835,7 +3839,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "applyMutation snapshots the pre-mutation lastSnapshot onto history BEFORE replacing the doc, so an LLM-driven change is a single Cmd-Z away for the human at the keyboard. It deliberately preserves history and originalDoc (loadDocument clears both), keeping the undo timeline continuous across remote ops.",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "keyboard-shortcut-input-passthrough": {
       "id": "keyboard-shortcut-input-passthrough",
@@ -3844,7 +3850,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "handleKeydown lets Cmd/Ctrl-Z and Cmd/Ctrl-Shift-Z through ALWAYS (even while typing in an input), but returns early for Space/arrows/Delete/Backspace when the event target is an input, textarea, or select — so typing a space or deleting text in a field never toggles playback or deletes the selected layer. Order matters: the undo/redo check precedes the input-guard.",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "preview-vs-commit-render-split": {
       "id": "preview-vs-commit-render-split",
@@ -3853,7 +3861,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "previewDocChange re-renders the canvas ONLY — it skips history.snapshot/lastSnapshot, the layer+yaml panel refresh, and the host onDocumentChange notification, and short-circuits entirely when suppressNotify is set. The committing onDocChange is the one path that records history and notifies the host exactly once, so a 60Hz slider drag collapses into a single undo entry and a single save.",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "undo-redo-preserves-state": {
       "id": "undo-redo-preserves-state",
@@ -3862,7 +3872,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "reloadPanels (the shared undo/redo + state-switch path) keeps the currently-selected stateName across Cmd-Z/Cmd-Shift-Z when that state still exists in the restored doc, only falling back to the first state when the action being undone deleted it — otherwise editing \"hover\" and hitting undo would snap the editor back to \"default\". It also resyncs the toolbar state selector.",
-      "related": []
+      "related": [
+        "#atelier-studio"
+      ]
     },
     "player-loop-and-clamp": {
       "id": "player-loop-and-clamp",
@@ -3880,7 +3892,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "CanvasPanel uses ResizeObserver on this.el (the outer panel) — NOT this.canvas.parentElement (which is .atel-canvas-wrap, flex-shrink:0 and shrink-fits the canvas, so observing it would either be a no-op or a feedback loop). applyLetterboxFit subtracts the .atel-canvas-panel padding (16*2), the playback row height, and the column gap (12) from the panel rect to derive the available area, then computeLetterboxFit picks min(availW/canvasW, availH/canvasH) so the canvas display size always fits with aspect preserved. Raster dimensions (canvas.width/.height) stay pinned to doc.canvas.width/.height — only CSS sizing scales. loadDocument calls applyLetterboxFit explicitly so the first frame paints correctly before the observer fires; destroy() disconnects the observer.",
-      "related": []
+      "related": [
+        "#canvas-panel"
+      ]
     },
     "scrub-pause-resume": {
       "id": "scrub-pause-resume",
@@ -3889,7 +3903,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.",
-      "related": []
+      "related": [
+        "#canvas-panel"
+      ]
     },
     "image-drop-files-only": {
       "id": "image-drop-files-only",
@@ -3898,7 +3914,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Canvas drag handlers respond ONLY to file drags — hasFileTypes checks dataTransfer.types for \"Files\" (populated during dragover, unlike dataTransfer.files which fills only at drop), so in-app layer-reorder drags never trigger the image-drop highlight or pipeline. dragover must preventDefault for the drop event to fire, and dragleave clears the highlight only when the cursor truly leaves the wrap (target === dropTarget).",
-      "related": []
+      "related": [
+        "#canvas-panel"
+      ]
     },
     "image-drop-first-replaces-background": {
       "id": "image-drop-first-replaces-background",
@@ -3907,7 +3925,9 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "On a multi-file drop, only the FIRST image gets replaceBackground:true so it swaps the welcome scaffold placeholder (doc.layers[0].id === \"background\") in place; subsequent images stack. createImageLayerFromFile aspect-fits the image to the canvas (fit to width when wider than canvas, else fit to height, both capped at canvas extents) with a 0.5/0.5 anchor centered, and unshifts onto layers so new images sit BEHIND existing overlays. A file that fails to decode is skipped without aborting the batch.",
-      "related": []
+      "related": [
+        "#canvas-panel"
+      ]
     },
     "layer-id-collision-free": {
       "id": "layer-id-collision-free",
@@ -4559,195 +4579,6 @@
       "description": "rgbaToHsla guards the achromatic case — when max equals min (delta is 0) hue and saturation stay 0 to avoid a divide-by-zero, and saturation switches formula on whether lightness exceeds 0.5. The inverse hslaToRgba similarly shortcuts gray when s === 0.",
       "related": []
     },
-    "pinned-lottie-version": {
-      "id": "pinned-lottie-version",
-      "name": "Pinned Lottie Version",
-      "symbol": "~pinned-lottie-version",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
-      "related": []
-    },
-    "default-first-state": {
-      "id": "default-first-state",
-      "name": "Default First State",
-      "symbol": "~default-first-state",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
-      "related": []
-    },
-    "warning-dedup-collapse": {
-      "id": "warning-dedup-collapse",
-      "name": "Warning Dedup Collapse",
-      "symbol": "~warning-dedup-collapse",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
-      "related": []
-    },
-    "image-asset-fixed-dimensions": {
-      "id": "image-asset-fixed-dimensions",
-      "name": "Image Asset Fixed Dimensions",
-      "symbol": "~image-asset-fixed-dimensions",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
-      "related": []
-    },
-    "numeric-layer-type-discriminant": {
-      "id": "numeric-layer-type-discriminant",
-      "name": "Numeric Layer Type Discriminant",
-      "symbol": "~numeric-layer-type-discriminant",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
-      "related": []
-    },
-    "bezier-handles-as-xy-objects": {
-      "id": "bezier-handles-as-xy-objects",
-      "name": "Bezier Handles As Xy Objects",
-      "symbol": "~bezier-handles-as-xy-objects",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
-      "related": []
-    },
-    "percentage-units-collapse-to-zero": {
-      "id": "percentage-units-collapse-to-zero",
-      "name": "Percentage Units Collapse To Zero",
-      "symbol": "~percentage-units-collapse-to-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
-      "related": []
-    },
-    "layer-index-is-parent-pointer": {
-      "id": "layer-index-is-parent-pointer",
-      "name": "Layer Index Is Parent Pointer",
-      "symbol": "~layer-index-is-parent-pointer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
-      "related": []
-    },
-    "opacity-and-scale-percent-rescale": {
-      "id": "opacity-and-scale-percent-rescale",
-      "name": "Opacity And Scale Percent Rescale",
-      "symbol": "~opacity-and-scale-percent-rescale",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
-      "related": []
-    },
-    "max-frame-fallback-sixty": {
-      "id": "max-frame-fallback-sixty",
-      "name": "Max Frame Fallback Sixty",
-      "symbol": "~max-frame-fallback-sixty",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
-      "related": []
-    },
-    "rect-centered-radial-fixed": {
-      "id": "rect-centered-radial-fixed",
-      "name": "Rect Centered Radial Fixed",
-      "symbol": "~rect-centered-radial-fixed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
-      "related": []
-    },
-    "gradient-stop-stride-no-alpha": {
-      "id": "gradient-stop-stride-no-alpha",
-      "name": "Gradient Stop Stride No Alpha",
-      "symbol": "~gradient-stop-stride-no-alpha",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
-      "related": []
-    },
-    "unknown-fill-black-fallback": {
-      "id": "unknown-fill-black-fallback",
-      "name": "Unknown Fill Black Fallback",
-      "symbol": "~unknown-fill-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
-      "related": []
-    },
-    "expression-short-circuits-static-zero": {
-      "id": "expression-short-circuits-static-zero",
-      "name": "Expression Short Circuits Static Zero",
-      "symbol": "~expression-short-circuits-static-zero",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
-      "related": []
-    },
-    "position-z-zero-easing-from-x": {
-      "id": "position-z-zero-easing-from-x",
-      "name": "Position Z Zero Easing From X",
-      "symbol": "~position-z-zero-easing-from-x",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
-      "related": []
-    },
-    "keyframe-hold-last-completed": {
-      "id": "keyframe-hold-last-completed",
-      "name": "Keyframe Hold Last Completed",
-      "symbol": "~keyframe-hold-last-completed",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
-      "related": []
-    },
-    "rgb-normalize-255-to-unit": {
-      "id": "rgb-normalize-255-to-unit",
-      "name": "Rgb Normalize 255 To Unit",
-      "symbol": "~rgb-normalize-255-to-unit",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
-      "related": []
-    },
-    "hex-shorthand-and-black-fallback": {
-      "id": "hex-shorthand-and-black-fallback",
-      "name": "Hex Shorthand And Black Fallback",
-      "symbol": "~hex-shorthand-and-black-fallback",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
-      "related": []
-    },
-    "easing-handles-swapped-and-inverted": {
-      "id": "easing-handles-swapped-and-inverted",
-      "name": "Easing Handles Swapped And Inverted",
-      "symbol": "~easing-handles-swapped-and-inverted",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
-      "related": []
-    },
-    "lossy-easing-approximations": {
-      "id": "lossy-easing-approximations",
-      "name": "Lossy Easing Approximations",
-      "symbol": "~lossy-easing-approximations",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
-      "related": []
-    },
-    "unsupported-feature-catalog": {
-      "id": "unsupported-feature-catalog",
-      "name": "Unsupported Feature Catalog",
-      "symbol": "~unsupported-feature-catalog",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
-      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
-      "related": []
-    },
     "store-synchronous-registration-order-emit": {
       "id": "store-synchronous-registration-order-emit",
       "name": "Store Synchronous Registration Order Emit",
@@ -5132,6 +4963,195 @@
         "#ref-cycle"
       ]
     },
+    "pinned-lottie-version": {
+      "id": "pinned-lottie-version",
+      "name": "Pinned Lottie Version",
+      "symbol": "~pinned-lottie-version",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Exported animations hardcode Lottie schema version \"5.7.4\" (v field) regardless of feature usage, and the image-layer in-point/out-point come from state.duration mapped directly to op while ip is always 0. The output is pinned to one schema version — players expecting a different version may misparse.",
+      "related": []
+    },
+    "default-first-state": {
+      "id": "default-first-state",
+      "name": "Default First State",
+      "symbol": "~default-first-state",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "When no opts.state is supplied, export picks Object.keys(doc.states)[0] — the FIRST state in insertion order — not a named \"default\" or \"initial\" state. Throws if the document has zero states or the requested state name is missing, so state selection fails loud but defaults silently to whatever key happens to be first.",
+      "related": []
+    },
+    "warning-dedup-collapse": {
+      "id": "warning-dedup-collapse",
+      "name": "Warning Dedup Collapse",
+      "symbol": "~warning-dedup-collapse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Warnings accumulate per-layer/per-delta during mapping then collapse through a Set before return, so an identical message emitted on every one of N layers (e.g. the same unsupported feature) surfaces to the user exactly once. Count of warnings is therefore distinct-messages, not occurrences.",
+      "related": []
+    },
+    "image-asset-fixed-dimensions": {
+      "id": "image-asset-fixed-dimensions",
+      "name": "Image Asset Fixed Dimensions",
+      "symbol": "~image-asset-fixed-dimensions",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Image assets are emitted with hardcoded w=100, h=100 and e=0 (not embedded) because Atelier asset records carry no intrinsic pixel size — the real dimensions are unknown at export time. Any image asset in the output reports a placeholder 100x100, which a strict Lottie consumer may scale incorrectly.",
+      "related": []
+    },
+    "numeric-layer-type-discriminant": {
+      "id": "numeric-layer-type-discriminant",
+      "name": "Numeric Layer Type Discriminant",
+      "symbol": "~numeric-layer-type-discriminant",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "LottieLayer.ty is a numeric discriminant (0=precomp, 1=solid, 2=image, 3=null, 4=shape, 5=text) and shapes/text/refId are optional fields keyed off it — there is no runtime tag string. Consumers must switch on ty to know which optional payload (shapes vs t vs refId) is populated.",
+      "related": []
+    },
+    "bezier-handles-as-xy-objects": {
+      "id": "bezier-handles-as-xy-objects",
+      "name": "Bezier Handles As Xy Objects",
+      "symbol": "~bezier-handles-as-xy-objects",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Keyframe easing is modeled as separate i (in) and o (out) tangent objects, each holding x and y as NUMBER ARRAYS rather than scalars — the array form is what allows per-axis (multi-dimensional) easing on position keyframes. A keyframe also carries an optional h:1 hold flag that, when set, makes the value snap instead of interpolate.",
+      "related": []
+    },
+    "percentage-units-collapse-to-zero": {
+      "id": "percentage-units-collapse-to-zero",
+      "name": "Percentage Units Collapse To Zero",
+      "symbol": "~percentage-units-collapse-to-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "toNum silently maps any non-number UnitValue (i.e. percentage strings) to 0 when feeding bounds.width/height, frame.x/y, and anchor math into Lottie. Percentage-based layouts that resolve fine on canvas degrade to zero in the export — a load-bearing lossy conversion with no warning emitted.",
+      "related": []
+    },
+    "layer-index-is-parent-pointer": {
+      "id": "layer-index-is-parent-pointer",
+      "name": "Layer Index Is Parent Pointer",
+      "symbol": "~layer-index-is-parent-pointer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "A layer's position in doc.layers IS its Lottie ind, and parenting is expressed by writing the parent layer's numeric index into base.parent (resolved through layerIndexMap). A parentId that does not resolve to a known index is dropped silently (no parent set) rather than erroring.",
+      "related": []
+    },
+    "opacity-and-scale-percent-rescale": {
+      "id": "opacity-and-scale-percent-rescale",
+      "name": "Opacity And Scale Percent Rescale",
+      "symbol": "~opacity-and-scale-percent-rescale",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier opacity (0–1) and scale (1.0 = identity) are rescaled to Lottie's 0–100 convention by multiplying by 100 — opacity statically and per-keyframe (both s and e), scale on its base values. Scale ANIMATION is intentionally NOT keyframed: when scale deltas exist, output is the static base [sx,sy,100] plus a \"Scale animation partially mapped\" warning. Position z is always 0.",
+      "related": []
+    },
+    "max-frame-fallback-sixty": {
+      "id": "max-frame-fallback-sixty",
+      "name": "Max Frame Fallback Sixty",
+      "symbol": "~max-frame-fallback-sixty",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "getMaxFrame computes a layer out-point from the largest state.duration across ALL states (not just the exported one) OR the largest delta range end, whichever is greater, and falls back to 60 frames when both are zero. So an otherwise empty/zero-duration layer still gets a non-zero op of 60.",
+      "related": []
+    },
+    "rect-centered-radial-fixed": {
+      "id": "rect-centered-radial-fixed",
+      "name": "Rect Centered Radial Fixed",
+      "symbol": "~rect-centered-radial-fixed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Rect and ellipse geometry is centered: size is [w,h] but position is [w/2, h/2], so the shape sits at the box center rather than origin. Radial-gradient endpoints are HARDCODED at s=(50,50) e=(100,50) regardless of layer bounds — a lossy approximation, since the gradient geometry is not derived from the actual shape.",
+      "related": []
+    },
+    "gradient-stop-stride-no-alpha": {
+      "id": "gradient-stop-stride-no-alpha",
+      "name": "Gradient Stop Stride No Alpha",
+      "symbol": "~gradient-stop-stride-no-alpha",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Gradient stops are flattened into a single number array with stride 4 — [offset, r, g, b] per stop — so the alpha channel from each stop color is DISCARDED (only the first three normalized channels are pushed). Per-stop transparency does not survive the export; g.p records the stop count for the consumer to re-chunk.",
+      "related": []
+    },
+    "unknown-fill-black-fallback": {
+      "id": "unknown-fill-black-fallback",
+      "name": "Unknown Fill Black Fallback",
+      "symbol": "~unknown-fill-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "mapFill dispatches on fill.type (solid, linear-gradient, radial-gradient) and any unrecognized fill type falls through to an opaque black solid fill ({c:[0,0,0], o:100}) rather than throwing or omitting the fill. Solid fill alpha is split out into the o (opacity) field scaled to 0–100, separate from the rgb in c.",
+      "related": []
+    },
+    "expression-short-circuits-static-zero": {
+      "id": "expression-short-circuits-static-zero",
+      "name": "Expression Short Circuits Static Zero",
+      "symbol": "~expression-short-circuits-static-zero",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "If ANY delta in the list has an expression in from or to, the entire property collapses to a single static value (a:0) — using d.from if numeric else 0 — and emits a warning, abandoning all keyframes for that property. Likewise from===to collapses a single delta to a static value. Expressions are unrepresentable in Lottie, so they are flattened, not approximated.",
+      "related": []
+    },
+    "position-z-zero-easing-from-x": {
+      "id": "position-z-zero-easing-from-x",
+      "name": "Position Z Zero Easing From X",
+      "symbol": "~position-z-zero-easing-from-x",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Position keyframes are 3-tuples [x, y, 0] — the z component is ALWAYS 0 even though Lottie supports 3D position. X and Y deltas are merged onto a unified sorted frame set, and the per-segment easing is taken from the active X delta with the Y delta as fallback (activeX?.easing ?? activeY?.easing), so X easing wins when both axes animate the same segment.",
+      "related": []
+    },
+    "keyframe-hold-last-completed": {
+      "id": "keyframe-hold-last-completed",
+      "name": "Keyframe Hold Last Completed",
+      "symbol": "~keyframe-hold-last-completed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "resolveAtFrame holds the to value of the most recently completed delta (largest range[1] strictly before the frame) when no delta is active — mirroring core's hold-last-completed invariant so re-derived position samples between segments do not snap to base. Zero-length ranges (range[0]===range[1]) are treated as instantaneous progress 1.",
+      "related": []
+    },
+    "rgb-normalize-255-to-unit": {
+      "id": "rgb-normalize-255-to-unit",
+      "name": "Rgb Normalize 255 To Unit",
+      "symbol": "~rgb-normalize-255-to-unit",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier's native color channels are 0–255 (RGBA) but Lottie expects 0–1, so every channel is divided by 255. RGB conversion ROUNDS (Math.round in hslToRgb) before normalizing while the alpha channel passes through un-normalized for RGBA/HSLA (c.a used directly) — a subtle asymmetry between how rgb and alpha are treated.",
+      "related": []
+    },
+    "hex-shorthand-and-black-fallback": {
+      "id": "hex-shorthand-and-black-fallback",
+      "name": "Hex Shorthand And Black Fallback",
+      "symbol": "~hex-shorthand-and-black-fallback",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "3- and 4-digit hex shorthands are expanded by DOUBLING each nibble (f → ff) before parsing; 6/8-digit hex parse pairwise with alpha defaulting to 1 when absent. Any color shape that is neither string, has \"r\", nor has \"h\" returns opaque black [0,0,0,1] rather than throwing — malformed colors render black, not error.",
+      "related": []
+    },
+    "easing-handles-swapped-and-inverted": {
+      "id": "easing-handles-swapped-and-inverted",
+      "name": "Easing Handles Swapped And Inverted",
+      "symbol": "~easing-handles-swapped-and-inverted",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Atelier cubic-bezier (x1,y1,x2,y2) maps to Lottie with the handles SWAPPED — Lottie o (out tangent from start) gets Atelier's (x1,y1) and Lottie i (in tangent at end) gets (x2,y2). Get this mapping reversed and every eased curve mirrors. The named \"linear\" easing is Lottie's default (0.833 / 0.167) NOT a true (0,0,1,1) straight line.",
+      "related": []
+    },
+    "lossy-easing-approximations": {
+      "id": "lossy-easing-approximations",
+      "name": "Lossy Easing Approximations",
+      "symbol": "~lossy-easing-approximations",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "Spring easing is approximated by a FIXED cubic-bezier (0.25, 0.1, 0.25, 1) ignoring its physical parameters, step easing becomes a hold flag {h:1} (snap, no curve), and any unrecognized string/object easing silently degrades to linear. isLossyEasing surfaces spring/step as warnings; string presets and linear are considered lossless and return null.",
+      "related": []
+    },
+    "unsupported-feature-catalog": {
+      "id": "unsupported-feature-catalog",
+      "name": "Unsupported Feature Catalog",
+      "symbol": "~unsupported-feature-catalog",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose",
+      "description": "This component IS the authoritative catalog of what has NO Lottie equivalent — it emits warnings for: audio tracks (dropped), expression values (flattened to static), layer shadows (no base-Lottie equivalent), motion paths (not directly mappable), clip paths (mapped to a partial-support mask), and multiple states (flattened to a single timeline). Each warning marks an intentional fidelity loss in the lossy export.",
+      "related": []
+    },
     "frame-resolution-determinism": {
       "id": "frame-resolution-determinism",
       "name": "Frame Resolution Determinism",
@@ -5348,6 +5368,177 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
       "description": "Before startFrame computeAudioState returns shouldPlay false with currentTime 0 (volume still reported), and shouldPlay is gated on frame < stateDuration so audio is silent outside its active window. Looping with non-positive segment duration also returns silent.",
+      "related": []
+    },
+    "painters-algorithm-order": {
+      "id": "painters-algorithm-order",
+      "name": "Painters Algorithm Order",
+      "symbol": "~painters-algorithm-order",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Layers render in effList order — first element is drawn first and ends up at the back, last on top. The list is built by iterating resolvedFrame.layers in order, so resolution order IS z-order. There is no separate sort or z-index.",
+      "related": []
+    },
+    "save-restore-per-layer": {
+      "id": "save-restore-per-layer",
+      "name": "Save Restore Per Layer",
+      "symbol": "~save-restore-per-layer",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.",
+      "related": []
+    },
+    "transform-stack-anchor-order": {
+      "id": "transform-stack-anchor-order",
+      "name": "Transform Stack Anchor Order",
+      "symbol": "~transform-stack-anchor-order",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.",
+      "related": []
+    },
+    "ancestor-transforms-root-first": {
+      "id": "ancestor-transforms-root-first",
+      "name": "Ancestor Transforms Root First",
+      "symbol": "~ancestor-transforms-root-first",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.",
+      "related": []
+    },
+    "tint-offscreen-multiply-mask": {
+      "id": "tint-offscreen-multiply-mask",
+      "name": "Tint Offscreen Multiply Mask",
+      "symbol": "~tint-offscreen-multiply-mask",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.",
+      "related": []
+    },
+    "early-skip-invisible-layers": {
+      "id": "early-skip-invisible-layers",
+      "name": "Early Skip Invisible Layers",
+      "symbol": "~early-skip-invisible-layers",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.",
+      "related": []
+    },
+    "render-context-no-dom-dependency": {
+      "id": "render-context-no-dom-dependency",
+      "name": "Render Context No Dom Dependency",
+      "symbol": "~render-context-no-dom-dependency",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.",
+      "related": []
+    },
+    "perimeter-from-shape-type": {
+      "id": "perimeter-from-shape-type",
+      "name": "Perimeter From Shape Type",
+      "symbol": "~perimeter-from-shape-type",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Stroke trim (strokeStart/strokeEnd dash math) needs a path length, so each shape computes its own perimeter — rect via 2*(w+h), ellipse via the Ramanujan approximation, path by summing segment chord distances with bezier segments fudged at chord * 1.2. Wrong perimeter desyncs the dash offset and the trim animation drifts.",
+      "related": []
+    },
+    "rounded-rect-feature-detect": {
+      "id": "rounded-rect-feature-detect",
+      "name": "Rounded Rect Feature Detect",
+      "symbol": "~rounded-rect-feature-detect",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "roundRect is feature-detected (cornerRadius && ctx.roundRect) — when a cornerRadius is set but the context lacks roundRect, rect rendering falls back to plain fillRect/strokeRect (square corners) rather than throwing. clipPath has its own manual moveTo/lineTo fallback for the same reason.",
+      "related": []
+    },
+    "path-needs-two-points": {
+      "id": "path-needs-two-points",
+      "name": "Path Needs Two Points",
+      "symbol": "~path-needs-two-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.",
+      "related": []
+    },
+    "text-align-offset-baseline": {
+      "id": "text-align-offset-baseline",
+      "name": "Text Align Offset Baseline",
+      "symbol": "~text-align-offset-baseline",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "Canvas textAlign anchors at the draw point, so the X draw position is offset to keep text inside the layer bounds — left=0, center=width/2, right=width. textBaseline is forced to \"top\" so y=0 is the top edge of the box, matching the layer coordinate system rather than the canvas alphabetic default.",
+      "related": []
+    },
+    "font-string-assembly": {
+      "id": "font-string-assembly",
+      "name": "Font String Assembly",
+      "symbol": "~font-string-assembly",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "The CSS font shorthand is assembled in strict order \"<fontStyle> <fontWeight> <fontSizepx> <fontFamily>\" with fontStyle/fontWeight defaulting to \"normal\"; fontSize is always emitted in px. Reorder the tokens and the canvas silently ignores the malformed font string.",
+      "related": []
+    },
+    "video-null-provider-retry": {
+      "id": "video-null-provider-retry",
+      "name": "Video Null Provider Retry",
+      "symbol": "~video-null-provider-retry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "renderVideo draws nothing (silent return) when visual.src is missing OR the provider returns null — null means the frame is not decoded yet, and the contract is that the caller re-renders on a later tick until the provider yields a frame. No placeholder is drawn, so the previous frame content remains visible.",
+      "related": []
+    },
+    "effective-property-override-defaults": {
+      "id": "effective-property-override-defaults",
+      "name": "Effective Property Override Defaults",
+      "symbol": "~effective-property-override-defaults",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "buildEffectiveLayer merges computedProperties (animated values) over layer defaults using ?? chains — cp value first, then the static layer field, then a hard default. shadow and tint blocks are only constructed when either the static layer has them OR a relevant computed key is present, otherwise they stay undefined to skip that work downstream.",
+      "related": []
+    },
+    "percentage-resolved-at-render": {
+      "id": "percentage-resolved-at-render",
+      "name": "Percentage Resolved At Render",
+      "symbol": "~percentage-resolved-at-render",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "resolveUnit converts a percentage string to pixels (parseFloat/100 * reference) at render time, with x/width measured against parentWidth and y/height against parentHeight. Raw numbers pass through unchanged. The correct reference axis must be supplied per field — using the wrong dimension skews percentage layouts.",
+      "related": []
+    },
+    "visual-override-copy-on-write": {
+      "id": "visual-override-copy-on-write",
+      "name": "Visual Override Copy On Write",
+      "symbol": "~visual-override-copy-on-write",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "buildEffectiveVisual returns the ORIGINAL visual untouched when no visual/image computed keys are present, and otherwise shallow-clones before mutating fill/stroke/style/sourceRect — so the source document visual is never mutated. frameIndex is floored to an integer when animated.",
+      "related": []
+    },
+    "stroke-trim-via-dash": {
+      "id": "stroke-trim-via-dash",
+      "name": "Stroke Trim Via Dash",
+      "symbol": "~stroke-trim-via-dash",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "strokeStart/strokeEnd trim is implemented with the line-dash trick — a dash of [visible, pathLength+1] plus lineDashOffset = -start*pathLength reveals only the (end-start)*pathLength segment of the perimeter. The +1 guarantees the gap exceeds the path so only one dash shows; visible is clamped to >= 0. Plain stroke.dash applies only when no trim is set.",
+      "related": []
+    },
+    "color-css-type-dispatch": {
+      "id": "color-css-type-dispatch",
+      "name": "Color Css Type Dispatch",
+      "symbol": "~color-css-type-dispatch",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "colorToCSS dispatches on shape — a string passes through as a hex literal, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything else falls back to #000000. The fallback means malformed color objects render black rather than throwing.",
+      "related": []
+    },
+    "gradient-geometry-from-bounds": {
+      "id": "gradient-geometry-from-bounds",
+      "name": "Gradient Geometry From Bounds",
+      "symbol": "~gradient-geometry-from-bounds",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
+      "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
       "related": []
     },
     "lint-gate-cascade-short-circuit": {
@@ -6170,177 +6361,6 @@
         "^valid-media-ref-path"
       ]
     },
-    "painters-algorithm-order": {
-      "id": "painters-algorithm-order",
-      "name": "Painters Algorithm Order",
-      "symbol": "~painters-algorithm-order",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Layers render in effList order — first element is drawn first and ends up at the back, last on top. The list is built by iterating resolvedFrame.layers in order, so resolution order IS z-order. There is no separate sort or z-index.",
-      "related": []
-    },
-    "save-restore-per-layer": {
-      "id": "save-restore-per-layer",
-      "name": "Save Restore Per Layer",
-      "symbol": "~save-restore-per-layer",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.",
-      "related": []
-    },
-    "transform-stack-anchor-order": {
-      "id": "transform-stack-anchor-order",
-      "name": "Transform Stack Anchor Order",
-      "symbol": "~transform-stack-anchor-order",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.",
-      "related": []
-    },
-    "ancestor-transforms-root-first": {
-      "id": "ancestor-transforms-root-first",
-      "name": "Ancestor Transforms Root First",
-      "symbol": "~ancestor-transforms-root-first",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.",
-      "related": []
-    },
-    "tint-offscreen-multiply-mask": {
-      "id": "tint-offscreen-multiply-mask",
-      "name": "Tint Offscreen Multiply Mask",
-      "symbol": "~tint-offscreen-multiply-mask",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.",
-      "related": []
-    },
-    "early-skip-invisible-layers": {
-      "id": "early-skip-invisible-layers",
-      "name": "Early Skip Invisible Layers",
-      "symbol": "~early-skip-invisible-layers",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.",
-      "related": []
-    },
-    "render-context-no-dom-dependency": {
-      "id": "render-context-no-dom-dependency",
-      "name": "Render Context No Dom Dependency",
-      "symbol": "~render-context-no-dom-dependency",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.",
-      "related": []
-    },
-    "perimeter-from-shape-type": {
-      "id": "perimeter-from-shape-type",
-      "name": "Perimeter From Shape Type",
-      "symbol": "~perimeter-from-shape-type",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Stroke trim (strokeStart/strokeEnd dash math) needs a path length, so each shape computes its own perimeter — rect via 2*(w+h), ellipse via the Ramanujan approximation, path by summing segment chord distances with bezier segments fudged at chord * 1.2. Wrong perimeter desyncs the dash offset and the trim animation drifts.",
-      "related": []
-    },
-    "rounded-rect-feature-detect": {
-      "id": "rounded-rect-feature-detect",
-      "name": "Rounded Rect Feature Detect",
-      "symbol": "~rounded-rect-feature-detect",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "roundRect is feature-detected (cornerRadius && ctx.roundRect) — when a cornerRadius is set but the context lacks roundRect, rect rendering falls back to plain fillRect/strokeRect (square corners) rather than throwing. clipPath has its own manual moveTo/lineTo fallback for the same reason.",
-      "related": []
-    },
-    "path-needs-two-points": {
-      "id": "path-needs-two-points",
-      "name": "Path Needs Two Points",
-      "symbol": "~path-needs-two-points",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.",
-      "related": []
-    },
-    "text-align-offset-baseline": {
-      "id": "text-align-offset-baseline",
-      "name": "Text Align Offset Baseline",
-      "symbol": "~text-align-offset-baseline",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "Canvas textAlign anchors at the draw point, so the X draw position is offset to keep text inside the layer bounds — left=0, center=width/2, right=width. textBaseline is forced to \"top\" so y=0 is the top edge of the box, matching the layer coordinate system rather than the canvas alphabetic default.",
-      "related": []
-    },
-    "font-string-assembly": {
-      "id": "font-string-assembly",
-      "name": "Font String Assembly",
-      "symbol": "~font-string-assembly",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "The CSS font shorthand is assembled in strict order \"<fontStyle> <fontWeight> <fontSizepx> <fontFamily>\" with fontStyle/fontWeight defaulting to \"normal\"; fontSize is always emitted in px. Reorder the tokens and the canvas silently ignores the malformed font string.",
-      "related": []
-    },
-    "video-null-provider-retry": {
-      "id": "video-null-provider-retry",
-      "name": "Video Null Provider Retry",
-      "symbol": "~video-null-provider-retry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "renderVideo draws nothing (silent return) when visual.src is missing OR the provider returns null — null means the frame is not decoded yet, and the contract is that the caller re-renders on a later tick until the provider yields a frame. No placeholder is drawn, so the previous frame content remains visible.",
-      "related": []
-    },
-    "effective-property-override-defaults": {
-      "id": "effective-property-override-defaults",
-      "name": "Effective Property Override Defaults",
-      "symbol": "~effective-property-override-defaults",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "buildEffectiveLayer merges computedProperties (animated values) over layer defaults using ?? chains — cp value first, then the static layer field, then a hard default. shadow and tint blocks are only constructed when either the static layer has them OR a relevant computed key is present, otherwise they stay undefined to skip that work downstream.",
-      "related": []
-    },
-    "percentage-resolved-at-render": {
-      "id": "percentage-resolved-at-render",
-      "name": "Percentage Resolved At Render",
-      "symbol": "~percentage-resolved-at-render",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "resolveUnit converts a percentage string to pixels (parseFloat/100 * reference) at render time, with x/width measured against parentWidth and y/height against parentHeight. Raw numbers pass through unchanged. The correct reference axis must be supplied per field — using the wrong dimension skews percentage layouts.",
-      "related": []
-    },
-    "visual-override-copy-on-write": {
-      "id": "visual-override-copy-on-write",
-      "name": "Visual Override Copy On Write",
-      "symbol": "~visual-override-copy-on-write",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "buildEffectiveVisual returns the ORIGINAL visual untouched when no visual/image computed keys are present, and otherwise shallow-clones before mutating fill/stroke/style/sourceRect — so the source document visual is never mutated. frameIndex is floored to an integer when animated.",
-      "related": []
-    },
-    "stroke-trim-via-dash": {
-      "id": "stroke-trim-via-dash",
-      "name": "Stroke Trim Via Dash",
-      "symbol": "~stroke-trim-via-dash",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "strokeStart/strokeEnd trim is implemented with the line-dash trick — a dash of [visible, pathLength+1] plus lineDashOffset = -start*pathLength reveals only the (end-start)*pathLength segment of the perimeter. The +1 guarantees the gap exceeds the path so only one dash shows; visible is clamped to >= 0. Plain stroke.dash applies only when no trim is set.",
-      "related": []
-    },
-    "color-css-type-dispatch": {
-      "id": "color-css-type-dispatch",
-      "name": "Color Css Type Dispatch",
-      "symbol": "~color-css-type-dispatch",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "colorToCSS dispatches on shape — a string passes through as a hex literal, an object with \"r\" becomes rgba() with r/g/b rounded, an object with \"h\" becomes hsla(); anything else falls back to #000000. The fallback means malformed color objects render black rather than throwing.",
-      "related": []
-    },
-    "gradient-geometry-from-bounds": {
-      "id": "gradient-geometry-from-bounds",
-      "name": "Gradient Geometry From Bounds",
-      "symbol": "~gradient-geometry-from-bounds",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
-      "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
-      "related": []
-    },
     "ingest-dispatch-doc-target.": {
       "id": "ingest-dispatch-doc-target.",
       "name": "Ingest Dispatch Doc Target.",
@@ -6694,38 +6714,6 @@
       "category": "components",
       "id": "#color-math"
     },
-    "##lottie-exporter": {
-      "category": "components",
-      "id": "#lottie-exporter"
-    },
-    "##lottie-types": {
-      "category": "components",
-      "id": "#lottie-types"
-    },
-    "##lottie-map-layers": {
-      "category": "components",
-      "id": "#lottie-map-layers"
-    },
-    "##lottie-map-shapes": {
-      "category": "components",
-      "id": "#lottie-map-shapes"
-    },
-    "##lottie-map-keyframes": {
-      "category": "components",
-      "id": "#lottie-map-keyframes"
-    },
-    "##lottie-map-colors": {
-      "category": "components",
-      "id": "#lottie-map-colors"
-    },
-    "##lottie-map-easing": {
-      "category": "components",
-      "id": "#lottie-map-easing"
-    },
-    "##lottie-warnings": {
-      "category": "components",
-      "id": "#lottie-warnings"
-    },
     "#mcp-store": {
       "category": "components",
       "id": "mcp-store"
@@ -6870,6 +6858,38 @@
       "category": "components",
       "id": "mcp-lib-doc-management-types"
     },
+    "##lottie-exporter": {
+      "category": "components",
+      "id": "#lottie-exporter"
+    },
+    "##lottie-types": {
+      "category": "components",
+      "id": "#lottie-types"
+    },
+    "##lottie-map-layers": {
+      "category": "components",
+      "id": "#lottie-map-layers"
+    },
+    "##lottie-map-shapes": {
+      "category": "components",
+      "id": "#lottie-map-shapes"
+    },
+    "##lottie-map-keyframes": {
+      "category": "components",
+      "id": "#lottie-map-keyframes"
+    },
+    "##lottie-map-colors": {
+      "category": "components",
+      "id": "#lottie-map-colors"
+    },
+    "##lottie-map-easing": {
+      "category": "components",
+      "id": "#lottie-map-easing"
+    },
+    "##lottie-warnings": {
+      "category": "components",
+      "id": "#lottie-warnings"
+    },
     "##frame-resolver": {
       "category": "components",
       "id": "#frame-resolver"
@@ -6913,6 +6933,30 @@
     "##audio-timing": {
       "category": "components",
       "id": "#audio-timing"
+    },
+    "#render-frame": {
+      "category": "components",
+      "id": "render-frame"
+    },
+    "#shape-renderer": {
+      "category": "components",
+      "id": "shape-renderer"
+    },
+    "#text-renderer": {
+      "category": "components",
+      "id": "text-renderer"
+    },
+    "#video-renderer": {
+      "category": "components",
+      "id": "video-renderer"
+    },
+    "#apply-properties": {
+      "category": "components",
+      "id": "apply-properties"
+    },
+    "#canvas-styles": {
+      "category": "components",
+      "id": "canvas-styles"
     },
     "#cli-lint": {
       "category": "components",
@@ -7145,30 +7189,6 @@
     "##carousel-add-slide-button": {
       "category": "components",
       "id": "#carousel-add-slide-button"
-    },
-    "#render-frame": {
-      "category": "components",
-      "id": "render-frame"
-    },
-    "#shape-renderer": {
-      "category": "components",
-      "id": "shape-renderer"
-    },
-    "#text-renderer": {
-      "category": "components",
-      "id": "text-renderer"
-    },
-    "#video-renderer": {
-      "category": "components",
-      "id": "video-renderer"
-    },
-    "#apply-properties": {
-      "category": "components",
-      "id": "apply-properties"
-    },
-    "#canvas-styles": {
-      "category": "components",
-      "id": "canvas-styles"
     },
     "^^valid-document": {
       "category": "gates",
@@ -7866,90 +7886,6 @@
       "category": "aspects",
       "id": "hsl-zero-saturation-guard"
     },
-    "~pinned-lottie-version": {
-      "category": "aspects",
-      "id": "pinned-lottie-version"
-    },
-    "~default-first-state": {
-      "category": "aspects",
-      "id": "default-first-state"
-    },
-    "~warning-dedup-collapse": {
-      "category": "aspects",
-      "id": "warning-dedup-collapse"
-    },
-    "~image-asset-fixed-dimensions": {
-      "category": "aspects",
-      "id": "image-asset-fixed-dimensions"
-    },
-    "~numeric-layer-type-discriminant": {
-      "category": "aspects",
-      "id": "numeric-layer-type-discriminant"
-    },
-    "~bezier-handles-as-xy-objects": {
-      "category": "aspects",
-      "id": "bezier-handles-as-xy-objects"
-    },
-    "~percentage-units-collapse-to-zero": {
-      "category": "aspects",
-      "id": "percentage-units-collapse-to-zero"
-    },
-    "~layer-index-is-parent-pointer": {
-      "category": "aspects",
-      "id": "layer-index-is-parent-pointer"
-    },
-    "~opacity-and-scale-percent-rescale": {
-      "category": "aspects",
-      "id": "opacity-and-scale-percent-rescale"
-    },
-    "~max-frame-fallback-sixty": {
-      "category": "aspects",
-      "id": "max-frame-fallback-sixty"
-    },
-    "~rect-centered-radial-fixed": {
-      "category": "aspects",
-      "id": "rect-centered-radial-fixed"
-    },
-    "~gradient-stop-stride-no-alpha": {
-      "category": "aspects",
-      "id": "gradient-stop-stride-no-alpha"
-    },
-    "~unknown-fill-black-fallback": {
-      "category": "aspects",
-      "id": "unknown-fill-black-fallback"
-    },
-    "~expression-short-circuits-static-zero": {
-      "category": "aspects",
-      "id": "expression-short-circuits-static-zero"
-    },
-    "~position-z-zero-easing-from-x": {
-      "category": "aspects",
-      "id": "position-z-zero-easing-from-x"
-    },
-    "~keyframe-hold-last-completed": {
-      "category": "aspects",
-      "id": "keyframe-hold-last-completed"
-    },
-    "~rgb-normalize-255-to-unit": {
-      "category": "aspects",
-      "id": "rgb-normalize-255-to-unit"
-    },
-    "~hex-shorthand-and-black-fallback": {
-      "category": "aspects",
-      "id": "hex-shorthand-and-black-fallback"
-    },
-    "~easing-handles-swapped-and-inverted": {
-      "category": "aspects",
-      "id": "easing-handles-swapped-and-inverted"
-    },
-    "~lossy-easing-approximations": {
-      "category": "aspects",
-      "id": "lossy-easing-approximations"
-    },
-    "~unsupported-feature-catalog": {
-      "category": "aspects",
-      "id": "unsupported-feature-catalog"
-    },
     "~store-synchronous-registration-order-emit": {
       "category": "aspects",
       "id": "store-synchronous-registration-order-emit"
@@ -8118,6 +8054,90 @@
       "category": "aspects",
       "id": "doc-cycle-v1-simple-check"
     },
+    "~pinned-lottie-version": {
+      "category": "aspects",
+      "id": "pinned-lottie-version"
+    },
+    "~default-first-state": {
+      "category": "aspects",
+      "id": "default-first-state"
+    },
+    "~warning-dedup-collapse": {
+      "category": "aspects",
+      "id": "warning-dedup-collapse"
+    },
+    "~image-asset-fixed-dimensions": {
+      "category": "aspects",
+      "id": "image-asset-fixed-dimensions"
+    },
+    "~numeric-layer-type-discriminant": {
+      "category": "aspects",
+      "id": "numeric-layer-type-discriminant"
+    },
+    "~bezier-handles-as-xy-objects": {
+      "category": "aspects",
+      "id": "bezier-handles-as-xy-objects"
+    },
+    "~percentage-units-collapse-to-zero": {
+      "category": "aspects",
+      "id": "percentage-units-collapse-to-zero"
+    },
+    "~layer-index-is-parent-pointer": {
+      "category": "aspects",
+      "id": "layer-index-is-parent-pointer"
+    },
+    "~opacity-and-scale-percent-rescale": {
+      "category": "aspects",
+      "id": "opacity-and-scale-percent-rescale"
+    },
+    "~max-frame-fallback-sixty": {
+      "category": "aspects",
+      "id": "max-frame-fallback-sixty"
+    },
+    "~rect-centered-radial-fixed": {
+      "category": "aspects",
+      "id": "rect-centered-radial-fixed"
+    },
+    "~gradient-stop-stride-no-alpha": {
+      "category": "aspects",
+      "id": "gradient-stop-stride-no-alpha"
+    },
+    "~unknown-fill-black-fallback": {
+      "category": "aspects",
+      "id": "unknown-fill-black-fallback"
+    },
+    "~expression-short-circuits-static-zero": {
+      "category": "aspects",
+      "id": "expression-short-circuits-static-zero"
+    },
+    "~position-z-zero-easing-from-x": {
+      "category": "aspects",
+      "id": "position-z-zero-easing-from-x"
+    },
+    "~keyframe-hold-last-completed": {
+      "category": "aspects",
+      "id": "keyframe-hold-last-completed"
+    },
+    "~rgb-normalize-255-to-unit": {
+      "category": "aspects",
+      "id": "rgb-normalize-255-to-unit"
+    },
+    "~hex-shorthand-and-black-fallback": {
+      "category": "aspects",
+      "id": "hex-shorthand-and-black-fallback"
+    },
+    "~easing-handles-swapped-and-inverted": {
+      "category": "aspects",
+      "id": "easing-handles-swapped-and-inverted"
+    },
+    "~lossy-easing-approximations": {
+      "category": "aspects",
+      "id": "lossy-easing-approximations"
+    },
+    "~unsupported-feature-catalog": {
+      "category": "aspects",
+      "id": "unsupported-feature-catalog"
+    },
     "~frame-resolution-determinism": {
       "category": "aspects",
       "id": "frame-resolution-determinism"
@@ -8213,6 +8233,82 @@
     "~audio-before-start-silent": {
       "category": "aspects",
       "id": "audio-before-start-silent"
+    },
+    "~painters-algorithm-order": {
+      "category": "aspects",
+      "id": "painters-algorithm-order"
+    },
+    "~save-restore-per-layer": {
+      "category": "aspects",
+      "id": "save-restore-per-layer"
+    },
+    "~transform-stack-anchor-order": {
+      "category": "aspects",
+      "id": "transform-stack-anchor-order"
+    },
+    "~ancestor-transforms-root-first": {
+      "category": "aspects",
+      "id": "ancestor-transforms-root-first"
+    },
+    "~tint-offscreen-multiply-mask": {
+      "category": "aspects",
+      "id": "tint-offscreen-multiply-mask"
+    },
+    "~early-skip-invisible-layers": {
+      "category": "aspects",
+      "id": "early-skip-invisible-layers"
+    },
+    "~render-context-no-dom-dependency": {
+      "category": "aspects",
+      "id": "render-context-no-dom-dependency"
+    },
+    "~perimeter-from-shape-type": {
+      "category": "aspects",
+      "id": "perimeter-from-shape-type"
+    },
+    "~rounded-rect-feature-detect": {
+      "category": "aspects",
+      "id": "rounded-rect-feature-detect"
+    },
+    "~path-needs-two-points": {
+      "category": "aspects",
+      "id": "path-needs-two-points"
+    },
+    "~text-align-offset-baseline": {
+      "category": "aspects",
+      "id": "text-align-offset-baseline"
+    },
+    "~font-string-assembly": {
+      "category": "aspects",
+      "id": "font-string-assembly"
+    },
+    "~video-null-provider-retry": {
+      "category": "aspects",
+      "id": "video-null-provider-retry"
+    },
+    "~effective-property-override-defaults": {
+      "category": "aspects",
+      "id": "effective-property-override-defaults"
+    },
+    "~percentage-resolved-at-render": {
+      "category": "aspects",
+      "id": "percentage-resolved-at-render"
+    },
+    "~visual-override-copy-on-write": {
+      "category": "aspects",
+      "id": "visual-override-copy-on-write"
+    },
+    "~stroke-trim-via-dash": {
+      "category": "aspects",
+      "id": "stroke-trim-via-dash"
+    },
+    "~color-css-type-dispatch": {
+      "category": "aspects",
+      "id": "color-css-type-dispatch"
+    },
+    "~gradient-geometry-from-bounds": {
+      "category": "aspects",
+      "id": "gradient-geometry-from-bounds"
     },
     "~lint-gate-cascade-short-circuit": {
       "category": "aspects",
@@ -8562,82 +8658,6 @@
       "category": "aspects",
       "id": "media-ref-drag-discriminated"
     },
-    "~painters-algorithm-order": {
-      "category": "aspects",
-      "id": "painters-algorithm-order"
-    },
-    "~save-restore-per-layer": {
-      "category": "aspects",
-      "id": "save-restore-per-layer"
-    },
-    "~transform-stack-anchor-order": {
-      "category": "aspects",
-      "id": "transform-stack-anchor-order"
-    },
-    "~ancestor-transforms-root-first": {
-      "category": "aspects",
-      "id": "ancestor-transforms-root-first"
-    },
-    "~tint-offscreen-multiply-mask": {
-      "category": "aspects",
-      "id": "tint-offscreen-multiply-mask"
-    },
-    "~early-skip-invisible-layers": {
-      "category": "aspects",
-      "id": "early-skip-invisible-layers"
-    },
-    "~render-context-no-dom-dependency": {
-      "category": "aspects",
-      "id": "render-context-no-dom-dependency"
-    },
-    "~perimeter-from-shape-type": {
-      "category": "aspects",
-      "id": "perimeter-from-shape-type"
-    },
-    "~rounded-rect-feature-detect": {
-      "category": "aspects",
-      "id": "rounded-rect-feature-detect"
-    },
-    "~path-needs-two-points": {
-      "category": "aspects",
-      "id": "path-needs-two-points"
-    },
-    "~text-align-offset-baseline": {
-      "category": "aspects",
-      "id": "text-align-offset-baseline"
-    },
-    "~font-string-assembly": {
-      "category": "aspects",
-      "id": "font-string-assembly"
-    },
-    "~video-null-provider-retry": {
-      "category": "aspects",
-      "id": "video-null-provider-retry"
-    },
-    "~effective-property-override-defaults": {
-      "category": "aspects",
-      "id": "effective-property-override-defaults"
-    },
-    "~percentage-resolved-at-render": {
-      "category": "aspects",
-      "id": "percentage-resolved-at-render"
-    },
-    "~visual-override-copy-on-write": {
-      "category": "aspects",
-      "id": "visual-override-copy-on-write"
-    },
-    "~stroke-trim-via-dash": {
-      "category": "aspects",
-      "id": "stroke-trim-via-dash"
-    },
-    "~color-css-type-dispatch": {
-      "category": "aspects",
-      "id": "color-css-type-dispatch"
-    },
-    "~gradient-geometry-from-bounds": {
-      "category": "aspects",
-      "id": "gradient-geometry-from-bounds"
-    },
     "#svg-shapes": {
       "category": "components",
       "id": "svg-shapes"
@@ -8669,30 +8689,6 @@
     "^valid-recipe": {
       "category": "gates",
       "id": "valid-recipe"
-    },
-    "#lottie-map-layers": {
-      "category": "components",
-      "id": "lottie-map-layers"
-    },
-    "#lottie-warnings": {
-      "category": "components",
-      "id": "lottie-warnings"
-    },
-    "#lottie-map-shapes": {
-      "category": "components",
-      "id": "lottie-map-shapes"
-    },
-    "#lottie-map-keyframes": {
-      "category": "components",
-      "id": "lottie-map-keyframes"
-    },
-    "#lottie-map-colors": {
-      "category": "components",
-      "id": "lottie-map-colors"
-    },
-    "#lottie-map-easing": {
-      "category": "components",
-      "id": "lottie-map-easing"
     },
     "!doc-change": {
       "category": "signals",
@@ -8737,6 +8733,34 @@
     "^doc-path-inside-project.": {
       "category": "gates",
       "id": "doc-path-inside-project."
+    },
+    "#lottie-map-layers": {
+      "category": "components",
+      "id": "lottie-map-layers"
+    },
+    "#lottie-warnings": {
+      "category": "components",
+      "id": "lottie-warnings"
+    },
+    "#lottie-map-shapes": {
+      "category": "components",
+      "id": "lottie-map-shapes"
+    },
+    "#lottie-map-keyframes": {
+      "category": "components",
+      "id": "lottie-map-keyframes"
+    },
+    "#lottie-map-colors": {
+      "category": "components",
+      "id": "lottie-map-colors"
+    },
+    "#lottie-map-easing": {
+      "category": "components",
+      "id": "lottie-map-easing"
+    },
+    "#frame-resolver": {
+      "category": "components",
+      "id": "frame-resolver"
     },
     "^valid-document": {
       "category": "gates",
@@ -8853,10 +8877,6 @@
     "~media-ref-drag-discriminated.": {
       "category": "aspects",
       "id": "media-ref-drag-discriminated."
-    },
-    "#frame-resolver": {
-      "category": "components",
-      "id": "frame-resolver"
     },
     "^no-overlap": {
       "category": "gates",

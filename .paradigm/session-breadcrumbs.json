@@ -1,104 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779966786668,
+  "lastActivity": 1779968597065,
   "breadcrumbs": [
-    {
-      "timestamp": 1779777381234,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Recipe sharing & asset portability: nevr.land hosts inert ar"
-    },
-    {
-      "timestamp": 1779778054596,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Atelier is local-first only — no hosted Studio tier (reverse"
-    },
-    {
-      "timestamp": 1779778062565,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Personal notebooks and mind-map are creator-owned, never lea"
-    },
-    {
-      "timestamp": 1779778071650,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Extracted recipes default to personal-use, not publishable"
-    },
-    {
-      "timestamp": 1779799711170,
-      "action": "tool-call",
-      "tool": "paradigm_portal_add_gate",
-      "summary": "portal_add_gate: valid-artifact-set"
-    },
-    {
-      "timestamp": 1779799724024,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Phase 2: artifact Zod schemas (DESIGN/SCRIPT/STORYBOARD) lan"
-    },
-    {
-      "timestamp": 1779853060829,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_check",
-      "summary": "aspect_check: ~store-single-instance-shared"
-    },
-    {
-      "timestamp": 1779854039510,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Phase 3 core build: Claude Code agents, mind-map stub, ateli"
-    },
-    {
-      "timestamp": 1779857040304,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Workspace layer: context-aware atelier studio, workspace.ate"
-    },
-    {
-      "timestamp": 1779889657905,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Paradigm + Atelier symbiosis: inspection + protocol design"
-    },
-    {
-      "timestamp": 1779889715389,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Session arc: artifact schemas → agent wiring → workspace lay"
-    },
-    {
-      "timestamp": 1779890592590,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Paradigm-Atelier symbiosis: detection + 4-augmentation contr"
-    },
-    {
-      "timestamp": 1779905396116,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: V1 release gating: real-content-team bundle is the last buil"
-    },
-    {
-      "timestamp": 1779906118321,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Local-only by default — all third-party integrations are opt"
-    },
-    {
-      "timestamp": 1779907235339,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: v1-prep checkpoint: real content team bundle complete, ready"
-    },
-    {
-      "timestamp": 1779910481452,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Test stance: end-to-end UX validation over piecemeal agent t"
-    },
     {
       "timestamp": 1779911298378,
       "action": "tool-call",
@@ -302,6 +206,102 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: Round 3 — BrowserVideoFrameProvider + srcResolver close the "
+    },
+    {
+      "timestamp": 1779968079925,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779968510359,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968514423,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968517932,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968521519,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968525491,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968529544,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968537764,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968539215,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968549876,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968554837,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968559405,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: .purpose"
+    },
+    {
+      "timestamp": 1779968565782,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779968593693,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779968596821,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779968626916,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
     }
   ],
   "symbolsModified": [],
