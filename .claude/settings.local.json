@@ -156,7 +156,9 @@
       "Bash(awk '/isProjectDir|listProjects/ {print NR\": \"$0}' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace.ts)",
       "Bash(echo \"exit: $?\")",
       "Bash(awk '/setActiveProject/ {print NR\": \"$0}' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace.ts)",
-      "Bash(echo \"\\(error count: $\\(pnpm -r exec tsc --noEmit 2>&1)"
+      "Bash(echo \"\\(error count: $\\(pnpm -r exec tsc --noEmit 2>&1)",
+      "Bash(paradigm aspect-drift *)",
+      "Bash(awk '/source-tagged-mutation:/,/appliesTo/' packages/cli/.purpose)"
     ]
   },
   "enableAllProjectMcpServers": true,

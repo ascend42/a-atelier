@@ -839,8 +839,8 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:500
-      - packages/cli/src/commands/studio.ts:559-568
+      - packages/cli/src/commands/studio.ts:255-270
+      - packages/cli/src/commands/studio.ts:1790-1810
     enforcement: explicit 127.0.0.1 host bind
     appliesTo: ["#cli-studio"]
   studio-origin-check-bridge-vs-mcp-split:
@@ -850,8 +850,8 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:94-112
-      - packages/cli/src/commands/studio.ts:584-594
+      - packages/cli/src/commands/studio.ts:255-275
+      - packages/cli/src/commands/studio.ts:2760-2785
     enforcement: strict origin for bridge, tolerant for mcp
     appliesTo: ["#cli-studio"]
   studio-ws-upgrade-rechecks-origin:
@@ -861,7 +861,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:719-736
+      - packages/cli/src/commands/studio.ts:2745-2790
     enforcement: re-run origin check on WS upgrade
     appliesTo: ["#cli-studio"]
   studio-llm-only-broadcast:
@@ -871,8 +871,8 @@ aspects:
       - attribution
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:122-124
-      - packages/cli/src/commands/studio.ts:538-557
+      - packages/cli/src/commands/studio.ts:280-295
+      - packages/cli/src/commands/studio.ts:2275-2295
     enforcement: broadcast/persist only source === llm
     appliesTo: ["#cli-studio"]
   studio-contained-path-guard:
@@ -882,7 +882,7 @@ aspects:
       - path-traversal
       - edge-case
     anchors:
-      - packages/cli/src/commands/studio.ts:70-75
+      - packages/cli/src/commands/studio.ts:120-140
     enforcement: resolved-containment prefix check
     appliesTo: ["#cli-studio"]
   recipe-lib-resolution-chain:
@@ -1065,7 +1065,7 @@ aspects:
       - invariant
       - v1
     anchors:
-      - packages/cli/src/lib/compose-image-project.ts:108
+      - packages/cli/src/lib/compose-image-project.ts:118
     enforcement: refuse second image with different basename, idempotent on same
     appliesTo: ["#compose-image-project"]
   slide-ref-no-ownership:
@@ -1126,7 +1126,7 @@ aspects:
       - convention
       - v1.0.x
     anchors:
-      - packages/cli/src/lib/doc-management.ts:189-298
+      - packages/cli/src/lib/doc-management.ts:195-310
     enforcement: layer ids derived from media slug, not doc filename
     appliesTo: ["#doc-management", "#mcp-tool-duplicate-doc"]
   doc-symlink-followed:
@@ -1138,8 +1138,8 @@ aspects:
       - cautionary
       - v1.0.x
     anchors:
-      - packages/cli/src/lib/doc-management.ts:340-349
-      - packages/cli/src/lib/doc-management.ts:453-540
+      - packages/cli/src/lib/doc-management.ts:346-360
+      - packages/cli/src/lib/doc-management.ts:498-545
     enforcement: statSync follows symlinks (intentional)
     appliesTo: ["#doc-management"]
   doc-dangling-refvisual-reported:
@@ -1151,7 +1151,7 @@ aspects:
       - cascade
       - v1.0.x
     anchors:
-      - packages/cli/src/lib/doc-management.ts:384-405
+      - packages/cli/src/lib/doc-management.ts:395-430
     enforcement: collect dangling RefVisual layers into report, do not mutate
     appliesTo: ["#doc-management"]
   doc-management-cli-mcp-duplication:

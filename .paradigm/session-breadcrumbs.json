@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779932792308,
+  "lastActivity": 1779937823960,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -236,6 +236,18 @@
       "action": "tool-call",
       "tool": "paradigm_aspect_drift",
       "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779937823744,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Flat-docs pivot — drop manifest concept, fix .atelier/ listi"
+    },
+    {
+      "timestamp": 1779938130294,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [],
