@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T04:28:27.762Z'
+generated: '2026-05-28T04:38:18.159Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -4212,11 +4212,33 @@ by_symbol:
       agent: []
   '#studio-doc-endpoints':
     symbol: '#studio-doc-endpoints'
-    total_changes: 1
-    last_modified: '2026-05-28T04:19:36Z'
+    total_changes: 2
+    last_modified: '2026-05-28T04:38:14Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_54
+        id: h0085
+        ts: '2026-05-28T04:38:14Z'
+        type: implement
+        symbols:
+          - '#ingest-dispatch'
+          - '#studio-doc-endpoints'
+          - '#studio-drop-zone'
+        author:
+          type: human
+          id: ascend
+        commit: 81985994e2d5ba75683eb13ac6ce4c7cb6c765b7
+        intent: feature
+        files:
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/lib/ingest-dispatch.test.ts
+          - packages/cli/src/lib/ingest-dispatch.ts
+          - packages/cli/src/web/workspace-app.ts
+          - packages/cli/src/workspace-ui.test.ts
+        description: 'feat(#ingest-dispatch): context-aware drag-drop — canvas drop adds to loaded doc'
       - *ref_53
     contributors:
       human:
@@ -4230,6 +4252,30 @@ by_symbol:
     fragility: low
     recent:
       - *ref_53
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#ingest-dispatch':
+    symbol: '#ingest-dispatch'
+    total_changes: 1
+    last_modified: '2026-05-28T04:38:14Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_54
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#studio-drop-zone':
+    symbol: '#studio-drop-zone'
+    total_changes: 1
+    last_modified: '2026-05-28T04:38:14Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_54
     contributors:
       human:
         - ascend

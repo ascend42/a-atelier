@@ -851,7 +851,7 @@ aspects:
       - core-invariant
     anchors:
       - packages/cli/src/commands/studio.ts:256-276
-      - packages/cli/src/commands/studio.ts:2768-2793
+      - packages/cli/src/commands/studio.ts:2865-2890
     enforcement: strict origin for bridge, tolerant for mcp
     appliesTo: ["#cli-studio"]
   studio-ws-upgrade-rechecks-origin:
@@ -861,7 +861,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:2753-2798
+      - packages/cli/src/commands/studio.ts:2855-2900
     enforcement: re-run origin check on WS upgrade
     appliesTo: ["#cli-studio"]
   studio-llm-only-broadcast:
@@ -872,7 +872,7 @@ aspects:
       - core-invariant
     anchors:
       - packages/cli/src/commands/studio.ts:281-296
-      - packages/cli/src/commands/studio.ts:2283-2303
+      - packages/cli/src/commands/studio.ts:2420-2440
     enforcement: broadcast/persist only source === llm
     appliesTo: ["#cli-studio"]
   studio-contained-path-guard:

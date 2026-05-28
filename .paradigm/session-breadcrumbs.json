@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779937823960,
+  "lastActivity": 1779943126484,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -245,6 +245,18 @@
     },
     {
       "timestamp": 1779938130294,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779943126222,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779943170325,
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"
