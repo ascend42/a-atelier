@@ -145,7 +145,14 @@
       "Bash(echo \"TSC=$?\")",
       "Bash(awk '{sum += $2} END {print \"Total:\", sum}')",
       "Bash(awk -F'Tests' '{print $2}')",
-      "Bash(awk '{sum += $1} END {print \"TOTAL:\", sum}')"
+      "Bash(awk '{sum += $1} END {print \"TOTAL:\", sum}')",
+      "mcp__paradigm__paradigm_aspect_drift",
+      "Bash(awk '{ s += $3 } END { print \"Total tests:\", s }')",
+      "Bash(bc)",
+      "Bash(git stash *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"TSC EXIT: $?\")",
+      "Bash(echo \"EXIT $?\")"
     ]
   },
   "enableAllProjectMcpServers": true,

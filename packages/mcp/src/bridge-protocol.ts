@@ -211,6 +211,21 @@ export interface ProjectDeletedEnvelope {
   wasActive: boolean;
 }
 
+// ── doc:list:changed envelope (v1.0.x doc-management) ──────
+//
+// Server → client signal that the set of .atelier docs inside a project
+// changed (create / duplicate / delete). Mirrors `media:list:changed` —
+// cheap envelope, no payload beyond the project name. Client refetches
+// `GET /api/project/:name/docs` on receipt. The browser tolerates unknown
+// envelope types, so an older client connected to a newer server is
+// harmless. Marker block kept narrow to avoid stomping on Kit-B's edits to
+// `bridge-protocol.ts` from the parallel MCP build.
+export interface DocListChangedEnvelope {
+  type: "doc:list:changed";
+  /** Subdir basename of the project whose docs[] changed. Client refetches GET /api/project/:name/docs. */
+  projectName: string;
+}
+
 /** Discriminated union of all envelopes carried over the bridge. */
 export type BridgeEnvelope =
   | HelloEnvelope
@@ -224,7 +239,8 @@ export type BridgeEnvelope =
   | MediaIngestProgressEnvelope
   | FileDeletedEnvelope
   | MediaDeletedEnvelope
-  | ProjectDeletedEnvelope;
+  | ProjectDeletedEnvelope
+  | DocListChangedEnvelope;
 
 /** Type guard for runtime envelope validation. */
 export function isBridgeEnvelope(value: unknown): value is BridgeEnvelope {
@@ -242,6 +258,7 @@ export function isBridgeEnvelope(value: unknown): value is BridgeEnvelope {
     t === "media:ingest:progress" ||
     t === "file:deleted" ||
     t === "media:deleted" ||
-    t === "project:deleted"
+    t === "project:deleted" ||
+    t === "doc:list:changed"
   );
 }

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-28T00:22:52.353Z",
+  "generatedAt": "2026-05-28T01:46:32.234Z",
   "flows": {
     "$frame-resolution": {
       "id": "$frame-resolution",
@@ -102,6 +102,75 @@
         }
       ],
       "definedIn": "packages/cli/.purpose"
+    },
+    "$doc-create-flow": {
+      "id": "$doc-create-flow",
+      "description": "Sidebar \"+ new doc\" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its DOCUMENT / SLIDES / OTHER DOCS groups. When the carousel project is active and the slide toggle is on, createDoc also runs composeCarouselProject to append a SlideRef (with full cycle check).",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "render \"+ new doc\" affordance on the DOCUMENT label row",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-2",
+          "action": "collect kind + name (+ slide toggle), preview slug",
+          "symbol": "#studio-new-doc-modal"
+        },
+        {
+          "id": "step-3",
+          "action": "POST /api/project/:name/docs, gate ^valid-doc-name + ^doc-path-inside-project",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-4",
+          "action": "createDoc → composeImage|Video|Carousel, write file",
+          "symbol": "#doc-management"
+        },
+        {
+          "id": "step-5",
+          "action": "broadcast !doc-list-changed envelope",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-6",
+          "action": "refresh on doc:list:changed",
+          "symbol": "#studio-doc-sidebar"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$doc-delete-cascade-flow": {
+      "id": "$doc-delete-cascade-flow",
+      "description": "Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, removes matching SlideRef entries from any carousel manifest, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the project manifest so the editor never lingers on a missing file.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "right-click → context menu → Delete…",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-2",
+          "action": "DELETE /api/project/:name/docs?path=, gate manifest + path + name",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-3",
+          "action": "deleteDoc → workspace-wide SlideRef scrub + RefVisual dangling scan + unlink",
+          "symbol": "#doc-management"
+        },
+        {
+          "id": "step-4",
+          "action": "broadcast !doc-list-changed",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-5",
+          "action": "refresh; bridge falls back to manifest if currentDoc was deleted",
+          "symbol": "#studio-doc-sidebar"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
     }
   },
   "symbolToFlows": {
@@ -134,6 +203,21 @@
     ],
     "#rename-media": [
       "$rename-cascade-flow"
+    ],
+    "#studio-doc-sidebar": [
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
+    ],
+    "#studio-new-doc-modal": [
+      "$doc-create-flow"
+    ],
+    "#studio-doc-endpoints": [
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
+    ],
+    "#doc-management": [
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
     ]
   }
 }

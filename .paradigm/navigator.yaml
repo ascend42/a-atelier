@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T00:22:52.348Z'
+generated: '2026-05-28T01:46:32.224Z'
 structure: {}
 key_files:
   config:
@@ -100,14 +100,6 @@ symbols:
   '#purpose-component-easing-picker': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-range-slider': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   '#purpose-component-drag-reorder': /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
-  '#purpose-component-#document-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#layer-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#delta-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#validation-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#recipe-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#yaml-parser': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#workspace-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  '#purpose-component-#artifact-schemas': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-component-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
   '#purpose-component-use-animation': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
   '#purpose-component-use-animation-state': /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
@@ -142,6 +134,12 @@ symbols:
   '#purpose-component-mcp-lib-timeline-ops': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-component-mcp-tool-rename-media': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-component-mcp-lib-rename-media': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-tool-create-doc': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-tool-duplicate-doc': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-tool-delete-doc': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-tool-list-docs': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-lib-doc-management': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '#purpose-component-mcp-lib-doc-management-types': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-component-#easing-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   '#purpose-component-#spring-solver': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   '#purpose-component-#lerp-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
@@ -208,26 +206,46 @@ symbols:
   '#purpose-component-#ingest-dispatch': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-component-#rename-media': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-component-#studio-rename-endpoint': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-#doc-management-types': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-#doc-management': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-#studio-doc-endpoints': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-#studio-new-doc-modal': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '#purpose-component-#studio-doc-sidebar': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-component-render-frame': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-shape-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-text-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-video-renderer': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-apply-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   '#purpose-component-canvas-styles': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  '#purpose-component-#document-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#layer-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#delta-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#validation-functions': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#recipe-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#yaml-parser': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#workspace-schema': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  '#purpose-component-#artifact-schemas': /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ^purpose-gate-^workspace-scoped-project-dir: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-gate-^workspace-scoped-doc-tool: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-gate-^no-overlap: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
+  ^purpose-gate-^carousel-cycle-safe: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-gate-^valid-media-basename: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-gate-^valid-doc-name: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-gate-^manifest-doc-protected: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-gate-^doc-path-inside-project: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ^purpose-gate-^valid-document: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-video-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-recipe: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ^purpose-gate-^valid-artifact-set: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ^purpose-gate-^workspace-scoped-project-dir: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
-  ^purpose-gate-^no-overlap: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
-  ^purpose-gate-^carousel-cycle-safe: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
-  ^purpose-gate-^valid-media-basename: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   $purpose-flow-$frame-resolution: /Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose
   $purpose-flow-$media-ingest-flow: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   $purpose-flow-$rename-cascade-flow: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  $purpose-flow-$doc-create-flow: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  $purpose-flow-$doc-delete-cascade-flow: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '!purpose-signal-!clip-added-to-track': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '!purpose-signal-!media-rename-cascaded': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  '!purpose-signal-!doc-list-changed': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ~purpose-aspect-layer-tag-isolation: /Users/ascend/Documents/GitHub/a-atelier/.purpose
   ~purpose-aspect-detected-vs-user-edited: /Users/ascend/Documents/GitHub/a-atelier/.purpose
   ~purpose-aspect-copy-on-write-doc: /Users/ascend/Documents/GitHub/a-atelier/.purpose
@@ -327,27 +345,6 @@ symbols:
   ~purpose-aspect-drag-reorder-handle-only: /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   ~purpose-aspect-drag-reorder-index-adjust: /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
   ~purpose-aspect-drag-reorder-aborts-clean: /Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose
-  ~purpose-aspect-document-shape-asymmetry: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-visual-discriminated-union: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-video-bound-asymmetry: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-layer-clamps-and-min-points: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-animatable-property-canonical-enum: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-frame-range-ordering-refinement: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-delta-values-unvalidated-at-parse: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-flat-ai-readable-error-shape: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-video-semantic-checks-beyond-zod: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-recipe-warnings-side-channel: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-recipe-strict-no-unknown-keys: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-page-number-format-template-syntax: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-recipe-phase-split-strict-vs-opaque: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-yaml-parse-never-throws: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-slot-closed-kind-open-tail: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-script-discriminated-union: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-validator-result-shape-deviates-from-recipe-idiom: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-technique-library-validated-cross-artifact: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-b-roll-id-exemption: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-artifact-parser-frontmatter-plus-body-universal: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ~purpose-aspect-yaml-safe-by-default-data-only: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   ~purpose-aspect-canvas-intrinsic-not-css-size: /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
   ~purpose-aspect-initial-state-effect-deps-narrow: /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
   ~purpose-aspect-player-lifecycle-keyed-on-doc: /Users/ascend/Documents/GitHub/a-atelier/packages/react/.purpose
@@ -401,6 +398,7 @@ symbols:
   ~purpose-aspect-mind-map-query-local-only: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   ~purpose-aspect-mind-map-stub-no-ingestion: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   ~purpose-aspect-mcp-lib-duplication-vs-cli: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ~purpose-aspect-doc-cycle-v1-simple-check: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   ~purpose-aspect-bezier-binary-search-not-newton: /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   ~purpose-aspect-easing-endpoint-snap: /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
   ~purpose-aspect-css-preset-control-points: /Users/ascend/Documents/GitHub/a-atelier/packages/math/.purpose
@@ -539,6 +537,10 @@ symbols:
   ~purpose-aspect-rename-atomicity: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ~purpose-aspect-rename-not-concurrent-safe: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ~purpose-aspect-rename-symlink-passthrough: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ~purpose-aspect-doc-slug-stable: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ~purpose-aspect-doc-symlink-followed: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ~purpose-aspect-doc-dangling-refvisual-reported: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ~purpose-aspect-doc-management-cli-mcp-duplication: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ~purpose-aspect-painters-algorithm-order: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ~purpose-aspect-save-restore-per-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ~purpose-aspect-transform-stack-anchor-order: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
@@ -558,14 +560,33 @@ symbols:
   ~purpose-aspect-stroke-trim-via-dash: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ~purpose-aspect-color-css-type-dispatch: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ~purpose-aspect-gradient-geometry-from-bounds: /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
+  ~purpose-aspect-document-shape-asymmetry: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-visual-discriminated-union: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-video-bound-asymmetry: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-layer-clamps-and-min-points: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-animatable-property-canonical-enum: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-frame-range-ordering-refinement: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-delta-values-unvalidated-at-parse: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-flat-ai-readable-error-shape: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-video-semantic-checks-beyond-zod: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-recipe-warnings-side-channel: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-recipe-strict-no-unknown-keys: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-page-number-format-template-syntax: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-recipe-phase-split-strict-vs-opaque: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-yaml-parse-never-throws: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-slot-closed-kind-open-tail: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-script-discriminated-union: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-validator-result-shape-deviates-from-recipe-idiom: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-technique-library-validated-cross-artifact: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-b-roll-id-exemption: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-artifact-parser-frontmatter-plus-body-universal: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
+  ~purpose-aspect-yaml-safe-by-default-data-only: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '#purpose-ref-component-svg-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-ref-component-svg-text': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-ref-component-svg-gradients': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-ref-component-svg-filters': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-ref-component-svg-clip': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
   '#purpose-ref-component-svg-properties': /Users/ascend/Documents/GitHub/a-atelier/packages/svg/.purpose
-  ^purpose-ref-gate-valid-video-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
-  ^purpose-ref-gate-valid-recipe: /Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose
   '!purpose-ref-signal-doc-change': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   ^purpose-ref-gate-valid-mind-map-query: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   ^purpose-ref-gate-valid-media-basename: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
@@ -573,6 +594,11 @@ symbols:
   '!purpose-ref-signal-media-rename-cascaded': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-ref-component-rename-media': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '!purpose-ref-signal-dryRun': /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-ref-gate-valid-doc-name: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-ref-gate-manifest-doc-protected: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-ref-gate-workspace-scoped-doc-tool: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-ref-gate-doc-path-inside-project: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
+  ^purpose-ref-gate-doc-path-inside-project.: /Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose
   '#purpose-ref-component-lottie-map-layers': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-warnings': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   '#purpose-ref-component-lottie-map-shapes': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
@@ -581,8 +607,10 @@ symbols:
   '#purpose-ref-component-lottie-map-easing': /Users/ascend/Documents/GitHub/a-atelier/packages/lottie/.purpose
   ^purpose-ref-gate-valid-document: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   ^purpose-ref-gate-valid-delta: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-ref-gate-valid-video-layer: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-render-image': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-cli-transcribe': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-ref-gate-valid-recipe: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-learning-mode-io': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-cli-artifacts': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-paradigm-augment': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
@@ -595,6 +623,8 @@ symbols:
   '#purpose-ref-component-ref-cycle': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-compose-video-project.': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-cli-studio': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  ^purpose-ref-gate-carousel-cycle-safe: /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
+  '!purpose-ref-signal-doc-list-changed': /Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose
   '#purpose-ref-component-frame-resolver': /Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose
   ^gate-no-overlap: /Users/ascend/Documents/GitHub/a-atelier
   ^gate-valid-document: /Users/ascend/Documents/GitHub/a-atelier
@@ -604,6 +634,9 @@ symbols:
   ^gate-localhost-only: /Users/ascend/Documents/GitHub/a-atelier
   ^gate-valid-artifact-set: /Users/ascend/Documents/GitHub/a-atelier
   ^gate-valid-mind-map-query: /Users/ascend/Documents/GitHub/a-atelier
+  ^gate-carousel-cycle-safe: /Users/ascend/Documents/GitHub/a-atelier
+  ^gate-valid-media-basename: /Users/ascend/Documents/GitHub/a-atelier
+  ^gate-workspace-scoped-project-dir: /Users/ascend/Documents/GitHub/a-atelier
 symbolsByComponentType:
   component:
     - '#animation'

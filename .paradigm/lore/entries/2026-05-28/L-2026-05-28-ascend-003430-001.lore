@@ -1,0 +1,134 @@
+id: L-2026-05-28-ascend-003430-001
+type: milestone
+timestamp: '2026-05-28T00:34:30.960Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: v1.0 surface bundle — agent clip tools + image/carousel compose + rename cascade (team-orchestrated)
+summary: 'Shipped the v1.0-completing authoring surface: six MCP clip tools (add/move/trim/remove/transcribe/move_slide), compose-image-project + compose-carousel-project (with cycle-safe ref-cycle), studio drag-drop dispatcher routing by file kind, and atomic media-rename cascade with two-phase rollback. First session to actually use the project''s 13-agent Paradigm roster end-to-end — Arky decomposed, five parallel Kits built, Aegis audited (4 findings, 3 fixed inline), Scribe swept .purpose files, Rune verified compliance + portal.yaml updates, Probe verified test coverage. 1023 tests pass (was 911), zero tsc errors, compliance + portal clean. Pre-existing studio.ts errors cleaned in the previous schema commit.'
+symbols_touched:
+  - '#atelier-v1-surface'
+  - '#ref-cycle'
+  - '#timeline-ops'
+  - '#compose-image-project'
+  - '#compose-carousel-project'
+  - '#ingest-dispatch'
+  - '#rename-media'
+  - '#studio-rename-endpoint'
+  - '#mcp-tool-add-clip'
+  - '#mcp-tool-move-clip'
+  - '#mcp-tool-trim-clip'
+  - '#mcp-tool-remove-clip'
+  - '#mcp-tool-transcribe-clip'
+  - '#mcp-tool-move-slide'
+  - '#mcp-tool-rename-media'
+  - '#mcp-lib-timeline-ops'
+  - '#mcp-lib-rename-media'
+  - $media-ingest-flow
+  - $rename-cascade-flow
+  - ^carousel-cycle-safe
+  - ^valid-media-basename
+  - ^workspace-scoped-project-dir
+symbols_created:
+  - '#ref-cycle'
+  - '#timeline-ops'
+  - '#compose-image-project'
+  - '#compose-carousel-project'
+  - '#ingest-dispatch'
+  - '#rename-media'
+  - '#studio-rename-endpoint'
+  - '#mcp-tool-add-clip'
+  - '#mcp-tool-move-clip'
+  - '#mcp-tool-trim-clip'
+  - '#mcp-tool-remove-clip'
+  - '#mcp-tool-transcribe-clip'
+  - '#mcp-tool-move-slide'
+  - '#mcp-tool-rename-media'
+  - '#mcp-lib-timeline-ops'
+  - '#mcp-lib-rename-media'
+files_created:
+  - packages/cli/src/lib/ref-cycle.ts
+  - packages/cli/src/lib/ref-cycle.test.ts
+  - packages/cli/src/lib/timeline-ops.ts
+  - packages/cli/src/lib/timeline-ops.test.ts
+  - packages/cli/src/lib/compose-image-project.ts
+  - packages/cli/src/lib/compose-image-project.test.ts
+  - packages/cli/src/lib/compose-carousel-project.ts
+  - packages/cli/src/lib/compose-carousel-project.test.ts
+  - packages/cli/src/lib/ingest-dispatch.ts
+  - packages/cli/src/lib/ingest-dispatch.test.ts
+  - packages/cli/src/lib/rename-media.ts
+  - packages/cli/src/lib/rename-media.test.ts
+  - packages/mcp/src/tools/clips.ts
+  - packages/mcp/src/tools/clips.test.ts
+  - packages/mcp/src/tools/rename-media.ts
+  - packages/mcp/src/tools/rename-media.test.ts
+  - packages/mcp/src/lib/timeline-ops.ts
+  - packages/mcp/src/lib/rename-media.ts
+files_modified:
+  - packages/cli/src/lib/compose-video-project.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/index.ts
+  - packages/cli/src/workspace-ui.test.ts
+  - packages/mcp/src/index.ts
+  - packages/mcp/src/index.test.ts
+  - packages/cli/.purpose
+  - packages/mcp/.purpose
+  - portal.yaml
+decisions:
+  - id: TD-2026-05-27-mcp-cli-dep-cycle-duplication
+    decision: MCP tools that need cli/lib helpers get intentional duplicate copies in packages/mcp/src/lib/ with header comments explaining the dep-cycle constraint
+    rationale: cli already depends on mcp (for tool registration helpers); reverse-importing closes the cycle. Lifting to a shared package (e.g. atelier-timeline) is the right long-term fix; flagged as v1.1 candidate via ~mcp-lib-duplication-vs-cli.
+  - id: TD-2026-05-27-clip-slug-stable-on-rename
+    decision: When media is renamed, the asset KEY (clip-<slug>) stays stable; only .src values cascade. Layer ids never change.
+    rationale: clip-<slug> captures provenance at create-time. Renaming the layer id would break any external reference (deltas, parentId from captions). Rename is a media op, not an identity op.
+  - id: TD-2026-05-27-rename-per-project-mutex
+    decision: renameMedia uses an in-process per-project mutex (Map<projectDir, Promise>) to serialize concurrent rename calls
+    rationale: Aegis Finding 3 — TOCTOU race between existence check and renameSync was reachable through normal UX (double-click, two browser tabs). Per-project mutex is cheap and sufficient for v1 single-process studio. Cross-process via lockfiles is a v1.1 consideration.
+  - id: TD-2026-05-27-mcp-workspace-scoping
+    decision: atelier_rename_media MCP tool requires projectDir to resolve inside workspaceDir (defaults to process.cwd()) — gate name ^workspace-scoped-project-dir
+    rationale: Aegis Finding 1 — the MCP tool accepted any projectDir, opening a tool-misuse vector (prompt injection causing agent to rename in arbitrary dirs). Workspace scoping is defense-in-depth on top of the existing path-traversal basename check.
+  - id: TD-2026-05-27-image-project-single-image
+    decision: kind:image projects hold exactly one image; refuse second image at compose-image-project (use rename or delete first)
+    rationale: Multi-image workflows are explicitly carousels. Keeps the kinds orthogonal and stops creators from accidentally creating an ill-defined 'image project with multiple images'.
+  - id: TD-2026-05-27-state-stub-for-non-video-kinds
+    decision: 'Image and carousel kinds scaffold states: { default: { duration: 1, deltas: [] } } rather than making states optional in the schema'
+    rationale: Relaxing the schema to make states optional would break 911 existing tests. A single-frame default state is semantically correct for static kinds (renderer draws frame 0) and keeps the type contract uniform.
+  - id: TD-2026-05-27-ingest-dispatch-matrix
+    decision: Studio drag-drop routes via a 12-cell (file-kind × project-kind) matrix; mismatches return 400 with a clear explanation; uploaded file is cleaned up on reject
+    rationale: Explicit routing surface beats silent acceptance. Cleanup-on-reject prevents media/ from accumulating orphan files when the dispatcher rejects.
+learnings:
+  - 'The 13-agent Paradigm roster (Arky, Kit, Judge, Aegis, Probe, Scribe, Rune, etc.) was sitting unused while I drove a multi-hour refactor solo. User pushed back: this is the opposite of dogfooding. Pattern that worked: Arky decomposes into parallel-safe units → 3-5 Kits build in parallel → Aegis/Scribe/Rune do their specialist passes → Judge + Probe verify → commit. Stored as a [[use-the-paradigm-roster]] memory.'
+  - 'Parallel builders WILL collide on shared files (index.ts, .purpose, route dispatchers). Mitigation: explicit block-markers (`// ── v1.0 clip tools ──────`) per slice that builders are told to stay inside. Worked.'
+  - The cli → mcp dep direction is permanent. New MCP tools that need cli/lib helpers MUST duplicate (with header comments). Lifting timeline-ops + rename-media + caption-builder + slug-helper into a shared `atelier-timeline` package is the v1.1 architecture move that retires the duplication aspect.
+  - Test count estimates by the architect (Arky said target ~1100; actual landed 1023) drift +~10% because builders consolidate test cases into table-driven blocks. Not a problem; just don't anchor on the projection.
+  - Aegis security audit before the commit (not after) is the right placement. Found 4 important issues in a fresh-eyes pass that the implementing builder couldn't have flagged for themselves. Three were quick fixes; one was a documentation update.
+verification:
+  status: pass
+  details:
+    workspace_tests: 1023/1023 pass across 12 packages (+112 from baseline)
+    tsc_workspace: exit 0
+    compliance_check: all checks passed
+    portal_yaml: 3 new gates declared, no undeclared gates
+    security_audit: 'Aegis: 0 critical, 4 important — 3 fixed, 1 documented'
+tags:
+  - v1.0
+  - milestone
+  - agent-team
+  - mcp-tools
+  - compose-pipelines
+  - rename-cascade
+  - carousel
+  - image-projects
+  - security-audited
+linked_lore:
+  - L-2026-05-27-ascend-230751-001
+linked_commits:
+  - 3950dcb
+  - f204462
+confidence: 0.85
+git_context:
+  ref: 3950dcbe5cba9ce606c110fb7e92e4518112f10e
+  branch: feat/creator-flow-v1-prep
+  dirty: true

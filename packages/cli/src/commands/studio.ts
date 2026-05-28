@@ -69,6 +69,18 @@ import {
   isValidMediaBasenameForRename,
   type RenameMediaResult,
 } from "../lib/rename-media.js";
+// ── doc-management v1.0.x HTTP ──────
+import {
+  isValidDocName,
+  isManifestDoc,
+  type DocKind,
+} from "../lib/doc-management-types.js";
+import {
+  createDoc,
+  duplicateDoc,
+  deleteDoc,
+  listDocs,
+} from "../lib/doc-management.js";
 
 /** Recursively glob for .atelier files under a directory. */
 function findAtelierFiles(dir: string, base: string = dir): string[] {
@@ -932,6 +944,314 @@ export async function handleMediaRenameRequest(
     }
     return { status: 500, body: { error: msg } };
   }
+}
+
+// ── doc-management HTTP handlers (v1.0.x) ──────────────────────────
+//
+// Four endpoints (GET list / POST create / POST duplicate / DELETE) sit on
+// the same safety floor as the rest of /api/project/* — loopback-bound,
+// Origin-checked on mutating methods (MUTATING set in the middleware below),
+// project name funneled through `resolveProjectInWorkspace` which itself
+// gates on `isValidProjectName` BEFORE any disk work.
+//
+// In addition, every endpoint that takes a user-supplied `?path` or
+// `body.name` runs through the centralised `validateProjectRelativeDocPath`
+// helper below — Aegis audit surface, mirrors the posture established by
+// `handleMediaRenameRequest` above.
+
+/**
+ * Path-traversal defense — Aegis audit surface (single source of truth for
+ * the doc-management HTTP layer).
+ *
+ * Validates a user-supplied `?path=` query (project-relative .atelier doc
+ * path). Defense-in-depth rules, applied in order:
+ *
+ *   1. Must be a non-empty string after `.trim()`.
+ *   2. URL-decoded ONCE via `decodeURIComponent` (the query string the
+ *      browser sends is already URL-decoded by Vite's URL parser; we
+ *      decode again to be paranoid against tools that double-encode).
+ *   3. Reject absolute paths (leading `/`).
+ *   4. Reject any `..` substring (parent-dir traversal).
+ *   5. Reject backslash (Windows path separator — every project path on disk
+ *      uses POSIX slashes regardless of OS).
+ *   6. Reject any segment that starts with `.` (hidden / dotfile leaders).
+ *   7. Reject control bytes (NUL through 0x1f) — `decodeURIComponent("%00")`
+ *      survives the earlier substring checks but is the canonical "smuggle
+ *      a null byte past native fs" trick. Mirrors Aegis Finding 4
+ *      (TD-2026-05-27) in rename-media.ts.
+ *   8. Resolved absolute path MUST live inside `<projectDir>/`. Defence-in-
+ *      depth — the substring checks above already make `..` impossible, but
+ *      a containment assert is the right invariant to ship for any future
+ *      change to the regex set.
+ *
+ * Returns the validated decoded path on success, or `{ error: string }` on
+ * any reject. The handlers below translate that into a 400-with-error body.
+ */
+function validateProjectRelativeDocPath(
+  rawQuery: unknown,
+  projectDir: string,
+): { ok: true; decoded: string } | { ok: false; error: string } {
+  if (typeof rawQuery !== "string") return { ok: false, error: "missing path" };
+  const trimmed = rawQuery.trim();
+  if (trimmed.length === 0) return { ok: false, error: "missing path" };
+
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(trimmed);
+  } catch {
+    return { ok: false, error: "invalid path encoding" };
+  }
+  if (decoded.length === 0) return { ok: false, error: "missing path" };
+  if (decoded.startsWith("/")) return { ok: false, error: "invalid path" };
+  if (decoded.includes("..")) return { ok: false, error: "invalid path" };
+  if (decoded.includes("\\")) return { ok: false, error: "invalid path" };
+  // Reject control bytes (NUL through 0x1f). Aegis Finding 4 — keep the
+  // escape sequence rather than literal bytes so a future format pass can't
+  // silently mangle the class.
+  // eslint-disable-next-line no-control-regex
+  if (/[\x00-\x1f]/.test(decoded)) return { ok: false, error: "invalid path" };
+  // Reject any segment starting with a dot (catches `.hidden`, `./foo`, etc).
+  for (const seg of decoded.split("/")) {
+    if (seg.length === 0) return { ok: false, error: "invalid path" };
+    if (seg.startsWith(".")) return { ok: false, error: "invalid path" };
+  }
+
+  // Containment assert — defense-in-depth.
+  const resolved = resolve(projectDir, decoded);
+  const root = resolve(projectDir);
+  if (resolved !== root && !resolved.startsWith(root + sep)) {
+    return { ok: false, error: "invalid path" };
+  }
+
+  return { ok: true, decoded };
+}
+
+/**
+ * GET /api/project/:name/docs → DocListEntry[].
+ *
+ * Pure / read-only. No path input; project name flows through
+ * `resolveProjectInWorkspace` which is itself gated by `isValidProjectName`.
+ */
+export function buildProjectDocs(
+  workspaceDir: string,
+  projectName: string,
+): WorkspaceApiResult {
+  const dir = resolveProjectInWorkspace(workspaceDir, projectName);
+  if (!dir) {
+    return { status: 404, body: { error: `project not found: ${projectName}` } };
+  }
+  try {
+    const docs = listDocs(dir);
+    return { status: 200, body: docs };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { status: 500, body: { error: msg } };
+  }
+}
+
+/**
+ * POST /api/project/:name/docs → create a fresh doc OR a carousel slide.
+ *
+ * Path-traversal defense — Aegis audit surface:
+ *   - `projectName` → resolveProjectInWorkspace (validates via
+ *     isValidProjectName BEFORE any disk join).
+ *   - `body.name` → isValidDocName (rejects `/`, `\`, `..`, leading `.`,
+ *     control bytes, empty/whitespace, >200 chars). The downstream slugger
+ *     in `createDoc` then maps the human name to a fs-safe stem.
+ *   - `body.carouselDocPath` (when asCarouselSlide:true) → validated via
+ *     `validateProjectRelativeDocPath` so a crafted `../../etc/passwd` can't
+ *     trick `composeCarouselProject` into pointing slides[].src outside the
+ *     workspace.
+ */
+export async function handleCreateDoc(
+  workspaceDir: string,
+  projectName: string,
+  body: unknown,
+): Promise<WorkspaceApiResult> {
+  const dir = resolveProjectInWorkspace(workspaceDir, projectName);
+  if (!dir) {
+    return { status: 404, body: { error: `project not found: ${projectName}` } };
+  }
+  if (!body || typeof body !== "object") {
+    return { status: 400, body: { error: "missing JSON body" } };
+  }
+  const b = body as {
+    name?: unknown;
+    kind?: unknown;
+    asCarouselSlide?: unknown;
+    carouselDocPath?: unknown;
+    insertAt?: unknown;
+  };
+
+  // ── Path-traversal defense (Aegis) ──────
+  if (!isValidDocName(b.name)) {
+    return { status: 400, body: { error: "invalid doc name" } };
+  }
+  if (b.kind !== "video" && b.kind !== "image" && b.kind !== "carousel") {
+    return { status: 400, body: { error: "invalid doc kind" } };
+  }
+  const kind = b.kind as DocKind;
+  const asCarouselSlide = b.asCarouselSlide === true;
+  let carouselDocPath: string | undefined;
+  if (asCarouselSlide) {
+    if (b.carouselDocPath === undefined || b.carouselDocPath === null) {
+      // Default to the project manifest (slides anchored on this project).
+      carouselDocPath = "project.atelier";
+    } else {
+      const v = validateProjectRelativeDocPath(b.carouselDocPath, dir);
+      if (!v.ok) return { status: 400, body: { error: v.error } };
+      carouselDocPath = v.decoded;
+    }
+  }
+  let insertAt: number | undefined;
+  if (b.insertAt !== undefined) {
+    if (typeof b.insertAt !== "number" || !Number.isInteger(b.insertAt) || b.insertAt < 0) {
+      return { status: 400, body: { error: "invalid insertAt" } };
+    }
+    insertAt = b.insertAt;
+  }
+
+  try {
+    const opts: Parameters<typeof createDoc>[0] = {
+      projectDir: dir,
+      name: b.name,
+      kind,
+    };
+    if (asCarouselSlide) opts.asCarouselSlide = true;
+    if (carouselDocPath !== undefined) opts.carouselDocPath = carouselDocPath;
+    if (insertAt !== undefined) opts.insertAt = insertAt;
+    const result = await createDoc(opts);
+    const body: { docPath: string; appendedSlideIndex?: number } = {
+      docPath: result.docPath,
+    };
+    if (result.appendedSlideIndex !== undefined) {
+      body.appendedSlideIndex = result.appendedSlideIndex;
+    }
+    return { status: 201, body };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("invalid doc name") || msg.includes("collision suffix")) {
+      return { status: 400, body: { error: msg } };
+    }
+    return { status: 500, body: { error: msg } };
+  }
+}
+
+/**
+ * POST /api/project/:name/docs/duplicate?path=...
+ *
+ * Path-traversal defense — Aegis audit surface:
+ *   - `projectName` → resolveProjectInWorkspace (isValidProjectName gate).
+ *   - `?path` query → `validateProjectRelativeDocPath` (full decode +
+ *     reject + containment assert).
+ *   - Refuse the project manifest via `isManifestDoc(decoded)` BEFORE any fs
+ *     call so a probe can't even trigger the existsSync inside duplicateDoc.
+ */
+export async function handleDuplicateDoc(
+  workspaceDir: string,
+  projectName: string,
+  docPathQuery: string | null,
+  body: unknown,
+): Promise<WorkspaceApiResult> {
+  const dir = resolveProjectInWorkspace(workspaceDir, projectName);
+  if (!dir) {
+    return { status: 404, body: { error: `project not found: ${projectName}` } };
+  }
+  const v = validateProjectRelativeDocPath(docPathQuery, dir);
+  if (!v.ok) return { status: 400, body: { error: v.error } };
+  if (isManifestDoc(v.decoded)) {
+    return { status: 400, body: { error: "cannot duplicate the project manifest" } };
+  }
+  const b = (body && typeof body === "object" ? body : {}) as { appendSlideRef?: unknown };
+  const appendSlideRef = b.appendSlideRef === true;
+
+  try {
+    const opts: Parameters<typeof duplicateDoc>[0] = {
+      projectDir: dir,
+      sourceDocPath: v.decoded,
+    };
+    if (appendSlideRef) opts.appendSlideRef = true;
+    const report = await duplicateDoc(opts);
+    return { status: 200, body: report };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("source doc not found")) {
+      return { status: 404, body: { error: msg } };
+    }
+    if (
+      msg.includes("cannot duplicate the project manifest") ||
+      msg.includes("appendSlideRef requires a slide source") ||
+      msg.includes("collision suffix")
+    ) {
+      return { status: 400, body: { error: msg } };
+    }
+    return { status: 500, body: { error: msg } };
+  }
+}
+
+/**
+ * DELETE /api/project/:name/docs?path=...
+ *
+ * Path-traversal defense — Aegis audit surface:
+ *   - `projectName` → resolveProjectInWorkspace (isValidProjectName gate).
+ *   - `?path` query → `validateProjectRelativeDocPath` (full decode +
+ *     reject + containment assert).
+ *   - Refuse the project manifest via `isManifestDoc(decoded)` BEFORE any fs
+ *     call. Whole-project delete lives behind DELETE /api/project/:name.
+ */
+export async function handleDeleteDoc(
+  workspaceDir: string,
+  projectName: string,
+  docPathQuery: string | null,
+): Promise<WorkspaceApiResult> {
+  const dir = resolveProjectInWorkspace(workspaceDir, projectName);
+  if (!dir) {
+    return { status: 404, body: { error: `project not found: ${projectName}` } };
+  }
+  const v = validateProjectRelativeDocPath(docPathQuery, dir);
+  if (!v.ok) return { status: 400, body: { error: v.error } };
+  if (isManifestDoc(v.decoded)) {
+    return {
+      status: 400,
+      body: { error: "cannot delete the project manifest; use the project-delete flow instead" },
+    };
+  }
+
+  try {
+    const report = deleteDoc({
+      workspaceDir,
+      projectName,
+      docPath: v.decoded,
+    });
+    return { status: 200, body: report };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("doc not found")) {
+      return { status: 404, body: { error: msg } };
+    }
+    if (msg.includes("cannot delete the project manifest")) {
+      return { status: 400, body: { error: msg } };
+    }
+    return { status: 500, body: { error: msg } };
+  }
+}
+
+/** Match `/api/project/:name/docs` exactly (used for GET/POST/DELETE). */
+export function matchProjectDocsRoute(
+  pathname: string,
+): { name: string } | null {
+  const m = pathname.match(/^\/api\/project\/([^/]+)\/docs$/);
+  if (!m) return null;
+  return { name: decodeURIComponent(m[1]) };
+}
+
+/** Match `/api/project/:name/docs/duplicate` exactly (POST only). */
+export function matchProjectDocsDuplicateRoute(
+  pathname: string,
+): { name: string } | null {
+  const m = pathname.match(/^\/api\/project\/([^/]+)\/docs\/duplicate$/);
+  if (!m) return null;
+  return { name: decodeURIComponent(m[1]) };
 }
 
 /**
@@ -2264,6 +2584,84 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                         wasActive: body.wasActive,
                       });
                     }
+                    return;
+                  }
+
+                  // ── doc-management v1.0.x HTTP ──────
+                  // GET    /api/project/:name/docs                  → list
+                  // POST   /api/project/:name/docs                  → create
+                  // POST   /api/project/:name/docs/duplicate?path=  → duplicate
+                  // DELETE /api/project/:name/docs?path=            → delete
+                  // Path-traversal defense lives inside each handler
+                  // (validateProjectRelativeDocPath / isValidDocName /
+                  // isManifestDoc). The MUTATING set above already gates POST
+                  // and DELETE under /api/ with the Origin check.
+                  const docsDup = matchProjectDocsDuplicateRoute(url.pathname);
+                  if (docsDup && req.method === "POST") {
+                    const docPathQuery = url.searchParams.get("path");
+                    readJsonBody(req)
+                      .then(async (rawBody) => {
+                        const result = await handleDuplicateDoc(cwd, docsDup.name, docPathQuery, rawBody);
+                        writeJsonResult(res, result);
+                        if (result.status === 200) {
+                          broadcastIngest(bridgeClients, {
+                            type: "doc:list:changed",
+                            projectName: docsDup.name,
+                          });
+                        }
+                      })
+                      .catch((err: unknown) => {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        res.statusCode = 400;
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(JSON.stringify({ error: `invalid JSON body: ${msg}` }));
+                      });
+                    return;
+                  }
+
+                  const docsRoute = matchProjectDocsRoute(url.pathname);
+                  if (docsRoute && (req.method === "GET" || !req.method)) {
+                    writeJsonResult(res, buildProjectDocs(cwd, docsRoute.name));
+                    return;
+                  }
+                  if (docsRoute && req.method === "POST") {
+                    readJsonBody(req)
+                      .then(async (rawBody) => {
+                        const result = await handleCreateDoc(cwd, docsRoute.name, rawBody);
+                        writeJsonResult(res, result);
+                        if (result.status === 201) {
+                          broadcastIngest(bridgeClients, {
+                            type: "doc:list:changed",
+                            projectName: docsRoute.name,
+                          });
+                        }
+                      })
+                      .catch((err: unknown) => {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        res.statusCode = 400;
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(JSON.stringify({ error: `invalid JSON body: ${msg}` }));
+                      });
+                    return;
+                  }
+                  if (docsRoute && req.method === "DELETE") {
+                    const docPathQuery = url.searchParams.get("path");
+                    handleDeleteDoc(cwd, docsRoute.name, docPathQuery)
+                      .then((result) => {
+                        writeJsonResult(res, result);
+                        if (result.status === 200) {
+                          broadcastIngest(bridgeClients, {
+                            type: "doc:list:changed",
+                            projectName: docsRoute.name,
+                          });
+                        }
+                      })
+                      .catch((err: unknown) => {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(JSON.stringify({ error: msg }));
+                      });
                     return;
                   }
 

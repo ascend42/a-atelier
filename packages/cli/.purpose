@@ -177,6 +177,32 @@ components:
     file: src/commands/studio.ts
     gates: ['^localhost-only', '^valid-media-basename']
     tags: [rename, media, studio, http, security, v1]
+  # ── v1.0.x doc-management bundle (Slice S0 + A + D) ──────
+  '#doc-management-types':
+    description: 'Shared types + validators for the doc-management surface. Exports the DocKind discriminator ("video" | "image" | "carousel"), the CreateDocOptions / DuplicateDocOptions / DeleteDocOptions request shapes, the DocListEntry / DocDeleteCascadeReport / DocDuplicateReport response shapes, and two predicates: isValidDocName(name) (rejects path separators, ".", "..", leading dot, control bytes 0x00-0x1F, empty/whitespace, >200 chars) and isManifestDoc(relPath) (true for "project.atelier" — the project manifest is not a doc). Pure types + pure predicates; zero I/O. Duplicated into packages/mcp/src/lib/doc-management-types.ts to break the cli↔mcp dep cycle (see ~doc-management-cli-mcp-duplication).'
+    file: src/lib/doc-management-types.ts
+    gates: ['^valid-doc-name', '^manifest-doc-protected']
+    tags: [doc, types, validators, cli-lib, v1.0.x]
+  '#doc-management':
+    description: 'Core doc CRUD for an Atelier project — createDoc / duplicateDoc / deleteDoc / listDocs. createDoc slugifies the user-supplied name, picks a non-colliding filename under <projectDir>/<slug>.atelier (suffix -2 / -3 / … on collision), composes a fresh AtelierDocument via composeImageProject / composeVideoProject / composeCarouselProject keyed off DocKind, and (when asCarouselSlide is set) appends a SlideRef via composeCarouselProject so the full cycle detector runs. duplicateDoc file-level-copies the source doc with collision-suffixing, optionally appending the duplicate as a SlideRef. deleteDoc refuses the project manifest via isManifestDoc, then walks every sibling project subdir in the workspace: removes matching SlideRef entries from any carousel manifest (workspace-wide cascade), collects dangling RefVisual layers into refLayersDangling without auto-removing them, and unlinks the doc. listDocs enumerates manifest + carousel slides[].src + every other root-level *.atelier in the project. statSync follows symlinks (~doc-symlink-followed). Pure-ish — fs reads/writes via node:fs, no logging side-channels.'
+    file: src/lib/doc-management.ts
+    gates: ['^valid-doc-name', '^manifest-doc-protected', '^doc-path-inside-project', '^carousel-cycle-safe']
+    tags: [doc, cli-lib, cascade, carousel, v1.0.x]
+  '#studio-doc-endpoints':
+    description: 'HTTP doc endpoints on the studio dev server. GET /api/project/:name/docs → listDocs(projectDir) → DocListEntry[]. POST /api/project/:name/docs → ^valid-doc-name + ^doc-path-inside-project → createDoc → writes file → broadcasts {type:"doc:list:changed", projectName} on the bridge WS. POST /api/project/:name/docs/duplicate?path=... → ^valid-doc-name on the source basename + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → duplicateDoc → broadcast. DELETE /api/project/:name/docs?path=... → same gates → deleteDoc → broadcast. Every path query is URL-decoded, normalized, and prefix-checked against the project root with a trailing-separator boundary so sibling /a/project-x is not treated as inside /a/project. The mutating routes share the existing ^localhost-only Origin check.'
+    file: src/commands/studio.ts
+    gates: ['^localhost-only', '^valid-doc-name', '^manifest-doc-protected', '^doc-path-inside-project']
+    signals: ['!doc-list-changed']
+    tags: [doc, studio, http, security, v1.0.x]
+  '#studio-new-doc-modal':
+    description: 'NewDocDialog — three-tile kind picker (video / image / carousel) in the workspace-app sidebar. Live slug preview shows the slugified filename as the creator types. When the active project is a carousel, a "add as slide of <project>" toggle is shown; flipping it on rewires the submit to POST asCarouselSlide:true so createDoc appends the new doc as a SlideRef in one round-trip (cycle-checked by composeCarouselProject). Cancel / Escape closes; Enter submits when the name passes isValidDocName at the field level. Returns NewDocSelection | null to the caller.'
+    file: src/web/workspace-app.ts
+    gates: ['^valid-doc-name']
+    tags: [doc, studio, sidebar, modal, web, v1.0.x]
+  '#studio-doc-sidebar':
+    description: 'DOCUMENT / SLIDES / OTHER DOCS sidebar groups under the active project in the workspace app. DOCUMENT pins the project manifest (project.atelier) and carries the "+ new doc" affordance on its label row. SLIDES is rendered only for kind:"carousel" projects with non-empty slides[]. OTHER DOCS lists non-manifest, non-slide root-level *.atelier files. Each row is a left-click-to-open + right-click-to-context-menu surface; the menu offers Duplicate / Delete…, with Delete… going through a ConfirmDialog before firing the DELETE request. Refreshes on every "doc:list:changed" WS envelope; when the currently-open doc gets deleted out from under the bridge, falls back to the project manifest.'
+    file: src/web/workspace-app.ts
+    tags: [doc, studio, sidebar, web, v1.0.x]
 flows:
   $media-ingest-flow:
     description: 'Drag-drop in the studio → file lands in media/ via /api/media/ingest → #ingest-dispatch classifyMediaFile derives kind (video / image / audio / unsupported) → routeIngest pairs (file-kind, project-kind|undefined) into the 12-cell matrix → dispatcher routes to the right composer or rejects + unlinks the upload. Scaffold-on-ingest is permitted only for video+undef and image+undef; audio cannot establish a project on its own. Spans the studio HTTP handler, #ingest-dispatch, and one of the three composers depending on the route.'
@@ -208,6 +234,37 @@ flows:
       - component: '#rename-media'
         action: Phase 2 — write project.atelier (rollback transcript + media on failure)
     tags: [rename, media, cascade, atomic, v1]
+  # ── v1.0.x doc-management flows ──────
+  $doc-create-flow:
+    description: 'Sidebar "+ new doc" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:"doc:list:changed", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its DOCUMENT / SLIDES / OTHER DOCS groups. When the carousel project is active and the slide toggle is on, createDoc also runs composeCarouselProject to append a SlideRef (with full cycle check).'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: render "+ new doc" affordance on the DOCUMENT label row
+      - component: '#studio-new-doc-modal'
+        action: collect kind + name (+ slide toggle), preview slug
+      - component: '#studio-doc-endpoints'
+        action: POST /api/project/:name/docs, gate ^valid-doc-name + ^doc-path-inside-project
+      - component: '#doc-management'
+        action: createDoc → composeImage|Video|Carousel, write file
+      - component: '#studio-doc-endpoints'
+        action: broadcast !doc-list-changed envelope
+      - component: '#studio-doc-sidebar'
+        action: refresh on doc:list:changed
+    tags: [doc, create, studio, sidebar, v1.0.x]
+  $doc-delete-cascade-flow:
+    description: 'Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, removes matching SlideRef entries from any carousel manifest, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the project manifest so the editor never lingers on a missing file.'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: right-click → context menu → Delete…
+      - component: '#studio-doc-endpoints'
+        action: DELETE /api/project/:name/docs?path=, gate manifest + path + name
+      - component: '#doc-management'
+        action: deleteDoc → workspace-wide SlideRef scrub + RefVisual dangling scan + unlink
+      - component: '#studio-doc-endpoints'
+        action: broadcast !doc-list-changed
+      - component: '#studio-doc-sidebar'
+        action: refresh; bridge falls back to manifest if currentDoc was deleted
+    tags: [doc, delete, cascade, studio, sidebar, v1.0.x]
 gates:
   ^carousel-cycle-safe:
     description: 'A carousel slide ref (or RefVisual src) must not create a cycle back to its own document — direct or transitive. Enforced by detectCarouselCycle in #ref-cycle, which walks slides[].src AND RefVisual src layers, tracks visited absolute paths, is depth-limited at MAX_HOPS=64, and is DAG-tolerant (diamonds OK, cycles refused). compose-carousel-project calls this BEFORE writing any slide ref.'
@@ -217,6 +274,19 @@ gates:
     description: 'Media basenames passed to the rename cascade must not contain path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), or be empty / whitespace-only. Enforced by isValidMediaBasenameForRename in #rename-media. Required because the cascade joins straight into <projectDir>/media/<basename> with no further sanitization — the basename guard IS the path-traversal defense.'
     enforcement: isValidMediaBasenameForRename guard at every external entry point (studio HTTP, MCP tool)
     appliesTo: ["#rename-media", "#studio-rename-endpoint", "mcp-tool-rename-media"]
+  # ── v1.0.x doc-management gates ──────
+  ^valid-doc-name:
+    description: 'User-typed doc names (the "name" field on POST /api/project/:name/docs and the source/dest basenames on POST /api/project/:name/docs/duplicate) must pass isValidDocName: rejects path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), empty / whitespace-only strings, and anything over 200 chars. Enforced at BOTH the HTTP layer (studio.ts) AND the core fn (doc-management.ts / mcp/tools/docs.ts) for defense-in-depth — the basename is joined straight into <projectDir>/<slug>.atelier, so the guard IS the path-traversal defense.'
+    enforcement: isValidDocName guard at every external entry point (studio HTTP, MCP tool, CLI core)
+    appliesTo: ["#doc-management-types", "#doc-management", "#studio-doc-endpoints", "#mcp-tool-create-doc", "#mcp-tool-duplicate-doc"]
+  ^manifest-doc-protected:
+    description: 'project.atelier (the project manifest) cannot be deleted or duplicated as a doc — it is the project, not a doc inside it. Enforced via isManifestDoc(relPath) predicate at every gate: HTTP (studio.ts checks BEFORE calling deleteDoc / duplicateDoc), MCP (tools/docs.ts), and CLI core (doc-management.ts deleteDoc throws "cannot delete the project manifest"). A creator who wants to delete the project deletes the project dir, not the manifest.'
+    enforcement: isManifestDoc predicate at HTTP + MCP + core entry points
+    appliesTo: ["#doc-management-types", "#doc-management", "#studio-doc-endpoints", "#mcp-tool-delete-doc", "#mcp-tool-duplicate-doc"]
+  ^doc-path-inside-project:
+    description: 'The ?path query on /api/project/:name/docs (delete, duplicate) and every resolved doc path must stay inside <projectDir>. Path traversal (../, absolute paths, paths that resolve outside via decoded chains) is rejected before any fs op. Resolved-prefix containment check with trailing path-separator boundary so sibling /a/project-x does NOT pass for /a/project. Mirrors #studio-rename-endpoint''s ^valid-media-basename + isSafePath posture.'
+    enforcement: decode + resolve + startsWith(projectDir + sep) containment check
+    appliesTo: ["#studio-doc-endpoints", "#doc-management"]
 aspects:
   lint-gate-cascade-short-circuit:
     description: 'lintFile runs three gates in order, but a failed ^valid-document aborts the rest with an early return — ^valid-delta and ^valid-video-layer cannot run on an unparseable document, so a parse failure reports exactly one gate, not three. ^valid-video-layer only inspects layers whose visual.type is "video".'
@@ -1037,3 +1107,59 @@ aspects:
       - packages/cli/src/lib/rename-media.ts:306
     enforcement: renameSync semantics — rename the link, not the target
     appliesTo: ["#rename-media"]
+  # ── v1.0.x doc-management bundle aspects ──────
+  doc-slug-stable:
+    description: 'Doc layer ids survive duplicate / rename of the host doc file. The slug-as-id pattern (e.g. img-<slug>, clip-<slug>, cap-<slug>-N) means a layer id is derived from the basename of the MEDIA source, NOT the .atelier file containing it — so duplicating a doc copies the layer set verbatim and the new doc keeps the same layer ids. .src values on assets / visuals cascade (rename-media rewrites them), but the layer id is stable across the doc-level duplicate. Callers that need a stable handle into a duplicated doc can therefore key off layer.id without re-mapping.'
+    tags:
+      - doc
+      - slug
+      - duplicate
+      - convention
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:189-298
+    enforcement: layer ids derived from media slug, not doc filename
+    appliesTo: ["#doc-management", "#mcp-tool-duplicate-doc"]
+  doc-symlink-followed:
+    description: 'listDocs and the deleteDoc workspace-cascade walk use statSync (NOT lstatSync) when classifying entries inside the workspace, so symlinks ARE followed. Acceptable under the local-only threat model (Aegis confirmed): the studio binds 127.0.0.1, only the local creator can plant symlinks in their own workspace, and following them matches how the rest of the rename / ingest pipeline already treats media/. If the threat model ever broadens (multi-user workspace, sandboxed creators), revisit and switch to lstatSync.'
+    tags:
+      - doc
+      - symlink
+      - convention
+      - cautionary
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:340-349
+      - packages/cli/src/lib/doc-management.ts:453-540
+    enforcement: statSync follows symlinks (intentional)
+    appliesTo: ["#doc-management"]
+  doc-dangling-refvisual-reported:
+    description: 'deleteDoc scrubs every workspace-wide SlideRef pointing at the doc being deleted (removed from slides[]), but RefVisual layers (layer.visual.type === "ref") that point at it are REPORTED in refLayersDangling, NOT auto-removed. The renderer tolerates missing refs (renders blank), so the v1 posture is to surface dangling refs as a studio warning rather than silently mutate sibling docs'' layer lists. A future Kit pass may add an opt-in "scrub dangling refs too" mode; until then the report is the contract.'
+    tags:
+      - doc
+      - refvisual
+      - dangling
+      - cascade
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:384-405
+    enforcement: collect dangling RefVisual layers into report, do not mutate
+    appliesTo: ["#doc-management"]
+  doc-management-cli-mcp-duplication:
+    description: 'packages/mcp/src/lib/doc-management.ts and packages/mcp/src/lib/doc-management-types.ts are intentional duplicates of their cli/lib counterparts (mirrors the convention already documented for timeline-ops, rename-media, recipes, overlays). Header comments on the MCP twins call out the dep-cycle constraint: cli depends on mcp (studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a cycle. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The MCP twin uses a SIMPLER cycle check (see ~doc-cycle-v1-simple-check) — that''s the one intentional behavioral divergence; everything else stays in lockstep.'
+    tags:
+      - duplication
+      - dep-cycle
+      - convention
+      - doc
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:1-30
+      - packages/cli/src/lib/doc-management-types.ts:1-20
+    enforcement: sentinel header comment on MCP twin + manual lockstep edit
+    appliesTo: ["#doc-management", "#doc-management-types", "#mcp-lib-doc-management", "#mcp-lib-doc-management-types"]
+signals:
+  '!doc-list-changed':
+    description: 'Emitted by the studio HTTP doc endpoints after a successful create, duplicate, or delete (broadcast on the bridge WS as {type:"doc:list:changed", projectName}). Received by every connected workspace-app sidebar to refresh DOCUMENT / SLIDES / OTHER DOCS groups, and by the bridge layer to fall back to the project manifest if the currently-open doc was the one deleted. The envelope intentionally carries only projectName (not a path or kind) — the receiver re-fetches GET /api/project/:name/docs to get the full DocListEntry[] truth.'
+    emittedBy: ["#studio-doc-endpoints"]
+    tags: [doc, sidebar, websocket, v1.0.x]

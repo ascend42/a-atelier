@@ -55,4 +55,24 @@ gates:
     type: security
     location: packages/mcp/src/tools/rename-media.ts
     prizes: []
+  valid-doc-name:
+    description: User-typed doc names must pass isValidDocName — rejects path separators (/, \), parent-dir refs (..), leading dot (hidden files), control bytes (NUL through 0x1f), empty/whitespace-only, and names longer than 200 chars. Enforced at BOTH the HTTP endpoint layer and the doc-management core fn for defense-in-depth.
+    type: security
+    location: packages/cli/src/lib/doc-management-types.ts
+    prizes: []
+  manifest-doc-protected:
+    description: project.atelier is the project's root manifest and cannot be deleted or duplicated. Enforced via the isManifestDoc predicate at every gate — HTTP endpoint, MCP tool wrapper, and the CLI core fn — so the rule cannot be bypassed at any layer. To delete a project entirely, use the existing project-delete flow.
+    type: validation
+    location: packages/cli/src/lib/doc-management-types.ts
+    prizes: []
+  doc-path-inside-project:
+    description: The ?path query parameter on POST /api/project/:name/docs/duplicate and DELETE /api/project/:name/docs is validated via single decodeURIComponent + reject (/, \, .., leading-., control bytes, empty); the resolved absolute path must then be inside <projectDir>/ (containment assert). Blocks path traversal attempts at the HTTP layer.
+    type: security
+    location: packages/cli/src/commands/studio.ts
+    prizes: []
+  workspace-scoped-doc-tool:
+    description: atelier_create_doc / atelier_duplicate_doc / atelier_delete_doc / atelier_list_docs MCP tools require projectDir (or workspaceDir + projectName) to resolve inside workspaceDir (defaults to process.cwd()). Mirrors workspace-scoped-project-dir but applies to the doc-management tool surface. Prevents agents from creating/deleting docs in arbitrary host directories.
+    type: security
+    location: packages/mcp/src/tools/docs.ts
+    prizes: []
 routes: {}

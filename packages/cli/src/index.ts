@@ -151,3 +151,26 @@ export {
   type IngestKind,
   type IngestRoute,
 } from "./lib/ingest-dispatch.js";
+
+// ── doc-management (v1.0.x) ──────────────────────────────────────
+// Public verbs (createDoc / duplicateDoc / deleteDoc / listDocs) shared by
+// the studio HTTP layer and the MCP doc tools. Types live in
+// `doc-management-types.ts`; see that file for the validator surface.
+export {
+  createDoc,
+  duplicateDoc,
+  deleteDoc,
+  listDocs,
+  type CreateDocResult,
+} from "./lib/doc-management.js";
+export {
+  isValidDocName,
+  isManifestDoc,
+  type DocKind,
+  type CreateDocOptions,
+  type DuplicateDocOptions,
+  type DeleteDocOptions,
+  type DocListEntry,
+  type DocDeleteCascadeReport,
+  type DocDuplicateReport,
+} from "./lib/doc-management-types.js";

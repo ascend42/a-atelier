@@ -81,6 +81,25 @@ interface ProjectArtifactsInfo {
   storyboard: ArtifactEntry;
 }
 
+/**
+ * Mirrors `DocListEntry` in `lib/doc-management-types.ts`. Kept narrow — the
+ * sidebar reads only the fields it renders; new server fields stay optional.
+ */
+interface DocListEntry {
+  path: string;
+  role: "manifest" | "slide" | "other";
+  kind?: "video" | "image" | "carousel";
+  slideIndex?: number;
+  slideLabel?: string;
+}
+
+/** Response body for DELETE /api/project/:name/docs?path=... */
+interface DocDeleteCascadeReport {
+  docPath: string;
+  slideRefsRemoved: Array<{ project: string; slideIndex: number }>;
+  refLayersDangling: Array<{ project: string; docPath: string; layerId: string }>;
+}
+
 interface ArtifactEntry {
   path: string;
   exists: boolean;
@@ -164,9 +183,20 @@ interface SidebarCallbacks {
   onSelectProject: (name: string) => void;
   onSelectArtifact: (projectName: string, kind: "design" | "script" | "storyboard") => void;
   onSelectAtelierDoc: (projectName: string) => void;
+  /**
+   * Select a non-manifest .atelier doc (slide or other) inside the active
+   * project. Loads `<projectName>/<entry.path>` into the canvas.
+   */
+  onSelectDoc: (projectName: string, entry: DocListEntry) => void;
   onSelectMedia: (projectName: string, entry: ProjectMediaEntry) => void;
   onSelectTranscript: (projectName: string, entry: ProjectTranscriptEntry) => void;
   onCreateProject: () => void;
+  /** "+ new doc" button next to the DOCUMENT label. Opens the NewDocDialog. */
+  onCreateDoc: (projectName: string) => void;
+  /** Right-click → Duplicate on a slide or other-doc row. */
+  onDuplicateDoc: (projectName: string, entry: DocListEntry) => void;
+  /** Right-click → Delete on a slide or other-doc row. Cascade-preview confirm. */
+  onDeleteDoc: (projectName: string, entry: DocListEntry) => void;
   /** Right-click → Delete on a project row. Triggers the type-to-confirm modal. */
   onDeleteProject: (name: string) => void;
   /** Right-click → Delete on a media row. Triggers the cascade-preview modal. */
@@ -186,11 +216,12 @@ class WorkspaceSidebar {
   private headerEl: HTMLElement;
   private workspace: WorkspaceInfo | null = null;
   private active: ActiveProjectFile | null = null;
-  /** Per-project loaded detail (media/transcripts/artifacts) — lazily filled. */
+  /** Per-project loaded detail (media/transcripts/artifacts/docs) — lazily filled. */
   private detail = new Map<string, {
     media: ProjectMediaEntry[];
     transcripts: ProjectTranscriptEntry[];
     artifacts: ProjectArtifactsInfo | null;
+    docs: DocListEntry[];
   }>();
 
   constructor(parent: HTMLElement, private cb: SidebarCallbacks) {
@@ -239,15 +270,21 @@ class WorkspaceSidebar {
 
   private async loadDetail(name: string): Promise<void> {
     try {
-      const [media, transcripts, artifacts] = await Promise.all([
+      const [media, transcripts, artifacts, docs] = await Promise.all([
         fetchJson<ProjectMediaEntry[]>(`/api/project/${encodeURIComponent(name)}/media`),
         fetchJson<ProjectTranscriptEntry[]>(`/api/project/${encodeURIComponent(name)}/transcripts`),
         fetchJson<ProjectArtifactsInfo>(`/api/project/${encodeURIComponent(name)}/artifacts`),
+        fetchJson<DocListEntry[]>(`/api/project/${encodeURIComponent(name)}/docs`),
       ]);
-      this.detail.set(name, { media, transcripts, artifacts });
+      this.detail.set(name, { media, transcripts, artifacts, docs });
     } catch {
       // Keep what we had on failure.
     }
+  }
+
+  /** Public accessor for the currently-cached doc list (used for fallback logic). */
+  getDocs(name: string): DocListEntry[] {
+    return this.detail.get(name)?.docs ?? [];
   }
 
   private renderError(msg: string): void {
@@ -323,17 +360,69 @@ class WorkspaceSidebar {
     const children = document.createElement("div");
     children.className = "atel-workspace-sidebar__project-children";
 
-    // Document
-    if (proj.hasAtelierDoc) {
+    // ── DOCUMENT / SLIDES / OTHER DOCS ──
+    // Prefer the live doc list from the server when available — falls back to
+    // a synthesized manifest-only list when /api/project/:name/docs hasn't
+    // landed yet (first paint, transient failure). This keeps the sidebar
+    // useful in both states without flickering.
+    const docs: DocListEntry[] = detail?.docs ?? (
+      proj.hasAtelierDoc ? [{ path: "project.atelier", role: "manifest" }] : []
+    );
+    const manifestEntry = docs.find((d) => d.role === "manifest") ?? null;
+    const slides = docs.filter((d) => d.role === "slide");
+    const others = docs.filter((d) => d.role === "other");
+    const isCarousel = manifestEntry?.kind === "carousel";
+
+    // DOCUMENT group — manifest pinned, "+ new doc" button on the label row.
+    if (manifestEntry) {
       const docNode = document.createElement("div");
       docNode.className = "atel-workspace-sidebar__group";
-      docNode.innerHTML = "<div class=\"atel-workspace-sidebar__group-label\">Document</div>";
+
+      const label = document.createElement("div");
+      label.className = "atel-workspace-sidebar__group-label atel-workspace-sidebar__group-label--with-action";
+      const labelText = document.createElement("span");
+      labelText.textContent = "Document";
+      label.appendChild(labelText);
+      const newDocBtn = document.createElement("button");
+      newDocBtn.className = "atel-workspace-sidebar__new-btn atel-workspace-sidebar__new-btn--inline";
+      newDocBtn.textContent = "+ new doc";
+      newDocBtn.title = "Create a new doc in this project";
+      newDocBtn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        this.cb.onCreateDoc(proj.name);
+      });
+      label.appendChild(newDocBtn);
+      docNode.appendChild(label);
+
       const docItem = document.createElement("div");
       docItem.className = "atel-workspace-sidebar__item";
       docItem.innerHTML = `<span class="atel-item-icon">▤</span> project.atelier`;
       docItem.addEventListener("click", () => this.cb.onSelectAtelierDoc(proj.name));
+      // No contextmenu — manifest is pinned and cannot be deleted / duplicated.
       docNode.appendChild(docItem);
       children.appendChild(docNode);
+    }
+
+    // SLIDES — only for carousel projects, and only when slides exist.
+    if (isCarousel && slides.length > 0) {
+      const group = document.createElement("div");
+      group.className = "atel-workspace-sidebar__group";
+      group.innerHTML = "<div class=\"atel-workspace-sidebar__group-label\">Slides</div>";
+      for (const s of slides) {
+        group.appendChild(this.renderDocRow(proj.name, s));
+      }
+      children.appendChild(group);
+    }
+
+    // OTHER DOCS — non-manifest, non-slide root-level *.atelier.
+    if (others.length > 0) {
+      const group = document.createElement("div");
+      group.className = "atel-workspace-sidebar__group";
+      group.innerHTML = "<div class=\"atel-workspace-sidebar__group-label\">Other docs</div>";
+      for (const o of others) {
+        group.appendChild(this.renderDocRow(proj.name, o));
+      }
+      children.appendChild(group);
     }
 
     // Artifacts
@@ -404,6 +493,37 @@ class WorkspaceSidebar {
 
     wrapper.appendChild(children);
     return wrapper;
+  }
+
+  /**
+   * Render one non-manifest doc row (slide or other-doc). Click loads the doc
+   * into the canvas; right-click opens the Duplicate / Delete… context menu.
+   */
+  private renderDocRow(projectName: string, entry: DocListEntry): HTMLElement {
+    const item = document.createElement("div");
+    item.className = "atel-workspace-sidebar__item";
+    // Show just the basename for readability ("slide-1.atelier" not "slides/slide-1.atelier").
+    const basename = entry.path.split("/").pop() ?? entry.path;
+    const labelExtra = entry.role === "slide" && entry.slideLabel
+      ? ` <span class="atel-item-meta">(${escapeHtml(entry.slideLabel)})</span>`
+      : "";
+    item.innerHTML = `<span class="atel-item-icon">${docKindIcon(entry.kind)}</span> ${escapeHtml(basename)}${labelExtra}`;
+    item.addEventListener("click", () => this.cb.onSelectDoc(projectName, entry));
+    item.addEventListener("contextmenu", (ev) => {
+      ev.preventDefault();
+      showContextMenu(ev.clientX, ev.clientY, [
+        {
+          label: "Duplicate",
+          onClick: () => this.cb.onDuplicateDoc(projectName, entry),
+        },
+        {
+          label: "Delete…",
+          destructive: true,
+          onClick: () => this.cb.onDeleteDoc(projectName, entry),
+        },
+      ]);
+    });
+    return item;
   }
 
   private renderArtifactRow(
@@ -583,6 +703,208 @@ class ConfirmDialog {
       }
     });
   }
+}
+
+// ─── #new-doc-dialog (create a fresh doc in the active project) ──────
+//
+// Three-tile modal (video / image / carousel — owner explicitly excluded
+// "blank" from v1). Mirrors ConfirmDialog's idiom: same backdrop, same
+// centered card. Returns the form selection (or null on cancel); the
+// HTTP call lives at the caller so error rendering can stay local.
+
+interface NewDocSelection {
+  name: string;
+  kind: "video" | "image" | "carousel";
+  /** Only relevant for carousel projects; ignored by the caller otherwise. */
+  asCarouselSlide: boolean;
+}
+
+interface NewDocDialogOptions {
+  /**
+   * When true, the active project is a carousel. Adds the "Add as slide"
+   * toggle (default ON). When false, the toggle is hidden and the new doc
+   * is always created at root.
+   */
+  carouselProject: boolean;
+}
+
+class NewDocDialog {
+  /**
+   * Show the create-doc modal and resolve with the creator's selection or
+   * null on cancel. Inline server errors are rendered via `showError`.
+   */
+  static prompt(opts: NewDocDialogOptions): Promise<NewDocSelection | null> {
+    return new Promise((resolveDone) => {
+      const overlay = document.createElement("div");
+      overlay.className = "atel-confirm-dialog";
+
+      const card = document.createElement("div");
+      card.className = "atel-confirm-dialog__card atel-new-doc-dialog__card";
+
+      const title = document.createElement("div");
+      title.className = "atel-confirm-dialog__title";
+      title.textContent = "New doc";
+      card.appendChild(title);
+
+      // ── Kind tiles (3, not 4 — blank excluded by owner) ──
+      const tilesRow = document.createElement("div");
+      tilesRow.className = "atel-new-doc-dialog__tiles";
+
+      let selectedKind: "video" | "image" | "carousel" = "video";
+      const tileDefs: Array<{ kind: "video" | "image" | "carousel"; icon: string; label: string }> = [
+        { kind: "video", icon: "🎬", label: "Video" },
+        { kind: "image", icon: "🖼", label: "Image" },
+        { kind: "carousel", icon: "🎠", label: "Carousel" },
+      ];
+      const tileEls: HTMLElement[] = [];
+      for (const def of tileDefs) {
+        const tile = document.createElement("button");
+        tile.type = "button";
+        tile.className = "atel-new-doc-dialog__tile";
+        if (def.kind === selectedKind) tile.classList.add("atel-new-doc-dialog__tile--selected");
+        tile.innerHTML = `<div class="atel-new-doc-dialog__tile-icon">${def.icon}</div>
+          <div class="atel-new-doc-dialog__tile-label">${def.label}</div>`;
+        tile.addEventListener("click", () => {
+          selectedKind = def.kind;
+          for (const el of tileEls) el.classList.remove("atel-new-doc-dialog__tile--selected");
+          tile.classList.add("atel-new-doc-dialog__tile--selected");
+        });
+        tileEls.push(tile);
+        tilesRow.appendChild(tile);
+      }
+      card.appendChild(tilesRow);
+
+      // ── Name input + live slug preview ──
+      const nameWrapper = document.createElement("div");
+      nameWrapper.className = "atel-new-doc-dialog__field";
+      const nameLabel = document.createElement("label");
+      nameLabel.textContent = "Name";
+      nameLabel.className = "atel-confirm-dialog__type-label";
+      nameWrapper.appendChild(nameLabel);
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.className = "atel-confirm-dialog__type-input";
+      nameInput.autocomplete = "off";
+      nameInput.spellcheck = false;
+      nameInput.placeholder = "e.g. Intro scene";
+      nameWrapper.appendChild(nameInput);
+      const slugPreview = document.createElement("div");
+      slugPreview.className = "atel-new-doc-dialog__slug-preview";
+      slugPreview.textContent = " ";
+      nameWrapper.appendChild(slugPreview);
+      card.appendChild(nameWrapper);
+
+      // ── Add-as-slide toggle (carousel-only) ──
+      let asSlideCheckbox: HTMLInputElement | null = null;
+      if (opts.carouselProject) {
+        const toggleWrap = document.createElement("label");
+        toggleWrap.className = "atel-new-doc-dialog__toggle";
+        asSlideCheckbox = document.createElement("input");
+        asSlideCheckbox.type = "checkbox";
+        asSlideCheckbox.checked = true; // default ON for carousel projects
+        toggleWrap.appendChild(asSlideCheckbox);
+        const txt = document.createElement("span");
+        txt.textContent = "Add as slide in this carousel";
+        toggleWrap.appendChild(txt);
+        card.appendChild(toggleWrap);
+      }
+
+      // ── Error row (inline; populated by showError below) ──
+      const errorRow = document.createElement("div");
+      errorRow.className = "atel-new-doc-dialog__error";
+      errorRow.style.display = "none";
+      card.appendChild(errorRow);
+
+      // ── Buttons ──
+      const buttons = document.createElement("div");
+      buttons.className = "atel-confirm-dialog__buttons";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "atel-confirm-dialog__btn atel-confirm-dialog__btn--cancel";
+      cancelBtn.textContent = "Cancel";
+      buttons.appendChild(cancelBtn);
+
+      const createBtn = document.createElement("button");
+      createBtn.className = "atel-confirm-dialog__btn atel-confirm-dialog__btn--primary";
+      createBtn.textContent = "Create";
+      createBtn.disabled = true;
+      buttons.appendChild(createBtn);
+
+      card.appendChild(buttons);
+      overlay.appendChild(card);
+
+      // Live slug preview + Create enable/disable.
+      nameInput.addEventListener("input", () => {
+        const raw = nameInput.value.trim();
+        if (raw.length === 0) {
+          slugPreview.textContent = " ";
+          createBtn.disabled = true;
+        } else {
+          slugPreview.textContent = `slug: ${previewSlug(raw)}.atelier`;
+          createBtn.disabled = false;
+        }
+        // Clear any prior inline error on edit.
+        errorRow.style.display = "none";
+      });
+      nameInput.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" && !createBtn.disabled) {
+          ev.preventDefault();
+          createBtn.click();
+        }
+      });
+
+      // Cleanup + resolution wiring (mirrors ConfirmDialog).
+      const cleanup = (): void => {
+        document.removeEventListener("keydown", onKey);
+        overlay.remove();
+      };
+      const onKey = (ev: KeyboardEvent): void => {
+        if (ev.key === "Escape") {
+          cleanup();
+          resolveDone(null);
+        }
+      };
+      cancelBtn.addEventListener("click", () => {
+        cleanup();
+        resolveDone(null);
+      });
+      createBtn.addEventListener("click", () => {
+        if (createBtn.disabled) return;
+        const name = nameInput.value.trim();
+        if (name.length === 0) return;
+        cleanup();
+        resolveDone({
+          name,
+          kind: selectedKind,
+          asCarouselSlide: asSlideCheckbox?.checked ?? false,
+        });
+      });
+      overlay.addEventListener("click", (ev) => {
+        if (ev.target === overlay) {
+          cleanup();
+          resolveDone(null);
+        }
+      });
+      document.addEventListener("keydown", onKey);
+
+      document.body.appendChild(overlay);
+      nameInput.focus();
+    });
+  }
+}
+
+/**
+ * Lightweight slug preview — matches the spec's "lowercase + space→hyphen"
+ * fallback. Exact slug is the server's job (slugifyBasename); this is purely
+ * a visual hint.
+ */
+function previewSlug(raw: string): string {
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]+/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-") || "doc";
 }
 
 // ─── #context-menu (sidebar right-click affordance) ──────────────────
@@ -1288,6 +1610,13 @@ export async function bootWorkspaceApp(): Promise<void> {
   mainPanel.appendChild(mainBody);
 
   let activeProjectName: string | null = null;
+  /**
+   * Project-relative path of the .atelier doc currently rendered in the
+   * canvas. Defaults to `project.atelier` (the manifest). Tracked so we can
+   * fall back to the manifest when the loaded doc disappears (deleted from
+   * disk, or unlinked as a slide).
+   */
+  let currentDocPath: string = "project.atelier";
 
   const sidebar = new WorkspaceSidebar(shell, {
     onSelectProject: async (name) => {
@@ -1301,6 +1630,7 @@ export async function bootWorkspaceApp(): Promise<void> {
       }
     },
     onSelectAtelierDoc: (name) => openProjectDoc(name),
+    onSelectDoc: (name, entry) => openProjectDoc(name, entry.path),
     onSelectArtifact: (projectName, kind) => {
       const file = kind === "design" ? "DESIGN.md" : kind === "script" ? "SCRIPT.md" : "STORYBOARD.md";
       openMarkdown(`${projectName}/${file}`);
@@ -1319,6 +1649,104 @@ export async function bootWorkspaceApp(): Promise<void> {
         await openProjectDoc(name);
       } catch (err) {
         alert("Failed to create project: " + (err instanceof Error ? err.message : err));
+      }
+    },
+    onCreateDoc: async (projectName) => {
+      // Determine carousel-ness from the cached manifest entry. Falls back to
+      // false when the doc list hasn't loaded yet (rare — the sidebar refresh
+      // preloads detail for the active project on first paint).
+      const docs = sidebar.getDocs(projectName);
+      const manifest = docs.find((d) => d.role === "manifest");
+      const carouselProject = manifest?.kind === "carousel";
+      const selection = await NewDocDialog.prompt({ carouselProject });
+      if (!selection) return;
+      // Compose the request body. When the project is a carousel AND the
+      // creator wants the new doc anchored as a slide, `carouselDocPath`
+      // defaults to the manifest (matches handleCreateDoc's server default).
+      const body: {
+        name: string;
+        kind: "video" | "image" | "carousel";
+        asCarouselSlide?: boolean;
+        carouselDocPath?: string;
+      } = { name: selection.name, kind: selection.kind };
+      if (carouselProject && selection.asCarouselSlide) {
+        body.asCarouselSlide = true;
+        body.carouselDocPath = "project.atelier";
+      }
+      try {
+        const result = await postJson<{ docPath: string; appendedSlideIndex?: number }>(
+          `/api/project/${encodeURIComponent(projectName)}/docs`,
+          body,
+        );
+        statusBar.textContent = `Created ${result.docPath}`;
+        // Sidebar will refetch via `doc:list:changed` WS broadcast.
+        // Belt-and-braces: also refresh inline in case the WS bridge is down.
+        await sidebar.refreshProject(projectName);
+      } catch (err) {
+        alert("Failed to create doc: " + (err instanceof Error ? err.message : err));
+      }
+    },
+    onDuplicateDoc: async (projectName, entry) => {
+      try {
+        const body: { appendSlideRef?: boolean } = {};
+        // For slides we also want a SlideRef to the duplicate so it shows up
+        // in the carousel. For "other" docs we duplicate the file only.
+        if (entry.role === "slide") body.appendSlideRef = true;
+        await postJson(
+          `/api/project/${encodeURIComponent(projectName)}/docs/duplicate?path=${encodeURIComponent(entry.path)}`,
+          body,
+        );
+        await sidebar.refreshProject(projectName);
+        statusBar.textContent = `Duplicated ${entry.path}`;
+      } catch (err) {
+        alert("Failed to duplicate doc: " + (err instanceof Error ? err.message : err));
+      }
+    },
+    onDeleteDoc: async (projectName, entry) => {
+      // Pre-confirm body — generic copy from the spec. The actual cascade
+      // counts (slideRefsRemoved, refLayersDangling) are only known AFTER the
+      // server processes the DELETE; surface them in the status bar on
+      // success rather than pretending to know them up-front.
+      const bodyCopy = entry.role === "slide"
+        ? `Delete <code>${escapeHtml(entry.path)}</code>? ` +
+          `This will remove it from this carousel.`
+        : `Delete <code>${escapeHtml(entry.path)}</code>? ` +
+          `Any RefVisual layers pointing at it will be left dangling.`;
+      const ok = await ConfirmDialog.prompt({
+        title: `Delete "${entry.path}"?`,
+        body: bodyCopy,
+        confirmLabel: "Delete",
+      });
+      if (!ok) return;
+      try {
+        const report = await deleteJson<DocDeleteCascadeReport>(
+          `/api/project/${encodeURIComponent(projectName)}/docs?path=${encodeURIComponent(entry.path)}`,
+        );
+        // Surface cascade counts in the status bar — both buckets are workspace-
+        // wide effects a creator likely wants to know about after the fact:
+        //   - slideRefsRemoved → SlideRefs auto-scrubbed from OTHER carousels
+        //     (this matches the spec's "Plus N slide references in M other
+        //     projects" copy);
+        //   - refLayersDangling → RefVisual layers still pointing at the now-
+        //     deleted doc (NOT auto-removed — surfaced as a soft warning).
+        const otherSlideProjects = new Set(
+          report.slideRefsRemoved
+            .filter((r) => r.project !== projectName)
+            .map((r) => r.project),
+        );
+        const parts: string[] = [];
+        if (report.slideRefsRemoved.length > 0 && otherSlideProjects.size > 0) {
+          parts.push(`${report.slideRefsRemoved.length} slide ref${report.slideRefsRemoved.length === 1 ? "" : "s"} in ${otherSlideProjects.size} other project${otherSlideProjects.size === 1 ? "" : "s"}`);
+        }
+        if (report.refLayersDangling.length > 0) {
+          parts.push(`${report.refLayersDangling.length} dangling RefVisual layer${report.refLayersDangling.length === 1 ? "" : "s"}`);
+        }
+        const extra = parts.length > 0 ? ` (plus ${parts.join("; ")})` : "";
+        statusBar.textContent = `Deleted ${entry.path}${extra}`;
+        // The WS broadcast will refresh other clients; refresh inline too.
+        await sidebar.refreshProject(projectName);
+      } catch (err) {
+        alert("Failed to delete doc: " + (err instanceof Error ? err.message : err));
       }
     },
     onDeleteMedia: async (projectName, entry) => {
@@ -1409,10 +1837,11 @@ export async function bootWorkspaceApp(): Promise<void> {
     mainBody.innerHTML = "";
   };
 
-  async function openProjectDoc(name: string): Promise<void> {
+  async function openProjectDoc(name: string, docPath: string = "project.atelier"): Promise<void> {
     clearMain();
-    const path = `${name}/project.atelier`;
+    const path = `${name}/${docPath}`;
     statusBar.textContent = path;
+    currentDocPath = docPath;
     try {
       const content = await fetchText("/api/file?path=" + encodeURIComponent(path));
       const parsed = parseAtelier(content);
@@ -1522,6 +1951,24 @@ export async function bootWorkspaceApp(): Promise<void> {
       if (activeProjectName && (env as { projectName?: string }).projectName === activeProjectName) {
         void sidebar.refreshProject(activeProjectName);
       }
+    } else if (env.type === "doc:list:changed") {
+      // Doc surface changed (create / duplicate / delete from this or another
+      // client). Refresh the sidebar, and — if the currently-loaded doc has
+      // disappeared (deleted from disk, or unlinked as a slide) — fall back
+      // to the project manifest so the canvas doesn't show a stale doc.
+      const e = env as { projectName?: string };
+      if (activeProjectName && e.projectName === activeProjectName) {
+        const projectName = activeProjectName;
+        void (async () => {
+          await sidebar.refreshProject(projectName);
+          const docs = sidebar.getDocs(projectName);
+          const stillExists = docs.some((d) => d.path === currentDocPath);
+          if (!stillExists && currentDocPath !== "project.atelier") {
+            statusBar.textContent = `Loaded doc was removed — falling back to project.atelier`;
+            await openProjectDoc(projectName, "project.atelier");
+          }
+        })();
+      }
     } else if (env.type === "media:ingest:progress") {
       const e = env as { phase: string; file: string; error?: string; received?: number; total?: number | null };
       if (e.phase === "error") {
@@ -1614,6 +2061,16 @@ function kindIcon(kind: string): string {
     case "audio": return "🎵";
     case "font": return "🔤";
     default: return "📄";
+  }
+}
+
+/** Icon for a non-manifest .atelier doc row (slide / other). */
+function docKindIcon(kind: string | undefined): string {
+  switch (kind) {
+    case "video": return "🎬";
+    case "image": return "🖼";
+    case "carousel": return "🎠";
+    default: return "▤";
   }
 }
 
@@ -1819,6 +2276,55 @@ function injectStyles(): void {
   }
   .atel-confirm-dialog__btn--danger:hover:not(:disabled) { background: #C75B39; }
   .atel-confirm-dialog__btn--danger:disabled {
+    background: #4A3530; color: #7E6E66; cursor: not-allowed;
+  }
+
+  /* Group label with inline action (e.g. "+ new doc" next to DOCUMENT). */
+  .atel-workspace-sidebar__group-label--with-action {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  }
+  .atel-workspace-sidebar__new-btn--inline {
+    padding: 1px 6px; font-size: 9px; letter-spacing: 0.5px;
+  }
+
+  /* NewDocDialog — three-tile picker, slug preview, optional slide toggle. */
+  .atel-new-doc-dialog__card { min-width: 440px; max-width: 520px; }
+  .atel-new-doc-dialog__tiles {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px;
+  }
+  .atel-new-doc-dialog__tile {
+    background: #2A2520; color: #F5F0EB; border: 1px solid #3A3530; border-radius: 6px;
+    padding: 14px 8px; cursor: pointer; text-align: center;
+    font-family: inherit; transition: background 120ms ease, border-color 120ms ease;
+  }
+  .atel-new-doc-dialog__tile:hover { background: #34302C; }
+  .atel-new-doc-dialog__tile--selected {
+    background: #3A1F1A; border-color: #C75B39;
+  }
+  .atel-new-doc-dialog__tile-icon { font-size: 28px; line-height: 1; }
+  .atel-new-doc-dialog__tile-label {
+    margin-top: 6px; font-size: 12px; letter-spacing: 0.5px;
+  }
+  .atel-new-doc-dialog__field { margin-bottom: 14px; }
+  .atel-new-doc-dialog__slug-preview {
+    margin-top: 6px; font-size: 11px; color: #6E6862;
+    font-family: ui-monospace, monospace; min-height: 14px;
+  }
+  .atel-new-doc-dialog__toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: #C5BEB7; margin: 4px 0 14px 0;
+    cursor: pointer;
+  }
+  .atel-new-doc-dialog__toggle input { cursor: pointer; }
+  .atel-new-doc-dialog__error {
+    background: #3A1F1A; border: 1px solid #6A2F22; color: #E07B5C;
+    padding: 8px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 12px;
+  }
+  .atel-confirm-dialog__btn--primary {
+    background: #C75B39; color: #FFFFFF;
+  }
+  .atel-confirm-dialog__btn--primary:hover:not(:disabled) { background: #D4724E; }
+  .atel-confirm-dialog__btn--primary:disabled {
     background: #4A3530; color: #7E6E66; cursor: not-allowed;
   }
 

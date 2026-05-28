@@ -29,6 +29,8 @@ import { register as registerMediaNotesTools } from "./tools/media-notes.js";
 import { register as registerClipTools } from "./tools/clips.js";
 // ── v1.0 rename-media tool ──────
 import { register as registerRenameMediaTool } from "./tools/rename-media.js";
+// ── v1.0.x doc tools ──────
+import { register as registerDocTools } from "./tools/docs.js";
 
 export { DocumentStore } from "./store.js";
 export type { MutationSource, ChangeListener } from "./store.js";
@@ -82,6 +84,8 @@ export {
 } from "./tools/clips.js";
 // ── v1.0 rename-media tool ──────
 export { register as registerRenameMediaTool } from "./tools/rename-media.js";
+// ── v1.0.x doc tools ──────
+export { register as registerDocTools } from "./tools/docs.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -128,6 +132,8 @@ export function createServer(
   registerClipTools(server, store);
   // ── v1.0 rename-media tool ──────
   registerRenameMediaTool(server, store);
+  // ── v1.0.x doc tools ──────
+  registerDocTools(server, store);
 
   return { server, store };
 }

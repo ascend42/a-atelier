@@ -2,7 +2,7 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-28T00:22:52.338Z",
+    "generatedAt": "2026-05-28T01:46:32.213Z",
     "paradigmVersion": "0.1.0",
     "sources": {
       "purposeFiles": 14,
@@ -671,91 +671,6 @@
       "visualTags": [],
       "related": []
     },
-    "#document-schema": {
-      "id": "#document-schema",
-      "name": "#document Schema",
-      "symbol": "##document-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
-      "visualTags": [],
-      "related": [
-        "#atelier-types"
-      ]
-    },
-    "#layer-schema": {
-      "id": "#layer-schema",
-      "name": "#layer Schema",
-      "symbol": "##layer-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-schema": {
-      "id": "#delta-schema",
-      "name": "#delta Schema",
-      "symbol": "##delta-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
-      "visualTags": [],
-      "related": []
-    },
-    "#validation-functions": {
-      "id": "#validation-functions",
-      "name": "#validation Functions",
-      "symbol": "##validation-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields",
-      "visualTags": [],
-      "related": [
-        "^valid-video-layer",
-        "^valid-recipe"
-      ]
-    },
-    "#recipe-schema": {
-      "id": "#recipe-schema",
-      "name": "#recipe Schema",
-      "symbol": "##recipe-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.",
-      "visualTags": [],
-      "related": []
-    },
-    "#yaml-parser": {
-      "id": "#yaml-parser",
-      "name": "#yaml Parser",
-      "symbol": "##yaml-parser",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
-      "visualTags": [],
-      "related": []
-    },
-    "#workspace-schema": {
-      "id": "#workspace-schema",
-      "name": "#workspace Schema",
-      "symbol": "##workspace-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "WorkspaceManifestSchema — Zod schema for `workspace.atelier`, the YAML manifest at the root of an Atelier workspace (a layer above Project that holds multiple content Projects with shared creator-level config). Fields: version (literal \"1.0\"), name (display, default basename(dir) at create time), created (ISO 8601), default_mode (ambient|explicit — inherited by new projects via `atelier init`), projects? (advisory relative subdir names; on-disk truth wins — `listProjects` refreshes), description?. .strict() — unknown keys are hard errors so authoring typos surface at validate time, matching the recipe-schema posture. workspace.atelier is intentionally YAML (distinguishes it from project.atelier which is JSON) and shares the .atelier extension as a family marker; the two never collide in a single directory.",
-      "visualTags": [],
-      "related": []
-    },
-    "#artifact-schemas": {
-      "id": "#artifact-schemas",
-      "name": "#artifact Schemas",
-      "symbol": "##artifact-schemas",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).",
-      "visualTags": [],
-      "related": []
-    },
     "animation": {
       "id": "animation",
       "name": "Animation",
@@ -1111,6 +1026,88 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
       "description": "Local duplication of cli/lib/rename-media.ts (renameMedia + applyMediaRenameToDoc + scanArtifactsForOldBasename + isValidMediaBasenameForRename). Lives here so the MCP rename tool has access without forming a cli↔mcp dependency cycle. Mirrors the duplication convention established by mcp-lib-timeline-ops / recipes.ts / overlays.ts. Carries a sentinel header comment explaining the dep-cycle constraint and the in-sync-with-cli requirement; the two files MUST be edited together until the planned Unit-0.5 lift into a shared package.",
+      "visualTags": [],
+      "related": []
+    },
+    "mcp-tool-create-doc": {
+      "id": "mcp-tool-create-doc",
+      "name": "Mcp Tool Create Doc",
+      "symbol": "#mcp-tool-create-doc",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "atelier_create_doc — programmatic doc creation for video / image / carousel kinds at a project root OR as a slide of an existing carousel (asCarouselSlide:true + carouselDocPath). Gates: ^valid-doc-name (isValidDocName on the user-supplied name), ^manifest-doc-protected (refuses to create a doc named \"project.atelier\"), and ^workspace-scoped-doc-tool (projectDir must resolve inside workspaceDir, defaulting to process.cwd()). On success, composes the doc via the cli twin's composeImage|Video|Carousel and writes <projectDir>/<slug>.atelier with collision-suffixing; when appending to a carousel, uses the v1 simple-cycle check (see ~doc-cycle-v1-simple-check).",
+      "visualTags": [],
+      "related": [
+        "^valid-doc-name",
+        "^manifest-doc-protected",
+        "^workspace-scoped-doc-tool",
+        "~doc-cycle-v1-simple-check"
+      ]
+    },
+    "mcp-tool-duplicate-doc": {
+      "id": "mcp-tool-duplicate-doc",
+      "name": "Mcp Tool Duplicate Doc",
+      "symbol": "#mcp-tool-duplicate-doc",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "atelier_duplicate_doc — file-level duplicate with collision-suffixing (-2, -3, …). Optional appendSlideRef appends the duplicate as a SlideRef on the host carousel (v1 simple-cycle check). Gates: ^valid-doc-name (basename), ^manifest-doc-protected (refuses to duplicate project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. Idempotent on a no-op same-name duplicate? No — collision-suffixing guarantees a fresh path.",
+      "visualTags": [],
+      "related": [
+        "^valid-doc-name",
+        "^manifest-doc-protected",
+        "^workspace-scoped-doc-tool",
+        "^doc-path-inside-project"
+      ]
+    },
+    "mcp-tool-delete-doc": {
+      "id": "mcp-tool-delete-doc",
+      "name": "Mcp Tool Delete Doc",
+      "symbol": "#mcp-tool-delete-doc",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "atelier_delete_doc — workspace-wide cascade. Walks every sibling project subdir under workspaceDir; removes matching SlideRef entries from any carousel manifest; collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported); unlinks the doc. Gates: ^manifest-doc-protected (isManifestDoc refuses project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. destructiveHint:true.",
+      "visualTags": [],
+      "related": [
+        "~doc-dangling-refvisual-reported",
+        "^manifest-doc-protected",
+        "^workspace-scoped-doc-tool",
+        "^doc-path-inside-project"
+      ]
+    },
+    "mcp-tool-list-docs": {
+      "id": "mcp-tool-list-docs",
+      "name": "Mcp Tool List Docs",
+      "symbol": "#mcp-tool-list-docs",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "atelier_list_docs — enumerate the manifest + carousel slides[] + every other root-level *.atelier in a project as DocListEntry[]. Read-only; ^workspace-scoped-doc-tool only. statSync follows symlinks (~doc-symlink-followed). The single line of truth for the studio sidebar's DOCUMENT / SLIDES / OTHER DOCS groups when fetched via MCP.",
+      "visualTags": [
+        "list"
+      ],
+      "related": [
+        "^workspace-scoped-doc-tool",
+        "~doc-symlink-followed"
+      ]
+    },
+    "mcp-lib-doc-management": {
+      "id": "mcp-lib-doc-management",
+      "name": "Mcp Lib Doc Management",
+      "symbol": "#mcp-lib-doc-management",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Intentional duplicate of cli/src/lib/doc-management.ts. Lives here so the MCP doc tools have access without forming a cli↔mcp dependency cycle — the same convention as mcp-lib-rename-media / mcp-lib-timeline-ops / recipes.ts / overlays.ts. Carries a sentinel header comment explaining the dep-cycle constraint and the in-sync-with-cli requirement. ONE INTENTIONAL DIVERGENCE: createDoc / duplicateDoc here use a SIMPLER cycle check (see ~doc-cycle-v1-simple-check) — \"is src already in slides[]?\" — instead of the full transitive walk; everything else stays in lockstep with the cli twin.",
+      "visualTags": [],
+      "related": [
+        "~doc-cycle-v1-simple-check"
+      ]
+    },
+    "mcp-lib-doc-management-types": {
+      "id": "mcp-lib-doc-management-types",
+      "name": "Mcp Lib Doc Management Types",
+      "symbol": "#mcp-lib-doc-management-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Intentional duplicate of cli/src/lib/doc-management-types.ts (DocKind, CreateDocOptions, DuplicateDocOptions, DeleteDocOptions, DocListEntry, DocDeleteCascadeReport, DocDuplicateReport, isValidDocName, isManifestDoc). Pure types + validators — zero I/O. Lives here for the same dep-cycle reason as mcp-lib-doc-management; the two files MUST be edited together with their cli twins until the planned Unit-0.5 lift into a shared package.",
       "visualTags": [],
       "related": []
     },
@@ -1830,6 +1827,78 @@
         "^valid-media-basename"
       ]
     },
+    "#doc-management-types": {
+      "id": "#doc-management-types",
+      "name": "#doc Management Types",
+      "symbol": "##doc-management-types",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Shared types + validators for the doc-management surface. Exports the DocKind discriminator (\"video\" | \"image\" | \"carousel\"), the CreateDocOptions / DuplicateDocOptions / DeleteDocOptions request shapes, the DocListEntry / DocDeleteCascadeReport / DocDuplicateReport response shapes, and two predicates: isValidDocName(name) (rejects path separators, \".\", \"..\", leading dot, control bytes 0x00-0x1F, empty/whitespace, >200 chars) and isManifestDoc(relPath) (true for \"project.atelier\" — the project manifest is not a doc). Pure types + pure predicates; zero I/O. Duplicated into packages/mcp/src/lib/doc-management-types.ts to break the cli↔mcp dep cycle (see ~doc-management-cli-mcp-duplication).",
+      "visualTags": [],
+      "related": [
+        "~doc-management-cli-mcp-duplication",
+        "^valid-doc-name",
+        "^manifest-doc-protected"
+      ]
+    },
+    "#doc-management": {
+      "id": "#doc-management",
+      "name": "#doc Management",
+      "symbol": "##doc-management",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Core doc CRUD for an Atelier project — createDoc / duplicateDoc / deleteDoc / listDocs. createDoc slugifies the user-supplied name, picks a non-colliding filename under <projectDir>/<slug>.atelier (suffix -2 / -3 / … on collision), composes a fresh AtelierDocument via composeImageProject / composeVideoProject / composeCarouselProject keyed off DocKind, and (when asCarouselSlide is set) appends a SlideRef via composeCarouselProject so the full cycle detector runs. duplicateDoc file-level-copies the source doc with collision-suffixing, optionally appending the duplicate as a SlideRef. deleteDoc refuses the project manifest via isManifestDoc, then walks every sibling project subdir in the workspace: removes matching SlideRef entries from any carousel manifest (workspace-wide cascade), collects dangling RefVisual layers into refLayersDangling without auto-removing them, and unlinks the doc. listDocs enumerates manifest + carousel slides[].src + every other root-level *.atelier in the project. statSync follows symlinks (~doc-symlink-followed). Pure-ish — fs reads/writes via node:fs, no logging side-channels.",
+      "visualTags": [],
+      "related": [
+        "~doc-symlink-followed",
+        "^valid-doc-name",
+        "^manifest-doc-protected",
+        "^doc-path-inside-project",
+        "^carousel-cycle-safe"
+      ]
+    },
+    "#studio-doc-endpoints": {
+      "id": "#studio-doc-endpoints",
+      "name": "#studio Doc Endpoints",
+      "symbol": "##studio-doc-endpoints",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "HTTP doc endpoints on the studio dev server. GET /api/project/:name/docs → listDocs(projectDir) → DocListEntry[]. POST /api/project/:name/docs → ^valid-doc-name + ^doc-path-inside-project → createDoc → writes file → broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS. POST /api/project/:name/docs/duplicate?path=... → ^valid-doc-name on the source basename + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → duplicateDoc → broadcast. DELETE /api/project/:name/docs?path=... → same gates → deleteDoc → broadcast. Every path query is URL-decoded, normalized, and prefix-checked against the project root with a trailing-separator boundary so sibling /a/project-x is not treated as inside /a/project. The mutating routes share the existing ^localhost-only Origin check.",
+      "visualTags": [],
+      "related": [
+        "^valid-doc-name",
+        "^doc-path-inside-project",
+        "^manifest-doc-protected",
+        "^localhost-only",
+        "!doc-list-changed"
+      ]
+    },
+    "#studio-new-doc-modal": {
+      "id": "#studio-new-doc-modal",
+      "name": "#studio New Doc Modal",
+      "symbol": "##studio-new-doc-modal",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "NewDocDialog — three-tile kind picker (video / image / carousel) in the workspace-app sidebar. Live slug preview shows the slugified filename as the creator types. When the active project is a carousel, a \"add as slide of <project>\" toggle is shown; flipping it on rewires the submit to POST asCarouselSlide:true so createDoc appends the new doc as a SlideRef in one round-trip (cycle-checked by composeCarouselProject). Cancel / Escape closes; Enter submits when the name passes isValidDocName at the field level. Returns NewDocSelection | null to the caller.",
+      "visualTags": [
+        "modal"
+      ],
+      "related": [
+        "^valid-doc-name"
+      ]
+    },
+    "#studio-doc-sidebar": {
+      "id": "#studio-doc-sidebar",
+      "name": "#studio Doc Sidebar",
+      "symbol": "##studio-doc-sidebar",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "DOCUMENT / SLIDES / OTHER DOCS sidebar groups under the active project in the workspace app. DOCUMENT pins the project manifest (project.atelier) and carries the \"+ new doc\" affordance on its label row. SLIDES is rendered only for kind:\"carousel\" projects with non-empty slides[]. OTHER DOCS lists non-manifest, non-slide root-level *.atelier files. Each row is a left-click-to-open + right-click-to-context-menu surface; the menu offers Duplicate / Delete…, with Delete… going through a ConfirmDialog before firing the DELETE request. Refreshes on every \"doc:list:changed\" WS envelope; when the currently-open doc gets deleted out from under the bridge, falls back to the project manifest.",
+      "visualTags": [
+        "sidebar"
+      ],
+      "related": []
+    },
     "render-frame": {
       "id": "render-frame",
       "name": "Render Frame",
@@ -1893,6 +1962,91 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
       "description": "colorToCSS conversion, applyFill (solid/linear/radial gradient), applyStroke with dash and strokeStart/strokeEnd trim support",
+      "visualTags": [],
+      "related": []
+    },
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+      "visualTags": [],
+      "related": [
+        "#atelier-types"
+      ]
+    },
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
+      "visualTags": [],
+      "related": []
+    },
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields",
+      "visualTags": [],
+      "related": [
+        "^valid-video-layer",
+        "^valid-recipe"
+      ]
+    },
+    "#recipe-schema": {
+      "id": "#recipe-schema",
+      "name": "#recipe Schema",
+      "symbol": "##recipe-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.",
+      "visualTags": [],
+      "related": []
+    },
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "visualTags": [],
+      "related": []
+    },
+    "#workspace-schema": {
+      "id": "#workspace-schema",
+      "name": "#workspace Schema",
+      "symbol": "##workspace-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "WorkspaceManifestSchema — Zod schema for `workspace.atelier`, the YAML manifest at the root of an Atelier workspace (a layer above Project that holds multiple content Projects with shared creator-level config). Fields: version (literal \"1.0\"), name (display, default basename(dir) at create time), created (ISO 8601), default_mode (ambient|explicit — inherited by new projects via `atelier init`), projects? (advisory relative subdir names; on-disk truth wins — `listProjects` refreshes), description?. .strict() — unknown keys are hard errors so authoring typos surface at validate time, matching the recipe-schema posture. workspace.atelier is intentionally YAML (distinguishes it from project.atelier which is JSON) and shares the .atelier extension as a family marker; the two never collide in a single directory.",
+      "visualTags": [],
+      "related": []
+    },
+    "#artifact-schemas": {
+      "id": "#artifact-schemas",
+      "name": "#artifact Schemas",
+      "symbol": "##artifact-schemas",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).",
       "visualTags": [],
       "related": []
     },
@@ -2311,10 +2465,174 @@
           "order": 4
         }
       ]
+    },
+    "$doc-create-flow": {
+      "id": "$doc-create-flow",
+      "name": "$doc Create Flow",
+      "symbol": "$$doc-create-flow",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Sidebar \"+ new doc\" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its DOCUMENT / SLIDES / OTHER DOCS groups. When the carousel project is active and the slide toggle is on, createDoc also runs composeCarouselProject to append a SlideRef (with full cycle check).",
+      "steps": [
+        {
+          "id": "$doc-create-flow-step-0",
+          "name": "render \"+ new doc\" affordance on the DOCUMENT label row",
+          "target": "#studio-doc-sidebar",
+          "order": 0
+        },
+        {
+          "id": "$doc-create-flow-step-1",
+          "name": "collect kind + name (+ slide toggle), preview slug",
+          "target": "#studio-new-doc-modal",
+          "order": 1
+        },
+        {
+          "id": "$doc-create-flow-step-2",
+          "name": "POST /api/project/:name/docs, gate ^valid-doc-name + ^doc-path-inside-project",
+          "target": "#studio-doc-endpoints",
+          "order": 2
+        },
+        {
+          "id": "$doc-create-flow-step-3",
+          "name": "createDoc → composeImage|Video|Carousel, write file",
+          "target": "#doc-management",
+          "order": 3
+        },
+        {
+          "id": "$doc-create-flow-step-4",
+          "name": "broadcast !doc-list-changed envelope",
+          "target": "#studio-doc-endpoints",
+          "order": 4
+        },
+        {
+          "id": "$doc-create-flow-step-5",
+          "name": "refresh on doc:list:changed",
+          "target": "#studio-doc-sidebar",
+          "order": 5
+        }
+      ]
+    },
+    "$doc-delete-cascade-flow": {
+      "id": "$doc-delete-cascade-flow",
+      "name": "$doc Delete Cascade Flow",
+      "symbol": "$$doc-delete-cascade-flow",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, removes matching SlideRef entries from any carousel manifest, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the project manifest so the editor never lingers on a missing file.",
+      "steps": [
+        {
+          "id": "$doc-delete-cascade-flow-step-0",
+          "name": "right-click → context menu → Delete…",
+          "target": "#studio-doc-sidebar",
+          "order": 0
+        },
+        {
+          "id": "$doc-delete-cascade-flow-step-1",
+          "name": "DELETE /api/project/:name/docs?path=, gate manifest + path + name",
+          "target": "#studio-doc-endpoints",
+          "order": 1
+        },
+        {
+          "id": "$doc-delete-cascade-flow-step-2",
+          "name": "deleteDoc → workspace-wide SlideRef scrub + RefVisual dangling scan + unlink",
+          "target": "#doc-management",
+          "order": 2
+        },
+        {
+          "id": "$doc-delete-cascade-flow-step-3",
+          "name": "broadcast !doc-list-changed",
+          "target": "#studio-doc-endpoints",
+          "order": 3
+        },
+        {
+          "id": "$doc-delete-cascade-flow-step-4",
+          "name": "refresh; bridge falls back to manifest if currentDoc was deleted",
+          "target": "#studio-doc-sidebar",
+          "order": 4
+        }
+      ]
     }
   },
   "state": {},
   "gates": {
+    "^workspace-scoped-project-dir": {
+      "id": "^workspace-scoped-project-dir",
+      "name": "^workspace Scoped Project Dir",
+      "symbol": "^^workspace-scoped-project-dir",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "atelier_rename_media bounds the rename to the workspace root: by default process.cwd() (the MCP server is launched from the workspace), or an explicit `workspaceDir` argument. Any projectDir that resolves outside that root is rejected with `projectDir must be inside workspace <root>` before any cascade work runs. Resolved-prefix containment check with a trailing path separator boundary, so sibling /a/workspace-x does NOT pass for workspace /a/workspace. Closes Aegis Finding 1 (TD-2026-05-27): the MCP tool previously accepted an unconstrained projectDir.",
+      "related": []
+    },
+    "^workspace-scoped-doc-tool": {
+      "id": "^workspace-scoped-doc-tool",
+      "name": "^workspace Scoped Doc Tool",
+      "symbol": "^^workspace-scoped-doc-tool",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "The MCP doc tools (atelier_create_doc / atelier_duplicate_doc / atelier_delete_doc / atelier_list_docs) require projectDir / (workspaceDir + projectName) to resolve inside workspaceDir, which defaults to process.cwd() (the MCP server is launched from the workspace). resolveProjectInWorkspace() does resolve()+startsWith(workspaceAbs + sep) containment check, rejecting any projectDir that escapes the workspace root. Mirrors ^workspace-scoped-project-dir from rename-media; the closing-of-Aegis-Finding-1 posture is now uniform across every workspace-scoped MCP tool.",
+      "related": [
+        "^workspace-scoped-project-dir"
+      ]
+    },
+    "^no-overlap": {
+      "id": "^no-overlap",
+      "name": "^no Overlap",
+      "symbol": "^^no-overlap",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
+      "description": "Rejects delta additions that overlap with existing deltas on same property",
+      "related": []
+    },
+    "^carousel-cycle-safe": {
+      "id": "^carousel-cycle-safe",
+      "name": "^carousel Cycle Safe",
+      "symbol": "^^carousel-cycle-safe",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "A carousel slide ref (or RefVisual src) must not create a cycle back to its own document — direct or transitive. Enforced by detectCarouselCycle in #ref-cycle, which walks slides[].src AND RefVisual src layers, tracks visited absolute paths, is depth-limited at MAX_HOPS=64, and is DAG-tolerant (diamonds OK, cycles refused). compose-carousel-project calls this BEFORE writing any slide ref.",
+      "related": [
+        "#ref-cycle"
+      ]
+    },
+    "^valid-media-basename": {
+      "id": "^valid-media-basename",
+      "name": "^valid Media Basename",
+      "symbol": "^^valid-media-basename",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Media basenames passed to the rename cascade must not contain path separators (/, \\), the dot-segments \".\" or \"..\", a leading dot, ASCII control bytes (0x00-0x1F), or be empty / whitespace-only. Enforced by isValidMediaBasenameForRename in #rename-media. Required because the cascade joins straight into <projectDir>/media/<basename> with no further sanitization — the basename guard IS the path-traversal defense.",
+      "related": [
+        "#rename-media"
+      ]
+    },
+    "^valid-doc-name": {
+      "id": "^valid-doc-name",
+      "name": "^valid Doc Name",
+      "symbol": "^^valid-doc-name",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "User-typed doc names (the \"name\" field on POST /api/project/:name/docs and the source/dest basenames on POST /api/project/:name/docs/duplicate) must pass isValidDocName: rejects path separators (/, \\), the dot-segments \".\" or \"..\", a leading dot, ASCII control bytes (0x00-0x1F), empty / whitespace-only strings, and anything over 200 chars. Enforced at BOTH the HTTP layer (studio.ts) AND the core fn (doc-management.ts / mcp/tools/docs.ts) for defense-in-depth — the basename is joined straight into <projectDir>/<slug>.atelier, so the guard IS the path-traversal defense.",
+      "related": []
+    },
+    "^manifest-doc-protected": {
+      "id": "^manifest-doc-protected",
+      "name": "^manifest Doc Protected",
+      "symbol": "^^manifest-doc-protected",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "project.atelier (the project manifest) cannot be deleted or duplicated as a doc — it is the project, not a doc inside it. Enforced via isManifestDoc(relPath) predicate at every gate: HTTP (studio.ts checks BEFORE calling deleteDoc / duplicateDoc), MCP (tools/docs.ts), and CLI core (doc-management.ts deleteDoc throws \"cannot delete the project manifest\"). A creator who wants to delete the project deletes the project dir, not the manifest.",
+      "related": []
+    },
+    "^doc-path-inside-project": {
+      "id": "^doc-path-inside-project",
+      "name": "^doc Path Inside Project",
+      "symbol": "^^doc-path-inside-project",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "The ?path query on /api/project/:name/docs (delete, duplicate) and every resolved doc path must stay inside <projectDir>. Path traversal (../, absolute paths, paths that resolve outside via decoded chains) is rejected before any fs op. Resolved-prefix containment check with trailing path-separator boundary so sibling /a/project-x does NOT pass for /a/project. Mirrors #studio-rename-endpoint's ^valid-media-basename + isSafePath posture.",
+      "related": [
+        "^valid-media-basename"
+      ]
+    },
     "^valid-document": {
       "id": "^valid-document",
       "name": "^valid Document",
@@ -2360,64 +2678,6 @@
       "description": "Cross-artifact rules pass — every STORYBOARD beat id matches a SCRIPT beat id or is prefixed `b-roll.`; all slot refs use a known kind from the closed enum; all techniques exist in the resolved technique library; duration sum within target (warn-only pre-VO).",
       "related": []
     },
-    "^workspace-scoped-project-dir": {
-      "id": "^workspace-scoped-project-dir",
-      "name": "^workspace Scoped Project Dir",
-      "symbol": "^^workspace-scoped-project-dir",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "atelier_rename_media bounds the rename to the workspace root: by default process.cwd() (the MCP server is launched from the workspace), or an explicit `workspaceDir` argument. Any projectDir that resolves outside that root is rejected with `projectDir must be inside workspace <root>` before any cascade work runs. Resolved-prefix containment check with a trailing path separator boundary, so sibling /a/workspace-x does NOT pass for workspace /a/workspace. Closes Aegis Finding 1 (TD-2026-05-27): the MCP tool previously accepted an unconstrained projectDir.",
-      "related": []
-    },
-    "^no-overlap": {
-      "id": "^no-overlap",
-      "name": "^no Overlap",
-      "symbol": "^^no-overlap",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/core/.purpose",
-      "description": "Rejects delta additions that overlap with existing deltas on same property",
-      "related": []
-    },
-    "^carousel-cycle-safe": {
-      "id": "^carousel-cycle-safe",
-      "name": "^carousel Cycle Safe",
-      "symbol": "^^carousel-cycle-safe",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "A carousel slide ref (or RefVisual src) must not create a cycle back to its own document — direct or transitive. Enforced by detectCarouselCycle in #ref-cycle, which walks slides[].src AND RefVisual src layers, tracks visited absolute paths, is depth-limited at MAX_HOPS=64, and is DAG-tolerant (diamonds OK, cycles refused). compose-carousel-project calls this BEFORE writing any slide ref.",
-      "related": [
-        "#ref-cycle"
-      ]
-    },
-    "^valid-media-basename": {
-      "id": "^valid-media-basename",
-      "name": "^valid Media Basename",
-      "symbol": "^^valid-media-basename",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
-      "description": "Media basenames passed to the rename cascade must not contain path separators (/, \\), the dot-segments \".\" or \"..\", a leading dot, ASCII control bytes (0x00-0x1F), or be empty / whitespace-only. Enforced by isValidMediaBasenameForRename in #rename-media. Required because the cascade joins straight into <projectDir>/media/<basename> with no further sanitization — the basename guard IS the path-traversal defense.",
-      "related": [
-        "#rename-media"
-      ]
-    },
-    "valid-video-layer": {
-      "id": "valid-video-layer",
-      "name": "Valid Video Layer",
-      "symbol": "^valid-video-layer",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier",
-      "description": "Validates a VideoVisual layer — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty",
-      "related": []
-    },
-    "valid-recipe": {
-      "id": "valid-recipe",
-      "name": "Valid Recipe",
-      "symbol": "^valid-recipe",
-      "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier",
-      "description": "Validates a StudioRecipe against the schema — Phase 1 fields strict, Phase 3 reserved fields parsed opaque with warnings",
-      "related": []
-    },
     "valid-mind-map-query": {
       "id": "valid-mind-map-query",
       "name": "Valid Mind Map Query",
@@ -2432,21 +2692,72 @@
       "name": "Valid Media Basename",
       "symbol": "^valid-media-basename",
       "category": "gates",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Referenced from #mcp-tool-rename-media",
-      "related": [
-        "#mcp-tool-rename-media"
-      ]
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Media basenames passed to rename-media must not contain path separators (/, \\), parent-dir refs (..), leading dot (hidden files), control bytes (NUL through 0x1f), or be empty/whitespace. Enforced at both HTTP layer (studio.ts) and the rename-media core fn for defense-in-depth.",
+      "related": []
     },
     "workspace-scoped-project-dir": {
       "id": "workspace-scoped-project-dir",
       "name": "Workspace Scoped Project Dir",
       "symbol": "^workspace-scoped-project-dir",
       "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "atelier_rename_media MCP tool requires the supplied projectDir to resolve inside workspaceDir (defaults to process.cwd()). Prevents agents (including via prompt injection) from renaming media in arbitrary directories on the host fs. Workspace scoping check runs before any fs op.",
+      "related": []
+    },
+    "valid-doc-name": {
+      "id": "valid-doc-name",
+      "name": "Valid Doc Name",
+      "symbol": "^valid-doc-name",
+      "category": "gates",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Referenced from #mcp-tool-rename-media",
+      "description": "Referenced from #mcp-tool-create-doc",
       "related": [
-        "#mcp-tool-rename-media"
+        "#mcp-tool-create-doc"
+      ]
+    },
+    "manifest-doc-protected": {
+      "id": "manifest-doc-protected",
+      "name": "Manifest Doc Protected",
+      "symbol": "^manifest-doc-protected",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-create-doc",
+      "related": [
+        "#mcp-tool-create-doc"
+      ]
+    },
+    "workspace-scoped-doc-tool": {
+      "id": "workspace-scoped-doc-tool",
+      "name": "Workspace Scoped Doc Tool",
+      "symbol": "^workspace-scoped-doc-tool",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-create-doc",
+      "related": [
+        "#mcp-tool-create-doc"
+      ]
+    },
+    "doc-path-inside-project": {
+      "id": "doc-path-inside-project",
+      "name": "Doc Path Inside Project",
+      "symbol": "^doc-path-inside-project",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-duplicate-doc",
+      "related": [
+        "#mcp-tool-duplicate-doc"
+      ]
+    },
+    "doc-path-inside-project.": {
+      "id": "doc-path-inside-project.",
+      "name": "Doc Path Inside Project.",
+      "symbol": "^doc-path-inside-project.",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "Referenced from #mcp-tool-duplicate-doc",
+      "related": [
+        "#mcp-tool-duplicate-doc"
       ]
     },
     "valid-document": {
@@ -2467,6 +2778,24 @@
       "description": "Validates that a Delta object conforms to the schema — property types, value ranges, and easing references",
       "related": []
     },
+    "valid-video-layer": {
+      "id": "valid-video-layer",
+      "name": "Valid Video Layer",
+      "symbol": "^valid-video-layer",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Validates a VideoVisual layer — sourceEnd > sourceOffset, sourceEnd ≤ videoMeta.duration if present, assetId non-empty",
+      "related": []
+    },
+    "valid-recipe": {
+      "id": "valid-recipe",
+      "name": "Valid Recipe",
+      "symbol": "^valid-recipe",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Validates a StudioRecipe against the schema — Phase 1 fields strict, Phase 3 reserved fields parsed opaque with warnings",
+      "related": []
+    },
     "valid-artifact-set": {
       "id": "valid-artifact-set",
       "name": "Valid Artifact Set",
@@ -2483,6 +2812,15 @@
       "category": "gates",
       "path": "/Users/ascend/Documents/GitHub/a-atelier",
       "description": "atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user's CWD.",
+      "related": []
+    },
+    "carousel-cycle-safe": {
+      "id": "carousel-cycle-safe",
+      "name": "Carousel Cycle Safe",
+      "symbol": "^carousel-cycle-safe",
+      "category": "gates",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier",
+      "description": "Adding a SlideRef to a carousel project MUST NOT create a cycle (direct self-ref or transitive ref back to the carousel). Enforced by detectCarouselCycle in",
       "related": []
     },
     "no-overlap": {
@@ -2516,6 +2854,15 @@
         "!doc-change"
       ]
     },
+    "!doc-list-changed": {
+      "id": "!doc-list-changed",
+      "name": "!doc List Changed",
+      "symbol": "!!doc-list-changed",
+      "category": "signals",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Emitted by the studio HTTP doc endpoints after a successful create, duplicate, or delete (broadcast on the bridge WS as {type:\"doc:list:changed\", projectName}). Received by every connected workspace-app sidebar to refresh DOCUMENT / SLIDES / OTHER DOCS groups, and by the bridge layer to fall back to the project manifest if the currently-open doc was the one deleted. The envelope intentionally carries only projectName (not a path or kind) — the receiver re-fetches GET /api/project/:name/docs to get the full DocListEntry[] truth.",
+      "related": []
+    },
     "doc-change": {
       "id": "doc-change",
       "name": "Doc Change",
@@ -2548,6 +2895,15 @@
       "related": [
         "#mcp-tool-rename-media"
       ]
+    },
+    "doc-list-changed": {
+      "id": "doc-list-changed",
+      "name": "Doc List Changed",
+      "symbol": "!doc-list-changed",
+      "category": "signals",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Referenced from ##studio-doc-endpoints",
+      "related": []
     }
   },
   "aspects": {
@@ -3444,197 +3800,6 @@
       "description": "All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.",
       "related": []
     },
-    "document-shape-asymmetry": {
-      "id": "document-shape-asymmetry",
-      "name": "Document Shape Asymmetry",
-      "symbol": "~document-shape-asymmetry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
-      "related": []
-    },
-    "visual-discriminated-union": {
-      "id": "visual-discriminated-union",
-      "name": "Visual Discriminated Union",
-      "symbol": "~visual-discriminated-union",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
-      "related": []
-    },
-    "video-bound-asymmetry": {
-      "id": "video-bound-asymmetry",
-      "name": "Video Bound Asymmetry",
-      "symbol": "~video-bound-asymmetry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
-      "related": []
-    },
-    "layer-clamps-and-min-points": {
-      "id": "layer-clamps-and-min-points",
-      "name": "Layer Clamps And Min Points",
-      "symbol": "~layer-clamps-and-min-points",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
-      "related": []
-    },
-    "animatable-property-canonical-enum": {
-      "id": "animatable-property-canonical-enum",
-      "name": "Animatable Property Canonical Enum",
-      "symbol": "~animatable-property-canonical-enum",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
-      "related": []
-    },
-    "frame-range-ordering-refinement": {
-      "id": "frame-range-ordering-refinement",
-      "name": "Frame Range Ordering Refinement",
-      "symbol": "~frame-range-ordering-refinement",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
-      "related": []
-    },
-    "delta-values-unvalidated-at-parse": {
-      "id": "delta-values-unvalidated-at-parse",
-      "name": "Delta Values Unvalidated At Parse",
-      "symbol": "~delta-values-unvalidated-at-parse",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
-      "related": []
-    },
-    "flat-ai-readable-error-shape": {
-      "id": "flat-ai-readable-error-shape",
-      "name": "Flat Ai Readable Error Shape",
-      "symbol": "~flat-ai-readable-error-shape",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
-      "related": []
-    },
-    "video-semantic-checks-beyond-zod": {
-      "id": "video-semantic-checks-beyond-zod",
-      "name": "Video Semantic Checks Beyond Zod",
-      "symbol": "~video-semantic-checks-beyond-zod",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
-      "related": [
-        "^valid-video-layer"
-      ]
-    },
-    "recipe-warnings-side-channel": {
-      "id": "recipe-warnings-side-channel",
-      "name": "Recipe Warnings Side Channel",
-      "symbol": "~recipe-warnings-side-channel",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
-      "related": []
-    },
-    "recipe-strict-no-unknown-keys": {
-      "id": "recipe-strict-no-unknown-keys",
-      "name": "Recipe Strict No Unknown Keys",
-      "symbol": "~recipe-strict-no-unknown-keys",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
-      "related": []
-    },
-    "page-number-format-template-syntax": {
-      "id": "page-number-format-template-syntax",
-      "name": "Page Number Format Template Syntax",
-      "symbol": "~page-number-format-template-syntax",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
-      "related": []
-    },
-    "recipe-phase-split-strict-vs-opaque": {
-      "id": "recipe-phase-split-strict-vs-opaque",
-      "name": "Recipe Phase Split Strict Vs Opaque",
-      "symbol": "~recipe-phase-split-strict-vs-opaque",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
-      "related": []
-    },
-    "yaml-parse-never-throws": {
-      "id": "yaml-parse-never-throws",
-      "name": "Yaml Parse Never Throws",
-      "symbol": "~yaml-parse-never-throws",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
-      "related": []
-    },
-    "artifact-slot-closed-kind-open-tail": {
-      "id": "artifact-slot-closed-kind-open-tail",
-      "name": "Artifact Slot Closed Kind Open Tail",
-      "symbol": "~artifact-slot-closed-kind-open-tail",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "SlotRefSchema enforces a hybrid contract — the first dot-separated segment (kind) is a CLOSED Zod enum (image|video|audio|text|font|voice|logo); everything after the first dot is OPEN and creator-extensible, with the only structural rule being ≥1 non-empty tail segment. This is what reconciles the artifact spec's own examples mixing two-segment (font.display) and four-segment (audio.sfx.transition.whoosh) refs while still failing fast on a typo'd kind.",
-      "related": []
-    },
-    "artifact-script-discriminated-union": {
-      "id": "artifact-script-discriminated-union",
-      "name": "Artifact Script Discriminated Union",
-      "symbol": "~artifact-script-discriminated-union",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "ScriptArtifactSchema is a z.discriminatedUnion on the literal \"mode\" field across narrated | carousel | text-only — narrated has the four ordered blocks (hook/story/proof/cta), carousel and text-only use a flat beats list. A wrong or missing mode yields a single clear error instead of unioning every branch error. Adding a new script mode requires both a literal(\"mode\") member and a union entry.",
-      "related": []
-    },
-    "artifact-validator-result-shape-deviates-from-recipe-idiom": {
-      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom",
-      "name": "Artifact Validator Result Shape Deviates From Recipe Idiom",
-      "symbol": "~artifact-validator-result-shape-deviates-from-recipe-idiom",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateArtifactSet returns { ok: boolean, warnings: string[], errors: string[] } — intentionally different from validateRecipe's { success: true, warnings?: [] } idiom. The artifacts surface validates multiple independent rules whose severities differ (some warn-only pre-VO, others hard fails) and flattening to a single discriminated result loses that. Callers handle warn vs. error decisions themselves; the validator never throws.",
-      "related": []
-    },
-    "artifact-technique-library-validated-cross-artifact": {
-      "id": "artifact-technique-library-validated-cross-artifact",
-      "name": "Artifact Technique Library Validated Cross Artifact",
-      "symbol": "~artifact-technique-library-validated-cross-artifact",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "StoryboardArtifactSchema validates techniques as `string[]` at the pure-Zod level — the closed-enum membership check happens in validateArtifactSet, which resolves the active library via technique_library_version (integer; per artifact spec §9 Q4). This keeps the schema version-agnostic while still hard-failing on unknown technique strings at validate time. v1 ships four techniques drawn from the artifact spec's STORYBOARD EXAMPLE.",
-      "related": []
-    },
-    "artifact-b-roll-id-exemption": {
-      "id": "artifact-b-roll-id-exemption",
-      "name": "Artifact B Roll Id Exemption",
-      "symbol": "~artifact-b-roll-id-exemption",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Cross-artifact beat-id matching has one explicit exemption — a STORYBOARD beat whose id starts with `b-roll.` does NOT need a matching SCRIPT beat. This is what lets Lux add storyboard-only B-roll beats without forcing Quill to write a corresponding script line. The prefix is checked literally via String#startsWith('b-roll.'); any other dot-namespaced id (e.g. `intro.cards`) still requires a script match.",
-      "related": []
-    },
-    "artifact-parser-frontmatter-plus-body-universal": {
-      "id": "artifact-parser-frontmatter-plus-body-universal",
-      "name": "Artifact Parser Frontmatter Plus Body Universal",
-      "symbol": "~artifact-parser-frontmatter-plus-body-universal",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "All three artifact parsers share the same outer shape — leading `---` fence, YAML frontmatter mapping, closing `---` fence, then a Markdown body. splitFrontmatter() is the shared splitter (rejects missing-fence with a clear error and never throws on otherwise-valid YAML failures without context). Per-artifact parsers then lift body content into typed fields: DESIGN keeps the body verbatim, SCRIPT extracts `# Hook/Story/Proof/CTA` H1 lists in narrated mode (flat YAML list otherwise), STORYBOARD extracts `## <beat-id>` H2 sections each with a YAML mapping. Beats live in the body (not frontmatter) so single-beat edits diff cleanly — the load-bearing re-entry property per artifact spec §7.",
-      "related": []
-    },
-    "yaml-safe-by-default-data-only": {
-      "id": "yaml-safe-by-default-data-only",
-      "name": "Yaml Safe By Default Data Only",
-      "symbol": "~yaml-safe-by-default-data-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
-      "related": []
-    },
     "canvas-intrinsic-not-css-size": {
       "id": "canvas-intrinsic-not-css-size",
       "name": "Canvas Intrinsic Not Css Size",
@@ -4111,8 +4276,21 @@
       "symbol": "~mcp-lib-duplication-vs-cli",
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
-      "description": "Files in packages/mcp/src/lib/ that intentionally duplicate packages/cli/src/lib/ (timeline-ops.ts, rename-media.ts — and historically recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts) carry a sentinel header comment explaining the dep-cycle constraint and the in-sync requirement with the cli twin. The duplication is NOT an oversight: cli depends on mcp (the studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a dependency cycle that breaks the build. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The planned Unit-0.5 lift into a shared @a-company/atelier-ops package is the medium-term exit; until then, the duplication is the convention, not a bug.",
-      "related": []
+      "description": "Files in packages/mcp/src/lib/ that intentionally duplicate packages/cli/src/lib/ (timeline-ops.ts, rename-media.ts, doc-management.ts, doc-management-types.ts — and historically recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts) carry a sentinel header comment explaining the dep-cycle constraint and the in-sync requirement with the cli twin. The duplication is NOT an oversight: cli depends on mcp (the studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a dependency cycle that breaks the build. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The planned Unit-0.5 lift into a shared @a-company/atelier-ops package is the medium-term exit; until then, the duplication is the convention, not a bug. NOTE: the doc-management twin carries ONE INTENTIONAL behavioral divergence (~doc-cycle-v1-simple-check); everything else stays in lockstep.",
+      "related": [
+        "~doc-cycle-v1-simple-check"
+      ]
+    },
+    "doc-cycle-v1-simple-check": {
+      "id": "doc-cycle-v1-simple-check",
+      "name": "Doc Cycle V1 Simple Check",
+      "symbol": "~doc-cycle-v1-simple-check",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/mcp/.purpose",
+      "description": "The MCP twin of doc-management uses a SIMPLER cycle check than the cli twin: when createDoc / duplicateDoc append a SlideRef to a host carousel, it asks only \"is the new src already present in slides[]?\" — covering direct self-reference and duplicate inserts, but NOT a full transitive walk. The cli twin routes through composeCarouselProject which DOES run #ref-cycle detectCarouselCycle (full transitive cycle detection up to MAX_HOPS=64). The MCP twin documents this deviation in its header comments and intentionally accepts the gap as the v1 posture; full detection in the MCP path is the v1.1 follow-up. Practical impact: a creator who builds A→B→A via the MCP surface across two tool calls is not refused at the second call (the cli twin would refuse via composeCarouselProject); a single-call duplicate insert IS still refused.",
+      "related": [
+        "#ref-cycle"
+      ]
     },
     "bezier-binary-search-not-newton": {
       "id": "bezier-binary-search-not-newton",
@@ -5380,6 +5558,44 @@
       "description": "renameSync (node:fs) does NOT follow symlinks: if media/<oldBasename> is a symlink, renameSync renames the link itself, NOT its target. This is the intended behavior — the rename cascade is operating on the project's view of media/, not the underlying file an admin may have symlinked in. Asset/visual.src rewrites happen at the doc layer regardless. Document, do not \"fix\".",
       "related": []
     },
+    "doc-slug-stable": {
+      "id": "doc-slug-stable",
+      "name": "Doc Slug Stable",
+      "symbol": "~doc-slug-stable",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "Doc layer ids survive duplicate / rename of the host doc file. The slug-as-id pattern (e.g. img-<slug>, clip-<slug>, cap-<slug>-N) means a layer id is derived from the basename of the MEDIA source, NOT the .atelier file containing it — so duplicating a doc copies the layer set verbatim and the new doc keeps the same layer ids. .src values on assets / visuals cascade (rename-media rewrites them), but the layer id is stable across the doc-level duplicate. Callers that need a stable handle into a duplicated doc can therefore key off layer.id without re-mapping.",
+      "related": []
+    },
+    "doc-symlink-followed": {
+      "id": "doc-symlink-followed",
+      "name": "Doc Symlink Followed",
+      "symbol": "~doc-symlink-followed",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "listDocs and the deleteDoc workspace-cascade walk use statSync (NOT lstatSync) when classifying entries inside the workspace, so symlinks ARE followed. Acceptable under the local-only threat model (Aegis confirmed): the studio binds 127.0.0.1, only the local creator can plant symlinks in their own workspace, and following them matches how the rest of the rename / ingest pipeline already treats media/. If the threat model ever broadens (multi-user workspace, sandboxed creators), revisit and switch to lstatSync.",
+      "related": []
+    },
+    "doc-dangling-refvisual-reported": {
+      "id": "doc-dangling-refvisual-reported",
+      "name": "Doc Dangling Refvisual Reported",
+      "symbol": "~doc-dangling-refvisual-reported",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "deleteDoc scrubs every workspace-wide SlideRef pointing at the doc being deleted (removed from slides[]), but RefVisual layers (layer.visual.type === \"ref\") that point at it are REPORTED in refLayersDangling, NOT auto-removed. The renderer tolerates missing refs (renders blank), so the v1 posture is to surface dangling refs as a studio warning rather than silently mutate sibling docs' layer lists. A future Kit pass may add an opt-in \"scrub dangling refs too\" mode; until then the report is the contract.",
+      "related": []
+    },
+    "doc-management-cli-mcp-duplication": {
+      "id": "doc-management-cli-mcp-duplication",
+      "name": "Doc Management Cli Mcp Duplication",
+      "symbol": "~doc-management-cli-mcp-duplication",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/cli/.purpose",
+      "description": "packages/mcp/src/lib/doc-management.ts and packages/mcp/src/lib/doc-management-types.ts are intentional duplicates of their cli/lib counterparts (mirrors the convention already documented for timeline-ops, rename-media, recipes, overlays). Header comments on the MCP twins call out the dep-cycle constraint: cli depends on mcp (studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a cycle. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The MCP twin uses a SIMPLER cycle check (see ~doc-cycle-v1-simple-check) — that's the one intentional behavioral divergence; everything else stays in lockstep.",
+      "related": [
+        "~doc-cycle-v1-simple-check"
+      ]
+    },
     "painters-algorithm-order": {
       "id": "painters-algorithm-order",
       "name": "Painters Algorithm Order",
@@ -5549,6 +5765,197 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/canvas/.purpose",
       "description": "applyFill builds gradients from the layer bounds — a linear gradient spans the box along the fill.angle (centered, ±cos/sin * half-extent), and a radial gradient resolves percentage center/radius against width/height (radius against max(width,height)). Gradient coordinates are local to the layer, so they animate correctly under the transform stack.",
+      "related": []
+    },
+    "document-shape-asymmetry": {
+      "id": "document-shape-asymmetry",
+      "name": "Document Shape Asymmetry",
+      "symbol": "~document-shape-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
+      "related": []
+    },
+    "visual-discriminated-union": {
+      "id": "visual-discriminated-union",
+      "name": "Visual Discriminated Union",
+      "symbol": "~visual-discriminated-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
+      "related": []
+    },
+    "video-bound-asymmetry": {
+      "id": "video-bound-asymmetry",
+      "name": "Video Bound Asymmetry",
+      "symbol": "~video-bound-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
+      "related": []
+    },
+    "layer-clamps-and-min-points": {
+      "id": "layer-clamps-and-min-points",
+      "name": "Layer Clamps And Min Points",
+      "symbol": "~layer-clamps-and-min-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
+      "related": []
+    },
+    "animatable-property-canonical-enum": {
+      "id": "animatable-property-canonical-enum",
+      "name": "Animatable Property Canonical Enum",
+      "symbol": "~animatable-property-canonical-enum",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
+      "related": []
+    },
+    "frame-range-ordering-refinement": {
+      "id": "frame-range-ordering-refinement",
+      "name": "Frame Range Ordering Refinement",
+      "symbol": "~frame-range-ordering-refinement",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
+      "related": []
+    },
+    "delta-values-unvalidated-at-parse": {
+      "id": "delta-values-unvalidated-at-parse",
+      "name": "Delta Values Unvalidated At Parse",
+      "symbol": "~delta-values-unvalidated-at-parse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
+      "related": []
+    },
+    "flat-ai-readable-error-shape": {
+      "id": "flat-ai-readable-error-shape",
+      "name": "Flat Ai Readable Error Shape",
+      "symbol": "~flat-ai-readable-error-shape",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
+      "related": []
+    },
+    "video-semantic-checks-beyond-zod": {
+      "id": "video-semantic-checks-beyond-zod",
+      "name": "Video Semantic Checks Beyond Zod",
+      "symbol": "~video-semantic-checks-beyond-zod",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
+      "related": [
+        "^valid-video-layer"
+      ]
+    },
+    "recipe-warnings-side-channel": {
+      "id": "recipe-warnings-side-channel",
+      "name": "Recipe Warnings Side Channel",
+      "symbol": "~recipe-warnings-side-channel",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
+      "related": []
+    },
+    "recipe-strict-no-unknown-keys": {
+      "id": "recipe-strict-no-unknown-keys",
+      "name": "Recipe Strict No Unknown Keys",
+      "symbol": "~recipe-strict-no-unknown-keys",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
+      "related": []
+    },
+    "page-number-format-template-syntax": {
+      "id": "page-number-format-template-syntax",
+      "name": "Page Number Format Template Syntax",
+      "symbol": "~page-number-format-template-syntax",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
+      "related": []
+    },
+    "recipe-phase-split-strict-vs-opaque": {
+      "id": "recipe-phase-split-strict-vs-opaque",
+      "name": "Recipe Phase Split Strict Vs Opaque",
+      "symbol": "~recipe-phase-split-strict-vs-opaque",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
+      "related": []
+    },
+    "yaml-parse-never-throws": {
+      "id": "yaml-parse-never-throws",
+      "name": "Yaml Parse Never Throws",
+      "symbol": "~yaml-parse-never-throws",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
+      "related": []
+    },
+    "artifact-slot-closed-kind-open-tail": {
+      "id": "artifact-slot-closed-kind-open-tail",
+      "name": "Artifact Slot Closed Kind Open Tail",
+      "symbol": "~artifact-slot-closed-kind-open-tail",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "SlotRefSchema enforces a hybrid contract — the first dot-separated segment (kind) is a CLOSED Zod enum (image|video|audio|text|font|voice|logo); everything after the first dot is OPEN and creator-extensible, with the only structural rule being ≥1 non-empty tail segment. This is what reconciles the artifact spec's own examples mixing two-segment (font.display) and four-segment (audio.sfx.transition.whoosh) refs while still failing fast on a typo'd kind.",
+      "related": []
+    },
+    "artifact-script-discriminated-union": {
+      "id": "artifact-script-discriminated-union",
+      "name": "Artifact Script Discriminated Union",
+      "symbol": "~artifact-script-discriminated-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "ScriptArtifactSchema is a z.discriminatedUnion on the literal \"mode\" field across narrated | carousel | text-only — narrated has the four ordered blocks (hook/story/proof/cta), carousel and text-only use a flat beats list. A wrong or missing mode yields a single clear error instead of unioning every branch error. Adding a new script mode requires both a literal(\"mode\") member and a union entry.",
+      "related": []
+    },
+    "artifact-validator-result-shape-deviates-from-recipe-idiom": {
+      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom",
+      "name": "Artifact Validator Result Shape Deviates From Recipe Idiom",
+      "symbol": "~artifact-validator-result-shape-deviates-from-recipe-idiom",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateArtifactSet returns { ok: boolean, warnings: string[], errors: string[] } — intentionally different from validateRecipe's { success: true, warnings?: [] } idiom. The artifacts surface validates multiple independent rules whose severities differ (some warn-only pre-VO, others hard fails) and flattening to a single discriminated result loses that. Callers handle warn vs. error decisions themselves; the validator never throws.",
+      "related": []
+    },
+    "artifact-technique-library-validated-cross-artifact": {
+      "id": "artifact-technique-library-validated-cross-artifact",
+      "name": "Artifact Technique Library Validated Cross Artifact",
+      "symbol": "~artifact-technique-library-validated-cross-artifact",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StoryboardArtifactSchema validates techniques as `string[]` at the pure-Zod level — the closed-enum membership check happens in validateArtifactSet, which resolves the active library via technique_library_version (integer; per artifact spec §9 Q4). This keeps the schema version-agnostic while still hard-failing on unknown technique strings at validate time. v1 ships four techniques drawn from the artifact spec's STORYBOARD EXAMPLE.",
+      "related": []
+    },
+    "artifact-b-roll-id-exemption": {
+      "id": "artifact-b-roll-id-exemption",
+      "name": "Artifact B Roll Id Exemption",
+      "symbol": "~artifact-b-roll-id-exemption",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Cross-artifact beat-id matching has one explicit exemption — a STORYBOARD beat whose id starts with `b-roll.` does NOT need a matching SCRIPT beat. This is what lets Lux add storyboard-only B-roll beats without forcing Quill to write a corresponding script line. The prefix is checked literally via String#startsWith('b-roll.'); any other dot-namespaced id (e.g. `intro.cards`) still requires a script match.",
+      "related": []
+    },
+    "artifact-parser-frontmatter-plus-body-universal": {
+      "id": "artifact-parser-frontmatter-plus-body-universal",
+      "name": "Artifact Parser Frontmatter Plus Body Universal",
+      "symbol": "~artifact-parser-frontmatter-plus-body-universal",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "All three artifact parsers share the same outer shape — leading `---` fence, YAML frontmatter mapping, closing `---` fence, then a Markdown body. splitFrontmatter() is the shared splitter (rejects missing-fence with a clear error and never throws on otherwise-valid YAML failures without context). Per-artifact parsers then lift body content into typed fields: DESIGN keeps the body verbatim, SCRIPT extracts `# Hook/Story/Proof/CTA` H1 lists in narrated mode (flat YAML list otherwise), STORYBOARD extracts `## <beat-id>` H2 sections each with a YAML mapping. Beats live in the body (not frontmatter) so single-beat edits diff cleanly — the load-bearing re-entry property per artifact spec §7.",
+      "related": []
+    },
+    "yaml-safe-by-default-data-only": {
+      "id": "yaml-safe-by-default-data-only",
+      "name": "Yaml Safe By Default Data Only",
+      "symbol": "~yaml-safe-by-default-data-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
       "related": []
     }
   },
@@ -5794,38 +6201,6 @@
       "category": "components",
       "id": "drag-reorder"
     },
-    "##document-schema": {
-      "category": "components",
-      "id": "#document-schema"
-    },
-    "##layer-schema": {
-      "category": "components",
-      "id": "#layer-schema"
-    },
-    "##delta-schema": {
-      "category": "components",
-      "id": "#delta-schema"
-    },
-    "##validation-functions": {
-      "category": "components",
-      "id": "#validation-functions"
-    },
-    "##recipe-schema": {
-      "category": "components",
-      "id": "#recipe-schema"
-    },
-    "##yaml-parser": {
-      "category": "components",
-      "id": "#yaml-parser"
-    },
-    "##workspace-schema": {
-      "category": "components",
-      "id": "#workspace-schema"
-    },
-    "##artifact-schemas": {
-      "category": "components",
-      "id": "#artifact-schemas"
-    },
     "#animation": {
       "category": "components",
       "id": "animation"
@@ -5961,6 +6336,30 @@
     "#mcp-lib-rename-media": {
       "category": "components",
       "id": "mcp-lib-rename-media"
+    },
+    "#mcp-tool-create-doc": {
+      "category": "components",
+      "id": "mcp-tool-create-doc"
+    },
+    "#mcp-tool-duplicate-doc": {
+      "category": "components",
+      "id": "mcp-tool-duplicate-doc"
+    },
+    "#mcp-tool-delete-doc": {
+      "category": "components",
+      "id": "mcp-tool-delete-doc"
+    },
+    "#mcp-tool-list-docs": {
+      "category": "components",
+      "id": "mcp-tool-list-docs"
+    },
+    "#mcp-lib-doc-management": {
+      "category": "components",
+      "id": "mcp-lib-doc-management"
+    },
+    "#mcp-lib-doc-management-types": {
+      "category": "components",
+      "id": "mcp-lib-doc-management-types"
     },
     "##easing-functions": {
       "category": "components",
@@ -6226,6 +6625,26 @@
       "category": "components",
       "id": "#studio-rename-endpoint"
     },
+    "##doc-management-types": {
+      "category": "components",
+      "id": "#doc-management-types"
+    },
+    "##doc-management": {
+      "category": "components",
+      "id": "#doc-management"
+    },
+    "##studio-doc-endpoints": {
+      "category": "components",
+      "id": "#studio-doc-endpoints"
+    },
+    "##studio-new-doc-modal": {
+      "category": "components",
+      "id": "#studio-new-doc-modal"
+    },
+    "##studio-doc-sidebar": {
+      "category": "components",
+      "id": "#studio-doc-sidebar"
+    },
     "#render-frame": {
       "category": "components",
       "id": "render-frame"
@@ -6250,6 +6669,70 @@
       "category": "components",
       "id": "canvas-styles"
     },
+    "##document-schema": {
+      "category": "components",
+      "id": "#document-schema"
+    },
+    "##layer-schema": {
+      "category": "components",
+      "id": "#layer-schema"
+    },
+    "##delta-schema": {
+      "category": "components",
+      "id": "#delta-schema"
+    },
+    "##validation-functions": {
+      "category": "components",
+      "id": "#validation-functions"
+    },
+    "##recipe-schema": {
+      "category": "components",
+      "id": "#recipe-schema"
+    },
+    "##yaml-parser": {
+      "category": "components",
+      "id": "#yaml-parser"
+    },
+    "##workspace-schema": {
+      "category": "components",
+      "id": "#workspace-schema"
+    },
+    "##artifact-schemas": {
+      "category": "components",
+      "id": "#artifact-schemas"
+    },
+    "^^workspace-scoped-project-dir": {
+      "category": "gates",
+      "id": "^workspace-scoped-project-dir"
+    },
+    "^^workspace-scoped-doc-tool": {
+      "category": "gates",
+      "id": "^workspace-scoped-doc-tool"
+    },
+    "^^no-overlap": {
+      "category": "gates",
+      "id": "^no-overlap"
+    },
+    "^^carousel-cycle-safe": {
+      "category": "gates",
+      "id": "^carousel-cycle-safe"
+    },
+    "^^valid-media-basename": {
+      "category": "gates",
+      "id": "^valid-media-basename"
+    },
+    "^^valid-doc-name": {
+      "category": "gates",
+      "id": "^valid-doc-name"
+    },
+    "^^manifest-doc-protected": {
+      "category": "gates",
+      "id": "^manifest-doc-protected"
+    },
+    "^^doc-path-inside-project": {
+      "category": "gates",
+      "id": "^doc-path-inside-project"
+    },
     "^^valid-document": {
       "category": "gates",
       "id": "^valid-document"
@@ -6270,22 +6753,6 @@
       "category": "gates",
       "id": "^valid-artifact-set"
     },
-    "^^workspace-scoped-project-dir": {
-      "category": "gates",
-      "id": "^workspace-scoped-project-dir"
-    },
-    "^^no-overlap": {
-      "category": "gates",
-      "id": "^no-overlap"
-    },
-    "^^carousel-cycle-safe": {
-      "category": "gates",
-      "id": "^carousel-cycle-safe"
-    },
-    "^^valid-media-basename": {
-      "category": "gates",
-      "id": "^valid-media-basename"
-    },
     "$$frame-resolution": {
       "category": "flows",
       "id": "$frame-resolution"
@@ -6298,6 +6765,14 @@
       "category": "flows",
       "id": "$rename-cascade-flow"
     },
+    "$$doc-create-flow": {
+      "category": "flows",
+      "id": "$doc-create-flow"
+    },
+    "$$doc-delete-cascade-flow": {
+      "category": "flows",
+      "id": "$doc-delete-cascade-flow"
+    },
     "!!clip-added-to-track": {
       "category": "signals",
       "id": "!clip-added-to-track"
@@ -6305,6 +6780,10 @@
     "!!media-rename-cascaded": {
       "category": "signals",
       "id": "!media-rename-cascaded"
+    },
+    "!!doc-list-changed": {
+      "category": "signals",
+      "id": "!doc-list-changed"
     },
     "~layer-tag-isolation": {
       "category": "aspects",
@@ -6702,90 +7181,6 @@
       "category": "aspects",
       "id": "drag-reorder-aborts-clean"
     },
-    "~document-shape-asymmetry": {
-      "category": "aspects",
-      "id": "document-shape-asymmetry"
-    },
-    "~visual-discriminated-union": {
-      "category": "aspects",
-      "id": "visual-discriminated-union"
-    },
-    "~video-bound-asymmetry": {
-      "category": "aspects",
-      "id": "video-bound-asymmetry"
-    },
-    "~layer-clamps-and-min-points": {
-      "category": "aspects",
-      "id": "layer-clamps-and-min-points"
-    },
-    "~animatable-property-canonical-enum": {
-      "category": "aspects",
-      "id": "animatable-property-canonical-enum"
-    },
-    "~frame-range-ordering-refinement": {
-      "category": "aspects",
-      "id": "frame-range-ordering-refinement"
-    },
-    "~delta-values-unvalidated-at-parse": {
-      "category": "aspects",
-      "id": "delta-values-unvalidated-at-parse"
-    },
-    "~flat-ai-readable-error-shape": {
-      "category": "aspects",
-      "id": "flat-ai-readable-error-shape"
-    },
-    "~video-semantic-checks-beyond-zod": {
-      "category": "aspects",
-      "id": "video-semantic-checks-beyond-zod"
-    },
-    "~recipe-warnings-side-channel": {
-      "category": "aspects",
-      "id": "recipe-warnings-side-channel"
-    },
-    "~recipe-strict-no-unknown-keys": {
-      "category": "aspects",
-      "id": "recipe-strict-no-unknown-keys"
-    },
-    "~page-number-format-template-syntax": {
-      "category": "aspects",
-      "id": "page-number-format-template-syntax"
-    },
-    "~recipe-phase-split-strict-vs-opaque": {
-      "category": "aspects",
-      "id": "recipe-phase-split-strict-vs-opaque"
-    },
-    "~yaml-parse-never-throws": {
-      "category": "aspects",
-      "id": "yaml-parse-never-throws"
-    },
-    "~artifact-slot-closed-kind-open-tail": {
-      "category": "aspects",
-      "id": "artifact-slot-closed-kind-open-tail"
-    },
-    "~artifact-script-discriminated-union": {
-      "category": "aspects",
-      "id": "artifact-script-discriminated-union"
-    },
-    "~artifact-validator-result-shape-deviates-from-recipe-idiom": {
-      "category": "aspects",
-      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom"
-    },
-    "~artifact-technique-library-validated-cross-artifact": {
-      "category": "aspects",
-      "id": "artifact-technique-library-validated-cross-artifact"
-    },
-    "~artifact-b-roll-id-exemption": {
-      "category": "aspects",
-      "id": "artifact-b-roll-id-exemption"
-    },
-    "~artifact-parser-frontmatter-plus-body-universal": {
-      "category": "aspects",
-      "id": "artifact-parser-frontmatter-plus-body-universal"
-    },
-    "~yaml-safe-by-default-data-only": {
-      "category": "aspects",
-      "id": "yaml-safe-by-default-data-only"
-    },
     "~canvas-intrinsic-not-css-size": {
       "category": "aspects",
       "id": "canvas-intrinsic-not-css-size"
@@ -6997,6 +7392,10 @@
     "~mcp-lib-duplication-vs-cli": {
       "category": "aspects",
       "id": "mcp-lib-duplication-vs-cli"
+    },
+    "~doc-cycle-v1-simple-check": {
+      "category": "aspects",
+      "id": "doc-cycle-v1-simple-check"
     },
     "~bezier-binary-search-not-newton": {
       "category": "aspects",
@@ -7550,6 +7949,22 @@
       "category": "aspects",
       "id": "rename-symlink-passthrough"
     },
+    "~doc-slug-stable": {
+      "category": "aspects",
+      "id": "doc-slug-stable"
+    },
+    "~doc-symlink-followed": {
+      "category": "aspects",
+      "id": "doc-symlink-followed"
+    },
+    "~doc-dangling-refvisual-reported": {
+      "category": "aspects",
+      "id": "doc-dangling-refvisual-reported"
+    },
+    "~doc-management-cli-mcp-duplication": {
+      "category": "aspects",
+      "id": "doc-management-cli-mcp-duplication"
+    },
     "~painters-algorithm-order": {
       "category": "aspects",
       "id": "painters-algorithm-order"
@@ -7626,6 +8041,90 @@
       "category": "aspects",
       "id": "gradient-geometry-from-bounds"
     },
+    "~document-shape-asymmetry": {
+      "category": "aspects",
+      "id": "document-shape-asymmetry"
+    },
+    "~visual-discriminated-union": {
+      "category": "aspects",
+      "id": "visual-discriminated-union"
+    },
+    "~video-bound-asymmetry": {
+      "category": "aspects",
+      "id": "video-bound-asymmetry"
+    },
+    "~layer-clamps-and-min-points": {
+      "category": "aspects",
+      "id": "layer-clamps-and-min-points"
+    },
+    "~animatable-property-canonical-enum": {
+      "category": "aspects",
+      "id": "animatable-property-canonical-enum"
+    },
+    "~frame-range-ordering-refinement": {
+      "category": "aspects",
+      "id": "frame-range-ordering-refinement"
+    },
+    "~delta-values-unvalidated-at-parse": {
+      "category": "aspects",
+      "id": "delta-values-unvalidated-at-parse"
+    },
+    "~flat-ai-readable-error-shape": {
+      "category": "aspects",
+      "id": "flat-ai-readable-error-shape"
+    },
+    "~video-semantic-checks-beyond-zod": {
+      "category": "aspects",
+      "id": "video-semantic-checks-beyond-zod"
+    },
+    "~recipe-warnings-side-channel": {
+      "category": "aspects",
+      "id": "recipe-warnings-side-channel"
+    },
+    "~recipe-strict-no-unknown-keys": {
+      "category": "aspects",
+      "id": "recipe-strict-no-unknown-keys"
+    },
+    "~page-number-format-template-syntax": {
+      "category": "aspects",
+      "id": "page-number-format-template-syntax"
+    },
+    "~recipe-phase-split-strict-vs-opaque": {
+      "category": "aspects",
+      "id": "recipe-phase-split-strict-vs-opaque"
+    },
+    "~yaml-parse-never-throws": {
+      "category": "aspects",
+      "id": "yaml-parse-never-throws"
+    },
+    "~artifact-slot-closed-kind-open-tail": {
+      "category": "aspects",
+      "id": "artifact-slot-closed-kind-open-tail"
+    },
+    "~artifact-script-discriminated-union": {
+      "category": "aspects",
+      "id": "artifact-script-discriminated-union"
+    },
+    "~artifact-validator-result-shape-deviates-from-recipe-idiom": {
+      "category": "aspects",
+      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom"
+    },
+    "~artifact-technique-library-validated-cross-artifact": {
+      "category": "aspects",
+      "id": "artifact-technique-library-validated-cross-artifact"
+    },
+    "~artifact-b-roll-id-exemption": {
+      "category": "aspects",
+      "id": "artifact-b-roll-id-exemption"
+    },
+    "~artifact-parser-frontmatter-plus-body-universal": {
+      "category": "aspects",
+      "id": "artifact-parser-frontmatter-plus-body-universal"
+    },
+    "~yaml-safe-by-default-data-only": {
+      "category": "aspects",
+      "id": "yaml-safe-by-default-data-only"
+    },
     "#svg-shapes": {
       "category": "components",
       "id": "svg-shapes"
@@ -7649,14 +8148,6 @@
     "#svg-properties": {
       "category": "components",
       "id": "svg-properties"
-    },
-    "^valid-video-layer": {
-      "category": "gates",
-      "id": "valid-video-layer"
-    },
-    "^valid-recipe": {
-      "category": "gates",
-      "id": "valid-recipe"
     },
     "!doc-change": {
       "category": "signals",
@@ -7685,6 +8176,26 @@
     "!dryRun": {
       "category": "signals",
       "id": "dryRun"
+    },
+    "^valid-doc-name": {
+      "category": "gates",
+      "id": "valid-doc-name"
+    },
+    "^manifest-doc-protected": {
+      "category": "gates",
+      "id": "manifest-doc-protected"
+    },
+    "^workspace-scoped-doc-tool": {
+      "category": "gates",
+      "id": "workspace-scoped-doc-tool"
+    },
+    "^doc-path-inside-project": {
+      "category": "gates",
+      "id": "doc-path-inside-project"
+    },
+    "^doc-path-inside-project.": {
+      "category": "gates",
+      "id": "doc-path-inside-project."
     },
     "#lottie-map-layers": {
       "category": "components",
@@ -7718,6 +8229,10 @@
       "category": "gates",
       "id": "valid-delta"
     },
+    "^valid-video-layer": {
+      "category": "gates",
+      "id": "valid-video-layer"
+    },
     "#render-image": {
       "category": "components",
       "id": "render-image"
@@ -7725,6 +8240,10 @@
     "#cli-transcribe": {
       "category": "components",
       "id": "cli-transcribe"
+    },
+    "^valid-recipe": {
+      "category": "gates",
+      "id": "valid-recipe"
     },
     "#learning-mode-io": {
       "category": "components",
@@ -7773,6 +8292,14 @@
     "#cli-studio": {
       "category": "components",
       "id": "cli-studio"
+    },
+    "^carousel-cycle-safe": {
+      "category": "gates",
+      "id": "carousel-cycle-safe"
+    },
+    "!doc-list-changed": {
+      "category": "signals",
+      "id": "doc-list-changed"
     },
     "#frame-resolver": {
       "category": "components",

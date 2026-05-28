@@ -106,6 +106,35 @@ components:
     description: 'Local duplication of cli/lib/rename-media.ts (renameMedia + applyMediaRenameToDoc + scanArtifactsForOldBasename + isValidMediaBasenameForRename). Lives here so the MCP rename tool has access without forming a cli↔mcp dependency cycle. Mirrors the duplication convention established by mcp-lib-timeline-ops / recipes.ts / overlays.ts. Carries a sentinel header comment explaining the dep-cycle constraint and the in-sync-with-cli requirement; the two files MUST be edited together until the planned Unit-0.5 lift into a shared package.'
     file: src/lib/rename-media.ts
     tags: [rename, media, lib, duplication, v1]
+  # ── v1.0.x doc-management tools (Slice B) ──────
+  mcp-tool-create-doc:
+    description: 'atelier_create_doc — programmatic doc creation for video / image / carousel kinds at a project root OR as a slide of an existing carousel (asCarouselSlide:true + carouselDocPath). Gates: ^valid-doc-name (isValidDocName on the user-supplied name), ^manifest-doc-protected (refuses to create a doc named "project.atelier"), and ^workspace-scoped-doc-tool (projectDir must resolve inside workspaceDir, defaulting to process.cwd()). On success, composes the doc via the cli twin''s composeImage|Video|Carousel and writes <projectDir>/<slug>.atelier with collision-suffixing; when appending to a carousel, uses the v1 simple-cycle check (see ~doc-cycle-v1-simple-check).'
+    file: src/tools/docs.ts
+    gates: ['^valid-doc-name', '^manifest-doc-protected', '^workspace-scoped-doc-tool']
+    tags: [doc, mcp-tool, create, v1.0.x]
+  mcp-tool-duplicate-doc:
+    description: 'atelier_duplicate_doc — file-level duplicate with collision-suffixing (-2, -3, …). Optional appendSlideRef appends the duplicate as a SlideRef on the host carousel (v1 simple-cycle check). Gates: ^valid-doc-name (basename), ^manifest-doc-protected (refuses to duplicate project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. Idempotent on a no-op same-name duplicate? No — collision-suffixing guarantees a fresh path.'
+    file: src/tools/docs.ts
+    gates: ['^valid-doc-name', '^manifest-doc-protected', '^workspace-scoped-doc-tool', '^doc-path-inside-project']
+    tags: [doc, mcp-tool, duplicate, v1.0.x]
+  mcp-tool-delete-doc:
+    description: 'atelier_delete_doc — workspace-wide cascade. Walks every sibling project subdir under workspaceDir; removes matching SlideRef entries from any carousel manifest; collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported); unlinks the doc. Gates: ^manifest-doc-protected (isManifestDoc refuses project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. destructiveHint:true.'
+    file: src/tools/docs.ts
+    gates: ['^manifest-doc-protected', '^workspace-scoped-doc-tool', '^doc-path-inside-project']
+    tags: [doc, mcp-tool, delete, cascade, v1.0.x]
+  mcp-tool-list-docs:
+    description: 'atelier_list_docs — enumerate the manifest + carousel slides[] + every other root-level *.atelier in a project as DocListEntry[]. Read-only; ^workspace-scoped-doc-tool only. statSync follows symlinks (~doc-symlink-followed). The single line of truth for the studio sidebar''s DOCUMENT / SLIDES / OTHER DOCS groups when fetched via MCP.'
+    file: src/tools/docs.ts
+    gates: ['^workspace-scoped-doc-tool']
+    tags: [doc, mcp-tool, list, v1.0.x]
+  mcp-lib-doc-management:
+    description: 'Intentional duplicate of cli/src/lib/doc-management.ts. Lives here so the MCP doc tools have access without forming a cli↔mcp dependency cycle — the same convention as mcp-lib-rename-media / mcp-lib-timeline-ops / recipes.ts / overlays.ts. Carries a sentinel header comment explaining the dep-cycle constraint and the in-sync-with-cli requirement. ONE INTENTIONAL DIVERGENCE: createDoc / duplicateDoc here use a SIMPLER cycle check (see ~doc-cycle-v1-simple-check) — "is src already in slides[]?" — instead of the full transitive walk; everything else stays in lockstep with the cli twin.'
+    file: src/lib/doc-management.ts
+    tags: [doc, lib, duplication, v1.0.x]
+  mcp-lib-doc-management-types:
+    description: 'Intentional duplicate of cli/src/lib/doc-management-types.ts (DocKind, CreateDocOptions, DuplicateDocOptions, DeleteDocOptions, DocListEntry, DocDeleteCascadeReport, DocDuplicateReport, isValidDocName, isManifestDoc). Pure types + validators — zero I/O. Lives here for the same dep-cycle reason as mcp-lib-doc-management; the two files MUST be edited together with their cli twins until the planned Unit-0.5 lift into a shared package.'
+    file: src/lib/doc-management-types.ts
+    tags: [doc, types, lib, duplication, v1.0.x]
 signals:
   '!clip-added-to-track':
     description: 'Declared signal for the v1.0 clip tools — fires when atelier_add_clip lands a new clip layer onto a video or audio track. NOT yet wired to an emitter; reserved as the ambient WS-bridge layer that will fan out clip additions to attached studio instances in a future pass. Listed here so the symbol registry has the canonical name before the wiring lands.'
@@ -120,6 +149,11 @@ gates:
     description: 'atelier_rename_media bounds the rename to the workspace root: by default process.cwd() (the MCP server is launched from the workspace), or an explicit `workspaceDir` argument. Any projectDir that resolves outside that root is rejected with `projectDir must be inside workspace <root>` before any cascade work runs. Resolved-prefix containment check with a trailing path separator boundary, so sibling /a/workspace-x does NOT pass for workspace /a/workspace. Closes Aegis Finding 1 (TD-2026-05-27): the MCP tool previously accepted an unconstrained projectDir.'
     enforcement: resolve()+startsWith(root + sep) containment check
     appliesTo: ["mcp-tool-rename-media"]
+  # ── v1.0.x doc-management gates ──────
+  ^workspace-scoped-doc-tool:
+    description: 'The MCP doc tools (atelier_create_doc / atelier_duplicate_doc / atelier_delete_doc / atelier_list_docs) require projectDir / (workspaceDir + projectName) to resolve inside workspaceDir, which defaults to process.cwd() (the MCP server is launched from the workspace). resolveProjectInWorkspace() does resolve()+startsWith(workspaceAbs + sep) containment check, rejecting any projectDir that escapes the workspace root. Mirrors ^workspace-scoped-project-dir from rename-media; the closing-of-Aegis-Finding-1 posture is now uniform across every workspace-scoped MCP tool.'
+    enforcement: resolveProjectInWorkspace() resolve()+startsWith containment check
+    appliesTo: ["mcp-tool-create-doc", "mcp-tool-duplicate-doc", "mcp-tool-delete-doc", "mcp-tool-list-docs"]
 aspects:
   store-synchronous-registration-order-emit:
     description: 'onChange listeners fire synchronously inside create/set/delete (not on a microtask), in registration order, over a slice() snapshot of the listener array taken at emit time — so a listener that subscribes/unsubscribes mid-emit neither skips nor double-fires its siblings. The unsubscribe closure splices by indexOf, so the same function registered twice only removes one copy.'
@@ -552,7 +586,7 @@ aspects:
     appliesTo: ["mcp-mind-map"]
   # ── v1.0 bundle aspect ──────
   mcp-lib-duplication-vs-cli:
-    description: 'Files in packages/mcp/src/lib/ that intentionally duplicate packages/cli/src/lib/ (timeline-ops.ts, rename-media.ts — and historically recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts) carry a sentinel header comment explaining the dep-cycle constraint and the in-sync requirement with the cli twin. The duplication is NOT an oversight: cli depends on mcp (the studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a dependency cycle that breaks the build. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The planned Unit-0.5 lift into a shared @a-company/atelier-ops package is the medium-term exit; until then, the duplication is the convention, not a bug.'
+    description: 'Files in packages/mcp/src/lib/ that intentionally duplicate packages/cli/src/lib/ (timeline-ops.ts, rename-media.ts, doc-management.ts, doc-management-types.ts — and historically recipes.ts / overlays.ts / effective-transcript.ts / media-notes.ts) carry a sentinel header comment explaining the dep-cycle constraint and the in-sync requirement with the cli twin. The duplication is NOT an oversight: cli depends on mcp (the studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a dependency cycle that breaks the build. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The planned Unit-0.5 lift into a shared @a-company/atelier-ops package is the medium-term exit; until then, the duplication is the convention, not a bug. NOTE: the doc-management twin carries ONE INTENTIONAL behavioral divergence (~doc-cycle-v1-simple-check); everything else stays in lockstep.'
     tags:
       - duplication
       - dep-cycle
@@ -561,5 +595,22 @@ aspects:
     anchors:
       - packages/mcp/src/lib/timeline-ops.ts:12
       - packages/mcp/src/lib/rename-media.ts:11
+      - packages/mcp/src/lib/doc-management.ts:1-30
+      - packages/mcp/src/lib/doc-management-types.ts:1-15
     enforcement: sentinel header comment + manual lockstep edit
-    appliesTo: ["mcp-lib-timeline-ops", "mcp-lib-rename-media"]
+    appliesTo: ["mcp-lib-timeline-ops", "mcp-lib-rename-media", "mcp-lib-doc-management", "mcp-lib-doc-management-types"]
+  # ── v1.0.x doc-management bundle aspects ──────
+  doc-cycle-v1-simple-check:
+    description: 'The MCP twin of doc-management uses a SIMPLER cycle check than the cli twin: when createDoc / duplicateDoc append a SlideRef to a host carousel, it asks only "is the new src already present in slides[]?" — covering direct self-reference and duplicate inserts, but NOT a full transitive walk. The cli twin routes through composeCarouselProject which DOES run #ref-cycle detectCarouselCycle (full transitive cycle detection up to MAX_HOPS=64). The MCP twin documents this deviation in its header comments and intentionally accepts the gap as the v1 posture; full detection in the MCP path is the v1.1 follow-up. Practical impact: a creator who builds A→B→A via the MCP surface across two tool calls is not refused at the second call (the cli twin would refuse via composeCarouselProject); a single-call duplicate insert IS still refused.'
+    tags:
+      - doc
+      - carousel
+      - cycle
+      - deviation
+      - cautionary
+      - v1.0.x
+    anchors:
+      - packages/mcp/src/lib/doc-management.ts:170-180
+      - packages/mcp/src/lib/doc-management.ts:212-220
+    enforcement: 'is-src-already-in-slides predicate (no transitive walk)'
+    appliesTo: ["mcp-lib-doc-management", "mcp-tool-create-doc", "mcp-tool-duplicate-doc"]
