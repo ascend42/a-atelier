@@ -3,6 +3,7 @@ import { resolveFrame } from "@a-company/atelier-core";
 import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
 import { Player } from "../player.js";
 import { createImageLayerFromFile } from "../utils/image-drop.js";
+import { BrowserVideoFrameProvider } from "../utils/browser-video-frame-provider.js";
 
 export interface CanvasPanelOptions {
   onFrameChange?: (frame: number) => void;
@@ -18,6 +19,15 @@ export interface CanvasPanelOptions {
    * (same channel the layer-panel uses for `+ Add` operations).
    */
   onDocumentChange?: () => void;
+  /**
+   * Map a doc-stored relative `src` (e.g. `media/IMG_7346.MOV`) to a
+   * browser-fetchable URL. Used by both the image cache and the video
+   * frame provider; without this both fall back to identity, which means
+   * relative-path layers from disk-loaded docs won't load. Workspace-app
+   * supplies the `/api/file?path=…` builder so the studio doesn't have
+   * to know about the file API surface.
+   */
+  srcResolver?: (src: string) => string;
 }
 
 /**
@@ -57,6 +67,7 @@ export class CanvasPanel {
   private doc: AtelierDocument | null = null;
   private stateName = "";
   private imageCache: ImageCache;
+  private videoProvider: BrowserVideoFrameProvider;
   private resizeObserver: ResizeObserver | undefined;
 
   constructor(parent: HTMLElement, private opts: CanvasPanelOptions = {}) {
@@ -70,15 +81,30 @@ export class CanvasPanel {
     this.canvas.width = 600;
     this.canvas.height = 400;
     this.ctx = this.canvas.getContext("2d")!;
+
+    // Resolve relative doc-stored srcs to absolute, browser-fetchable URLs.
+    // Used by BOTH the image cache and the video provider so the two stay in
+    // lockstep; the host (workspace-app) constructs a `/api/file?path=…`
+    // builder rooted at the loaded doc's directory.
+    const srcResolver = opts.srcResolver ?? ((s: string): string => s);
+
     this.imageCache = new ImageCache({
       onLoad: () => this.refresh(),
       createImage: (src, onLoad, onError) => {
         const img = new Image();
         img.onload = onLoad;
         img.onerror = onError;
-        img.src = src;
+        img.src = srcResolver(src);
         return img;
       },
+    });
+    // Preview-mode VideoFrameProvider — pairs with renderFrame's
+    // videoFrameProvider option so VideoVisual layers actually paint in the
+    // editor. The export path (Mediabunny/WebCodecs) supplies its own
+    // deterministic provider; this one is editor-only.
+    this.videoProvider = new BrowserVideoFrameProvider({
+      srcResolver,
+      onReady: () => this.refresh(),
     });
     wrap.appendChild(this.canvas);
     this.el.appendChild(wrap);
@@ -228,7 +254,15 @@ export class CanvasPanel {
   renderAt(frame: number): void {
     if (!this.doc) return;
     const resolved = resolveFrame(this.doc, this.stateName, frame);
-    renderFrame(this.ctx as any, resolved, this.doc, this.imageCache);
+    // RenderOptions object form (the old `imageCache` positional sentinel is
+    // also supported, but only the options form carries videoFrameProvider —
+    // without that, every VideoVisual layer silently no-ops via the
+    // `if (videoFrameProvider)` guard in render-frame.ts, which is exactly
+    // the bug that left the editor's canvas black on video docs.
+    renderFrame(this.ctx as any, resolved, this.doc, {
+      imageCache: this.imageCache,
+      videoFrameProvider: this.videoProvider.get,
+    });
     this.scrubber.value = String(frame);
     const total = this.doc.states[this.stateName]?.duration ?? 0;
     this.frameDisplay.textContent = `${frame} / ${total - 1}`;
@@ -275,6 +309,10 @@ export class CanvasPanel {
     this.player?.destroy();
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    // Release cached <video> elements so doc swaps don't leak detached DOM
+    // nodes that keep their decoders alive. ImageCache is GC'd via its own
+    // closure refs; only the video provider owns persistent DOM.
+    this.videoProvider.dispose();
   }
 
   /**

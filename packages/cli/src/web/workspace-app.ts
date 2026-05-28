@@ -2296,6 +2296,17 @@ export async function bootWorkspaceApp(): Promise<void> {
       // Save indicator + debounced save inline; matches inline-app.ts pattern.
       let saveTimer: ReturnType<typeof setTimeout> | null = null;
       // ── v1.0 UI shell rework (Kit-C) ── mount studio in canvasMount.
+      // Resolve doc-relative srcs (e.g. `media/IMG_7346.MOV`) to the file
+      // API so the canvas can actually fetch image/video bytes. The doc
+      // lives at `path` (cwd-relative); media paths in the doc are written
+      // relative to the doc's own directory, so we join + URL-encode.
+      const docDir = path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "";
+      const studioSrcResolver = (src: string): string => {
+        // Pass through absolute, protocol-qualified, and data URLs unchanged.
+        if (/^([a-z]+:|\/|data:)/i.test(src)) return src;
+        const full = docDir ? `${docDir}/${src}` : src;
+        return `/api/file?path=${encodeURIComponent(full)}`;
+      };
       currentStudio = new AtelierStudio(canvasMount, {
         mode: "full",
         initialTab: "editor",
@@ -2308,6 +2319,7 @@ export async function bootWorkspaceApp(): Promise<void> {
             });
           }, 800);
         },
+        srcResolver: studioSrcResolver,
       });
       currentStudio.setTheme(theme);
       currentStudio.loadDocument(parsed.data as Parameters<AtelierStudio["loadDocument"]>[0]);

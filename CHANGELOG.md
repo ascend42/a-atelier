@@ -52,6 +52,17 @@ The first triage round's "Kit-β letterbox-fit" and "Kit-γ canvas-size dropdown
 
 Runtime verification pending owner restart of `atelier studio`. Tests green: 1177 across 10 packages.
 
+### Fixed — v1.0 triage round 3 (preview-mode video provider)
+
+Owner restart of round 2 made the dropdown + ruler + letterbox visible (verified). The canvas was still black where the video should play — diagnosis: `renderFrame()` accepts a `videoFrameProvider` callback that returns a drawable for a `(src, sourceTime)` pair, but **no preview-mode implementation existed anywhere in the codebase**. The interface was defined, the renderer was wired, the export path (Mediabunny/WebCodecs) was apparently written — the browser-side HTMLVideoElement-backed provider was never written, and the studio's `canvas-panel` was calling `renderFrame(ctx, resolved, doc, imageCache)` with no provider at all. Every `VideoVisual` layer therefore silently skipped via the `if (videoFrameProvider)` guard.
+
+- **`BrowserVideoFrameProvider`** (`packages/studio/src/utils/browser-video-frame-provider.ts`) — backs each video src with a lazy `HTMLVideoElement` (muted, playsInline, crossOrigin=anonymous, preload=auto). Debounces `currentTime` seeks at a 16ms epsilon so playback doesn't thrash. Returns `null` while seek is in flight; fires `onReady` on `loadeddata` and `seeked` so canvas-panel re-paints when the freshly decoded frame is actually drawable. `dispose()` releases cached elements on doc swap.
+- **`CanvasPanelOptions.srcResolver`** — function that maps a doc-stored relative src (e.g. `media/IMG_7346.MOV`) to a browser-fetchable URL. Used by BOTH the image cache and the video provider so the two stay in lockstep. Defaults to identity. Closes a latent gap: disk-loaded docs with image layers ALSO couldn't fetch their bytes (drag-drop image-drop was data-URL'd, masking it).
+- **`StudioOptions.srcResolver`** — forwarded into `CanvasPanel`. The studio doesn't have to know about the host's file API surface; it just hands the function through.
+- **Workspace-app + inline-app supply the resolver** — builds `/api/file?path=${encodeURIComponent(joinPath(docDir, src))}` rooted at the loaded doc's directory. Pass-through guard for absolute/protocol/data URLs.
+
+Runtime verification pending owner restart again. Tests green: 1212 across 12 packages.
+
 ### Team execution
 
 This release was built almost entirely via Paradigm agent orchestration:

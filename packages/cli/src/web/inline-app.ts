@@ -685,6 +685,19 @@ function bootLegacyApp(config: StudioAppConfig): void {
       mode: "full",
       initialTab: "yaml",
       allowSave: true,
+      // Resolve doc-relative srcs against the currently-loaded file's
+      // directory. inline-app reuses one studio instance across file
+      // switches, so we read `currentFile` at call time (not closure time)
+      // — otherwise switching docs would leave the resolver pinned to the
+      // first one. See workspace-app for the same builder.
+      srcResolver: (src: string): string => {
+        if (/^([a-z]+:|\/|data:)/i.test(src)) return src;
+        const path = currentFile;
+        if (!path) return src;
+        const docDir = path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "";
+        const full = docDir ? `${docDir}/${src}` : src;
+        return `/api/file?path=${encodeURIComponent(full)}`;
+      },
       onDocumentChange: (doc) => {
         // Auto-save with debounce — flip to "saving" immediately so the user
         // knows their edit was registered even while the timeout is pending.

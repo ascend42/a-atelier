@@ -40,6 +40,15 @@ export interface StudioOptions {
   autoplay?: boolean;
   onDocumentChange?: (doc: AtelierDocument) => void;
   onSave?: (doc: AtelierDocument) => void;
+  /**
+   * Map a doc-stored relative src (e.g. `media/IMG_7346.MOV`) to a
+   * browser-fetchable URL. Forwarded into `CanvasPanel`, where it backs
+   * both the image cache and the video frame provider. Without it, image
+   * and video layers from disk-loaded docs can't fetch their bytes and
+   * render as empty / black. Identity by default — host (workspace-app)
+   * supplies the `/api/file?path=…` builder rooted at the doc's directory.
+   */
+  srcResolver?: (src: string) => string;
 }
 
 export class AtelierStudio {
@@ -116,6 +125,10 @@ export class AtelierStudio {
       // canvas-refresh + layer/yaml panel refresh + the host-side
       // onDocumentChange consumer (which the CLI uses to autosave).
       onDocumentChange: () => this.onDocChange(),
+      // Forward the host's src resolver so image/video layers with
+      // relative paths (e.g. `media/foo.MOV`) actually fetch — without
+      // this, every disk-loaded doc with video layers renders black.
+      srcResolver: opts.srcResolver,
     });
 
     // Right panel → right side of body
