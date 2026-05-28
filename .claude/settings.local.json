@@ -152,7 +152,11 @@
       "Bash(git stash *)",
       "Bash(echo \"EXIT: $?\")",
       "Bash(echo \"TSC EXIT: $?\")",
-      "Bash(echo \"EXIT $?\")"
+      "Bash(echo \"EXIT $?\")",
+      "Bash(awk '/isProjectDir|listProjects/ {print NR\": \"$0}' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace.ts)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(awk '/setActiveProject/ {print NR\": \"$0}' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace.ts)",
+      "Bash(echo \"\\(error count: $\\(pnpm -r exec tsc --noEmit 2>&1)"
     ]
   },
   "enableAllProjectMcpServers": true,

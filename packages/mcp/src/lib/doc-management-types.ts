@@ -36,10 +36,7 @@ export interface DeleteDocOptions {
 
 export interface DocListEntry {
   path: string;
-  role: "manifest" | "slide" | "other";
   kind?: "video" | "image" | "carousel";
-  slideIndex?: number;
-  slideLabel?: string;
 }
 
 export interface DocDeleteCascadeReport {
@@ -69,12 +66,4 @@ export function isValidDocName(name: unknown): name is string {
   // eslint-disable-next-line no-control-regex
   if (/[\x00-\x1f]/.test(trimmed)) return false;
   return true;
-}
-
-/**
- * Single source of truth for "is this the project's manifest .atelier file?".
- * Strict equality only: no `./` prefix, no trailing whitespace, no case folding.
- */
-export function isManifestDoc(relPath: string): boolean {
-  return relPath === "project.atelier";
 }

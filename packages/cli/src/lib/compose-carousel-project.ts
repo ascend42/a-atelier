@@ -20,8 +20,8 @@
 // of its own — render-time the exporter walks slides[] and stitches each
 // sub-document's render.
 
-import { existsSync, writeFileSync } from "node:fs";
-import { basename, dirname, relative, resolve } from "node:path";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import type {
   AtelierDocument,
   SlideRef,
@@ -31,9 +31,18 @@ import { readAtelierDoc } from "./compose-video-project.js";
 import { detectCarouselCycle } from "./ref-cycle.js";
 
 export interface ComposeCarouselProjectOptions {
-  /** Absolute path to project root (contains or will contain project.atelier). */
+  /** Absolute path to project root (contains or will contain the doc at docPath). */
   projectDir: string;
-  /** Absolute path to any .atelier file in the workspace. */
+  /**
+   * Project-relative path to the CAROUSEL .atelier composition document this
+   * helper reads/writes. Required — no default. Distinct from `slidePath`,
+   * which is the slide being added. Caller computes this from the ingest
+   * slug (e.g. `"gallery.atelier"`). The parent directory is created on
+   * demand. The helper NEVER touches `project.atelier` specifically; only
+   * this caller-supplied path.
+   */
+  docPath: string;
+  /** Absolute path to any .atelier file in the workspace — the slide to add. */
   slidePath: string;
   /** Workspace root used for cycle detection. Defaults to dirname(projectDir). */
   workspaceRoot?: string;
@@ -65,7 +74,9 @@ export async function composeCarouselProject(
   const projectDir = resolve(opts.projectDir);
   const slidePath = resolve(opts.slidePath);
   const workspaceRoot = resolve(opts.workspaceRoot ?? dirname(projectDir));
-  const compositionPath = `${projectDir}/project.atelier`;
+  const compositionPath = join(projectDir, opts.docPath);
+  // Ensure parent dir exists for nested docPaths like "slides/gallery.atelier".
+  mkdirSync(dirname(compositionPath), { recursive: true });
 
   // 1. Read or scaffold.
   let doc: AtelierDocument;

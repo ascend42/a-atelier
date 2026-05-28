@@ -60,11 +60,6 @@ gates:
     type: security
     location: packages/cli/src/lib/doc-management-types.ts
     prizes: []
-  manifest-doc-protected:
-    description: project.atelier is the project's root manifest and cannot be deleted or duplicated. Enforced via the isManifestDoc predicate at every gate — HTTP endpoint, MCP tool wrapper, and the CLI core fn — so the rule cannot be bypassed at any layer. To delete a project entirely, use the existing project-delete flow.
-    type: validation
-    location: packages/cli/src/lib/doc-management-types.ts
-    prizes: []
   doc-path-inside-project:
     description: The ?path query parameter on POST /api/project/:name/docs/duplicate and DELETE /api/project/:name/docs is validated via single decodeURIComponent + reject (/, \, .., leading-., control bytes, empty); the resolved absolute path must then be inside <projectDir>/ (containment assert). Blocks path traversal attempts at the HTTP layer.
     type: security

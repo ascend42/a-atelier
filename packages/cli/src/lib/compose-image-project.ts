@@ -18,13 +18,21 @@
 // that's what distinguishes them from video projects.
 
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { basename, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import type { AtelierDocument, Layer } from "@a-company/atelier-types";
 import { readAtelierDoc, slugifyBasename } from "./compose-video-project.js";
 
 export interface ComposeImageProjectOptions {
-  /** Absolute path to project root (contains or will contain project.atelier). */
+  /** Absolute path to project root (contains or will contain the doc at docPath). */
   projectDir: string;
+  /**
+   * Project-relative path to the .atelier composition document this helper
+   * reads/writes. Required — no default. Caller computes this from the
+   * ingest slug (e.g. `"hero-image.atelier"`, `"slides/slide-1.atelier"`).
+   * The parent directory is created on demand. The helper NEVER touches
+   * `project.atelier` specifically; only this caller-supplied path.
+   */
+  docPath: string;
   /** Absolute path to the source image file. */
   sourceFile: string;
   /** Override target basename inside media/. Defaults to basename(sourceFile). */
@@ -65,8 +73,10 @@ export async function composeImageProject(
     copyFileSync(sourceAbs, mediaDest);
   }
 
-  // 3. Read or scaffold project.atelier.
-  const compositionPath = `${projectDir}/project.atelier`;
+  // 3. Read or scaffold the .atelier doc at the caller-supplied docPath.
+  const compositionPath = join(projectDir, opts.docPath);
+  // Ensure parent dir exists for nested docPaths like "slides/slide-1.atelier".
+  mkdirSync(dirname(compositionPath), { recursive: true });
   let doc: AtelierDocument;
   if (existsSync(compositionPath)) {
     doc = readAtelierDoc(compositionPath);

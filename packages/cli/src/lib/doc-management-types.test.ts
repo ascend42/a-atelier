@@ -6,7 +6,7 @@
 // the project manifest.
 
 import { describe, expect, it } from "vitest";
-import { isValidDocName, isManifestDoc } from "./doc-management-types.js";
+import { isValidDocName } from "./doc-management-types.js";
 
 describe("isValidDocName", () => {
   it("accepts a plain phrase with spaces", () => {
@@ -83,40 +83,5 @@ describe("isValidDocName", () => {
 
   it("accepts a 200-character string at the boundary", () => {
     expect(isValidDocName("a".repeat(200))).toBe(true);
-  });
-});
-
-describe("isManifestDoc", () => {
-  it("accepts the exact manifest path", () => {
-    expect(isManifestDoc("project.atelier")).toBe(true);
-  });
-
-  it("rejects a './'-prefixed variant", () => {
-    expect(isManifestDoc("./project.atelier")).toBe(false);
-  });
-
-  it("rejects a nested path with the same basename", () => {
-    expect(isManifestDoc("slides/project.atelier")).toBe(false);
-  });
-
-  it("rejects a case-variant", () => {
-    expect(isManifestDoc("Project.Atelier")).toBe(false);
-  });
-
-  it("rejects a trailing-whitespace variant", () => {
-    expect(isManifestDoc("project.atelier ")).toBe(false);
-  });
-
-  it("rejects a backup-suffix variant", () => {
-    expect(isManifestDoc("project.atelier.bak")).toBe(false);
-  });
-
-  it("rejects an empty string", () => {
-    expect(isManifestDoc("")).toBe(false);
-  });
-
-  it("rejects an undefined value cast to string", () => {
-    // Models the MCP-input shape where a caller forgets to pass docPath.
-    expect(isManifestDoc(undefined as unknown as string)).toBe(false);
   });
 });

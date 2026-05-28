@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779929847627,
+  "lastActivity": 1779932792308,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -230,6 +230,12 @@
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779937411326,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
     }
   ],
   "symbolsModified": [],

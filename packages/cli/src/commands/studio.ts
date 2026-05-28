@@ -51,7 +51,7 @@ import {
 } from "../lib/workspace-project-info.js";
 import { composeVideoProject, readAtelierDoc, slugifyBasename } from "../lib/compose-video-project.js";
 import { composeImageProject } from "../lib/compose-image-project.js";
-import { routeIngest } from "../lib/ingest-dispatch.js";
+import { routeIngest, computeIngestDocPath, findSingleVideoDoc } from "../lib/ingest-dispatch.js";
 import {
   AUDIO_TRACK_ID,
   ensureClipLayer,
@@ -72,7 +72,6 @@ import {
 // ── doc-management v1.0.x HTTP ──────
 import {
   isValidDocName,
-  isManifestDoc,
   type DocKind,
 } from "../lib/doc-management-types.js";
 import {
@@ -1094,14 +1093,18 @@ export async function handleCreateDoc(
   const asCarouselSlide = b.asCarouselSlide === true;
   let carouselDocPath: string | undefined;
   if (asCarouselSlide) {
+    // Post-pivot (Unit A): every doc is equal — no implicit "project.atelier"
+    // default. The caller (the "+ add slide" button in Wave 3) always knows
+    // the active carousel doc and must pass it explicitly.
     if (b.carouselDocPath === undefined || b.carouselDocPath === null) {
-      // Default to the project manifest (slides anchored on this project).
-      carouselDocPath = "project.atelier";
-    } else {
-      const v = validateProjectRelativeDocPath(b.carouselDocPath, dir);
-      if (!v.ok) return { status: 400, body: { error: v.error } };
-      carouselDocPath = v.decoded;
+      return {
+        status: 400,
+        body: { error: "carouselDocPath is required when asCarouselSlide=true" },
+      };
     }
+    const v = validateProjectRelativeDocPath(b.carouselDocPath, dir);
+    if (!v.ok) return { status: 400, body: { error: v.error } };
+    carouselDocPath = v.decoded;
   }
   let insertAt: number | undefined;
   if (b.insertAt !== undefined) {
@@ -1144,8 +1147,9 @@ export async function handleCreateDoc(
  *   - `projectName` → resolveProjectInWorkspace (isValidProjectName gate).
  *   - `?path` query → `validateProjectRelativeDocPath` (full decode +
  *     reject + containment assert).
- *   - Refuse the project manifest via `isManifestDoc(decoded)` BEFORE any fs
- *     call so a probe can't even trigger the existsSync inside duplicateDoc.
+ *
+ * Post-pivot (Unit A): every doc is equal — there is no manifest-refusal
+ * branch. `project.atelier` duplicates just like any other doc.
  */
 export async function handleDuplicateDoc(
   workspaceDir: string,
@@ -1159,9 +1163,6 @@ export async function handleDuplicateDoc(
   }
   const v = validateProjectRelativeDocPath(docPathQuery, dir);
   if (!v.ok) return { status: 400, body: { error: v.error } };
-  if (isManifestDoc(v.decoded)) {
-    return { status: 400, body: { error: "cannot duplicate the project manifest" } };
-  }
   const b = (body && typeof body === "object" ? body : {}) as { appendSlideRef?: unknown };
   const appendSlideRef = b.appendSlideRef === true;
 
@@ -1179,7 +1180,6 @@ export async function handleDuplicateDoc(
       return { status: 404, body: { error: msg } };
     }
     if (
-      msg.includes("cannot duplicate the project manifest") ||
       msg.includes("appendSlideRef requires a slide source") ||
       msg.includes("collision suffix")
     ) {
@@ -1196,8 +1196,11 @@ export async function handleDuplicateDoc(
  *   - `projectName` → resolveProjectInWorkspace (isValidProjectName gate).
  *   - `?path` query → `validateProjectRelativeDocPath` (full decode +
  *     reject + containment assert).
- *   - Refuse the project manifest via `isManifestDoc(decoded)` BEFORE any fs
- *     call. Whole-project delete lives behind DELETE /api/project/:name.
+ *
+ * Post-pivot (Unit A): every doc is equal — there is no manifest-refusal
+ * branch. Deleting `project.atelier` is allowed; whole-project delete
+ * (cascade of the entire project directory) still lives behind DELETE
+ * /api/project/:name and is a separate concern.
  */
 export async function handleDeleteDoc(
   workspaceDir: string,
@@ -1210,12 +1213,6 @@ export async function handleDeleteDoc(
   }
   const v = validateProjectRelativeDocPath(docPathQuery, dir);
   if (!v.ok) return { status: 400, body: { error: v.error } };
-  if (isManifestDoc(v.decoded)) {
-    return {
-      status: 400,
-      body: { error: "cannot delete the project manifest; use the project-delete flow instead" },
-    };
-  }
 
   try {
     const report = deleteDoc({
@@ -1228,9 +1225,6 @@ export async function handleDeleteDoc(
     const msg = e instanceof Error ? e.message : String(e);
     if (msg.includes("doc not found")) {
       return { status: 404, body: { error: msg } };
-    }
-    if (msg.includes("cannot delete the project manifest")) {
-      return { status: 400, body: { error: msg } };
     }
     return { status: 500, body: { error: msg } };
   }
@@ -1907,16 +1901,37 @@ export function handleMediaIngestRequest(
     }
 
     // Determine the current project kind (if any) so the dispatcher can
-    // pick the correct composer. Missing / unreadable / no-kind project.atelier
-    // → `undefined`, which means "scaffold a fresh project."
+    // pick the correct composer. The legacy single-source layout had a
+    // canonical `project.atelier` whose top-level `kind` field told us the
+    // project's kind. Post-pivot (TD-2026-05-27) a project is just a folder
+    // of .atelier docs — there is no single project-level kind. We preserve
+    // backwards-compat for the legacy `project.atelier` AND fall back to
+    // inferring kind from a unique video doc (so audio drops into a project
+    // with one `<slug>.atelier` of kind:"video" still route correctly).
     const compositionPath = join(projectDir, "project.atelier");
     let currentProjectKind: ProjectKind | undefined;
+    let audioTargetDocPath: string | undefined;
     if (existsSync(compositionPath)) {
       try {
         const existingDoc = readAtelierDoc(compositionPath);
         currentProjectKind = existingDoc.kind;
+        if (currentProjectKind === "video") {
+          audioTargetDocPath = "project.atelier";
+        }
       } catch {
         currentProjectKind = undefined;
+      }
+    }
+    if (currentProjectKind === undefined) {
+      // Post-pivot fallback: peek at the project's .atelier docs. If exactly
+      // one is kind:"video" we let audio drops route to `add-audio-clip` and
+      // target that doc. Anything else (zero/multiple video docs, or only
+      // image/carousel docs) leaves `currentProjectKind` undefined so the
+      // dispatcher rejects audio with a clear "open a video doc first" hint.
+      const found = findSingleVideoDoc(projectDir);
+      if (found !== null) {
+        currentProjectKind = "video";
+        audioTargetDocPath = found;
       }
     }
 
@@ -1973,8 +1988,13 @@ export function handleMediaIngestRequest(
         }
       }
 
+      // Post-pivot: each drag-drop targets its OWN .atelier doc derived from
+      // the source filename (`IMG_7346.MOV` → `img-7346.atelier`). Collision
+      // suffixes (`-1`, `-2`, ...) on existing doc names. See #ingest-dispatch.
+      const ingestVideoDocPath = computeIngestDocPath(projectDir, filename);
       composeVideoProject({
         projectDir,
+        docPath: ingestVideoDocPath,
         sourceFile: destPath,
         mediaBasename: filename,
         // Pass the media file's real path to whisper directly — no more copying
@@ -2045,8 +2065,12 @@ export function handleMediaIngestRequest(
         file: filename,
         phase: "composing",
       });
+      // Post-pivot: image drag targets `<slug>.atelier` (e.g. `photo.atelier`)
+      // — never `project.atelier`. See #ingest-dispatch.
+      const ingestImageDocPath = computeIngestDocPath(projectDir, filename);
       composeImageProject({
         projectDir,
+        docPath: ingestImageDocPath,
         sourceFile: destPath,
         mediaBasename: filename,
       })
@@ -2093,10 +2117,14 @@ export function handleMediaIngestRequest(
         phase: "composing",
       });
       // Audio path is only reachable when projectKind === "video", which
-      // means project.atelier already exists. We trust that here — the
-      // dispatcher would have rejected the upload otherwise.
+      // means a target video doc already exists. Post-pivot we resolved the
+      // target during dispatch (`audioTargetDocPath`) — either the legacy
+      // `project.atelier` OR the unique kind:"video" doc found by
+      // `findSingleVideoDoc`. We trust that here — the dispatcher would have
+      // rejected the upload otherwise.
+      const audioDocAbs = join(projectDir, audioTargetDocPath ?? "project.atelier");
       (async () => {
-        const doc = readAtelierDoc(compositionPath);
+        const doc = readAtelierDoc(audioDocAbs);
         let clipDurationSeconds = 0;
         try {
           clipDurationSeconds = await probeDuration(destPath);
@@ -2120,7 +2148,7 @@ export function handleMediaIngestRequest(
           kind: "audio",
         });
         working = recomputeTimeline(ensured.doc);
-        writeFileSync(compositionPath, JSON.stringify(working, null, 2), "utf-8");
+        writeFileSync(audioDocAbs, JSON.stringify(working, null, 2), "utf-8");
         return { addedLayer: ensured.addedLayer, clipLayerId };
       })()
         .then((result) => {

@@ -84,13 +84,15 @@ interface ProjectArtifactsInfo {
 /**
  * Mirrors `DocListEntry` in `lib/doc-management-types.ts`. Kept narrow — the
  * sidebar reads only the fields it renders; new server fields stay optional.
+ *
+ * Post-pivot (Wave 1+): the role/slideIndex/slideLabel fields are gone —
+ * every doc is a flat root-level `.atelier` file; carousel structure lives
+ * inside the carousel doc's `slides[]` (handled by Kit-K's carousel toolbar,
+ * not the sidebar).
  */
 interface DocListEntry {
   path: string;
-  role: "manifest" | "slide" | "other";
   kind?: "video" | "image" | "carousel";
-  slideIndex?: number;
-  slideLabel?: string;
 }
 
 /** Response body for DELETE /api/project/:name/docs?path=... */
@@ -182,20 +184,19 @@ async function deleteJson<T>(path: string): Promise<T> {
 interface SidebarCallbacks {
   onSelectProject: (name: string) => void;
   onSelectArtifact: (projectName: string, kind: "design" | "script" | "storyboard") => void;
-  onSelectAtelierDoc: (projectName: string) => void;
   /**
-   * Select a non-manifest .atelier doc (slide or other) inside the active
+   * Select any .atelier doc (including `project.atelier`) inside the active
    * project. Loads `<projectName>/<entry.path>` into the canvas.
    */
   onSelectDoc: (projectName: string, entry: DocListEntry) => void;
   onSelectMedia: (projectName: string, entry: ProjectMediaEntry) => void;
   onSelectTranscript: (projectName: string, entry: ProjectTranscriptEntry) => void;
   onCreateProject: () => void;
-  /** "+ new doc" button next to the DOCUMENT label. Opens the NewDocDialog. */
+  /** "+ new doc" button on the DOCS header row. Opens the NewDocDialog. */
   onCreateDoc: (projectName: string) => void;
-  /** Right-click → Duplicate on a slide or other-doc row. */
+  /** Right-click → Duplicate on any doc row. */
   onDuplicateDoc: (projectName: string, entry: DocListEntry) => void;
-  /** Right-click → Delete on a slide or other-doc row. Cascade-preview confirm. */
+  /** Right-click → Delete on any doc row. Cascade-preview confirm. */
   onDeleteDoc: (projectName: string, entry: DocListEntry) => void;
   /** Right-click → Delete on a project row. Triggers the type-to-confirm modal. */
   onDeleteProject: (name: string) => void;
@@ -216,6 +217,12 @@ class WorkspaceSidebar {
   private headerEl: HTMLElement;
   private workspace: WorkspaceInfo | null = null;
   private active: ActiveProjectFile | null = null;
+  /**
+   * Path of the currently-loaded doc within the active project (e.g.
+   * "project.atelier" or "intro-scene.atelier"). Drives the "← loaded" marker
+   * on the matching doc row. `null` when nothing's loaded.
+   */
+  private currentDocPath: string | null = null;
   /** Per-project loaded detail (media/transcripts/artifacts/docs) — lazily filled. */
   private detail = new Map<string, {
     media: ProjectMediaEntry[];
@@ -285,6 +292,17 @@ class WorkspaceSidebar {
   /** Public accessor for the currently-cached doc list (used for fallback logic). */
   getDocs(name: string): DocListEntry[] {
     return this.detail.get(name)?.docs ?? [];
+  }
+
+  /**
+   * Update the "← loaded" marker on the doc row matching `path`. Pass `null`
+   * to clear the marker (e.g. when a non-doc panel — media / transcript /
+   * markdown — is open in the main panel).
+   */
+  setCurrentDocPath(path: string | null): void {
+    if (this.currentDocPath === path) return;
+    this.currentDocPath = path;
+    this.render();
   }
 
   private renderError(msg: string): void {
@@ -360,28 +378,27 @@ class WorkspaceSidebar {
     const children = document.createElement("div");
     children.className = "atel-workspace-sidebar__project-children";
 
-    // ── DOCUMENT / SLIDES / OTHER DOCS ──
-    // Prefer the live doc list from the server when available — falls back to
-    // a synthesized manifest-only list when /api/project/:name/docs hasn't
-    // landed yet (first paint, transient failure). This keeps the sidebar
-    // useful in both states without flickering.
+    // ── DOCS ──
+    // Single flat group, alphabetical by path (server-sorted via listDocs).
+    // Every doc — including project.atelier — is a regular row with a type
+    // icon, a click-to-load handler, and the Duplicate / Delete… context
+    // menu. Post-pivot, there's no "pinned manifest" distinction.
+    //
+    // Falls back to a synthesized manifest-only list when the live doc list
+    // hasn't landed yet (first paint, transient failure). Empty arrays render
+    // an empty-state message under the heading.
     const docs: DocListEntry[] = detail?.docs ?? (
-      proj.hasAtelierDoc ? [{ path: "project.atelier", role: "manifest" }] : []
+      proj.hasAtelierDoc ? [{ path: "project.atelier", kind: undefined }] : []
     );
-    const manifestEntry = docs.find((d) => d.role === "manifest") ?? null;
-    const slides = docs.filter((d) => d.role === "slide");
-    const others = docs.filter((d) => d.role === "other");
-    const isCarousel = manifestEntry?.kind === "carousel";
 
-    // DOCUMENT group — manifest pinned, "+ new doc" button on the label row.
-    if (manifestEntry) {
-      const docNode = document.createElement("div");
-      docNode.className = "atel-workspace-sidebar__group";
+    {
+      const group = document.createElement("div");
+      group.className = "atel-workspace-sidebar__group";
 
       const label = document.createElement("div");
       label.className = "atel-workspace-sidebar__group-label atel-workspace-sidebar__group-label--with-action";
       const labelText = document.createElement("span");
-      labelText.textContent = "Document";
+      labelText.textContent = "Docs";
       label.appendChild(labelText);
       const newDocBtn = document.createElement("button");
       newDocBtn.className = "atel-workspace-sidebar__new-btn atel-workspace-sidebar__new-btn--inline";
@@ -392,35 +409,17 @@ class WorkspaceSidebar {
         this.cb.onCreateDoc(proj.name);
       });
       label.appendChild(newDocBtn);
-      docNode.appendChild(label);
+      group.appendChild(label);
 
-      const docItem = document.createElement("div");
-      docItem.className = "atel-workspace-sidebar__item";
-      docItem.innerHTML = `<span class="atel-item-icon">▤</span> project.atelier`;
-      docItem.addEventListener("click", () => this.cb.onSelectAtelierDoc(proj.name));
-      // No contextmenu — manifest is pinned and cannot be deleted / duplicated.
-      docNode.appendChild(docItem);
-      children.appendChild(docNode);
-    }
-
-    // SLIDES — only for carousel projects, and only when slides exist.
-    if (isCarousel && slides.length > 0) {
-      const group = document.createElement("div");
-      group.className = "atel-workspace-sidebar__group";
-      group.innerHTML = "<div class=\"atel-workspace-sidebar__group-label\">Slides</div>";
-      for (const s of slides) {
-        group.appendChild(this.renderDocRow(proj.name, s));
-      }
-      children.appendChild(group);
-    }
-
-    // OTHER DOCS — non-manifest, non-slide root-level *.atelier.
-    if (others.length > 0) {
-      const group = document.createElement("div");
-      group.className = "atel-workspace-sidebar__group";
-      group.innerHTML = "<div class=\"atel-workspace-sidebar__group-label\">Other docs</div>";
-      for (const o of others) {
-        group.appendChild(this.renderDocRow(proj.name, o));
+      if (docs.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "atel-workspace-sidebar__empty";
+        empty.textContent = "No documents yet. Click + new doc to create one.";
+        group.appendChild(empty);
+      } else {
+        for (const d of docs) {
+          group.appendChild(this.renderDocRow(proj.name, d));
+        }
       }
       children.appendChild(group);
     }
@@ -496,18 +495,22 @@ class WorkspaceSidebar {
   }
 
   /**
-   * Render one non-manifest doc row (slide or other-doc). Click loads the doc
-   * into the canvas; right-click opens the Duplicate / Delete… context menu.
+   * Render a single doc row (any kind, including the project manifest). Click
+   * loads the doc into the canvas; right-click opens the Duplicate / Delete…
+   * context menu. The currently-loaded doc gets a `← loaded` marker and an
+   * accent-colored treatment.
    */
   private renderDocRow(projectName: string, entry: DocListEntry): HTMLElement {
     const item = document.createElement("div");
-    item.className = "atel-workspace-sidebar__item";
-    // Show just the basename for readability ("slide-1.atelier" not "slides/slide-1.atelier").
+    const isLoaded = entry.path === this.currentDocPath;
+    item.className = "atel-workspace-sidebar__item" +
+      (isLoaded ? " atel-workspace-sidebar__item--loaded" : "");
+    // Show just the basename for readability ("intro.atelier" not "intro.atelier").
     const basename = entry.path.split("/").pop() ?? entry.path;
-    const labelExtra = entry.role === "slide" && entry.slideLabel
-      ? ` <span class="atel-item-meta">(${escapeHtml(entry.slideLabel)})</span>`
+    const loadedMarker = isLoaded
+      ? '<span class="atel-loaded-marker"> ← loaded</span>'
       : "";
-    item.innerHTML = `<span class="atel-item-icon">${docKindIcon(entry.kind)}</span> ${escapeHtml(basename)}${labelExtra}`;
+    item.innerHTML = `<span class="atel-item-icon">${docKindIcon(entry.kind)}</span> ${escapeHtml(basename)}${loadedMarker}`;
     item.addEventListener("click", () => this.cb.onSelectDoc(projectName, entry));
     item.addEventListener("contextmenu", (ev) => {
       ev.preventDefault();
@@ -711,29 +714,31 @@ class ConfirmDialog {
 // "blank" from v1). Mirrors ConfirmDialog's idiom: same backdrop, same
 // centered card. Returns the form selection (or null on cancel); the
 // HTTP call lives at the caller so error rendering can stay local.
+//
+// Post-pivot: the dialog ONLY creates docs at project root. Slide creation
+// (anchoring a doc into a carousel's slides[]) moves into the carousel-doc
+// canvas toolbar (Kit-K's territory) — no slide toggle here.
 
 interface NewDocSelection {
   name: string;
   kind: "video" | "image" | "carousel";
-  /** Only relevant for carousel projects; ignored by the caller otherwise. */
-  asCarouselSlide: boolean;
 }
 
-interface NewDocDialogOptions {
-  /**
-   * When true, the active project is a carousel. Adds the "Add as slide"
-   * toggle (default ON). When false, the toggle is hidden and the new doc
-   * is always created at root.
-   */
-  carouselProject: boolean;
+interface NewDocPromptOptions {
+  /** Override the dialog title — e.g. "Add slide" when adding a slide to a carousel. */
+  title?: string;
 }
 
 class NewDocDialog {
   /**
    * Show the create-doc modal and resolve with the creator's selection or
    * null on cancel. Inline server errors are rendered via `showError`.
+   *
+   * `options.title` lets callers retitle the dialog (e.g. Kit-K's "+ add slide"
+   * carousel-toolbar entrypoint, which reuses this dialog for the
+   * "create new doc as slide" path).
    */
-  static prompt(opts: NewDocDialogOptions): Promise<NewDocSelection | null> {
+  static prompt(options: NewDocPromptOptions = {}): Promise<NewDocSelection | null> {
     return new Promise((resolveDone) => {
       const overlay = document.createElement("div");
       overlay.className = "atel-confirm-dialog";
@@ -743,7 +748,7 @@ class NewDocDialog {
 
       const title = document.createElement("div");
       title.className = "atel-confirm-dialog__title";
-      title.textContent = "New doc";
+      title.textContent = options.title ?? "New doc";
       card.appendChild(title);
 
       // ── Kind tiles (3, not 4 — blank excluded by owner) ──
@@ -793,21 +798,6 @@ class NewDocDialog {
       slugPreview.textContent = " ";
       nameWrapper.appendChild(slugPreview);
       card.appendChild(nameWrapper);
-
-      // ── Add-as-slide toggle (carousel-only) ──
-      let asSlideCheckbox: HTMLInputElement | null = null;
-      if (opts.carouselProject) {
-        const toggleWrap = document.createElement("label");
-        toggleWrap.className = "atel-new-doc-dialog__toggle";
-        asSlideCheckbox = document.createElement("input");
-        asSlideCheckbox.type = "checkbox";
-        asSlideCheckbox.checked = true; // default ON for carousel projects
-        toggleWrap.appendChild(asSlideCheckbox);
-        const txt = document.createElement("span");
-        txt.textContent = "Add as slide in this carousel";
-        toggleWrap.appendChild(txt);
-        card.appendChild(toggleWrap);
-      }
 
       // ── Error row (inline; populated by showError below) ──
       const errorRow = document.createElement("div");
@@ -876,7 +866,6 @@ class NewDocDialog {
         resolveDone({
           name,
           kind: selectedKind,
-          asCarouselSlide: asSlideCheckbox?.checked ?? false,
         });
       });
       overlay.addEventListener("click", (ev) => {
@@ -1612,11 +1601,21 @@ export async function bootWorkspaceApp(): Promise<void> {
   let activeProjectName: string | null = null;
   /**
    * Project-relative path of the .atelier doc currently rendered in the
-   * canvas. Defaults to `project.atelier` (the manifest). Tracked so we can
-   * fall back to the manifest when the loaded doc disappears (deleted from
-   * disk, or unlinked as a slide).
+   * canvas, or `null` when nothing is loaded (empty project, or active doc
+   * was deleted with no fallback available). Post-pivot (Wave 1+) projects
+   * can be doc-less — Kit-E removed the auto-`project.atelier` creation — so
+   * the canvas must tolerate the empty state. See `showEmptyCanvas()`.
    */
-  let currentDocPath: string = "project.atelier";
+  let currentDocPath: string | null = null;
+  /**
+   * Doc-kind metadata for the currently-loaded doc — sourced from the sidebar's
+   * `DocListEntry.kind` (the AtelierDocument schema itself has no `kind` field;
+   * it lives on the doc-list metadata). `null` whenever no doc is loaded.
+   *
+   * Drives Kit-K's "+ add slide" canvas affordance: the button is rendered
+   * only when `currentDocKind === "carousel"`.
+   */
+  let currentDocKind: "video" | "image" | "carousel" | null = null;
 
   const sidebar = new WorkspaceSidebar(shell, {
     onSelectProject: async (name) => {
@@ -1629,7 +1628,6 @@ export async function bootWorkspaceApp(): Promise<void> {
         statusBar.textContent = `Failed to activate ${name}: ${err instanceof Error ? err.message : err}`;
       }
     },
-    onSelectAtelierDoc: (name) => openProjectDoc(name),
     onSelectDoc: (name, entry) => openProjectDoc(name, entry.path),
     onSelectArtifact: (projectName, kind) => {
       const file = kind === "design" ? "DESIGN.md" : kind === "script" ? "SCRIPT.md" : "STORYBOARD.md";
@@ -1652,29 +1650,13 @@ export async function bootWorkspaceApp(): Promise<void> {
       }
     },
     onCreateDoc: async (projectName) => {
-      // Determine carousel-ness from the cached manifest entry. Falls back to
-      // false when the doc list hasn't loaded yet (rare — the sidebar refresh
-      // preloads detail for the active project on first paint).
-      const docs = sidebar.getDocs(projectName);
-      const manifest = docs.find((d) => d.role === "manifest");
-      const carouselProject = manifest?.kind === "carousel";
-      const selection = await NewDocDialog.prompt({ carouselProject });
+      // Post-pivot: the dialog ONLY creates docs at project root. Slide
+      // creation lives in the carousel-doc canvas toolbar (Kit-K) — not here.
+      const selection = await NewDocDialog.prompt();
       if (!selection) return;
-      // Compose the request body. When the project is a carousel AND the
-      // creator wants the new doc anchored as a slide, `carouselDocPath`
-      // defaults to the manifest (matches handleCreateDoc's server default).
-      const body: {
-        name: string;
-        kind: "video" | "image" | "carousel";
-        asCarouselSlide?: boolean;
-        carouselDocPath?: string;
-      } = { name: selection.name, kind: selection.kind };
-      if (carouselProject && selection.asCarouselSlide) {
-        body.asCarouselSlide = true;
-        body.carouselDocPath = "project.atelier";
-      }
+      const body = { name: selection.name, kind: selection.kind };
       try {
-        const result = await postJson<{ docPath: string; appendedSlideIndex?: number }>(
+        const result = await postJson<{ docPath: string }>(
           `/api/project/${encodeURIComponent(projectName)}/docs`,
           body,
         );
@@ -1688,13 +1670,12 @@ export async function bootWorkspaceApp(): Promise<void> {
     },
     onDuplicateDoc: async (projectName, entry) => {
       try {
-        const body: { appendSlideRef?: boolean } = {};
-        // For slides we also want a SlideRef to the duplicate so it shows up
-        // in the carousel. For "other" docs we duplicate the file only.
-        if (entry.role === "slide") body.appendSlideRef = true;
+        // Post-pivot: docs are flat root-level files. Duplicate copies the
+        // file only; no SlideRef plumbing (carousel slide management is
+        // Kit-K's territory in the carousel-doc toolbar).
         await postJson(
           `/api/project/${encodeURIComponent(projectName)}/docs/duplicate?path=${encodeURIComponent(entry.path)}`,
-          body,
+          {},
         );
         await sidebar.refreshProject(projectName);
         statusBar.textContent = `Duplicated ${entry.path}`;
@@ -1703,15 +1684,13 @@ export async function bootWorkspaceApp(): Promise<void> {
       }
     },
     onDeleteDoc: async (projectName, entry) => {
-      // Pre-confirm body — generic copy from the spec. The actual cascade
-      // counts (slideRefsRemoved, refLayersDangling) are only known AFTER the
-      // server processes the DELETE; surface them in the status bar on
-      // success rather than pretending to know them up-front.
-      const bodyCopy = entry.role === "slide"
-        ? `Delete <code>${escapeHtml(entry.path)}</code>? ` +
-          `This will remove it from this carousel.`
-        : `Delete <code>${escapeHtml(entry.path)}</code>? ` +
-          `Any RefVisual layers pointing at it will be left dangling.`;
+      // Pre-confirm copy — generic. The actual cascade counts
+      // (slideRefsRemoved, refLayersDangling) are only known AFTER the server
+      // processes the DELETE; surface them in the status bar on success
+      // rather than pretending to know them up-front.
+      const bodyCopy = `Delete <code>${escapeHtml(entry.path)}</code>? ` +
+        `Any SlideRef entries pointing at it will be auto-scrubbed; ` +
+        `RefVisual layers pointing at it will be left dangling.`;
       const ok = await ConfirmDialog.prompt({
         title: `Delete "${entry.path}"?`,
         body: bodyCopy,
@@ -1835,13 +1814,97 @@ export async function bootWorkspaceApp(): Promise<void> {
     currentMarkdown = null;
     currentTranscript = null;
     mainBody.innerHTML = "";
+    // Reset doc-kind metadata too — `openProjectDoc` resets it on the very
+    // next line for the doc-load path, but non-doc panels (markdown / media /
+    // transcript) leave the canvas without any doc loaded, so the stale kind
+    // would otherwise leak across panel switches.
+    currentDocKind = null;
+    // Drop the "← loaded" marker — non-doc panels (media / transcript /
+    // markdown) don't correspond to any sidebar doc row.
+    sidebar.setCurrentDocPath(null);
   };
 
-  async function openProjectDoc(name: string, docPath: string = "project.atelier"): Promise<void> {
+  /**
+   * #canvas-empty-state — centered, muted placeholder shown in the main panel
+   * when no doc is loaded. Post-pivot projects can be doc-less (Kit-E removes
+   * the auto-`project.atelier` creation), and selecting such a project should
+   * NOT crash the canvas. Also the fallback when an active doc is deleted and
+   * no other doc exists to swap in.
+   *
+   * The Reset / Undo / Redo / YAML / Editor toolbar lives inside the
+   * `AtelierStudio` component (instantiated in `openProjectDoc`). By not
+   * mounting a Studio here, the toolbar is absent for free — no per-button
+   * gating needed.
+   */
+  function showEmptyCanvas(): void {
     clearMain();
-    const path = `${name}/${docPath}`;
+    currentDocPath = null;
+    currentDocKind = null;
+    // `clearMain()` already calls `sidebar.setCurrentDocPath(null)`; no-op
+    // belt-and-braces — the marker stays clear.
+    statusBar.textContent = "No document loaded.";
+
+    const empty = document.createElement("div");
+    empty.className = "atel-canvas-empty";
+    empty.style.cssText = [
+      "display:flex",
+      "flex-direction:column",
+      "align-items:center",
+      "justify-content:center",
+      "height:100%",
+      "width:100%",
+      "padding:48px 24px",
+      "text-align:center",
+      "color:var(--atel-text-muted, #A89F95)",
+      `font-family:${theme.fontFamily}`,
+      "font-size:15px",
+      "line-height:1.6",
+      "letter-spacing:0.01em",
+    ].join(";");
+
+    const heading = document.createElement("div");
+    heading.style.cssText = "font-size:18px;margin-bottom:18px;color:var(--atel-text-muted, #A89F95)";
+    heading.textContent = "No document loaded.";
+    empty.appendChild(heading);
+
+    const body = document.createElement("div");
+    body.style.cssText = "max-width:380px;color:var(--atel-text-muted, #A89F95);opacity:0.85";
+    // Two lines, mirroring the spec copy. The "+ new doc" string matches the
+    // sidebar button label (atel-workspace-sidebar__new-btn--inline) verbatim
+    // so the visual cue resolves.
+    body.innerHTML =
+      "Click a doc in the sidebar to start editing,<br>" +
+      "or use <span style=\"font-family:" + theme.fontMono + ";color:var(--atel-text, #F5F0EB)\">+ new doc</span> to create one.";
+    empty.appendChild(body);
+
+    mainBody.appendChild(empty);
+  }
+
+  async function openProjectDoc(name: string, docPath?: string): Promise<void> {
+    // Post-pivot: when no explicit doc is requested, pick the first doc the
+    // sidebar knows about. Empty projects (Kit-E) and projects whose active
+    // doc was just deleted (WS fallback below) end up here with no docs —
+    // surface the empty-state visual instead of crashing on a missing file.
+    let resolvedDocPath = docPath;
+    if (resolvedDocPath === undefined) {
+      const docs = sidebar.getDocs(name);
+      if (docs.length === 0) {
+        showEmptyCanvas();
+        return;
+      }
+      resolvedDocPath = docs[0].path;
+    }
+
+    clearMain();
+    const path = `${name}/${resolvedDocPath}`;
     statusBar.textContent = path;
-    currentDocPath = docPath;
+    currentDocPath = resolvedDocPath;
+    sidebar.setCurrentDocPath(resolvedDocPath);
+    // Resolve the doc's kind from the sidebar's cached doc list (the schema
+    // itself has no `kind` field — it's doc-list metadata, set at create-time
+    // and surfaced by the server). Falls back to null when the doc isn't in
+    // the cache yet (rare race; the button just won't render that frame).
+    currentDocKind = sidebar.getDocs(name).find((d) => d.path === resolvedDocPath)?.kind ?? null;
     try {
       const content = await fetchText("/api/file?path=" + encodeURIComponent(path));
       const parsed = parseAtelier(content);
@@ -1866,9 +1929,87 @@ export async function bootWorkspaceApp(): Promise<void> {
       });
       currentStudio.setTheme(theme);
       currentStudio.loadDocument(parsed.data as Parameters<AtelierStudio["loadDocument"]>[0]);
+      // Kit-K: carousel docs get a "+ add slide" overlay button anchored to
+      // the canvas top-right. The button opens NewDocDialog (retitled "Add
+      // slide") and POSTs with `asCarouselSlide: true` so the new doc is
+      // anchored into this carousel's slides[] server-side. v1 scope: only
+      // "create new doc as slide" — the "pick existing .atelier" tab is v1.1.
+      if (currentDocKind === "carousel") {
+        mountAddSlideButton(name, resolvedDocPath);
+      }
     } catch (err) {
       mainBody.innerHTML = `<div style="padding:24px;color:#E25C5C">Failed to load: ${escapeHtml(err instanceof Error ? err.message : String(err))}</div>`;
     }
+  }
+
+  /**
+   * Render the "+ add slide" button as an absolute-positioned overlay anchored
+   * to the top-right of the canvas (`mainBody` is `position:relative`). The
+   * button is a sibling of the AtelierStudio root, so it stays on screen as
+   * the studio's own toolbar lives below it — and `clearMain()`'s
+   * `innerHTML = ""` sweeps it up on the next doc load.
+   *
+   * On click: open NewDocDialog retitled "Add slide", then POST
+   * `/api/project/:name/docs` with `asCarouselSlide: true` and the carousel
+   * doc's path. The WS `doc:list:changed` broadcast triggers the sidebar
+   * refresh + canvas reload; server-side cycle-detection (composeCarousel
+   * Project) handles invalid pairings — surface its error inline.
+   */
+  function mountAddSlideButton(projectName: string, carouselDocPath: string): void {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "atel-add-slide-btn";
+    btn.textContent = "+ add slide";
+    // Positioned below the studio's own toolbar (which renders Export + YAML/
+    // Editor tabs along the top); a top-right anchor here would collide with
+    // those controls. ~56px clears the toolbar's height with a small margin.
+    btn.style.cssText = [
+      "position:absolute",
+      "top:56px",
+      "right:16px",
+      "z-index:10",
+      `font-family:${theme.fontMono}`,
+      "font-size:12px",
+      "letter-spacing:0.04em",
+      `color:${theme.textAccent}`,
+      `background:${theme.buttonBg}`,
+      `border:1px solid ${theme.border}`,
+      "border-radius:4px",
+      "padding:6px 12px",
+      "cursor:pointer",
+    ].join(";");
+    btn.addEventListener("mouseenter", () => {
+      btn.style.background = theme.buttonHover;
+    });
+    btn.addEventListener("mouseleave", () => {
+      btn.style.background = theme.buttonBg;
+    });
+    btn.addEventListener("click", async () => {
+      const selection = await NewDocDialog.prompt({ title: "Add slide" });
+      if (!selection) return;
+      try {
+        const result = await postJson<{ docPath: string }>(
+          `/api/project/${encodeURIComponent(projectName)}/docs`,
+          {
+            name: selection.name,
+            kind: selection.kind,
+            asCarouselSlide: true,
+            carouselDocPath,
+          },
+        );
+        statusBar.textContent = `Added slide ${result.docPath}`;
+        // Refresh sidebar (the WS `doc:list:changed` broadcast handles other
+        // clients; inline refresh is belt-and-braces). The WS handler only
+        // reloads the canvas when the active doc DISAPPEARS — the carousel
+        // doc still exists with a new slides[] entry, so we re-open it
+        // explicitly to surface the updated slide count in the canvas.
+        await sidebar.refreshProject(projectName);
+        await openProjectDoc(projectName, carouselDocPath);
+      } catch (err) {
+        alert("Failed to add slide: " + (err instanceof Error ? err.message : err));
+      }
+    });
+    mainBody.appendChild(btn);
   }
 
   function openMarkdown(path: string): void {
@@ -1955,17 +2096,24 @@ export async function bootWorkspaceApp(): Promise<void> {
       // Doc surface changed (create / duplicate / delete from this or another
       // client). Refresh the sidebar, and — if the currently-loaded doc has
       // disappeared (deleted from disk, or unlinked as a slide) — fall back
-      // to the project manifest so the canvas doesn't show a stale doc.
+      // to the first remaining doc, or show the empty-canvas state when no
+      // docs remain (post-pivot, projects can legitimately be doc-less).
       const e = env as { projectName?: string };
       if (activeProjectName && e.projectName === activeProjectName) {
         const projectName = activeProjectName;
         void (async () => {
           await sidebar.refreshProject(projectName);
           const docs = sidebar.getDocs(projectName);
-          const stillExists = docs.some((d) => d.path === currentDocPath);
-          if (!stillExists && currentDocPath !== "project.atelier") {
-            statusBar.textContent = `Loaded doc was removed — falling back to project.atelier`;
-            await openProjectDoc(projectName, "project.atelier");
+          const stillExists = currentDocPath !== null && docs.some((d) => d.path === currentDocPath);
+          if (!stillExists) {
+            if (docs.length === 0) {
+              statusBar.textContent = `Loaded doc was removed — no docs remain`;
+              showEmptyCanvas();
+            } else if (currentDocPath !== null) {
+              // Active doc vanished but other docs remain — load the first.
+              statusBar.textContent = `Loaded doc was removed — falling back to ${docs[0].path}`;
+              await openProjectDoc(projectName, docs[0].path);
+            }
           }
         })();
       }
@@ -2129,6 +2277,14 @@ function injectStyles(): void {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .atel-workspace-sidebar__item:hover { background: #363636; color: #F5F0EB; }
+  /* Currently-loaded doc row — accent color + bold to mirror the active-project treatment. */
+  .atel-workspace-sidebar__item--loaded { color: #C75B39; }
+  .atel-workspace-sidebar__item--loaded:hover { color: #D4724E; background: #363636; }
+  .atel-loaded-marker { color: #C75B39; font-size: 10px; letter-spacing: 0.5px; }
+  .atel-workspace-sidebar__empty {
+    padding: 6px 8px 4px 22px; font-size: 11px; color: #6E6862;
+    font-family: 'SF Mono', 'Fira Code', monospace; font-style: italic;
+  }
   .atel-item-icon { display: inline-block; width: 18px; }
   .atel-item-meta { color: #6E6862; font-size: 11px; }
   .atel-badge {

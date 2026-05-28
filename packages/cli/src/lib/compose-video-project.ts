@@ -36,8 +36,8 @@
 // #timeline-ops so the MCP per-clip surfaces (atelier_transcribe_clip, etc.)
 // can reuse them without dragging the fs / probe wiring of composeVideoProject.
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, extname, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, extname, join, resolve } from "node:path";
 import type {
   AtelierDocument,
   State,
@@ -72,8 +72,16 @@ export function readAtelierDoc(absPath: string): AtelierDocument {
 }
 
 export interface ComposeVideoProjectOptions {
-  /** Absolute path to the project root (contains project.atelier). */
+  /** Absolute path to the project root (contains the doc at docPath). */
   projectDir: string;
+  /**
+   * Project-relative path to the .atelier composition document this helper
+   * reads/writes. Required — no default. Caller computes this from the
+   * ingest slug (e.g. `"img-7346.atelier"`, `"slides/slide-1.atelier"`).
+   * The parent directory is created on demand. The helper NEVER touches
+   * `project.atelier` specifically; only this caller-supplied path.
+   */
+  docPath: string;
   /**
    * Absolute path to the source media file. Used to (a) compute a canonical
    * assetId/layer src reference, and (b) probe duration via ffprobe.
@@ -177,11 +185,22 @@ export async function composeVideoProject(
   opts: ComposeVideoProjectOptions,
 ): Promise<ComposeVideoProjectResult> {
   const projectDir = resolve(opts.projectDir);
-  const compositionPath = `${projectDir}/project.atelier`;
+  const compositionPath = join(projectDir, opts.docPath);
+  // Ensure the parent dir exists for nested docPaths like "slides/slide-1.atelier".
+  mkdirSync(dirname(compositionPath), { recursive: true });
   if (!existsSync(compositionPath)) {
-    throw new Error(
-      `composeVideoProject: missing project.atelier at ${compositionPath}`,
-    );
+    // Scaffold a fresh kind:"video" doc — caller didn't pre-seed one. Mirrors
+    // the image/carousel helpers' scaffold path so the pivot is consistent
+    // across kinds. Downstream steps lazy-create the video track + clip layer.
+    const seedDoc: AtelierDocument = {
+      version: "1.0",
+      name: basename(projectDir),
+      kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [],
+      states: { default: { duration: 0, deltas: [] } },
+    };
+    writeFileSync(compositionPath, JSON.stringify(seedDoc, null, 2), "utf-8");
   }
 
   const sourceBasename = canonicalSourceName(opts.sourceFile, projectDir);

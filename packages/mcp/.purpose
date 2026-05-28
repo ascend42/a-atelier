@@ -108,22 +108,22 @@ components:
     tags: [rename, media, lib, duplication, v1]
   # ── v1.0.x doc-management tools (Slice B) ──────
   mcp-tool-create-doc:
-    description: 'atelier_create_doc — programmatic doc creation for video / image / carousel kinds at a project root OR as a slide of an existing carousel (asCarouselSlide:true + carouselDocPath). Gates: ^valid-doc-name (isValidDocName on the user-supplied name), ^manifest-doc-protected (refuses to create a doc named "project.atelier"), and ^workspace-scoped-doc-tool (projectDir must resolve inside workspaceDir, defaulting to process.cwd()). On success, composes the doc via the cli twin''s composeImage|Video|Carousel and writes <projectDir>/<slug>.atelier with collision-suffixing; when appending to a carousel, uses the v1 simple-cycle check (see ~doc-cycle-v1-simple-check).'
+    description: 'atelier_create_doc — programmatic doc creation for video / image / carousel kinds at a project root OR as a slide of an existing carousel (asCarouselSlide:true + carouselDocPath). Post-pivot: no manifest-refusal branch — every .atelier doc is equal, a doc named "project.atelier" is just a regular doc. Gates: ^valid-doc-name (isValidDocName on the user-supplied name) and ^workspace-scoped-doc-tool (projectDir must resolve inside workspaceDir, defaulting to process.cwd()). On success, slugifies the user-supplied name into <slug>.atelier (collision-suffixed -2/-3/…) and composes via the cli twin''s composeImage|Video|Carousel (each now takes the resolved docPath internally — no project.atelier hardcode); when appending to a carousel, uses the v1 simple-cycle check (see ~doc-cycle-v1-simple-check).'
     file: src/tools/docs.ts
-    gates: ['^valid-doc-name', '^manifest-doc-protected', '^workspace-scoped-doc-tool']
+    gates: ['^valid-doc-name', '^workspace-scoped-doc-tool']
     tags: [doc, mcp-tool, create, v1.0.x]
   mcp-tool-duplicate-doc:
-    description: 'atelier_duplicate_doc — file-level duplicate with collision-suffixing (-2, -3, …). Optional appendSlideRef appends the duplicate as a SlideRef on the host carousel (v1 simple-cycle check). Gates: ^valid-doc-name (basename), ^manifest-doc-protected (refuses to duplicate project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. Idempotent on a no-op same-name duplicate? No — collision-suffixing guarantees a fresh path.'
+    description: 'atelier_duplicate_doc — file-level duplicate with collision-suffixing (-2, -3, …). Optional appendSlideRef appends the duplicate as a SlideRef on the host carousel (v1 simple-cycle check). Post-pivot: no manifest-refusal branch — every .atelier doc, including project.atelier, can be duplicated. Gates: ^valid-doc-name (basename), ^workspace-scoped-doc-tool, ^doc-path-inside-project. Idempotent on a no-op same-name duplicate? No — collision-suffixing guarantees a fresh path.'
     file: src/tools/docs.ts
-    gates: ['^valid-doc-name', '^manifest-doc-protected', '^workspace-scoped-doc-tool', '^doc-path-inside-project']
+    gates: ['^valid-doc-name', '^workspace-scoped-doc-tool', '^doc-path-inside-project']
     tags: [doc, mcp-tool, duplicate, v1.0.x]
   mcp-tool-delete-doc:
-    description: 'atelier_delete_doc — workspace-wide cascade. Walks every sibling project subdir under workspaceDir; removes matching SlideRef entries from any carousel manifest; collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported); unlinks the doc. Gates: ^manifest-doc-protected (isManifestDoc refuses project.atelier), ^workspace-scoped-doc-tool, ^doc-path-inside-project. destructiveHint:true.'
+    description: 'atelier_delete_doc — workspace-wide cascade. Walks every sibling project subdir under workspaceDir; scans every .atelier doc encountered (not just project.atelier); removes matching SlideRef entries from any carousel doc; collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported); unlinks the target doc. Post-pivot: no manifest-refusal branch — every .atelier doc is equal, including project.atelier. Gates: ^workspace-scoped-doc-tool, ^doc-path-inside-project. destructiveHint:true.'
     file: src/tools/docs.ts
-    gates: ['^manifest-doc-protected', '^workspace-scoped-doc-tool', '^doc-path-inside-project']
+    gates: ['^workspace-scoped-doc-tool', '^doc-path-inside-project']
     tags: [doc, mcp-tool, delete, cascade, v1.0.x]
   mcp-tool-list-docs:
-    description: 'atelier_list_docs — enumerate the manifest + carousel slides[] + every other root-level *.atelier in a project as DocListEntry[]. Read-only; ^workspace-scoped-doc-tool only. statSync follows symlinks (~doc-symlink-followed). The single line of truth for the studio sidebar''s DOCUMENT / SLIDES / OTHER DOCS groups when fetched via MCP.'
+    description: 'atelier_list_docs — enumerate every .atelier doc in a project as a flat DocListEntry[] ({ path, kind? }), alphabetical by path. Read-only; ^workspace-scoped-doc-tool only. Post-pivot: a single flat list, no role/slideIndex/slideLabel — every doc is equal. statSync follows symlinks (~doc-symlink-followed). The single line of truth for the studio sidebar''s flat DOCS group when fetched via MCP.'
     file: src/tools/docs.ts
     gates: ['^workspace-scoped-doc-tool']
     tags: [doc, mcp-tool, list, v1.0.x]
@@ -132,7 +132,7 @@ components:
     file: src/lib/doc-management.ts
     tags: [doc, lib, duplication, v1.0.x]
   mcp-lib-doc-management-types:
-    description: 'Intentional duplicate of cli/src/lib/doc-management-types.ts (DocKind, CreateDocOptions, DuplicateDocOptions, DeleteDocOptions, DocListEntry, DocDeleteCascadeReport, DocDuplicateReport, isValidDocName, isManifestDoc). Pure types + validators — zero I/O. Lives here for the same dep-cycle reason as mcp-lib-doc-management; the two files MUST be edited together with their cli twins until the planned Unit-0.5 lift into a shared package.'
+    description: 'Intentional duplicate of cli/src/lib/doc-management-types.ts (DocKind, CreateDocOptions, DuplicateDocOptions, DeleteDocOptions, DocListEntry { path, kind? }, DocDeleteCascadeReport, DocDuplicateReport, isValidDocName). Post-pivot: the simplified DocListEntry has no role/slideIndex/slideLabel — every doc is equal — and the isManifestDoc predicate is RETIRED (see ~no-manifest-doc on the cli twin). Pure types + validators — zero I/O. Lives here for the same dep-cycle reason as mcp-lib-doc-management; the two files MUST be edited together with their cli twins until the planned Unit-0.5 lift into a shared package.'
     file: src/lib/doc-management-types.ts
     tags: [doc, types, lib, duplication, v1.0.x]
 signals:

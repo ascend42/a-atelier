@@ -28,8 +28,10 @@
 //   audio       undefined     →  reject
 //   unsupported *             →  reject
 
-import { extname } from "node:path";
+import { existsSync, readdirSync, statSync } from "node:fs";
+import { extname, join } from "node:path";
 import type { ProjectKind } from "@a-company/atelier-types";
+import { readAtelierDoc, slugifyBasename } from "./compose-video-project.js";
 
 /** Classification result for a media filename. */
 export type IngestKind = "video" | "image" | "audio" | "unsupported";
@@ -150,4 +152,90 @@ export function routeIngest(
     error:
       "audio cannot create a project; drag audio into an existing video project",
   };
+}
+
+/** Cap on `<slug>-N` collision attempts before we give up. Mirrors createDoc. */
+const MAX_INGEST_COLLISION_ATTEMPTS = 999;
+
+/**
+ * Compute the project-relative `.atelier` doc path a drag-drop ingest should
+ * target. Slugs the source basename, then collision-suffixes with `-1`, `-2`,
+ * ... up to 999.
+ *
+ * Examples:
+ * - `IMG_7346.MOV` → `img-7346.atelier`
+ * - `IMG_7346.MOV` (when `img-7346.atelier` exists) → `img-7346-1.atelier`
+ * - `media/B-roll Clip.mp4` → `b-roll-clip.atelier`
+ *
+ * Returns a project-relative filename (no subdirectory). The caller passes it
+ * straight to `composeVideoProject({ docPath })` / `composeImageProject({ docPath })`.
+ *
+ * Post-pivot: every drag-drop creates its OWN .atelier doc — there is no
+ * shared `project.atelier`. See Wave 3 retarget (TD-2026-05-27).
+ */
+export function computeIngestDocPath(
+  projectDir: string,
+  sourceFilename: string,
+): string {
+  const slug = slugifyBasename(sourceFilename);
+  if (!slug) {
+    throw new Error(
+      `computeIngestDocPath: cannot derive a slug from "${sourceFilename}"`,
+    );
+  }
+  for (let attempt = 0; attempt <= MAX_INGEST_COLLISION_ATTEMPTS; attempt++) {
+    const candidateStem = attempt === 0 ? slug : `${slug}-${attempt}`;
+    const candidateName = `${candidateStem}.atelier`;
+    const candidateAbs = join(projectDir, candidateName);
+    if (!existsSync(candidateAbs)) {
+      return candidateName;
+    }
+  }
+  throw new Error("computeIngestDocPath: collision suffix exhausted (999 attempts)");
+}
+
+/**
+ * Locate the single kind:"video" doc inside a project so an audio drag-drop
+ * can target it. Returns the project-relative path or `null` when there is
+ * zero or more-than-one video doc.
+ *
+ * The lenient fallback for the audio-into-video routing post-pivot — there is
+ * no studio header that tells the ingest handler "which doc is loaded", so we
+ * unambiguously route only when the choice is unambiguous. The caller turns a
+ * null into a 400 with "open a video doc first" so the creator knows why.
+ *
+ * Scope: project root + `slides/` subdir (mirrors `listDocs`). Reads each
+ * candidate to discover its kind; non-parseable files are skipped silently.
+ */
+export function findSingleVideoDoc(projectDir: string): string | null {
+  const matches: string[] = [];
+  for (const sub of ["", "slides"] as const) {
+    const dirAbs = sub ? join(projectDir, sub) : projectDir;
+    let entries: string[];
+    try {
+      entries = readdirSync(dirAbs);
+    } catch {
+      continue;
+    }
+    for (const name of entries) {
+      if (!name.endsWith(".atelier")) continue;
+      if (name === ".atelier") continue;
+      const abs = join(dirAbs, name);
+      try {
+        const st = statSync(abs);
+        if (!st.isFile()) continue;
+      } catch {
+        continue;
+      }
+      try {
+        const doc = readAtelierDoc(abs);
+        if (doc.kind === "video") {
+          matches.push(sub ? `${sub}/${name}` : name);
+        }
+      } catch {
+        // unparseable — skip
+      }
+    }
+  }
+  return matches.length === 1 ? matches[0]! : null;
 }

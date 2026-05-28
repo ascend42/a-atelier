@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T00:43:30.718Z'
+generated: '2026-05-28T01:48:09.247Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -3804,11 +3804,63 @@ by_symbol:
       agent: []
   '':
     symbol: ''
-    total_changes: 2
-    last_modified: '2026-05-28T00:33:07Z'
+    total_changes: 3
+    last_modified: '2026-05-28T01:47:58Z'
     stability_score: 1
     fragility: low
     recent:
+      - &ref_50
+        id: h0081
+        ts: '2026-05-28T01:47:58Z'
+        type: implement
+        symbols:
+          - ''
+          - '#doc-management'
+          - '#doc-management-types'
+          - '#mcp-tool-create-doc'
+        author:
+          type: human
+          id: ascend
+        commit: e78adc7b9a79bdd0fbfdc7f695a49bb4ea0adf50
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-003430-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/manifest.consistency.json
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/university/index.yaml
+          - packages/cli/.purpose
+          - packages/cli/src/commands/studio.docs.test.ts
+          - packages/cli/src/commands/studio.ts
+          - packages/cli/src/index.ts
+          - packages/cli/src/lib/doc-management-types.test.ts
+          - packages/cli/src/lib/doc-management-types.ts
+          - packages/cli/src/lib/doc-management.test.ts
+          - packages/cli/src/lib/doc-management.ts
+          - packages/cli/src/web/workspace-app.ts
+          - packages/mcp/.purpose
+          - packages/mcp/src/bridge-protocol.ts
+          - packages/mcp/src/index.test.ts
+          - packages/mcp/src/index.ts
+          - packages/mcp/src/lib/doc-management-types.ts
+          - packages/mcp/src/lib/doc-management.ts
+          - packages/mcp/src/tools/docs.test.ts
+          - packages/mcp/src/tools/docs.ts
+          - packages/studio/src/panels/layer-panel.ts
+          - portal.yaml
+        description: 'feat(#doc-management): + new doc UI + duplicate + delete + 4 MCP tools — doc-management v1.0.x'
       - &ref_49
         id: h0080
         ts: '2026-05-28T00:33:07Z'
@@ -4020,6 +4072,42 @@ by_symbol:
     fragility: low
     recent:
       - *ref_49
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#doc-management':
+    symbol: '#doc-management'
+    total_changes: 1
+    last_modified: '2026-05-28T01:47:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_50
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#doc-management-types':
+    symbol: '#doc-management-types'
+    total_changes: 1
+    last_modified: '2026-05-28T01:47:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_50
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#mcp-tool-create-doc':
+    symbol: '#mcp-tool-create-doc'
+    total_changes: 1
+    last_modified: '2026-05-28T01:47:58Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_50
     contributors:
       human:
         - ascend

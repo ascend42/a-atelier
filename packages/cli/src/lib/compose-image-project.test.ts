@@ -47,6 +47,7 @@ describe("composeImageProject", () => {
 
     const result = await composeImageProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile,
     });
 
@@ -93,10 +94,10 @@ describe("composeImageProject", () => {
     const sourceFile = join(externalDir, "photo-1.jpg");
     writeFileSync(sourceFile, "fake jpg bytes");
 
-    const r1 = await composeImageProject({ projectDir, sourceFile });
+    const r1 = await composeImageProject({ projectDir, docPath: "project.atelier", sourceFile });
     expect(r1.addedImageLayer).toBe(true);
 
-    const r2 = await composeImageProject({ projectDir, sourceFile });
+    const r2 = await composeImageProject({ projectDir, docPath: "project.atelier", sourceFile });
     expect(r2.addedImageLayer).toBe(false);
     expect(r2.layerId).toBe("img-photo-1");
 
@@ -112,10 +113,10 @@ describe("composeImageProject", () => {
     writeFileSync(sourceA, "A");
     writeFileSync(sourceB, "B");
 
-    await composeImageProject({ projectDir, sourceFile: sourceA });
+    await composeImageProject({ projectDir, docPath: "project.atelier", sourceFile: sourceA });
 
     await expect(
-      composeImageProject({ projectDir, sourceFile: sourceB }),
+      composeImageProject({ projectDir, docPath: "project.atelier", sourceFile: sourceB }),
     ).rejects.toThrow(
       /image project already has an image; rename or delete the existing image before adding another/,
     );
@@ -139,7 +140,7 @@ describe("composeImageProject", () => {
     const sourceFile = join(externalDir, "hero.png");
     writeFileSync(sourceFile, "png bytes");
 
-    await composeImageProject({ projectDir, sourceFile });
+    await composeImageProject({ projectDir, docPath: "project.atelier", sourceFile });
 
     const persisted = readProject();
     expect(persisted.layers[0]!.bounds).toEqual({ width: 800, height: 600 });
@@ -149,7 +150,7 @@ describe("composeImageProject", () => {
     const sourceFile = join(externalDir, "photo-1.jpg");
     writeFileSync(sourceFile, "bytes");
 
-    await composeImageProject({ projectDir, sourceFile });
+    await composeImageProject({ projectDir, docPath: "project.atelier", sourceFile });
 
     expect(existsSync(join(projectDir, "transcript.json"))).toBe(false);
     expect(existsSync(join(projectDir, "transcripts"))).toBe(false);
@@ -165,6 +166,7 @@ describe("composeImageProject", () => {
 
     const result = await composeImageProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile: externalImage,
     });
     expect(result.addedImageLayer).toBe(true);
@@ -174,12 +176,39 @@ describe("composeImageProject", () => {
     expect(readFileSync(copied, "utf-8")).toBe("outside bytes");
   });
 
+  it("writes to a non-default docPath and does NOT touch project.atelier", async () => {
+    // Caller specifies a slug-based doc path — the v1 ingest pivot.
+    // The compose helper must write ONLY to <projectDir>/<docPath>, never
+    // to project.atelier.
+    const sourceFile = join(externalDir, "hero.jpg");
+    writeFileSync(sourceFile, "bytes");
+
+    const result = await composeImageProject({
+      projectDir,
+      docPath: "hero-image.atelier",
+      sourceFile,
+    });
+
+    expect(result.addedImageLayer).toBe(true);
+    expect(existsSync(join(projectDir, "hero-image.atelier"))).toBe(true);
+    // Critical: the helper must NOT write project.atelier.
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
+
+    const persisted = JSON.parse(
+      readFileSync(join(projectDir, "hero-image.atelier"), "utf-8"),
+    ) as AtelierDocument;
+    expect(persisted.kind).toBe("image");
+    expect(persisted.layers).toHaveLength(1);
+    expect(persisted.layers[0]!.id).toBe("img-hero");
+  });
+
   it("respects mediaBasename override", async () => {
     const sourceFile = join(externalDir, "weird name@@.jpg");
     writeFileSync(sourceFile, "bytes");
 
     const result = await composeImageProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile,
       mediaBasename: "renamed.jpg",
     });

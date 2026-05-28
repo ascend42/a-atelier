@@ -7,6 +7,7 @@ import {
   readFileSync,
   mkdirSync,
   rmSync,
+  existsSync,
 } from "node:fs";
 import { join, relative } from "node:path";
 import { tmpdir } from "node:os";
@@ -68,6 +69,7 @@ describe("composeCarouselProject", () => {
 
     const result = await composeCarouselProject({
       projectDir,
+      docPath: "project.atelier",
       slidePath,
     });
 
@@ -88,10 +90,10 @@ describe("composeCarouselProject", () => {
     writeAtelier(slideA, imageDoc("A"));
     writeAtelier(slideB, imageDoc("B"));
 
-    const r1 = await composeCarouselProject({ projectDir, slidePath: slideA });
+    const r1 = await composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath: slideA });
     expect(r1.slideIndex).toBe(0);
 
-    const r2 = await composeCarouselProject({ projectDir, slidePath: slideB });
+    const r2 = await composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath: slideB });
     expect(r2.addedSlide).toBe(true);
     expect(r2.slideIndex).toBe(1);
 
@@ -110,6 +112,7 @@ describe("composeCarouselProject", () => {
     await expect(
       composeCarouselProject({
         projectDir,
+        docPath: "project.atelier",
         slidePath: carouselPath,
       }),
     ).rejects.toThrow(/carousel cycle detected/);
@@ -145,6 +148,7 @@ describe("composeCarouselProject", () => {
     await expect(
       composeCarouselProject({
         projectDir: aDir,
+        docPath: "project.atelier",
         slidePath: bPath,
         workspaceRoot: workspaceDir,
       }),
@@ -155,11 +159,11 @@ describe("composeCarouselProject", () => {
     const slide = join(workspaceDir, "slide-a", "project.atelier");
     writeAtelier(slide, imageDoc("A"));
 
-    const r1 = await composeCarouselProject({ projectDir, slidePath: slide });
+    const r1 = await composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath: slide });
     expect(r1.addedSlide).toBe(true);
     expect(r1.slideIndex).toBe(0);
 
-    const r2 = await composeCarouselProject({ projectDir, slidePath: slide });
+    const r2 = await composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath: slide });
     expect(r2.addedSlide).toBe(false);
     expect(r2.slideIndex).toBe(0);
 
@@ -173,9 +177,10 @@ describe("composeCarouselProject", () => {
     writeAtelier(slideA, imageDoc("A"));
     writeAtelier(slideB, imageDoc("B"));
 
-    await composeCarouselProject({ projectDir, slidePath: slideA });
+    await composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath: slideA });
     const r = await composeCarouselProject({
       projectDir,
+      docPath: "project.atelier",
       slidePath: slideB,
       insertAt: 0,
     });
@@ -205,7 +210,7 @@ describe("composeCarouselProject", () => {
     writeAtelier(slidePath, imageDoc("A"));
 
     await expect(
-      composeCarouselProject({ projectDir, slidePath }),
+      composeCarouselProject({ projectDir, docPath: "project.atelier", slidePath }),
     ).rejects.toThrow(/project is not a carousel; cannot add slides/);
   });
 
@@ -215,6 +220,7 @@ describe("composeCarouselProject", () => {
 
     await composeCarouselProject({
       projectDir,
+      docPath: "project.atelier",
       slidePath,
       workspaceRoot: workspaceDir,
     });
@@ -231,6 +237,7 @@ describe("composeCarouselProject", () => {
 
     await composeCarouselProject({
       projectDir,
+      docPath: "project.atelier",
       slidePath,
       duration: 90,
       transition: { kind: "crossfade", durationFrames: 12 },
@@ -243,5 +250,33 @@ describe("composeCarouselProject", () => {
       transition: { kind: "crossfade", durationFrames: 12 },
       label: "Hero shot",
     });
+  });
+
+  it("writes to a non-default docPath and does NOT touch project.atelier", async () => {
+    // Caller specifies a slug-based doc path — the v1 ingest pivot.
+    // The compose helper must write ONLY to <projectDir>/<docPath>, never
+    // to project.atelier.
+    const slidePath = join(workspaceDir, "slide-a", "project.atelier");
+    writeAtelier(slidePath, imageDoc("A"));
+
+    const result = await composeCarouselProject({
+      projectDir,
+      docPath: "gallery.atelier",
+      slidePath,
+      workspaceRoot: workspaceDir,
+    });
+
+    expect(result.addedSlide).toBe(true);
+    expect(result.slideIndex).toBe(0);
+
+    const carouselDocPath = join(projectDir, "gallery.atelier");
+    expect(
+      JSON.parse(readFileSync(carouselDocPath, "utf-8")) as AtelierDocument,
+    ).toMatchObject({
+      kind: "carousel",
+      slides: [{ src: relative(workspaceDir, slidePath) }],
+    });
+    // Critical: the helper must NOT write project.atelier.
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
   });
 });

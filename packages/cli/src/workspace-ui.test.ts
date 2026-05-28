@@ -199,6 +199,7 @@ describe("composeVideoProject", () => {
 
     const result = await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile,
       transcribeFn,
       probeDurationFn,
@@ -268,6 +269,7 @@ describe("composeVideoProject", () => {
     // First ingest — 2s clip.
     const r1 = await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile: fileA,
       mediaBasename: "IMG_7346.MOV",
       transcribeFn: makeTranscribe("a"),
@@ -279,6 +281,7 @@ describe("composeVideoProject", () => {
     // Second ingest — 3s clip. Must NOT delete clip A.
     const r2 = await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile: fileB,
       mediaBasename: "IMG_7347.MOV",
       transcribeFn: makeTranscribe("b"),
@@ -355,6 +358,7 @@ describe("composeVideoProject", () => {
 
     await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile: fileA,
       mediaBasename: "IMG_7346.MOV",
       transcribeFn: makeTranscribe("hello"),
@@ -372,6 +376,7 @@ describe("composeVideoProject", () => {
 
     await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile: fileB,
       mediaBasename: "IMG_7347.MOV",
       transcribeFn: makeTranscribe("world"),
@@ -518,6 +523,7 @@ describe("transcribeMediaFile", () => {
     const tx = makeFakeTranscribe({ language: "en", segments: [] });
     const result = await composeVideoProject({
       projectDir,
+      docPath: "project.atelier",
       sourceFile,
       mediaBasename: "IMG_7347.MOV",
       transcribeFn: tx,
@@ -826,8 +832,14 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
     await flushAsync();
 
     const projectDir = join(workspaceDir, projectName);
-    const compositionPath = join(projectDir, "project.atelier");
+
+    // Post-pivot (TD-2026-05-27): drag-drop ingest targets `<slug>.atelier`
+    // — derived from the source basename — not the legacy `project.atelier`.
+    // `photo.png` → `photo.atelier`.
+    const compositionPath = join(projectDir, "photo.atelier");
     expect(existsSync(compositionPath)).toBe(true);
+    // And the legacy path is NOT created.
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
 
     const doc = JSON.parse(readFileSync(compositionPath, "utf-8")) as AtelierDocument;
     expect(doc.kind).toBe("image");

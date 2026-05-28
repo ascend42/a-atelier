@@ -50,13 +50,8 @@ export interface DeleteDocOptions {
 export interface DocListEntry {
   /** Project-relative path. */
   path: string;
-  role: "manifest" | "slide" | "other";
   /** When determinable from the doc's `kind` field; undefined if doc kind is absent or unrecognized. */
   kind?: "video" | "image" | "carousel";
-  /** For role:"slide": index in the carousel's slides[]. */
-  slideIndex?: number;
-  /** For role:"slide": optional human label from SlideRef.label. */
-  slideLabel?: string;
 }
 
 export interface DocDeleteCascadeReport {
@@ -104,15 +99,4 @@ export function isValidDocName(name: unknown): name is string {
   // eslint-disable-next-line no-control-regex
   if (/[\x00-\x1f]/.test(trimmed)) return false;
   return true;
-}
-
-/**
- * Single source of truth for "is this the project's manifest .atelier file?".
- * Used everywhere: sidebar render (pinned, no context menu), delete (refused),
- * duplicate (refused), MCP tools (rejected with clear error).
- *
- * Strict equality only: no `./` prefix, no trailing whitespace, no case folding.
- */
-export function isManifestDoc(relPath: string): boolean {
-  return relPath === "project.atelier";
 }

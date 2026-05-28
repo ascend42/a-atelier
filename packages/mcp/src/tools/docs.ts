@@ -141,7 +141,7 @@ export function register(server: McpServer, store: DocumentStore): void {
   // ── 2. atelier_duplicate_doc ─────────────────────────────────
   server.tool(
     "atelier_duplicate_doc",
-    "Duplicate an existing .atelier doc inside a project. Refuses to duplicate project.atelier. Optionally appends a SlideRef to the project's carousel manifest.",
+    "Duplicate an existing .atelier doc inside a project. Optionally appends a SlideRef to the project's carousel manifest (requires the source to live directly under slides/).",
     {
       documentId: z.string().describe("Document ID under which to reload the affected doc"),
       projectDir: z.string().describe("Absolute project directory (must contain project.atelier)"),
@@ -182,7 +182,7 @@ export function register(server: McpServer, store: DocumentStore): void {
   // ── 3. atelier_delete_doc ────────────────────────────────────
   server.tool(
     "atelier_delete_doc",
-    "Delete a non-manifest .atelier doc, scrubbing matching SlideRefs across the workspace and reporting dangling RefVisual layers.",
+    "Delete any .atelier doc (including project.atelier), scrubbing matching SlideRefs across the workspace and reporting dangling RefVisual layers.",
     {
       documentId: z.string().describe("Document ID — if equal to the deleted doc's path, the studio handles fallback"),
       workspaceDir: z.string().optional().describe("Workspace root for security scoping (defaults to process.cwd())"),
@@ -224,7 +224,7 @@ export function register(server: McpServer, store: DocumentStore): void {
   // ── 4. atelier_list_docs ─────────────────────────────────────
   server.tool(
     "atelier_list_docs",
-    "Enumerate every .atelier doc inside a project: manifest, then carousel slides in order, then other root docs.",
+    "Enumerate every .atelier doc inside a project (flat alphabetical by project-relative path). Returns each as { path, kind? }.",
     {
       projectDir: z.string().describe("Absolute project directory"),
       workspaceDir: z.string().optional().describe("Workspace root for security scoping (defaults to process.cwd())"),

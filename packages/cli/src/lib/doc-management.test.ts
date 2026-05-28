@@ -3,6 +3,10 @@
 // Each test seeds a fresh workspace/project tree under tmpdir() so the
 // filesystem walks (workspace-wide SlideRef scrub, RefVisual dangling scan)
 // see only what the test put there.
+//
+// Post-pivot (Wave 1): every .atelier doc is equal. There is no privileged
+// manifest. Tests reflect that: project.atelier can be created, duplicated,
+// and deleted like any other doc. listDocs returns a flat alphabetical list.
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
@@ -143,56 +147,14 @@ describe("createDoc", () => {
     );
   });
 
-  it("propagates a cycle refusal from composeCarouselProject", async () => {
-    // Seed the carousel with itself as a pre-existing slide so any further
-    // SlideRef append into this same carousel triggers the cycle detector.
-    const manifestPath = join(projectDir, "project.atelier");
-    const selfRef = relative(workspaceDir, manifestPath);
-    writeAtelier(manifestPath, carouselDoc("host", [selfRef]));
-
-    // The new slide we create won't itself be the cycle, but the detector
-    // walks the carousel's existing slides[] from the candidate's perspective.
-    // To produce a deterministic cycle, point the new doc at the carousel
-    // and add a RefVisual that references it — but easier: just trigger via
-    // a pre-seeded self-ref carousel and have composeCarouselProject re-check.
-    // Workaround: seed an external carousel that already refs the host as a
-    // slide, then try to add the external carousel itself as a slide of host.
-    const externalDir = join(workspaceDir, "external");
-    const externalPath = join(externalDir, "project.atelier");
-    writeAtelier(
-      externalPath,
-      carouselDoc("external", [relative(workspaceDir, manifestPath)]),
-    );
-
-    // Now try to create a NEW slide doc, and append it; the new doc is empty
-    // so no cycle. Instead test cycle by directly seeding a slide that IS the
-    // carousel itself — composeCarouselProject's direct self-ref check fires
-    // when slidePath === rootPath, which we can't trigger via createDoc
-    // because a new doc has a distinct path. So we validate the propagation
-    // path differently: create a slide normally, then call composeCarousel
-    // directly through createDoc with carouselDocPath equal to the SAME new
-    // doc path — but that's also a unique fresh path.
-    //
-    // Easiest provable propagation: the host carousel has the external doc
-    // among the chain, and we add a slide whose path equals an existing
-    // workspace doc the chain would revisit. But createDoc only writes fresh
-    // paths. So skip the cycle-propagation test as not reachable through
-    // createDoc's API — composeCarouselProject's cycle path is covered in
-    // its own test file. We assert here that createDoc does roll back the
-    // new file when composeCarouselProject throws, by injecting a poisoned
-    // carouselDocPath that doesn't exist as a project dir.
-    //
-    // Instead: verify createDoc rolls back the new slide file when the host
-    // carousel write fails. We make the carouselDocPath point at a path
-    // whose parent dir is NOT a carousel (kind:video instead) — composeCarousel
-    // throws "project is not a carousel".
+  it("rolls back the new slide file when the host is not a carousel", async () => {
+    // composeCarouselProject throws "project is not a carousel" when the host
+    // doc has kind:"video". createDoc must unlink the freshly-written slide
+    // doc so the creator isn't left with an orphan.
     const videoProjectDir = join(workspaceDir, "video-host");
     const videoManifest = join(videoProjectDir, "project.atelier");
     writeAtelier(videoManifest, videoDoc("vid"));
 
-    // Re-init projectDir as the video host (so the new slide we're trying to
-    // write will be under video-host/slides/, but the host is a video, not a
-    // carousel — composeCarouselProject refuses).
     await expect(
       createDoc({
         projectDir: videoProjectDir,
@@ -207,11 +169,6 @@ describe("createDoc", () => {
     expect(
       existsSync(join(videoProjectDir, "slides", "rebellious.atelier")),
     ).toBe(false);
-
-    // Defensive — the unused `externalPath` write was kept above to mirror
-    // the cycle setup pattern other tests use; it shouldn't have affected
-    // this assertion.
-    expect(existsSync(externalPath)).toBe(true);
   });
 
   it("collision-suffixes when target name already exists", async () => {
@@ -335,11 +292,15 @@ describe("duplicateDoc", () => {
     expect(dup.layers.map((l) => l.id)).toEqual(["layer-alpha", "layer-beta"]);
   });
 
-  it("refuses to duplicate the project manifest", async () => {
+  it("can duplicate project.atelier just like any other doc", async () => {
+    // Post-pivot: project.atelier is not privileged.
     writeAtelier(join(projectDir, "project.atelier"), carouselDoc("host"));
-    await expect(
-      duplicateDoc({ projectDir, sourceDocPath: "project.atelier" }),
-    ).rejects.toThrow(/cannot duplicate the project manifest/);
+    const r = await duplicateDoc({
+      projectDir,
+      sourceDocPath: "project.atelier",
+    });
+    expect(r.newDocPath).toBe("project-copy.atelier");
+    expect(existsSync(join(projectDir, "project-copy.atelier"))).toBe(true);
   });
 
   it("throws when source doc not found", async () => {
@@ -499,15 +460,16 @@ describe("deleteDoc", () => {
     expect(persisted.layers[0]!.id).toBe("ref-layer-1");
   });
 
-  it("refuses to delete the project manifest", () => {
+  it("can delete project.atelier just like any other doc", () => {
+    // Post-pivot: project.atelier is not privileged.
     writeAtelier(join(projectDir, "project.atelier"), carouselDoc("host"));
-    expect(() =>
-      deleteDoc({
-        workspaceDir,
-        projectName: "my-project",
-        docPath: "project.atelier",
-      }),
-    ).toThrow(/cannot delete the project manifest/);
+    const report = deleteDoc({
+      workspaceDir,
+      projectName: "my-project",
+      docPath: "project.atelier",
+    });
+    expect(report.docPath).toBe("project.atelier");
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
   });
 
   it("throws when the doc is not found", () => {
@@ -530,6 +492,74 @@ describe("deleteDoc", () => {
     expect(report.slideRefsRemoved).toEqual([]);
     expect(report.refLayersDangling).toEqual([]);
   });
+
+  it("cascade walks every .atelier in the workspace (not just project.atelier)", () => {
+    // The carousel host that references the target is named `other.atelier`,
+    // NOT `project.atelier`. Pre-pivot the walk would have missed it.
+    const targetAbs = join(projectDir, "target.atelier");
+    writeAtelier(targetAbs, imageDoc("target"));
+
+    const hostProjectDir = join(workspaceDir, "host-project");
+    const hostDocAbs = join(hostProjectDir, "other.atelier");
+    writeAtelier(
+      hostDocAbs,
+      carouselDoc("host", [
+        relative(workspaceDir, targetAbs),
+      ]),
+    );
+
+    const report = deleteDoc({
+      workspaceDir,
+      projectName: "my-project",
+      docPath: "target.atelier",
+    });
+
+    expect(report.slideRefsRemoved).toEqual([
+      { project: "host-project", slideIndex: 0 },
+    ]);
+    const persisted = readAtelier(hostDocAbs);
+    expect(persisted.slides).toEqual([]);
+  });
+
+  it("reports refLayersDangling.docPath as the actual host doc path (not always project.atelier)", () => {
+    const targetAbs = join(projectDir, "target.atelier");
+    writeAtelier(targetAbs, imageDoc("target"));
+
+    // The consumer carousel lives under slides/consumer.atelier inside a
+    // sibling project — its docPath must be "slides/consumer.atelier".
+    const consumerDir = join(workspaceDir, "consumer-project");
+    const consumerDocAbs = join(consumerDir, "slides", "consumer.atelier");
+    const consumerDoc: AtelierDocument = {
+      version: "1.0",
+      name: "consumer",
+      kind: "video",
+      canvas: { width: 1080, height: 1920, fps: 30 },
+      layers: [
+        {
+          id: "ref-layer-x",
+          visual: { type: "ref", src: relative(workspaceDir, targetAbs) },
+          frame: { x: 0, y: 0 },
+          bounds: { width: 1080, height: 1920 },
+        },
+      ],
+      states: { default: { duration: 1, deltas: [] } },
+    };
+    writeAtelier(consumerDocAbs, consumerDoc);
+
+    const report = deleteDoc({
+      workspaceDir,
+      projectName: "my-project",
+      docPath: "target.atelier",
+    });
+
+    expect(report.refLayersDangling).toEqual([
+      {
+        project: "consumer-project",
+        docPath: "slides/consumer.atelier",
+        layerId: "ref-layer-x",
+      },
+    ]);
+  });
 });
 
 // ─── listDocs ───────────────────────────────────────────────────────
@@ -539,96 +569,77 @@ describe("listDocs", () => {
     writeAtelier(join(projectDir, "project.atelier"), videoDoc("solo"));
     const out = listDocs(projectDir);
     expect(out).toHaveLength(1);
-    expect(out[0]).toMatchObject({
+    expect(out[0]).toEqual({
       path: "project.atelier",
-      role: "manifest",
       kind: "video",
     });
   });
 
-  it("enumerates a carousel manifest + 3 slides in slides[] order", () => {
-    const slide1 = join(projectDir, "slides", "a.atelier");
-    const slide2 = join(projectDir, "slides", "b.atelier");
-    const slide3 = join(projectDir, "slides", "c.atelier");
-    writeAtelier(slide1, imageDoc("a"));
-    writeAtelier(slide2, imageDoc("b"));
-    writeAtelier(slide3, videoDoc("c"));
-
-    const manifest = carouselDoc("host", [
-      relative(workspaceDir, slide1),
-      relative(workspaceDir, slide2),
-      relative(workspaceDir, slide3),
-    ]);
-    manifest.slides![1]!.label = "middle";
-    writeAtelier(join(projectDir, "project.atelier"), manifest);
-
-    const out = listDocs(projectDir);
-    expect(out).toHaveLength(4);
-    expect(out[0]).toMatchObject({ path: "project.atelier", role: "manifest", kind: "carousel" });
-    expect(out[1]).toMatchObject({ path: "slides/a.atelier", role: "slide", slideIndex: 0, kind: "image" });
-    expect(out[2]).toMatchObject({
-      path: "slides/b.atelier",
-      role: "slide",
-      slideIndex: 1,
-      kind: "image",
-      slideLabel: "middle",
-    });
-    expect(out[3]).toMatchObject({ path: "slides/c.atelier", role: "slide", slideIndex: 2, kind: "video" });
-  });
-
-  it("surfaces project-root .atelier files as 'other'", () => {
+  it("returns DocListEntry shape {path, kind?} — no role / slideIndex / slideLabel", () => {
     writeAtelier(join(projectDir, "project.atelier"), videoDoc("host"));
     writeAtelier(join(projectDir, "scene.atelier"), imageDoc("scene"));
-
     const out = listDocs(projectDir);
-    expect(out).toHaveLength(2);
-    expect(out[0]).toMatchObject({ path: "project.atelier", role: "manifest" });
-    expect(out[1]).toMatchObject({ path: "scene.atelier", role: "other", kind: "image" });
+    for (const entry of out) {
+      const keys = Object.keys(entry).sort();
+      // Allowed keys: "kind" + "path". No "role", "slideIndex", "slideLabel".
+      expect(keys).not.toContain("role");
+      expect(keys).not.toContain("slideIndex");
+      expect(keys).not.toContain("slideLabel");
+      expect(keys).toContain("path");
+      // kind is optional but in this seed every doc has one.
+      expect(entry.kind).toBeDefined();
+    }
   });
 
-  it("preserves slides[] order under shuffling", () => {
-    const slide1 = join(projectDir, "slides", "first.atelier");
-    const slide2 = join(projectDir, "slides", "second.atelier");
-    const slide3 = join(projectDir, "slides", "third.atelier");
-    writeAtelier(slide1, imageDoc("first"));
-    writeAtelier(slide2, imageDoc("second"));
-    writeAtelier(slide3, imageDoc("third"));
-
-    // Manifest with deliberately shuffled order: third, first, second.
-    writeAtelier(
-      join(projectDir, "project.atelier"),
-      carouselDoc("host", [
-        relative(workspaceDir, slide3),
-        relative(workspaceDir, slide1),
-        relative(workspaceDir, slide2),
-      ]),
-    );
+  it("returns a flat alphabetical list of project root + slides/ docs", () => {
+    // alpha.atelier < project.atelier < slides/beta.atelier lexicographically.
+    writeAtelier(join(projectDir, "project.atelier"), carouselDoc("host"));
+    writeAtelier(join(projectDir, "alpha.atelier"), imageDoc("alpha"));
+    writeAtelier(join(projectDir, "slides", "beta.atelier"), imageDoc("beta"));
 
     const out = listDocs(projectDir);
-    const slidePaths = out.filter((e) => e.role === "slide").map((e) => e.path);
-    expect(slidePaths).toEqual([
-      "slides/third.atelier",
-      "slides/first.atelier",
-      "slides/second.atelier",
+    expect(out.map((e) => e.path)).toEqual([
+      "alpha.atelier",
+      "project.atelier",
+      "slides/beta.atelier",
     ]);
-    const slideIndices = out.filter((e) => e.role === "slide").map((e) => e.slideIndex);
-    expect(slideIndices).toEqual([0, 1, 2]);
   });
 
-  it("skips slide refs that resolve outside the project", () => {
-    // Slide lives in a sibling project, not in our project's tree.
-    const siblingDir = join(workspaceDir, "sibling");
-    const siblingSlide = join(siblingDir, "slides", "remote.atelier");
-    writeAtelier(siblingSlide, imageDoc("remote"));
+  it("omits kind when a doc fails to parse", () => {
+    writeFileSync(join(projectDir, "broken.atelier"), "{not valid json");
+    const out = listDocs(projectDir);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toEqual({ path: "broken.atelier" });
+  });
 
-    writeAtelier(
-      join(projectDir, "project.atelier"),
-      carouselDoc("host", [relative(workspaceDir, siblingSlide)]),
-    );
+  it("filters out the `.atelier/` directory at project root (bug fix)", () => {
+    // The hidden paradigm-style dir matches "*.atelier" but is NOT a doc.
+    // Pre-fix, listDocs surfaced it; post-fix, statSync().isFile() filters
+    // it out AND the defensive basename `.atelier` skip catches the case
+    // where a future symlink follows into a dir.
+    mkdirSync(join(projectDir, ".atelier"));
+    // Add a file INSIDE the .atelier/ dir to make it non-empty (still a dir).
+    writeFileSync(join(projectDir, ".atelier", "marker"), "");
+
+    writeAtelier(join(projectDir, "project.atelier"), videoDoc("host"));
+    writeAtelier(join(projectDir, "other.atelier"), imageDoc("other"));
 
     const out = listDocs(projectDir);
-    // Only the manifest — the remote slide should NOT surface.
-    expect(out).toHaveLength(1);
-    expect(out[0]!.role).toBe("manifest");
+    const paths = out.map((e) => e.path);
+    expect(paths).toEqual(["other.atelier", "project.atelier"]);
+    // Defensive: no entry should be named ".atelier" exactly.
+    expect(paths).not.toContain(".atelier");
+  });
+
+  it("surfaces slides/ docs even when no carousel host references them", () => {
+    // Post-pivot listDocs walks the filesystem, not the manifest's slides[].
+    writeAtelier(join(projectDir, "project.atelier"), videoDoc("host"));
+    writeAtelier(join(projectDir, "slides", "orphan.atelier"), imageDoc("orphan"));
+
+    const out = listDocs(projectDir);
+    expect(out.map((e) => e.path)).toEqual([
+      "project.atelier",
+      "slides/orphan.atelier",
+    ]);
   });
 });

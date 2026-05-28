@@ -18,6 +18,7 @@ import {
 } from "../lib/learning-mode.js";
 import {
   findWorkspace,
+  hasProjectMarker,
   isValidProjectName,
   listProjects,
   readWorkspace,
@@ -192,6 +193,16 @@ export interface RunInitOptions {
   /** Suppress interactive prompt fallback (used by --json path). Default false. */
   json: boolean;
   /**
+   * Drop a minimal `project.atelier` manifest at the project root so this
+   * directory is recognized as a Project by legacy discovery callers. The
+   * CLI surface (`atelier init`) leaves this true so existing tooling that
+   * keys on the manifest's presence keeps working; the workspace `+ new`
+   * surface (via `createProjectInWorkspace`) passes `false` so the project
+   * stays "lazy" until its first composed `.atelier` doc lands. Default
+   * true (preserves pre-pivot behavior on the CLI path).
+   */
+  writeManifest?: boolean;
+  /**
    * Test/programmatic override: a function that resolves to the chosen mode
    * when no `--mode` was passed. Production wiring uses the readline prompt.
    * Returning `undefined` or throwing aborts with the standard "couldn't
@@ -312,31 +323,40 @@ export async function runInit(opts: RunInitOptions): Promise<InitResult> {
   }
 
   // 5b. Drop a minimal `project.atelier` so this directory is recognized as
-  //     a Project by workspace-discovery (`isProjectDir` / `listProjects`)
-  //     and so workspace-level operations like `setActiveProject` can
-  //     point at it. Minimal scaffold; Iris populates layers/states/etc.
-  //     during the live loop. The shape matches the canonical empty doc
-  //     produced by the `atelier_create` MCP tool (states: {}, empty
-  //     layers) — `parseAtelier` accepts both YAML and JSON, and JSON
-  //     keeps the on-disk format trivially editable without a YAML dep.
+  //     a Project by legacy workspace-discovery callers and so workspace-
+  //     level operations like `setActiveProject` can point at it. Minimal
+  //     scaffold; Iris populates layers/states/etc. during the live loop.
+  //     The shape matches the canonical empty doc produced by the
+  //     `atelier_create` MCP tool (states: {}, empty layers) — `parseAtelier`
+  //     accepts both YAML and JSON, and JSON keeps the on-disk format
+  //     trivially editable without a YAML dep.
+  //
+  //     Gated by `writeManifest` (default true). The workspace `+ new`
+  //     flow passes `false` to keep freshly-created Projects "lazy" — they
+  //     become real Projects on disk once the creator composes their first
+  //     `.atelier` doc. Discovery (`hasProjectMarker` in workspace.ts)
+  //     now accepts the `.atelier/` metadata subdir as an equivalent
+  //     marker so manifestless Projects still surface in the sidebar.
   //     Idempotent: re-init never clobbers a creator's edits.
-  const projectAtelierPath = join(absDir, "project.atelier");
-  if (!existsSync(projectAtelierPath)) {
-    const minimalDoc = {
-      version: "1.0",
-      // Default to a vertical short-form canvas (TikTok/Reels/Shorts) at
-      // 30fps; Iris/Lux rewrite canvas dimensions when DESIGN.md specifies
-      // a different aspect ratio.
-      name: basename(absDir),
-      canvas: { width: 1080, height: 1920, fps: 30 },
-      layers: [],
-      states: {},
-    };
-    writeFileSync(
-      projectAtelierPath,
-      JSON.stringify(minimalDoc, null, 2) + "\n",
-      "utf-8",
-    );
+  if (opts.writeManifest !== false) {
+    const projectAtelierPath = join(absDir, "project.atelier");
+    if (!existsSync(projectAtelierPath)) {
+      const minimalDoc = {
+        version: "1.0",
+        // Default to a vertical short-form canvas (TikTok/Reels/Shorts) at
+        // 30fps; Iris/Lux rewrite canvas dimensions when DESIGN.md specifies
+        // a different aspect ratio.
+        name: basename(absDir),
+        canvas: { width: 1080, height: 1920, fps: 30 },
+        layers: [],
+        states: {},
+      };
+      writeFileSync(
+        projectAtelierPath,
+        JSON.stringify(minimalDoc, null, 2) + "\n",
+        "utf-8",
+      );
+    }
   }
 
   // 6. Scaffold the three artifacts (unless opted out). Re-init: swallow the
@@ -536,11 +556,14 @@ export interface CreateProjectInWorkspaceOptions {
  * Pipeline:
  *   1. Validate `name` against `isValidProjectName` (rejects path
  *      separators, leading dot, control chars) before any fs work.
- *   2. Refuse if the target dir already exists as a non-empty Project
- *      (has its own `project.atelier`) — the endpoint is "create new",
- *      not "complete an existing init". A bare empty dir is OK.
- *   3. Delegate to `runInit` with the resolved mode (caller's override or
- *      the workspace's `default_mode`).
+ *   2. Refuse if the target dir already looks like a Project — i.e. has
+ *      a `project.atelier` manifest OR an `.atelier/` metadata subdir
+ *      (`hasProjectMarker`). A bare empty dir is OK.
+ *   3. Delegate to `runInit` with `writeManifest: false` so the new
+ *      Project stays "lazy" — no auto-scaffolded `project.atelier`. The
+ *      directory + `.atelier/` metadata subdir is enough for discovery
+ *      to pick it up; the first composed `.atelier` doc lands when the
+ *      creator drops in media or asks an agent to compose one.
  *   4. Refresh the workspace manifest's advisory `projects[]` list so the
  *      manifest reflects on-disk truth (same logic as the CLI wrapper).
  *
@@ -565,9 +588,11 @@ export async function createProjectInWorkspace(
   const manifest = readWorkspace(absWs);
   const projectDir = join(absWs, opts.name);
 
-  // Refuse to clobber an existing project at this name. An empty/missing
-  // dir is fine — that's the standard "create new" case.
-  if (existsSync(join(projectDir, "project.atelier"))) {
+  // Refuse to clobber an existing project at this name. Use the same
+  // marker as discovery (either `project.atelier` OR `.atelier/`) so a
+  // freshly-created lazy project is also recognized as "already exists".
+  // An empty/missing dir is fine — that's the standard "create new" case.
+  if (hasProjectMarker(projectDir)) {
     throw new Error(
       `project "${opts.name}" already exists at ${projectDir}`,
     );
@@ -586,6 +611,11 @@ export async function createProjectInWorkspace(
     // --mode-equivalent and json:false (no need to error on missing mode
     // — we always supply one).
     json: false,
+    // Workspace `+ new` is the "lazy project" path — no auto-scaffolded
+    // `project.atelier`. The creator's first compose action drops a real
+    // `.atelier` doc; until then the project lives off its `.atelier/`
+    // metadata subdir alone.
+    writeManifest: false,
   });
 
   // Refresh the manifest's advisory projects[] list. Non-fatal.

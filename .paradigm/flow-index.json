@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-28T01:46:32.234Z",
+  "generatedAt": "2026-05-28T02:59:38.428Z",
   "flows": {
     "$frame-resolution": {
       "id": "$frame-resolution",
@@ -105,7 +105,7 @@
     },
     "$doc-create-flow": {
       "id": "$doc-create-flow",
-      "description": "Sidebar \"+ new doc\" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its DOCUMENT / SLIDES / OTHER DOCS groups. When the carousel project is active and the slide toggle is on, createDoc also runs composeCarouselProject to append a SlideRef (with full cycle check).",
+      "description": "Sidebar \"+ new doc\" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject (each with its docPath) builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its single flat DOCS group. Adding a slide to a carousel goes through the parallel #carousel-add-slide-button affordance on the carousel canvas, which POSTs asCarouselSlide:true so createDoc additionally runs composeCarouselProject to append a SlideRef (cycle-checked).",
       "steps": [
         {
           "id": "step-1",
@@ -124,7 +124,7 @@
         },
         {
           "id": "step-4",
-          "action": "createDoc → composeImage|Video|Carousel, write file",
+          "action": "createDoc → composeImage|Video|Carousel (each with docPath), write file",
           "symbol": "#doc-management"
         },
         {
@@ -134,7 +134,7 @@
         },
         {
           "id": "step-6",
-          "action": "refresh on doc:list:changed",
+          "action": "refresh single flat DOCS group on doc:list:changed",
           "symbol": "#studio-doc-sidebar"
         }
       ],
@@ -142,7 +142,7 @@
     },
     "$doc-delete-cascade-flow": {
       "id": "$doc-delete-cascade-flow",
-      "description": "Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^manifest-doc-protected (isManifestDoc(decoded)) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, removes matching SlideRef entries from any carousel manifest, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the project manifest so the editor never lingers on a missing file.",
+      "description": "Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, scans every .atelier doc encountered, removes matching SlideRef entries from any carousel doc, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the target doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the next available doc in the project (post-pivot: there is no privileged manifest to fall back to — see ~no-manifest-doc) or shows the empty-canvas state if the project has no docs left.",
       "steps": [
         {
           "id": "step-1",
@@ -151,12 +151,12 @@
         },
         {
           "id": "step-2",
-          "action": "DELETE /api/project/:name/docs?path=, gate manifest + path + name",
+          "action": "DELETE /api/project/:name/docs?path=, gate ^valid-doc-name + ^doc-path-inside-project",
           "symbol": "#studio-doc-endpoints"
         },
         {
           "id": "step-3",
-          "action": "deleteDoc → workspace-wide SlideRef scrub + RefVisual dangling scan + unlink",
+          "action": "deleteDoc → workspace-wide SlideRef scrub across every .atelier + RefVisual dangling scan + unlink",
           "symbol": "#doc-management"
         },
         {
@@ -166,7 +166,7 @@
         },
         {
           "id": "step-5",
-          "action": "refresh; bridge falls back to manifest if currentDoc was deleted",
+          "action": "refresh; bridge falls back to next available doc or empty-canvas state",
           "symbol": "#studio-doc-sidebar"
         }
       ],

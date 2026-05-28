@@ -114,16 +114,20 @@ describe("buildProjectDocs", () => {
   });
   afterEach(() => cleanup());
 
-  it("returns a single manifest entry for a manifest-only project", () => {
+  it("returns a single entry for a manifest-only project", () => {
+    // Post-pivot (Unit A): DocListEntry is { path, kind? } — no `role` field.
     makeProject(workspaceDir, "demo", { kind: "video" });
     const result = buildProjectDocs(workspaceDir, "demo");
     expect(result.status).toBe(200);
-    const body = result.body as Array<{ path: string; role: string }>;
+    const body = result.body as Array<{ path: string; kind?: string }>;
     expect(body).toHaveLength(1);
-    expect(body[0]).toMatchObject({ path: "project.atelier", role: "manifest" });
+    expect(body[0]).toMatchObject({ path: "project.atelier" });
   });
 
-  it("returns ordered manifest + slide entries for a carousel", () => {
+  it("returns ordered entries for a carousel project (root + slides/)", () => {
+    // Post-pivot (Unit A): listDocs walks root + slides/ and emits a flat
+    // alphabetical list of { path, kind? } — no `role`, `slideIndex`, or
+    // `slideLabel` distinction at the API surface.
     const projectDir = makeProject(workspaceDir, "carousel-demo", {
       kind: "carousel",
       slides: [
@@ -157,15 +161,12 @@ describe("buildProjectDocs", () => {
 
     const result = buildProjectDocs(workspaceDir, "carousel-demo");
     expect(result.status).toBe(200);
-    const body = result.body as Array<{ path: string; role: string; slideIndex?: number; slideLabel?: string }>;
-    expect(body.map((e) => ({ path: e.path, role: e.role }))).toEqual([
-      { path: "project.atelier", role: "manifest" },
-      { path: "slides/one.atelier", role: "slide" },
-      { path: "slides/two.atelier", role: "slide" },
+    const body = result.body as Array<{ path: string; kind?: string }>;
+    expect(body.map((e) => e.path)).toEqual([
+      "project.atelier",
+      "slides/one.atelier",
+      "slides/two.atelier",
     ]);
-    expect(body[1]!.slideIndex).toBe(0);
-    expect(body[2]!.slideIndex).toBe(1);
-    expect(body[2]!.slideLabel).toBe("Slide Two");
   });
 
   it("404s when the project does not exist", () => {
@@ -270,6 +271,9 @@ describe("handleCreateDoc", () => {
       name: "First Slide",
       kind: "image",
       asCarouselSlide: true,
+      // Post-pivot (Unit F): carouselDocPath is required when
+      // asCarouselSlide=true — no implicit "project.atelier" default.
+      carouselDocPath: "project.atelier",
     });
     expect(result.status).toBe(201);
     const body = result.body as { docPath: string; appendedSlideIndex?: number };
@@ -281,6 +285,20 @@ describe("handleCreateDoc", () => {
       readFileSync(join(workspaceDir, "demo", "project.atelier"), "utf-8"),
     ) as AtelierDocument;
     expect(manifest.slides).toHaveLength(1);
+  });
+
+  it("400s when asCarouselSlide=true but carouselDocPath is missing", async () => {
+    // Post-pivot (Unit F): no implicit "project.atelier" default. The caller
+    // (the "+ add slide" button) always knows the active carousel doc.
+    const result = await handleCreateDoc(workspaceDir, "demo", {
+      name: "Orphan Slide",
+      kind: "image",
+      asCarouselSlide: true,
+    });
+    expect(result.status).toBe(400);
+    expect(result.body).toMatchObject({
+      error: expect.stringMatching(/carouselDocPath is required/i),
+    });
   });
 
   it("404s when the project does not exist", async () => {
@@ -343,10 +361,16 @@ describe("handleDuplicateDoc", () => {
     expect(result.status).toBe(404);
   });
 
-  it("400s when asked to duplicate the project manifest", async () => {
+  it("can duplicate project.atelier just like any other doc", async () => {
+    // Post-pivot (Unit A/F): every doc is equal — no manifest-refusal branch.
     const result = await handleDuplicateDoc(workspaceDir, "demo", "project.atelier", null);
-    expect(result.status).toBe(400);
-    expect(result.body).toMatchObject({ error: expect.stringMatching(/manifest/i) });
+    expect(result.status).toBe(200);
+    const body = result.body as { sourceDocPath: string; newDocPath: string };
+    expect(body.sourceDocPath).toBe("project.atelier");
+    expect(body.newDocPath).toBe("project-copy.atelier");
+    expect(existsSync(join(workspaceDir, "demo", "project-copy.atelier"))).toBe(true);
+    // Original still on disk.
+    expect(existsSync(join(workspaceDir, "demo", "project.atelier"))).toBe(true);
   });
 
   it("400s on a parent-dir traversal path", async () => {
@@ -401,12 +425,15 @@ describe("handleDeleteDoc", () => {
     expect(existsSync(join(workspaceDir, "demo", "child.atelier"))).toBe(false);
   });
 
-  it("400s when asked to delete the project manifest (BEFORE any fs call)", async () => {
+  it("can delete project.atelier just like any other doc", async () => {
+    // Post-pivot (Unit A/F): every doc is equal — no manifest-refusal branch.
+    // Whole-project delete (cascading the directory) lives behind
+    // DELETE /api/project/:name; this endpoint just removes the file.
     const result = await handleDeleteDoc(workspaceDir, "demo", "project.atelier");
-    expect(result.status).toBe(400);
-    expect(result.body).toMatchObject({ error: expect.stringMatching(/manifest/i) });
-    // Manifest should still exist.
-    expect(existsSync(join(workspaceDir, "demo", "project.atelier"))).toBe(true);
+    expect(result.status).toBe(200);
+    const body = result.body as { docPath: string };
+    expect(body.docPath).toBe("project.atelier");
+    expect(existsSync(join(workspaceDir, "demo", "project.atelier"))).toBe(false);
   });
 
   it("400s on a parent-dir traversal path", async () => {

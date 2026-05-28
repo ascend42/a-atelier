@@ -16,19 +16,19 @@
 //   atelier_duplicate_doc:
 //     - Duplicate a root doc → "<stem>-copy.atelier", layers preserved
 //     - Duplicate a slide with appendSlideRef:true → SlideRef appended
-//     - Refuse project.atelier → error
+//     - Duplicates project.atelier like any other doc (post-pivot: no manifest refusal)
 //     - Out-of-workspace → error
 //
 //   atelier_delete_doc:
 //     - Delete a slide → file removed, SlideRef scrubbed
-//     - Refuse project.atelier → error
+//     - Deletes project.atelier like any other doc (post-pivot: no manifest refusal)
 //     - Out-of-workspace → error
 //     - DocDeleteCascadeReport shape correct
 //
 //   atelier_list_docs:
-//     - Project with manifest only → 1 entry
-//     - Carousel with slides → manifest + slides in order
-//     - Project with other root docs → manifest + "other" entries
+//     - Flat alphabetical { path, kind? } entries
+//     - Carousel project: manifest + slides surface as entries
+//     - Video project with other root docs: manifest + sibling docs surface as entries
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -426,7 +426,7 @@ describe("atelier_duplicate_doc", () => {
     expect(existsSync(join(projectDir, "intro-copy-2.atelier"))).toBe(true);
   });
 
-  it("refuses to duplicate project.atelier (the manifest)", async () => {
+  it("duplicates project.atelier like any other doc (post-pivot: no manifest refusal)", async () => {
     writeProject(projectDir, makeVideoManifest());
 
     const res = await callTool(client, "atelier_duplicate_doc", {
@@ -436,8 +436,15 @@ describe("atelier_duplicate_doc", () => {
       sourceDocPath: "project.atelier",
     });
 
-    expect(res._isError).toBe(true);
-    expect(res.error).toMatch(/manifest|project\.atelier/i);
+    expect(res._isError).toBe(false);
+    expect(res.success).toBe(true);
+    expect(res.sourceDocPath).toBe("project.atelier");
+    expect(res.newDocPath).toBe("project-copy.atelier");
+
+    const dupAbs = join(projectDir, "project-copy.atelier");
+    expect(existsSync(dupAbs)).toBe(true);
+    // Original manifest is preserved (duplicate is a copy, not a move).
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(true);
   });
 
   it("rejects an out-of-workspace projectDir", async () => {
@@ -504,7 +511,7 @@ describe("atelier_delete_doc", () => {
     ]);
   });
 
-  it("refuses to delete project.atelier (the manifest)", async () => {
+  it("deletes project.atelier like any other doc (post-pivot: no manifest refusal)", async () => {
     writeProject(projectDir, makeVideoManifest());
 
     const res = await callTool(client, "atelier_delete_doc", {
@@ -514,9 +521,10 @@ describe("atelier_delete_doc", () => {
       docPath: "project.atelier",
     });
 
-    expect(res._isError).toBe(true);
-    expect(res.error).toMatch(/manifest|project\.atelier/i);
-    expect(existsSync(join(projectDir, "project.atelier"))).toBe(true);
+    expect(res._isError).toBe(false);
+    expect(res.success).toBe(true);
+    expect(res.docPath).toBe("project.atelier");
+    expect(existsSync(join(projectDir, "project.atelier"))).toBe(false);
   });
 
   it("rejects an out-of-workspace projectName (path traversal)", async () => {
@@ -566,7 +574,7 @@ describe("atelier_delete_doc", () => {
 // ─── atelier_list_docs ────────────────────────────────────────
 
 describe("atelier_list_docs", () => {
-  it("returns a single manifest entry for a project with only project.atelier", async () => {
+  it("returns a single entry for a project with only project.atelier (post-pivot: flat { path, kind? })", async () => {
     writeProject(projectDir, makeVideoManifest());
 
     const res = await callTool(client, "atelier_list_docs", {
@@ -579,12 +587,11 @@ describe("atelier_list_docs", () => {
     expect(res.docs).toHaveLength(1);
     expect(res.docs[0]).toEqual({
       path: "project.atelier",
-      role: "manifest",
       kind: "video",
     });
   });
 
-  it("returns manifest + carousel slides in slides[] order", async () => {
+  it("returns manifest + carousel slides as flat alphabetical entries (post-pivot)", async () => {
     writeProject(projectDir, makeCarouselManifest());
     mkdirSync(join(projectDir, "slides"), { recursive: true });
     writeFileSync(join(projectDir, "slides", "a.atelier"), JSON.stringify(makeVideoManifest("a")));
@@ -603,22 +610,21 @@ describe("atelier_list_docs", () => {
 
     expect(res._isError).toBe(false);
     expect(res.docs).toHaveLength(3);
-    expect(res.docs[0].role).toBe("manifest");
-    expect(res.docs[0].kind).toBe("carousel");
 
-    expect(res.docs[1].role).toBe("slide");
-    expect(res.docs[1].path).toBe("slides/a.atelier");
-    expect(res.docs[1].slideIndex).toBe(0);
-    expect(res.docs[1].slideLabel).toBe("A");
-    expect(res.docs[1].kind).toBe("video");
+    // Flat alphabetical by project-relative path: project.atelier, slides/a.atelier, slides/b.atelier.
+    expect(res.docs[0]).toEqual({ path: "project.atelier", kind: "carousel" });
+    expect(res.docs[1]).toEqual({ path: "slides/a.atelier", kind: "video" });
+    expect(res.docs[2]).toEqual({ path: "slides/b.atelier", kind: "video" });
 
-    expect(res.docs[2].role).toBe("slide");
-    expect(res.docs[2].path).toBe("slides/b.atelier");
-    expect(res.docs[2].slideIndex).toBe(1);
-    expect(res.docs[2].slideLabel).toBe("B");
+    // No legacy role/slideIndex/slideLabel fields.
+    for (const d of res.docs) {
+      expect(d.role).toBeUndefined();
+      expect(d.slideIndex).toBeUndefined();
+      expect(d.slideLabel).toBeUndefined();
+    }
   });
 
-  it("returns manifest + other root docs (role=other) for video-kind projects", async () => {
+  it("returns manifest + sibling root docs as flat alphabetical entries (video-kind project)", async () => {
     writeProject(projectDir, makeVideoManifest());
     writeFileSync(join(projectDir, "scene-intro.atelier"), JSON.stringify(makeVideoManifest("scene-intro")));
     writeFileSync(join(projectDir, "scene-outro.atelier"), JSON.stringify(makeVideoManifest("scene-outro")));
@@ -629,12 +635,16 @@ describe("atelier_list_docs", () => {
     });
 
     expect(res._isError).toBe(false);
-    expect(res.docs.length).toBeGreaterThanOrEqual(3);
-    expect(res.docs[0].role).toBe("manifest");
-    const others = res.docs.filter((d: { role: string }) => d.role === "other");
-    expect(others).toHaveLength(2);
-    const otherPaths = others.map((d: { path: string }) => d.path).sort();
-    expect(otherPaths).toEqual(["scene-intro.atelier", "scene-outro.atelier"]);
+    expect(res.docs).toHaveLength(3);
+
+    // Flat alphabetical by project-relative path.
+    const paths = res.docs.map((d: { path: string }) => d.path);
+    expect(paths).toEqual(["project.atelier", "scene-intro.atelier", "scene-outro.atelier"]);
+    // All entries are video-kind.
+    for (const d of res.docs) {
+      expect(d.kind).toBe("video");
+      expect(d.role).toBeUndefined();
+    }
   });
 
   it("rejects an out-of-workspace projectDir", async () => {

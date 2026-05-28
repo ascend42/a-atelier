@@ -165,7 +165,7 @@ export {
 } from "./lib/doc-management.js";
 export {
   isValidDocName,
-  isManifestDoc,
+  // isManifestDoc retired with the manifest concept (v1.0.x flat-docs pivot)
   type DocKind,
   type CreateDocOptions,
   type DuplicateDocOptions,

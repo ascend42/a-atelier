@@ -6,7 +6,7 @@
 //
 //   - `createDoc` — scaffold a fresh kind:"video" / "image" / "carousel" doc
 //     at the project root, OR a slide under `slides/` that also gets a
-//     SlideRef appended to the carousel's `project.atelier` (cycle-safe via
+//     SlideRef appended to the carousel's host doc (cycle-safe via
 //     `composeCarouselProject`).
 //
 //   - `duplicateDoc` — copy an existing doc next to itself with a `-copy`
@@ -18,6 +18,11 @@
 //     workspace that pointed at it. RefVisual layers pointing at the deleted
 //     doc are NOT removed (the renderer tolerates missing refs) but are
 //     reported as dangling so the UI can surface them.
+//
+// Post-pivot (Wave 1): every .atelier doc is equal. There is no privileged
+// "project manifest"; project.atelier is just a doc that happens to share its
+// dir's basename. Cascade walks therefore inspect EVERY .atelier under each
+// project subdir (root + slides/), not just the historical project.atelier.
 //
 // Cascade resolution mirrors `#ref-cycle`'s dual-base pattern: slide srcs
 // may be either project-relative ("slides/foo.atelier") or workspace-relative
@@ -33,7 +38,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs";
-import { basename, dirname, extname, isAbsolute, join, resolve, sep } from "node:path";
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
 import type {
   AtelierDocument,
   Layer,
@@ -49,7 +54,6 @@ import {
   type DocKind,
   type DocListEntry,
   type DuplicateDocOptions,
-  isManifestDoc,
   isValidDocName,
 } from "./doc-management-types.js";
 import {
@@ -124,16 +128,18 @@ export async function createDoc(opts: CreateDocOptions): Promise<CreateDocResult
 
   let appendedSlideIndex: number | undefined;
   if (opts.asCarouselSlide && opts.carouselDocPath) {
-    // The carouselDocPath we accept is project-relative or absolute; we only
-    // use it to derive the host carousel's projectDir. composeCarouselProject
-    // operates on projectDir + slidePath directly.
+    // The carouselDocPath we accept is project-relative or absolute; we
+    // derive both the host carousel's projectDir AND its in-project docPath
+    // (post-pivot the host doc need not be project.atelier).
     const carouselAbs = isAbsolute(opts.carouselDocPath)
       ? opts.carouselDocPath
       : join(projectDir, opts.carouselDocPath);
     const carouselProjectDir = dirname(carouselAbs);
+    const carouselDocRel = relative(carouselProjectDir, carouselAbs);
     try {
       const composeOpts: Parameters<typeof composeCarouselProject>[0] = {
         projectDir: carouselProjectDir,
+        docPath: carouselDocRel,
         slidePath: chosenAbs,
       };
       if (opts.insertAt !== undefined) composeOpts.insertAt = opts.insertAt;
@@ -193,9 +199,6 @@ export async function duplicateDoc(opts: DuplicateDocOptions): Promise<DocDuplic
   if (!existsSync(sourceAbs)) {
     throw new Error("source doc not found");
   }
-  if (isManifestDoc(opts.sourceDocPath)) {
-    throw new Error("cannot duplicate the project manifest");
-  }
 
   const doc = readAtelierDoc(sourceAbs);
 
@@ -244,7 +247,9 @@ export async function duplicateDoc(opts: DuplicateDocOptions): Promise<DocDuplic
       throw new Error("appendSlideRef requires a slide source");
     }
 
-    // Find the source's index in the carousel manifest.
+    // Find the source's index in the carousel host doc (project.atelier in
+    // the duplicateDoc path — pre-pivot behavior preserved here; non-manifest
+    // hosts are out of scope for Unit B's duplicateDoc).
     const manifestPath = join(projectDir, "project.atelier");
     let sourceIndex = -1;
     if (existsSync(manifestPath)) {
@@ -269,6 +274,7 @@ export async function duplicateDoc(opts: DuplicateDocOptions): Promise<DocDuplic
     try {
       const composeOpts: Parameters<typeof composeCarouselProject>[0] = {
         projectDir,
+        docPath: "project.atelier",
         slidePath: chosenAbs,
       };
       if (sourceIndex >= 0) composeOpts.insertAt = sourceIndex + 1;
@@ -302,23 +308,21 @@ function sourceRelDir(relPath: string): string {
 /**
  * Delete a doc inside a project AND scrub any workspace-wide references:
  *
- *   1. Refuse the project manifest (use project-delete instead).
- *   2. Walk every sibling project subdir. For each carousel-kind project,
- *      scan `slides[]` for refs that resolve to the absolute path of the
- *      doc being deleted; splice those refs out, persist the updated
- *      manifest.
+ *   1. Walk every project subdir of the workspace. For each project, walk
+ *      its root + `slides/` for *.atelier files (mirroring listDocs' scope).
+ *   2. For each `.atelier` doc found: scan `slides[]` (if kind:carousel) for
+ *      refs that resolve to the absolute path of the doc being deleted;
+ *      splice those refs out, persist the updated doc.
  *   3. Same walk, but scan `layers[]` for RefVisual layers (`visual.type ==
  *      "ref"`) whose `src` resolves to the same absolute path. Collect
  *      these as `refLayersDangling` — do NOT remove them; the renderer
  *      tolerates missing refs and we want the studio to surface dangling
  *      refs as warnings rather than silently nuke them.
  *   4. Unlink the doc.
+ *
+ * Every .atelier is equal — there is no "project manifest" carve-out.
  */
 export function deleteDoc(opts: DeleteDocOptions): DocDeleteCascadeReport {
-  if (isManifestDoc(opts.docPath)) {
-    throw new Error("cannot delete the project manifest; use the project-delete flow instead");
-  }
-
   const workspaceAbs = resolve(opts.workspaceDir);
   const projectDir = join(workspaceAbs, opts.projectName);
   const docAbs = join(projectDir, opts.docPath);
@@ -330,7 +334,8 @@ export function deleteDoc(opts: DeleteDocOptions): DocDeleteCascadeReport {
   const slideRefsRemoved: Array<{ project: string; slideIndex: number }> = [];
   const refLayersDangling: Array<{ project: string; docPath: string; layerId: string }> = [];
 
-  // Walk workspace subdirs for sibling projects with project.atelier.
+  // Walk workspace subdirs for sibling projects (and the owning project too —
+  // self-refs are valid cascade targets).
   let entries: string[];
   try {
     entries = readdirSync(workspaceAbs);
@@ -347,62 +352,66 @@ export function deleteDoc(opts: DeleteDocOptions): DocDeleteCascadeReport {
       continue;
     }
     if (!st.isDirectory()) continue;
-    const otherManifest = join(otherProjectDir, "project.atelier");
-    if (!existsSync(otherManifest)) continue;
 
-    let otherDoc: AtelierDocument;
-    try {
-      otherDoc = readAtelierDoc(otherManifest);
-    } catch {
-      continue;
-    }
+    // Enumerate all .atelier docs in this project (root + slides/).
+    const projectDocs = enumerateProjectAtelierDocs(otherProjectDir);
 
-    // ── SlideRef scrub ─────────────────────────────────────────
-    let manifestMutated = false;
-    if (otherDoc.kind === "carousel" && Array.isArray(otherDoc.slides)) {
-      const slides = otherDoc.slides;
-      // First pass — collect PRE-removal indices of refs that match.
-      const matchIndices: number[] = [];
-      for (let i = 0; i < slides.length; i++) {
-        const ref = slides[i]!;
-        const resolved = resolveSlideRef(ref.src, otherProjectDir, workspaceAbs);
-        if (resolved === docAbs) {
-          matchIndices.push(i);
-          slideRefsRemoved.push({ project: entry, slideIndex: i });
+    for (const { absPath, relPath } of projectDocs) {
+      // Skip the doc being deleted — we'll unlink it at the end.
+      if (absPath === docAbs) continue;
+
+      let otherDoc: AtelierDocument;
+      try {
+        otherDoc = readAtelierDoc(absPath);
+      } catch {
+        continue;
+      }
+
+      // ── SlideRef scrub ─────────────────────────────────────────
+      let docMutated = false;
+      if (otherDoc.kind === "carousel" && Array.isArray(otherDoc.slides)) {
+        const slides = otherDoc.slides;
+        // First pass — collect PRE-removal indices of refs that match.
+        const matchIndices: number[] = [];
+        for (let i = 0; i < slides.length; i++) {
+          const ref = slides[i]!;
+          const resolved = resolveSlideRef(ref.src, otherProjectDir, workspaceAbs);
+          if (resolved === docAbs) {
+            matchIndices.push(i);
+            slideRefsRemoved.push({ project: entry, slideIndex: i });
+          }
+        }
+        if (matchIndices.length > 0) {
+          const matchSet = new Set(matchIndices);
+          const kept: SlideRef[] = slides.filter((_, i) => !matchSet.has(i));
+          otherDoc = { ...otherDoc, slides: kept };
+          docMutated = true;
         }
       }
-      if (matchIndices.length > 0) {
-        // Build kept[] preserving order; PRE-removal indices already in
-        // `slideRefsRemoved` so we just need the new array here.
-        const matchSet = new Set(matchIndices);
-        const kept: SlideRef[] = slides.filter((_, i) => !matchSet.has(i));
-        otherDoc = { ...otherDoc, slides: kept };
-        manifestMutated = true;
-      }
-    }
 
-    // ── RefVisual dangling scan (read-only) ────────────────────
-    if (Array.isArray(otherDoc.layers)) {
-      for (const layer of otherDoc.layers as Layer[]) {
-        const v = layer.visual as Layer["visual"];
-        if (v && (v as { type?: string }).type === "ref") {
-          const refVisual = v as RefVisual;
-          if (typeof refVisual.src === "string" && refVisual.src.length > 0) {
-            const resolved = resolveSlideRef(refVisual.src, otherProjectDir, workspaceAbs);
-            if (resolved === docAbs) {
-              refLayersDangling.push({
-                project: entry,
-                docPath: "project.atelier",
-                layerId: layer.id,
-              });
+      // ── RefVisual dangling scan (read-only) ────────────────────
+      if (Array.isArray(otherDoc.layers)) {
+        for (const layer of otherDoc.layers as Layer[]) {
+          const v = layer.visual as Layer["visual"];
+          if (v && (v as { type?: string }).type === "ref") {
+            const refVisual = v as RefVisual;
+            if (typeof refVisual.src === "string" && refVisual.src.length > 0) {
+              const resolved = resolveSlideRef(refVisual.src, otherProjectDir, workspaceAbs);
+              if (resolved === docAbs) {
+                refLayersDangling.push({
+                  project: entry,
+                  docPath: relPath,
+                  layerId: layer.id,
+                });
+              }
             }
           }
         }
       }
-    }
 
-    if (manifestMutated) {
-      writeFileSync(otherManifest, JSON.stringify(otherDoc, null, 2), "utf-8");
+      if (docMutated) {
+        writeFileSync(absPath, JSON.stringify(otherDoc, null, 2), "utf-8");
+      }
     }
   }
 
@@ -443,96 +452,84 @@ function resolveSlideRef(
 /**
  * Enumerate the .atelier docs belonging to a project for the studio sidebar.
  *
- * Order: manifest → slides (in carousel slides[] order) → other (alphabetical).
+ * Post-pivot: every .atelier is equal. Returns a flat alphabetical list of
+ * docs in the project's root + `slides/` subdir. The optional `kind` field
+ * is filled in when the doc parses and has a top-level `kind`; otherwise
+ * omitted.
  *
- * Slides that resolve outside the project (carousels can reference any
- * .atelier in the workspace) are valid in the manifest but are NOT surfaced
- * as project docs — the sidebar shows only docs that live in this project's
- * subtree.
+ * Scope is intentionally non-recursive (root + slides/ only) — per Arky's
+ * v1 plan, deeper trees are out of scope for the sidebar.
+ *
+ * Hardening: the `.atelier/` directory at project root (paradigm artifact
+ * sibling) matches `*.atelier` by name but is NOT a doc. We filter by
+ * `statSync().isFile()` AND skip basename `.atelier` defensively.
  */
 export function listDocs(projectDir: string): DocListEntry[] {
   const projectAbs = resolve(projectDir);
-  const manifestAbs = join(projectAbs, "project.atelier");
-  const out: DocListEntry[] = [];
+  const found = enumerateProjectAtelierDocs(projectAbs);
 
-  let manifest: AtelierDocument | undefined;
-  if (existsSync(manifestAbs)) {
-    try {
-      manifest = readAtelierDoc(manifestAbs);
-    } catch {
-      manifest = undefined;
-    }
-    const manifestEntry: DocListEntry = {
-      path: "project.atelier",
-      role: "manifest",
-    };
-    if (manifest?.kind !== undefined) {
-      manifestEntry.kind = manifest.kind;
-    }
-    out.push(manifestEntry);
-  }
-
-  // Track slides we surfaced — used to filter the "other" pass below so a
-  // doc that's both on disk AND referenced from slides[] surfaces once.
-  const surfacedSlideAbs = new Set<string>();
-
-  if (manifest?.kind === "carousel" && Array.isArray(manifest.slides)) {
-    const workspaceRoot = dirname(projectAbs);
-    for (let i = 0; i < manifest.slides.length; i++) {
-      const ref = manifest.slides[i]!;
-      const resolved = resolveSlideRef(ref.src, projectAbs, workspaceRoot);
-      if (resolved === undefined) continue;
-      // Containment check — only surface slides that live in THIS project.
-      if (!resolved.startsWith(projectAbs + sep)) continue;
-      // Compute project-relative path.
-      const rel = resolved.slice(projectAbs.length + 1).split(sep).join("/");
-      surfacedSlideAbs.add(resolved);
-
-      let slideKind: "video" | "image" | "carousel" | undefined;
+  const out: DocListEntry[] = found
+    .map(({ absPath, relPath }) => {
+      let kind: "video" | "image" | "carousel" | undefined;
       try {
-        const slideDoc = readAtelierDoc(resolved);
-        slideKind = slideDoc.kind;
+        const doc = readAtelierDoc(absPath);
+        kind = doc.kind;
       } catch {
-        slideKind = undefined;
+        kind = undefined;
       }
-      const entry: DocListEntry = {
-        path: rel,
-        role: "slide",
-        slideIndex: i,
-      };
-      if (slideKind !== undefined) entry.kind = slideKind;
-      if (ref.label !== undefined) entry.slideLabel = ref.label;
-      out.push(entry);
-    }
-  }
+      const entry: DocListEntry = { path: relPath };
+      if (kind !== undefined) entry.kind = kind;
+      return entry;
+    })
+    .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 
-  // "Other" pass — *.atelier at project root other than project.atelier and
-  // any docs we already surfaced as slides. Alphabetical.
-  let rootEntries: string[];
-  try {
-    rootEntries = readdirSync(projectAbs);
-  } catch {
-    rootEntries = [];
-  }
-  const others = rootEntries
-    .filter((e) => e.endsWith(".atelier") && e !== "project.atelier")
-    .sort();
-  for (const name of others) {
-    const abs = join(projectAbs, name);
-    if (surfacedSlideAbs.has(abs)) continue;
-    let kind: "video" | "image" | "carousel" | undefined;
+  return out;
+}
+
+// ─── shared walk ────────────────────────────────────────────────────
+
+interface FoundDoc {
+  absPath: string;
+  /** Project-relative, using forward slashes ("slides/foo.atelier"). */
+  relPath: string;
+}
+
+/**
+ * Enumerate every .atelier doc in a project's root + `slides/` subdir.
+ *
+ * Filters:
+ * - must end with `.atelier`
+ * - must NOT have basename exactly `.atelier` (defensive — paradigm dir)
+ * - must be a regular file (statSync().isFile()) — the `.atelier/` directory
+ *   at project root would otherwise match the suffix
+ *
+ * Used by both `listDocs` (sidebar) and `deleteDoc` (cascade scrub) so the
+ * two surfaces see the same set of docs.
+ */
+function enumerateProjectAtelierDocs(projectAbs: string): FoundDoc[] {
+  const out: FoundDoc[] = [];
+
+  for (const sub of ["", "slides"]) {
+    const dirAbs = sub ? join(projectAbs, sub) : projectAbs;
+    let entries: string[];
     try {
-      const otherDoc = readAtelierDoc(abs);
-      kind = otherDoc.kind;
+      entries = readdirSync(dirAbs);
     } catch {
-      kind = undefined;
+      continue;
     }
-    const entry: DocListEntry = {
-      path: name,
-      role: "other",
-    };
-    if (kind !== undefined) entry.kind = kind;
-    out.push(entry);
+    for (const name of entries) {
+      if (!name.endsWith(".atelier")) continue;
+      if (name === ".atelier") continue; // defense: paradigm dir basename
+      const abs = join(dirAbs, name);
+      try {
+        const st = statSync(abs);
+        if (!st.isFile()) continue;
+      } catch {
+        continue;
+      }
+      const relPath = sub ? `${sub}/${name}` : name;
+      out.push({ absPath: abs, relPath });
+    }
   }
 
   return out;
