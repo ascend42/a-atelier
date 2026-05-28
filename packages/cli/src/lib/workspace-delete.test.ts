@@ -246,6 +246,31 @@ describe("workspace-delete — project lifecycle (the corruption case)", () => {
     expect(existsSync(join(projDir, "fresh.atelier"))).toBe(true);
   });
 
+  // Regression: cascadeDeleteMedia previously required project.atelier to
+  // exist (same broken check as resolveProjectInWorkspace had). Post-pivot,
+  // projects can have .atelier/ metadata + media without project.atelier
+  // ever being scaffolded. Media-delete right-click was silently 404'ing
+  // with "invalid-project" — and the browser swallowed the error showing
+  // "Deleted <name>" in the status bar. Test the lib-level fix.
+  it("cascadeDeleteMedia works on a project without project.atelier (post-pivot)", async () => {
+    const { cascadeDeleteMedia } = await import("./workspace-delete.js");
+
+    await createProjectInWorkspace(wsDir, { name: "test1" });
+    const projDir = join(wsDir, "test1");
+    // Post-pivot — no project.atelier auto-created.
+    expect(existsSync(join(projDir, "project.atelier"))).toBe(false);
+
+    // Drop a media file in (mirrors what the ingest does on its first step).
+    const fs = await import("node:fs");
+    fs.mkdirSync(join(projDir, "media"), { recursive: true });
+    fs.writeFileSync(join(projDir, "media", "IMG_7346.MOV"), "fake bytes");
+
+    // Cascade-delete should succeed. Pre-fix it returned `kind: "invalid-project"`.
+    const outcome = cascadeDeleteMedia(wsDir, "test1", "IMG_7346.MOV");
+    expect(outcome.kind).toBe("deleted");
+    expect(existsSync(join(projDir, "media", "IMG_7346.MOV"))).toBe(false);
+  });
+
   // Regression: the user-reported "Failed to create doc: project not found:
   // test1" error after re-creating a project post-pivot. resolveProjectInWorkspace
   // used to require project.atelier; now it uses hasProjectMarker (legacy

@@ -42,6 +42,7 @@ import { extname, join, resolve, sep } from "node:path";
 import {
   ACTIVE_PROJECT_FILENAME,
   clearActiveProject,
+  hasProjectMarker,
   isValidProjectName,
   readActiveProject,
   readWorkspace,
@@ -203,7 +204,12 @@ export function cascadeDeleteMedia(
 
   const absWs = resolve(workspaceDir);
   const absProject = join(absWs, projectName);
-  if (!existsSync(join(absProject, "project.atelier"))) {
+  // Post-flat-docs-pivot: projects are identified by hasProjectMarker
+  // (project.atelier OR .atelier/ subdir), not strictly by project.atelier
+  // existence. Earlier check rejected freshly-created projects which had
+  // .atelier/ metadata but no manifest — meaning right-click Delete on
+  // media silently 404'd with "invalid-project". See ~no-manifest-doc.
+  if (!hasProjectMarker(absProject)) {
     return { kind: "invalid-project" };
   }
 

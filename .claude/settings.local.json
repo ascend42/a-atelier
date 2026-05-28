@@ -164,7 +164,8 @@
       "Bash(awk '/^export/' packages/cli/src/lib/workspace-delete.ts)",
       "Bash(awk -F'Tests' '{ print $2 }')",
       "Bash(awk '{ sum += $1 } END { print \"TOTAL:\", sum }')",
-      "Bash(awk '/export function hasProjectMarker/,/^}/' packages/cli/src/lib/workspace.ts)"
+      "Bash(awk '/export function hasProjectMarker/,/^}/' packages/cli/src/lib/workspace.ts)",
+      "Bash(awk '/^export function cascadeDeleteMedia/,/^}/' packages/cli/src/lib/workspace-delete.ts)"
     ]
   },
   "enableAllProjectMcpServers": true,

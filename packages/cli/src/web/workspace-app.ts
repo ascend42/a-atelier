@@ -1854,12 +1854,16 @@ export async function bootWorkspaceApp(): Promise<void> {
       const ok = await ConfirmDialog.prompt({
         title: `Delete "${entry.name}"?`,
         body: `This will remove the media file, its transcript (if any), its sidecar notes, ` +
-              `and any layers in project.atelier that reference it. This cannot be undone.`,
+              `and any layers in any .atelier doc that reference it. This cannot be undone.`,
         confirmLabel: "Delete",
       });
       if (!ok) return;
       try {
-        await fetch(`/api/project/${encodeURIComponent(projectName)}/media?file=${encodeURIComponent(entry.name)}`, { method: "DELETE" });
+        // Use deleteJson which throws on non-2xx — earlier raw fetch silently
+        // swallowed 4xx/5xx and falsely reported success in the status bar.
+        await deleteJson(
+          `/api/project/${encodeURIComponent(projectName)}/media?file=${encodeURIComponent(entry.name)}`,
+        );
         await sidebar.refresh();
         clearMain();
         statusBar.textContent = `Deleted ${entry.name}`;
@@ -1876,7 +1880,7 @@ export async function bootWorkspaceApp(): Promise<void> {
       });
       if (!ok) return;
       try {
-        await fetch(`/api/file?path=${encodeURIComponent(entry.path)}`, { method: "DELETE" });
+        await deleteJson(`/api/file?path=${encodeURIComponent(entry.path)}`);
         await sidebar.refresh();
         clearMain();
         statusBar.textContent = `Deleted ${entry.name}`;
@@ -1893,7 +1897,7 @@ export async function bootWorkspaceApp(): Promise<void> {
       });
       if (!ok) return;
       try {
-        await fetch(`/api/file?path=${encodeURIComponent(path)}`, { method: "DELETE" });
+        await deleteJson(`/api/file?path=${encodeURIComponent(path)}`);
         await sidebar.refresh();
         clearMain();
         statusBar.textContent = `Deleted ${label}`;
@@ -1911,7 +1915,7 @@ export async function bootWorkspaceApp(): Promise<void> {
       });
       if (!ok) return;
       try {
-        await fetch(`/api/project/${encodeURIComponent(name)}`, { method: "DELETE" });
+        await deleteJson(`/api/project/${encodeURIComponent(name)}`);
         if (activeProjectName === name) activeProjectName = null;
         await sidebar.refresh();
         clearMain();
@@ -2164,7 +2168,7 @@ export async function bootWorkspaceApp(): Promise<void> {
         });
         if (!ok) return;
         try {
-          await fetch(`/api/project/${encodeURIComponent(projName)}/media?file=${encodeURIComponent(entry.name)}`, { method: "DELETE" });
+          await deleteJson(`/api/project/${encodeURIComponent(projName)}/media?file=${encodeURIComponent(entry.name)}`);
           await sidebar.refresh();
           clearMain();
           statusBar.textContent = `Deleted ${entry.name}`;
