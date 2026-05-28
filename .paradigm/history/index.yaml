@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T18:56:22.392Z'
+generated: '2026-05-28T18:58:11.993Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -5236,6 +5236,45 @@ by_symbol:
     fragility: low
     recent:
       - *ref_70
+    contributors:
+      human:
+        - ascend
+      agent: []
+  'Symbols:':
+    symbol: 'Symbols:'
+    total_changes: 1
+    last_modified: '2026-05-28T18:58:10Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - id: h0110
+        ts: '2026-05-28T18:58:10Z'
+        type: implement
+        symbols:
+          - 'Symbols:'
+        author:
+          type: human
+          id: ascend
+        commit: 4575eedf0cd0f99f5975cb7096b27fcf6cce4dea
+        intent: feature
+        files:
+          - .paradigm/.purpose-paths
+          - .paradigm/aspect-graph.db
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/flow-index.json
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/manifest.consistency.json
+          - .paradigm/navigator.yaml
+          - .paradigm/personas/index.yaml
+          - .paradigm/scan-index.json
+          - .paradigm/session-breadcrumbs.json
+          - .paradigm/university/index.yaml
+          - packages/hyperframes-adapter/.purpose
+        description: 'chore(#hyperframes-adapter): register .purpose for the v2 adapter package'
     contributors:
       human:
         - ascend

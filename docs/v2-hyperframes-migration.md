@@ -1,313 +1,371 @@
-# Atelier v2.0 — Hyperframes Pivot Migration Plan
+# Atelier v2.0 — Brand Intelligence + Creative Direction Layer
 
 > **Status:** Active — `feat/v2-hyperframes-pivot` branch
 > **Decision:** [TD-2026-05-28-097](../.paradigm/) — companion lore `L-2026-05-28-ascend-184856-364`
-> **Trigger:** Owner directive after agent team's `creator/demo/exports/RENDER-AUDIO-ISSUE.md` made the case empirically.
+> **Sharpened scope:** owner clarification 2026-05-28 — Atelier v2 is the brand+asset+voice layer for agent-driven content production, with Hyperframes as the renderer
 
-## Why we're pivoting
+## What Atelier IS in v2
 
-Today (2026-05-28) the team shipped v1.0 export end-to-end in 13 commits. The agent team's diagnostic on `atelier render` exposed that even after a full day of work we have:
+> **Atelier is the brand intelligence + creative direction + asset library + voice knowledge layer for agent-driven content production. It feeds Hyperframes. It is not a renderer.**
 
-- A single-clip-MP4-only path
-- Multi-clip mixing → v1.1
-- State-level audio (`atelier_set_audio`) → v1.1
-- Time-warped clips → v1.1
-- GIF audio → format-impossible
-- WebM audio → v1.1
+The four pillars Atelier owns:
 
-[HeyGen Hyperframes](https://github.com/heygen-com/hyperframes) (v0.6.52 released the same day) ships all of that **plus** alpha channel (yuva420p WebM + ProRes 4444 MOV), HDR10/BT.2020, 24/30/60fps, distributed render via AWS Lambda — and is Apache 2.0, locally hostable, agent-first, with a first-class Node API (`@hyperframes/producer`).
+| Pillar | Owns |
+|---|---|
+| **Design direction** | The persistent editorial contract — voice, palette, typography, tone, visual style. The "what does this brand stand for + how does it look + how does it sound" knowledge that survives across every piece of content. Lives in DESIGN.md / SCRIPT.md / STORYBOARD.md plus the agent personas Quill (Showrunner) + Lux (Cinematographer) that author + maintain them. |
+| **Asset handling** | Ingest, transcribe, tag, organize. Media flows into a project's `media/` + gets sidecar metadata + transcripts + ref-rewrites on rename. The `atelier media` / `atelier transcribe` / media-notes / mind-map / ref-cycle surfaces. |
+| **Asset packs** | **(NEW first-class)** Folders on disk + Atelier-maintained knowledge overlay. NOT a packaged format. The folder is the truth; Atelier owns the layer that tells agents what's in the pack + when to use what + how to use it. Single-creator-multi-project scope for v2.0. |
+| **Brand voice knowledge** | DESIGN.md / SCRIPT.md / STORYBOARD.md as on-disk source of truth + a `.atelier-brand.yaml` overlay that captures the what/when/how that agents query. Same folder-as-truth pattern as packs. Paradigm lore captures the durable agent learning across sessions. |
 
-**The economics:** continuing to bend Atelier into a composition engine means competing with a 22k-star actively-developed framework on its core competency. Pivoting lets us double down on what's actually differentiated — agent-driven creative direction + brand consistency + asset orchestration.
+Everything else is delegated:
 
-## What Atelier v2.0 IS
+- **Composition format** → Hyperframes' HTML/CSS
+- **Timeline / playback** → Hyperframes' built-in
+- **Rendering** → `@hyperframes/producer`
+- **Frame-level editing UI** → Hyperframes' Studio
+- **Output formats** → Hyperframes (MP4 / WebM-alpha / ProRes / PNG-sequence)
 
-> **Atelier is the agent-driven creative-direction layer that feeds Hyperframes.**
+## The workspace = brand, project = series hierarchy
 
-- **Front-of-pipeline contract:** DESIGN.md / SCRIPT.md / STORYBOARD.md as the durable editorial brief, owned by agents (Quill / Lux / Iris)
-- **Workspace + mind-map:** the creator's multi-project asset library
-- **Recipes:** reusable style + technique presets that bind to slots via `SlotKind`
-- **Asset packs:** images, videos, audio, fonts organized for agent retrieval
-- **Agent personas:** Quill (Showrunner), Lux (Cinematographer), Iris (Composer) with persistent learning via Paradigm
-- **Ingest + transcribe pipeline:** drop a video → land in `media/` → whisper transcribe → ready for use
-- **Emitter:** translates the artifact triple + asset bindings into a **Hyperframes project** (HTML/CSS/JS + assets) that Hyperframes then renders deterministically
+A creator's setup:
 
-Atelier **does not** own composition format, timeline UI, renderer, encoder, or browser editor. Hyperframes does.
+```
+~/my-brand-workspace/                ← WORKSPACE (brand parent)
+├── workspace.atelier                ← config + registered pack pointers
+├── _brand/                          ← BRAND knowledge inherited by all projects
+│   ├── DESIGN.md                    ← brand palette, typography, treatment
+│   ├── SCRIPT.md                    ← voice exemplars, brand do/don't, tone
+│   ├── STORYBOARD.md                ← visual patterns the brand favors
+│   └── .atelier-brand.yaml          ← agent-readable what/when/how overlay
+├── _packs/                          ← workspace-level asset packs
+│   ├── core-logos/
+│   │   ├── primary.svg
+│   │   ├── monochrome.svg
+│   │   └── .atelier-pack.yaml
+│   ├── product-shoot-2026/
+│   │   ├── hero/
+│   │   ├── lifestyle/
+│   │   └── .atelier-pack.yaml
+│   └── transitions/
+├── projects/                        ← each = one output series
+│   ├── spring-launch/               ← PROJECT (inherits + overrides workspace brand)
+│   │   ├── DESIGN.md                ← project overrides ("hint of playfulness")
+│   │   ├── SCRIPT.md                ← this series' actual script
+│   │   ├── STORYBOARD.md            ← this series' shot list
+│   │   ├── media/                   ← raw recordings for this project
+│   │   ├── transcripts/             ← auto-generated
+│   │   ├── _packs/                  ← optional project-only packs
+│   │   └── hyperframes/             ← scaffolded outputs (one per variant)
+│   │       ├── teaser-15s/
+│   │       ├── trailer-30s/
+│   │       └── full-spot-60s/
+│   └── customer-stories/
+│       └── ...
+└── .paradigm/                       ← persistent agent learning + lore
+```
 
-## What Atelier v2.0 IS NOT (anymore)
+External packs (any folder anywhere on disk — Dropbox, iCloud, local) register via:
 
-- ❌ A custom canvas/SVG/Lottie renderer
-- ❌ A browser-based timeline editor
-- ❌ A `.atelier` YAML document format with states/deltas/layers
-- ❌ A WebCodecs / mp4-muxer / Mediabunny export pipeline
-- ❌ An ffmpeg overlay pipeline (`atelier render`)
-- ❌ A node-canvas dependency
+```sh
+atelier pack register ~/Dropbox/Shared/CompanyBrand
+```
+
+This writes a pointer into `workspace.atelier` and indexes the folder. No copy; the original location stays canonical.
+
+## Cascade rules — workspace brand → project brand
+
+When agents work on `projects/spring-launch/`, the **effective brand** they read is:
+
+| Layer | Source | Role |
+|---|---|---|
+| Base | `_brand/*` (workspace) | Source of truth — the brand identity |
+| Overlay | `projects/spring-launch/*.md` (project) | Additive/override for THIS output series |
+| Result | merged in-memory | What Quill/Lux/Iris plan against |
+
+Merge semantics:
+
+- **String fields** (voice descriptor, tone, register) → project overrides workspace
+- **List fields** (palette swatches, voice exemplars, brand do/don't, technique whitelist) → project extends workspace (additive)
+- **Map bindings** (when/how to use what) → project overrides at the key, leaves sibling keys intact
+
+Asset packs follow the same cascade: workspace-registered packs are visible to every project; projects can register additional packs they uniquely need.
+
+## The `.atelier-pack.yaml` sidecar (sketched)
+
+A pack is a folder. The sidecar tells Atelier (and through Atelier, the agents) what's in it and how to use it:
+
+```yaml
+name: swiss-grid
+owner: ascend
+vibe: editorial, clinical, generous whitespace, primary palette restraint
+
+# Categorization of what's in the folder. Atelier walks the folder to find
+# the actual files; this block describes the categories + their intent.
+categories:
+  logos:
+    when: full-screen reveals, watermarks (subtle bottom-right)
+    when_not: inline with body copy, on busy backgrounds without scrim
+    treatment: monochrome only on photographic backgrounds; full color on solid paper
+  grids:
+    when: 2-up or 3-up comparison shots, before/after, multi-product hero
+    when_not: single-subject focus, motion-heavy shots
+    primary_file: 12-col-1080.svg
+  transitions:
+    when: scene change between distinct beats; never within a beat
+    duration_s: 0.4
+
+# Cross-cutting rules that apply to combinations within this pack.
+restrictions:
+  - never combine logos/ with grids/ in the same frame
+  - never apply tint() to product photos in this pack
+```
+
+## The `.atelier-brand.yaml` sidecar (sketched)
+
+A brand has DESIGN/SCRIPT/STORYBOARD as on-disk markdown. The sidecar overlay captures structured knowledge agents query directly:
+
+```yaml
+name: my-company
+voice:
+  register: clinical-editorial
+  tone: confident-not-cocky
+  exemplars:
+    - "We measured this. Three months of founder velocity."
+    - "Same engine. Different scale."
+  do:
+    - lead with the metric, not the brag
+    - end on the actionable beat, not the inspirational one
+  dont:
+    - exclamation marks
+    - hype adjectives ("amazing", "incredible", "game-changing")
+visual:
+  primary_palette: [paper, ink, accent]
+  typography:
+    display: DM Sans
+    body: Inter
+  treatment:
+    photos: high-key, generous negative space
+    motion: gentle ease-out, never bounce
+techniques_whitelist:
+  - swiss-grid
+  - fade-under-vo
+  - ken-burns-restrained
+techniques_blacklist:
+  - glitch
+  - kinetic-typography-heavy
+```
+
+## The creator workflow this enables
+
+```sh
+cd ~/my-brand-workspace
+claude       # Claude Code session in the workspace folder
+```
+
+Then in chat:
+
+- **"@quill draft a 15s teaser script for spring-launch"** → reads workspace `_brand/SCRIPT.md` + writes `projects/spring-launch/SCRIPT.md` inheriting the brand voice
+- **"@lux storyboard it"** → reads merged brand + script, queries registered asset packs for matching footage, writes `projects/spring-launch/STORYBOARD.md`
+- Creator drops `recording-001.mov` into `projects/spring-launch/media/` — Atelier auto-transcribes (existing pipeline)
+- **"@iris compose the teaser-15s variant"** → scaffolds `projects/spring-launch/hyperframes/teaser-15s/` via `@a-company/atelier-hyperframes-adapter`, reads merged brand + project artifacts + selected asset paths
+- **"@iris preview"** → launches Hyperframes dev server against the scaffold for live agent iteration
+- **"@iris render"** → final MP4 via `@hyperframes/producer`
+
+Multiple variants per project (teaser-15s / trailer-30s / full-spot-60s) all share the same project-level brand overlay. Same composition logic, different durations / variant-specific overrides.
+
+The Claude Code session never leaves the workspace folder. Agents read everything fresh per task.
 
 ---
 
-## Inventory — what survives, what changes, what dies
+## v2 CLI surface
+
+| Verb | What it does | Replaces v1 |
+|---|---|---|
+| `atelier workspace init` | Scaffold a workspace with `_brand/` + `_packs/` + `projects/` + `workspace.atelier` | parts of `atelier studio --new` |
+| `atelier brand init` | Scaffold workspace's `_brand/` artifacts (DESIGN/SCRIPT/STORYBOARD templates + `.atelier-brand.yaml`) | (new) |
+| `atelier pack register <dir>` | Point at any folder, walk it, write `.atelier-pack.yaml` stub, register in workspace | (new) |
+| `atelier pack scan` | Re-walk registered packs, refresh the index (after creator drops files in) | (new) |
+| `atelier project new <name>` | Create a project inheriting workspace brand (project-level DESIGN/SCRIPT/STORYBOARD scaffolded as overrides) | `atelier init` (renamed + reshaped) |
+| `atelier media add <file>` | Drop a media file into the current project's `media/`, auto-transcribe | `atelier media` (existing) |
+| `atelier compose <project> [<variant>]` | Agent-driven composition: emit a Hyperframes scaffold from artifacts + asset bindings | (new — what `atelier render` becomes when scoped to scaffolding only) |
+| `atelier preview <project> [<variant>]` | Launch Hyperframes dev server against a scaffolded variant for live iteration | replaces `atelier studio` |
+| `atelier render <project> [<variant>]` | Final MP4 via `@hyperframes/producer` | replaces v1 `atelier render` |
+| `atelier brand show [<project>]` | Print the effective merged brand for a project (debugging the cascade) | (new) |
+| `atelier pack list` | Show all registered packs + categories + counts | (new) |
+| `atelier artifacts validate` / `scaffold` | Pure artifact tooling (preserved from v1) | (existing) |
+| `atelier transcribe` / `transcript` | Whisper pipeline + transcript editor (preserved from v1) | (existing) |
+
+## v2 MCP tool surface
+
+Quill/Lux/Iris get a new tool vocabulary aligned with the brand+pack+compose model:
+
+**Brand + voice (Quill primarily):**
+- `atelier_get_effective_brand({ projectName })` → returns merged workspace + project brand (DESIGN + voice + visual + techniques)
+- `atelier_update_brand({ projectName?, patch })` → write changes to brand artifacts; auto-routes to workspace or project based on scope
+- `atelier_get_voice_exemplars({ projectName?, tag? })` → retrieve example phrasings for tone-matching
+
+**Asset packs (Lux primarily):**
+- `atelier_pack_list({ projectName? })` → all packs visible to a project (workspace + project)
+- `atelier_pack_query({ category, criteria? })` → "give me logos appropriate for full-screen reveals in brand X" → returns absolute file paths + usage notes
+- `atelier_pack_register({ dir, name? })` → register a new pack
+- `atelier_pack_scan({ packName? })` → re-walk + refresh index
+
+**Composition (Iris primarily):**
+- `atelier_scaffold_hyperframes({ projectName, variantName, sceneSpec })` → call into `@a-company/atelier-hyperframes-adapter` to materialize a Hyperframes project from artifact overlays + asset bindings
+- `atelier_preview({ projectName, variantName })` → start Hyperframes dev server
+- `atelier_render({ projectName, variantName, format? })` → final render via `@hyperframes/producer`
+
+**Cross-cutting:**
+- `atelier_workspace_info()` → workspace + projects + packs listing
+- `atelier_project_info({ projectName })` → single project state + media + transcripts + variants
+
+Preserved from v1 (no rework needed):
+- All artifact MCP surfaces (already format-agnostic)
+- Transcribe + transcript editing surfaces
+- Mind-map + asset-touching MCP tools
+- Media notes + ref-cycle
+
+Deprecated from v1:
+- Layer-mutation surfaces (`atelier_add_layer` / `atelier_add_delta` / `atelier_set_*` for layer properties / etc.) — these spoke in `.atelier` doc primitives that don't exist in v2
+
+---
+
+## Inventory (carried from sharpened plan)
 
 ### (A) KEEP — survives the pivot intact (~7k LOC)
 
-| Area | Path | LOC | Why |
-|---|---|---|---|
-| Artifact schemas | `packages/schema/src/artifacts/` | ~1.0k | DESIGN/SCRIPT/STORYBOARD Zod schemas + SlotKind + parser + validator. Format-agnostic. |
-| Artifact CLI | `packages/cli/src/commands/artifacts.ts` + `lib/artifact-project.ts` + `lib/artifact-templates.ts` | ~735 | `atelier artifacts validate / scaffold`. Pure artifact tooling. |
-| Agent personas | `.claude/agents/atelier-{quill,lux,iris}.md` + `packages/cli/src/lib/atelier-agent-templates.ts` | ~503 | Roles are renderer-agnostic. Only MCP tool allowlists retarget. |
-| Workspace | `creator/workspace.atelier` + `packages/cli/src/lib/workspace*.ts` + `learning-mode.ts` | ~1.7k | Project-inside-Workspace concept is independent of rendering. |
-| `atelier init` | `packages/cli/src/commands/init.ts` | 633 | Scaffolds Project (artifact triple + mind-map + project file). Output target changes; scaffold logic stays. |
-| Mind-map / assets | `packages/mcp/src/tools/mind-map.ts` + `packages/core/src/document.ts` (mind-map slice) | ~267 | Asset registry. Nothing rendering-specific. |
-| Recipes | `packages/cli/src/lib/recipe.ts` + `packages/mcp/src/tools/recipes.ts` + `packages/cli/src/commands/recipe.ts` + `packages/core/src/recipe.ts` + `packages/schema/src/recipe.ts` | ~1k | Slot-binding model is renderer-agnostic. Recipe bodies retarget. |
-| Transcribe | `packages/cli/src/commands/transcribe.ts` + `lib/whisper.ts` + `lib/transcribe-orchestrator.ts` | ~895 | Decoupled from doc format. |
-| Transcript editor | `packages/cli/src/commands/transcript.ts` + `lib/transcript-model.ts` | ~741 | Pure derivation. JSON-in/JSON-out. |
-| Silence detect | `packages/cli/src/lib/silence-detect.ts` | 144 | Pure analysis. |
-| Media notes | `packages/cli/src/lib/media-notes.ts` + `packages/mcp/src/tools/media-notes.ts` + `effective-transcript.ts` | ~749 | `.notes.md` sidecar convention. Pure metadata. |
-| MCP asset surface | `packages/mcp/src/tools/{assets,refs,rename-media,templates}.ts` + `import-images.ts` (mostly) | ~603 | Read-only or asset-management; no doc-mutation. |
-| MCP server skeleton | `packages/mcp/src/{index,store,bridge-protocol,transports}.ts` | — | Only tool registrations change. |
-| Paradigm integration | `packages/cli/src/lib/paradigm-augment.ts` + `.paradigm/` + `portal.yaml` | ~687 + config | Renderer-agnostic. |
-| Math primitives | `packages/math/` | 487 | Pure functions. Useful regardless of pipeline. |
-| General types | Selective `packages/types/` (color, asset, general) | ~200 | Reusable subset. |
-| CLI infrastructure | `packages/cli/src/cli.ts` + `index.ts` + `commands/{info,lint,validate}.ts` | ~500 | Shell. |
-| Reconstruct | `packages/cli/src/commands/reconstruct.ts` | 242 | Reconstruct project from existing assets. |
+Same as before. Highlights for the new framing:
 
-### (B) ADAPT — idea survives, output target changes (~3.5k LOC)
+- **Artifact schemas** (`packages/schema/src/artifacts/`) — DESIGN/SCRIPT/STORYBOARD become the brand contract
+- **Agent personas** (Quill/Lux/Iris) — exactly the brand intelligence engine the v2 vision needs
+- **Workspace + mind-map + recipes** — extends to be brand-aware
+- **Paradigm integration** — durable agent learning across sessions (key to brand voice retention)
+- **Transcribe + ingest + media notes** — asset prep stays
+- **MCP server skeleton** — only tool registrations change
 
-| Area | Path | LOC | Adaptation needed |
-|---|---|---|---|
-| Media-bin + ingest | `packages/cli/src/commands/media.ts` + `lib/ingest-dispatch.ts` + `ingest-bin-types.ts` | ~694 | "Drop file → media/ + transcribe + sidecar notes" stays. Downstream `composeVideoProject` hop is replaced by Hyperframes scaffolder. |
-| Caption builder | `packages/cli/src/lib/caption-builder.ts` + `commands/captions.ts` | 255 | Word-timing → caption-cards stays. Emits Hyperframes overlay HTML (`data-start` / `data-duration`) instead of Atelier text layers + opacity deltas. |
-| Timeline ops | `packages/cli/src/lib/cut-model.ts` + `lib/timeline-ops.ts` + `packages/mcp/src/lib/timeline-ops.ts` | ~570 | Cut/trim/splice data model survives. Sinks at Hyperframes timeline format. |
-| Trim CLI | `packages/cli/src/commands/trim.ts` | 244 | Same. |
-| Technique library | `packages/schema/src/artifacts/technique.ts` + technique catalog | 88 + catalog | Named-technique concept (ken-burns, split-reveal, fade-under-vo) survives. Each entry's body re-expressed as Hyperframes CSS/timeline snippets. |
-| Clip-level MCP tools | `packages/mcp/src/tools/clips.ts` | 538 | Add/cut/reorder concepts map cleanly to Hyperframes scenes. |
-| Overlay MCP tools | `packages/mcp/src/tools/overlays.ts` | 189 | Overlay placement maps to Hyperframes overlay constructs. |
-| Variables MCP | `packages/mcp/src/tools/variables.ts` + `commands/variables.ts` | 212 | Design variables map to Hyperframes CSS variables. |
-| Interactions MCP | `packages/mcp/src/tools/interactions.ts` | 164 | Concept survives, target changes. |
-| Rename-media + ref-cycle | `packages/cli/src/lib/rename-media.ts` + `packages/mcp/src/tools/rename-media.ts` + `ref-cycle.ts` | ~702 | Reference-graph rewriting on asset rename. Now spans Hyperframes asset refs. |
+### (B) ADAPT (~3.5k LOC) — emit Hyperframes, query brand cascade
 
-### (C) DEPRECATE — kill entirely (~28k LOC)
+- **caption-builder** → emits Hyperframes overlay HTML instead of Atelier layer YAML
+- **timeline-ops** → operates on Hyperframes timeline
+- **technique-library** → re-expressed as Hyperframes CSS+animation snippets, parameterized by brand bindings
+- **mind-map** → extends to support multi-pack registration + per-pack categorization
+- **recipes** → bodies emit Hyperframes constructs; binding model survives
+- **rename-media + ref-cycle** → spans Hyperframes assets
 
-**Custom render/composition packages (~9.7k LOC):**
+### (C) DEPRECATE (~28k LOC) — kill entirely
 
-- `packages/canvas/` (1310) — Canvas 2D `renderFrame`. Hyperframes replaces.
-- `packages/studio/` (6261) — Browser editor with canvas-panel, layer-panel, property-panel, yaml-panel, history, player, export-dialog. Hyperframes is the editor.
-- `packages/svg/` (705) — SVG renderer.
-- `packages/lottie/` (878) — Lottie exporter.
-- `packages/video/` (291) — `element-provider.ts` + `webcodecs-provider.ts` + `ffmpeg-encoder.ts`.
-- `packages/react/` (287) — React `<Animation>` component for `.atelier` docs.
+Same as before. Concentrated in `packages/canvas`, `packages/studio`, `packages/svg`, `packages/lottie`, `packages/video`, `packages/react`, most of `packages/core`/`schema`/`types` (the `.atelier` doc model), `atelier studio` CLI verb, `atelier render` CLI verb, layer-mutation MCP tools, `apps/playground`, `apps/showcase`.
 
-**Studio web app + inline canvas (~7.7k LOC):**
+### (D) NEW WORK (~5-8k LOC — revised upward for the brand+pack surface)
 
-- `packages/cli/src/web/{inline-app,workspace-app,timeline-view,timeline-state-types}.ts` (~4.4k)
-- `packages/cli/src/commands/studio.ts` (3320) — `atelier studio` CLI verb (server, HTTP endpoints, WebSocket bridge)
-- `apps/playground/` + `apps/showcase/` — demo apps
+1. **`packages/hyperframes-adapter/`** (started) — scaffolder + producer-runner. Already builds clean (~250 LOC). Needs caption emitter from real transcript shape, brand merge, technique bindings.
 
-**Render CLI verbs + helpers (~3k LOC):**
+2. **`packages/atelier-brand/`** (new) — workspace `_brand/` + project artifact loader, cascade merge, `.atelier-brand.yaml` parser
+   - `load.ts` — read DESIGN.md + SCRIPT.md + STORYBOARD.md + `.atelier-brand.yaml`
+   - `merge.ts` — cascade workspace → project per the rules table
+   - `query.ts` — `getEffectiveBrand(projectName)` API
 
-- `packages/cli/src/commands/render.ts` (140) + `render-pipeline.ts` (391) — `atelier render` (CLI ffmpeg overlay path, fixed today)
-- `packages/cli/src/commands/{still,export-image,export-svg,export-lottie}.ts` (~394)
-- `packages/cli/src/commands/carousel.ts` (277)
-- `packages/cli/src/lib/{render-image,compose-video-project,compose-carousel-project,compose-image-project,video-project,media-project}.ts` (~1.4k)
-- `packages/studio/src/export/` (`video-exporter.ts` + `gif-encoder.ts` + `export-dialog.ts`, ~1376) — built today
+3. **`packages/atelier-packs/`** (new) — folder-as-truth asset pack management
+   - `register.ts` — walk a folder, scaffold `.atelier-pack.yaml`, write workspace pointer
+   - `scan.ts` — re-walk, refresh index, detect new/removed files
+   - `query.ts` — `queryPack({ category, criteria })` returns absolute paths + usage rules
+   - `cascade.ts` — workspace packs + project packs merge
 
-**`.atelier` doc format (~4.2k LOC):**
+4. **New CLI verbs** (`packages/cli/src/commands/`):
+   - `workspace.ts` — `init`
+   - `brand.ts` — `init` / `show`
+   - `pack.ts` — `register` / `scan` / `list`
+   - `project.ts` — `new`
+   - `compose.ts` — agent-driven scaffold
+   - `preview.ts` — Hyperframes dev server
+   - `render.ts` — final render (REPLACES v1 render)
 
-- `packages/core/src/` minus general helpers (1591) — `delta.ts`, `state.ts`, `layer.ts`, `shape.ts`, `shadow.ts`, `interaction.ts`, `timeline.ts`, `slides.ts`, `coordinates.ts`, `units.ts`, `parse.ts`, `validate.ts`, `easing.ts` + subdirs (resolver/, state/, expressions/, templates/, presets/, validation/, builder/, audio/)
-- `packages/schema/src/` non-artifact files (~1.1k)
-- `packages/types/` non-general types (~942)
-- `examples/*.atelier` (12 files)
-- `creator/demo/vid.atelier` (regenerates via new pipeline)
+5. **New MCP tool surface** (`packages/mcp/src/tools/`):
+   - `brand.ts` — `atelier_get_effective_brand` / `atelier_update_brand` / `atelier_get_voice_exemplars`
+   - `packs.ts` — `atelier_pack_list` / `atelier_pack_query` / `atelier_pack_register` / `atelier_pack_scan`
+   - `compose.ts` — `atelier_scaffold_hyperframes` / `atelier_preview` / `atelier_render`
+   - `workspace-v2.ts` — `atelier_workspace_info` / `atelier_project_info`
 
-**MCP layer-mutation tools (~2.5k LOC):**
+6. **Agent retarget** — update `.claude/agents/atelier-{quill,lux,iris}.md` + `.paradigm/personas/` for the new tool vocabulary. Each persona description sharpens for their pillar (Quill=brand voice; Lux=asset packs + visual; Iris=composition driver).
 
-- `packages/mcp/src/tools/{layers,layer-effects,states,state-config,deltas,shapes,docs,document,presets,preview,export,performance}.ts`
-- `packages/mcp/src/lib/doc-management.ts` (536) + `doc-management-types.ts` (101)
-- `packages/cli/src/lib/doc-management.ts` + `studio-save-coordinator.ts`
+7. **`atelier workspace init` template** — scaffolds the full directory hierarchy with `_brand/` + `_packs/` + `projects/` empty + a starter `.atelier-brand.yaml`.
 
-**Docs targeted at deprecated stack:**
-
-- `docs/format-spec.md`, `rendering-pipeline.md`, `state-machine-guide.md`, `animation-audit.md`
-
-### (D) NEW WORK — what the pivot creates (~3-5k LOC)
-
-1. **`packages/hyperframes-adapter/`** (new package) — owns all Hyperframes integration
-   - `scaffolder.ts` — creates Hyperframes project skeleton from `creator/<project>/`
-   - `design-to-css.ts` — DesignArtifact → `:root { --color-x: ...; }`
-   - `storyboard-to-html.ts` — StoryboardArtifact + bindings → `index.html` timeline
-   - `technique-emitters/` — per-technique HTML/CSS generators (~15 entries)
-   - `asset-injector.ts` — copies/symlinks `media/` → Hyperframes `assets/`
-   - `caption-emitter.ts` — replaces caption-builder's sink
-   - `producer-runner.ts` — wraps `@hyperframes/producer` `executeRenderJob` with progress
-   - `watcher.ts` — file-watcher: artifacts change → re-scaffold + signal Hyperframes hot-reload
-
-2. **`atelier render-v2` CLI verb** — eventually graduates to `atelier render`. Drives the scaffolder + producer.
-
-3. **`atelier preview` CLI verb** — launches Hyperframes' dev server in the scaffolded project. Replaces `atelier studio`.
-
-4. **New MCP tools** — `atelier_add_scene`, `atelier_set_overlay`, `atelier_set_css_var`, `atelier_set_animation_timing`. Replace `atelier_add_layer` / `atelier_add_delta` / etc.
-
-5. **Skill / agent retarget** — update `.claude/agents/atelier-*.md` and personas in `.paradigm/personas/` for the new MCP vocabulary. Optionally install Hyperframes' own `npx hyperframes skill add` for foundational Hyperframes literacy.
-
-6. **New examples** — replace `examples/*.atelier` with Hyperframes project examples committed to `examples/v2/`.
-
-7. **v2 docs** — update README, write `docs/v2-architecture.md`, archive `docs/v1-*.md`.
+8. **Documentation** — rewrite README + new `docs/v2-architecture.md` + `docs/brand-cascade.md` + `docs/asset-packs.md`. Archive v1 docs.
 
 ---
 
-## Hyperframes API contract
+## Phase timeline (revised)
 
-Source of truth: [`packages/producer` README](https://github.com/heygen-com/hyperframes/tree/main/packages/producer).
-
-```ts
-import { createRenderJob, executeRenderJob } from '@hyperframes/producer';
-
-const job = createRenderJob({
-  inputPath: '/abs/path/to/hyperframes-project',  // directory with index.html + assets
-  outputPath: '/abs/path/to/output.mp4',
-  width: 1080,
-  height: 1920,
-  fps: 30,
-  format: 'mp4',           // 'mp4' | 'webm' | 'mov' | 'png-sequence'
-  quality: 'high',         // 'draft' | 'standard' | 'high'
-  // codecs: 'h264' (default) | 'h265' for MP4; 'vp9' for WebM; 'prores' for MOV
-});
-
-await executeRenderJob(job, (progress) => {
-  // { frame, totalFrames, percent } shape (approx)
-});
-```
-
-**Hyperframes project structure** (what our scaffolder produces):
-
-```
-project/
-├── meta.json              # { name, id, createdAt }
-├── index.html             # root composition
-├── compositions/          # sub-compositions, loaded via data-composition-src
-│   ├── intro.html
-│   └── outro.html
-└── assets/
-    ├── video.mp4
-    ├── narration.wav
-    └── overlay.png
-```
-
-**HTML data-attribute timing model:**
-
-```html
-<video data-start="0" data-duration="7.85" data-track-index="0" src="assets/video.mp4"></video>
-<audio data-start="0" data-duration="7.85" data-track-index="1" data-volume="1.0" src="assets/audio.aac"></audio>
-<div class="caption" data-start="0.0" data-duration="0.4">Just</div>
-<div class="caption" data-start="1.03" data-duration="1.9">recording a quick video with</div>
-```
-
-**Animation registration** (for ken-burns / fade / etc):
-
-```html
-<script>
-  window.__timelines = window.__timelines || [];
-  window.__timelines.push({
-    id: 'ken-burns-1',
-    duration: 7.85,
-    apply: (t) => { /* CSS transforms based on t in [0,1] */ }
-  });
-</script>
-```
-
----
-
-## Phase timeline
-
-### Phase 0 — Spike (this session)
+### Phase 0 — Foundation + spike ✅ DONE
 
 - ✅ Decision recorded as `TD-2026-05-28-097`
 - ✅ Branch `feat/v2-hyperframes-pivot` created
-- ✅ Migration plan written (this doc)
-- ☐ `@hyperframes/producer` installed in new `packages/hyperframes-adapter`
-- ☐ Minimum scaffolder: DESIGN → CSS-vars + STORYBOARD → index.html with video + captions
-- ☐ End-to-end render of `creator/demo/vid.atelier` through Hyperframes
-- ☐ Compare output against today's `animation (2).mp4` for parity
+- ✅ Migration plan written (this doc — superseded by sharpened v2)
+- ✅ `@hyperframes/producer` installed in `packages/hyperframes-adapter`
+- ✅ Minimum scaffolder built
+- ✅ End-to-end spike: `creator/demo/vid.atelier` → Hyperframes → MP4 with video + audio + captions
+- ✅ Owner-verified pivot direction
 
-**Spike acceptance:** produces a playable MP4 with video + captions + audio at 1080×1920 in <30s runtime. If yes → Phase 1.
+### Phase 1 — Brand + packs + cascade (next)
 
-### Phase 1 — Parallel paths (1-2 weeks)
+- ☐ `packages/atelier-brand/` — load + merge + query
+- ☐ `packages/atelier-packs/` — register + scan + query
+- ☐ CLI verbs: `workspace init` / `brand init` / `brand show` / `pack register` / `pack scan` / `pack list` / `project new`
+- ☐ MCP brand + pack surfaces
+- ☐ Update agent personas + `.claude/agents/` for the new tool vocabulary
+- ☐ Workspace template (`_brand/` + `_packs/` + `projects/`)
+- ☐ One real workspace + brand + pack registered + a project created + cascade verified via `atelier brand show`
 
-- ☐ `atelier render-v2` CLI verb wired (uses spike pipeline end-to-end)
-- ☐ All technique-library entries re-emitted as Hyperframes CSS snippets
-- ☐ Caption-builder ported to emit Hyperframes overlay HTML
-- ☐ Timeline-ops adapted to operate on Hyperframes timeline format
-- ☐ Mind-map → Hyperframes asset injector working
-- ☐ Recipes retargeted: each recipe body emits Hyperframes constructs
-- ☐ Iris's MCP tools retargeted (atelier_add_scene + atelier_set_overlay + atelier_set_css_var)
-- ☐ Both v1 (`atelier render`) and v2 (`atelier render-v2`) keep working
+**Phase 1 acceptance:** A creator can `atelier workspace init my-brand`, register one pack, create one project, ask Quill in Claude Code to draft a script that inherits brand voice. No render yet.
 
-**Phase 1 acceptance:** agent team can author a full project end-to-end through the v2 path. Output parity with v1 confirmed across at least 3 distinct demo projects.
+### Phase 2 — Composition + render (after Phase 1)
 
-### Phase 2 — Deprecate v1 (1 week)
+- ☐ `atelier compose` CLI + MCP — agent scaffolds Hyperframes from artifacts + assets
+- ☐ Caption-builder adapted to emit Hyperframes overlay HTML
+- ☐ Timeline-ops adapted to Hyperframes timeline format
+- ☐ Technique library re-emitted as Hyperframes CSS snippets
+- ☐ `atelier preview` — Hyperframes dev server
+- ☐ `atelier render` — `@hyperframes/producer` driver
+- ☐ Iris's MCP tools wired
 
-- ☐ `atelier render-v2` graduates to `atelier render` (v1 → `atelier render-legacy` for one release, then deleted)
-- ☐ `atelier preview` replaces `atelier studio` (drives Hyperframes dev server)
+**Phase 2 acceptance:** Same creator from Phase 1 can ask Iris "compose + render" → gets an MP4 deliverable. Compare output parity with the spike.
+
+### Phase 3 — Deprecate v1 (after Phase 2)
+
 - ☐ Delete `packages/canvas`, `packages/studio`, `packages/svg`, `packages/lottie`, `packages/video`, `packages/react`
 - ☐ Delete most of `packages/core`, `packages/schema` non-artifact files, `packages/types` non-general
-- ☐ Delete `packages/cli/src/web/*`, `packages/cli/src/commands/{studio,still,export-image,export-svg,export-lottie,carousel}.ts`
-- ☐ Delete `packages/cli/src/lib/{render-image,compose-*,video-project,media-project,doc-management}.ts`
-- ☐ Delete `packages/mcp/src/tools/{layers,layer-effects,states,state-config,deltas,shapes,docs,document,presets,preview,export,performance}.ts`
-- ☐ Delete `examples/*.atelier` + `apps/playground` + `apps/showcase`
-- ☐ Delete `docs/{format-spec,rendering-pipeline,state-machine-guide,animation-audit}.md`
-- ☐ Bump version to `2.0.0` across all surviving packages
-- ☐ Update README, CHANGELOG, agent docs
+- ☐ Delete `packages/cli/src/web/*`, deprecated CLI verbs, deprecated MCP tools
+- ☐ Delete `apps/playground`, `apps/showcase`, `examples/*.atelier`
+- ☐ Bump to `2.0.0` across surviving packages
+- ☐ CHANGELOG + README rewrite
 
-**Phase 2 acceptance:** all 1212 tests green (or rewritten for new surface). Branch ready for merge to main as v2.0.
+**Phase 3 acceptance:** All remaining tests green. Branch ready for merge to main as v2.0.
 
 ---
 
-## Risk register
+## Risk register (revised)
 
 | Risk | Mitigation |
 |---|---|
-| Hyperframes is pre-1.0 (v0.6.52). API churn possible. | Pin version in package.json. Integrate via Node API (more stable than CLI flags). Keep `packages/hyperframes-adapter` as the only consumer so swaps are cheap. |
-| Hyperframes brand system (`Design.HTML`) is "in development". | Own the DESIGN.md → CSS-vars layer ourselves. This is actually our differentiator. When Hyperframes ships their brand system, evaluate replacing ours. |
-| Transcript-to-caption auto-alignment not in Hyperframes. | We already have this in `caption-builder.ts`. Keep + adapt to emit Hyperframes overlay HTML. |
-| Existing v1 creators (anyone using `.atelier` files) have a breaking-change cliff. | Document the migration. Provide `atelier migrate-v1-doc <file>` CLI to convert `.atelier` → Hyperframes project (best-effort). |
-| Today's 13 commits (export pipeline + audio mux + render fix) all go to /dev/null on the deprecate path. | The work isn't wasted — the insight survives. The WS bridge architecture, the BrowserVideoFrameProvider cache pattern, the cross-fade timing investigation all inform the v2 design. Document in lore. |
-| Hyperframes render speed unknown — they publish no benchmarks. | First test in the spike. If too slow vs current path, evaluate distributed-render via `@hyperframes/aws-lambda` or keep our ffmpeg overlay path as the "fast" option behind a flag. |
-| 28k LOC deletion is a huge diff. | Stage across multiple commits per phase 2 plan. Each commit removes one package + its tests + its dependents in a single atomic chunk. |
-| Tests for the deleted stack disappear; coverage of remaining KEEP/ADAPT code may degrade. | Audit test coverage of the KEEP column BEFORE starting phase 2. Add tests for any KEEP code that was only indirectly covered through DEPRECATE-path tests. |
-
----
-
-## Rollback strategy
-
-If Phase 0 spike fails (Hyperframes can't render the demo end-to-end at acceptable quality/speed):
-
-- Branch `feat/v2-hyperframes-pivot` stays open
-- No changes to `feat/creator-flow-v1-prep` or `main`
-- Record findings in lore + Paradigm decision update (`TD-2026-05-28-097` → `rejected`)
-- Continue v1.0 development
-
-If Phase 1 fails (parallel paths reveal Hyperframes can't express something we need):
-
-- Revert the affected commits on `feat/v2-hyperframes-pivot`
-- Re-scope: either own that feature (own a forked Hyperframes component) or accept the limitation as a v2 deferred-feature
-- Update this doc + Paradigm decision
-
-If Phase 2 fails (deletion causes cascading breakage we can't fix in scope):
-
-- Branch is recoverable via git revert
-- Re-bound deletion to packages that genuinely have zero forward references
-- Update this doc
+| Hyperframes pre-1.0 API churn | Pin version, integrate via Node API, adapter package is the only consumer |
+| `.atelier-pack.yaml` sidecar format becomes a versioned contract creators rely on | Treat sidecar as a v2.x stable interface; format changes go through a `version:` field + migration tool |
+| Brand cascade rules feel surprising to creators | `atelier brand show <project>` prints the merged effective brand — creators can always inspect |
+| Cross-filesystem symlinks fail (network drives, Windows w/o admin) | Asset injector falls back to copy; pack registration tolerates either |
+| Hyperframes' deterministic-font system rejects our `:root` CSS var fallback chains | Use Hyperframes' mapped font names directly; allow brand to declare `font_aliases` for non-mapped fonts |
+| Multi-creator brand sync wasn't in scope but creators ask for it | "External pack folder on Dropbox/iCloud" pattern handles 80% of multi-creator without us building a sync layer |
+| 28k LOC deletion is a huge diff | Stage across multiple commits per Phase 3 plan |
 
 ---
 
 ## Today's work — what's NOT wasted
 
-Even though today's 13 commits land in the deprecate column:
+Even though today's v1 export work lands in the deprecate column:
 
-- **Agent team feedback loop architecture** (RENDER-AUDIO-ISSUE.md) informs how v2 agents should report issues against Hyperframes integration
-- **WS bridge / `applyMutation` / live-preview** pattern maps directly to how the v2 file-watcher will fire Hyperframes' hot-reload
-- **BrowserVideoFrameProvider** module-level cache + seek-and-await pattern → applies to how we'd manage Hyperframes preview-window state during agent mutations
-- **Cross-fade investigation** + caption-timing model translates verbatim — Hyperframes uses `data-start` / `data-duration`, we already compute these
-- **Composer caption-builder** logic survives — just emits HTML instead of YAML
-- **All Paradigm lore from today** documents the v1→v2 evolution rationale
+- **Agent team feedback architecture** (RENDER-AUDIO-ISSUE.md) informs how v2 agents report against Hyperframes integration
+- **Artifact schemas + Quill/Lux/Iris personas + workspace concept + mind-map + recipes + Paradigm integration** — the entire v1 KEEP column IS the v2 foundation
+- **The hyperframes-adapter spike** proved the renderer integration in one session
+- **Caption-timing + transcript model** translates verbatim
+- **WS bridge / live-mutation pattern** maps to how the v2 file-watcher will trigger Hyperframes hot-reload
 
 ---
 
@@ -315,6 +373,7 @@ Even though today's 13 commits land in the deprecate column:
 
 - Paradigm decision: `TD-2026-05-28-097`
 - Companion lore: `L-2026-05-28-ascend-184856-364`
+- Spike commit: `c37b4a2` + verification in `creator/demo/exports/demo-v2-spike-*.mp4`
 - Originating issue: `creator/demo/exports/RENDER-AUDIO-ISSUE.md`
 - v1.0 milestone lore: `L-2026-05-28-ascend-163734-001`
 - Hyperframes upstream: https://github.com/heygen-com/hyperframes
