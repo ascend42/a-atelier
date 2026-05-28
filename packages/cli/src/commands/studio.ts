@@ -2316,11 +2316,17 @@ function handleNoTargetBinAdd(args: {
           projectName,
           transcriptPath: `${projectName}/transcripts/${stem}.json`,
         });
+        // ToastHost on the browser side discriminates bin-add completion
+        // by mediaPath + !targetDocPath. Both fields must travel on the
+        // envelope; without them the toast silently no-ops (Judge audit).
         broadcastIngest(bridgeClients, {
           type: "media:ingest:progress",
           projectName,
           file: filename,
           phase: "done",
+          mediaPath: `media/${filename}`,
+          fileKind,
+          transcribePending,
         });
       })
       .catch((err: unknown) => {
@@ -2339,6 +2345,9 @@ function handleNoTargetBinAdd(args: {
       projectName,
       file: filename,
       phase: "done",
+      mediaPath: `media/${filename}`,
+      fileKind,
+      transcribePending,
     });
   }
 
@@ -2388,7 +2397,11 @@ function handleExistingSourceIngest(args: {
     res, cwd, projectName, projectDir, existingPathParam,
     targetDocPathRaw, bridgeClients,
   } = args;
-  void args.req; // body is intentionally unread
+  // Drain the request body — clients may send one even though we don't need it.
+  // Without this, HTTP/1.1 keep-alive holds the socket until the client closes
+  // (Aegis informational finding). Guarded for test mocks that pass a stub
+  // without the .resume method.
+  if (typeof args.req.resume === "function") args.req.resume();
 
   if (!existsSync(resolve(cwd))) {
     res.statusCode = 404;

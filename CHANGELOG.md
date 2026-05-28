@@ -4,9 +4,57 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
-## [Unreleased] — pre-v1 creator-flow foundation
+## [Unreleased] — v1.0 creator-flow surface
 
-The **pre-v1 arc**: twelve strategic decisions, three Paradigm-native content-generation agents (Quill the Showrunner, Lux the Cinematographer, Iris the Composer) shipped as Claude Code agents, workspace concept above Project, Paradigm + Atelier symbiosis, front-of-pipeline artifact schemas + parsers + validators + CLI surface, expanded animation technique library, mind-map stub, effective transcript derivation, media folder + sidecar notes convention. v1 publish is explicitly gated on the studio-UI-as-creator-interface bundle (Phase 2 frontend) landing + full end-to-end validation.
+The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
+
+### Added — v1.0 media-bin model (TD-2026-05-28)
+
+The drop-anywhere-creates-a-doc model is retired. The new model mirrors FCP/Premiere: media goes into a bin, composition is an explicit verb.
+
+- **`POST /api/media/ingest` (no `targetDocPath`)** — copies the dragged file to `media/`, kicks off background `transcribeMediaToBin` for video/audio, broadcasts `media:ingest:progress` with `phase: "done"` carrying `mediaPath` + `fileKind` + `transcribePending`. Does NOT auto-create a doc.
+- **`POST /api/media/ingest?source=existing&path=media/<basename>`** — the sidebar→canvas drag handoff. The file is already in `media/`; this short-circuits the upload step and routes through `composeVideoProject` (or audio-add) against the existing media + cached transcript. Validated server-side via `^valid-media-ref-path` (defense-in-depth: independent of browser-side payload trust).
+- **`transcribeMediaToBin`** — new orchestrator entrypoint. Runs whisper.cpp on a standalone source file, writes `transcripts/<stem>.json`, doesn't touch any `.atelier` doc. Idempotent on re-call. Lets the transcript be ready by the time the creator composes with the clip.
+- **`routeIngest` collapse** — no-target ingest dispatcher shrinks from a 12-cell file-kind×project-kind matrix to `BinIngestRoute { kind, target: "add-to-bin" | "reject" }`. Project kind no longer matters for bin-add.
+- **`MediaRefPayload`** — typed payload `{ path, kind? }` carried over `application/x-atelier-media-ref` MIME for the sidebar→canvas drag. `isValidMediaRefPath` enforces `media/<basename>` shape (no traversal, no nesting, no NUL/control bytes, no backslashes).
+
+### Added — bottom timeline UI (TD-2026-05-28)
+
+A read-only timeline below the canvas. No more "the timeline is just a data block."
+
+- **`TimelineView`** (`packages/cli/src/web/timeline-view.ts`) — single track lane for `track-video-1`, clip blocks proportional to `startFrame`→`endFrame`, frame ruler with second-tick marks, playhead synced with canvas-panel scrubber. Click clip → select; click ruler → seek. Reads `doc.timeline`; shows empty state when no doc loaded.
+- **Layout reflow** — `canvasMount` (flex:1) + `timelineMount` (120px fixed) as a flex-column. `AtelierStudio` + `MarkdownView` + `MediaPreview` + `TranscriptViewer` mount into `canvasMount`; `TimelineView` mounts into `timelineMount`.
+- **Read-only in v1.0** — click for selection + seek. Drag-to-reposition + trim are explicit v1.1 scope.
+
+### Added — flat-docs UI model (TD-2026-05-27)
+
+The manifest concept retired. `project.atelier` becomes a regular doc; empty projects valid; sidebar collapses to one flat DOCS group. Every doc gets the same context menu (Duplicate, Delete). `+ new doc` modal with 3 kind tiles (video / image / carousel). Carousel `+ add slide` button on the canvas toolbar.
+
+### Added — agent authoring surface (TD-2026-05-27)
+
+Six MCP tools so Lux + Iris can drive multi-clip projects programmatically: `atelier_add_clip`, `atelier_move_clip`, `atelier_trim_clip`, `atelier_remove_clip`, `atelier_transcribe_clip`, `atelier_move_slide`. Plus doc-management (`atelier_create_doc` / `_duplicate_doc` / `_delete_doc` / `_list_docs`) and rename cascade (`atelier_rename_media`).
+
+### Added — v1.0 schema lock (TD-2026-05-27)
+
+- **`AudioVisual`** layer type replaces the per-state `State.audio` field
+- **`AtelierDocument.kind`** — `"video" | "image" | "carousel"` (default video)
+- **`AtelierDocument.design`** — per-file brand block; self-contained, lineage via `relatedTo[]`
+- **`AtelierDocument.slides`** — carousel manifest of `SlideRef[]`; cycle-safe via `detectCarouselCycle`
+- **`AtelierDocument.timeline`** — derived clip-placement summary; writer-regenerated, reader-tolerant
+- **Multi-clip authoring** — `clip-<slug>` layer IDs (one-to-one with assets), `track-video-1` lazy Group, captions parented to clips with clip-local delta time. Renderer applies ancestor `startFrame` offset on parented layers.
+
+### Team execution
+
+This release was built almost entirely via Paradigm agent orchestration:
+- **Arky** (paradigm:architect) decomposed every multi-unit bundle into parallel-safe units
+- **Kit** (paradigm:builder, ×N parallel spawns) implemented Wave A / Wave B units concurrently
+- **Aegis** (paradigm:security) audited every new HTTP endpoint + MCP tool surface (workspace-scoping, path-traversal, manifest refusal, body drain)
+- **Scribe** (paradigm:documentor) maintained `.purpose` files across the 7+ commit arc
+- **Rune** (paradigm:compliance) ran `paradigm_reindex` + `portal.yaml` updates after every wave
+- **Judge** (paradigm:reviewer) cross-builder review caught real bugs (the toast-envelope-fields blocker mid-wave)
+- **Probe** (paradigm:tester) gap analysis + determinism check
+
+The roster is recorded as the project's persistent team — see the [[use-the-paradigm-roster]] memory.
 
 ### Added — front-of-pipeline artifacts (Hyperframes-style discipline, Atelier-native)
 - **Artifact schemas** (`@a-company/atelier-schema`) — `DesignArtifactSchema` / `ScriptArtifactSchema` / `StoryboardArtifactSchema`, typed `SlotKind` reference (`<kind>.<category>.<specifier>` with closed kind enum), `TechniqueLibrarySchema`, hand-rolled YAML+Markdown parser, cross-artifact validator (`validateArtifactSet`) for beat-id coverage + slot validation + duration warnings. Pre-Zod spec at `docs/keynote/paradigm/atelier-front-of-pipeline-artifacts.md`.

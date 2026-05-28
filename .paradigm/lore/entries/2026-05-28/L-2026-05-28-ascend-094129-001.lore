@@ -1,0 +1,70 @@
+id: L-2026-05-28-ascend-094129-001
+type: milestone
+timestamp: '2026-05-28T09:41:29.389Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: v1.0 media-bin pivot + bottom timeline — full bundle landed (autonomous loop)
+summary: 'v1.0 media-bin + bottom timeline + sidebar-drag bundle shipped end-to-end via autonomous team orchestration. S0 (shared types) → Wave A (3 parallel Kits: backend, timeline UI, UI shell) → Wave B (sidebar drag affordance) → pre-commit gates (Aegis SHIP zero blockers, Scribe .purpose sweep, Probe test sweep, Judge caught 1 mid-wave blocker on envelope fields, Rune portal compliance). CHANGELOG updated. Workspace tests: 1176 → 1189. Zero tsc errors. Portal + aspect compliance green. 11 new symbols across 4 commits on feat/creator-flow-v1-prep.'
+symbols_touched:
+  - '#ingest-dispatch'
+  - '#transcribe-orchestrator'
+  - '#studio-doc-endpoints'
+  - '#workspace-app'
+  - '#studio-doc-sidebar'
+symbols_created:
+  - '#ingest-bin-types'
+  - '#timeline-state-types'
+  - '#timeline-view'
+  - '#handle-no-target-bin-add'
+  - '#transcribe-media-to-bin'
+  - '#bin-add-toast'
+  - '#media-ref-drop-target'
+  - ^valid-media-ref-path
+  - $media-bin-flow
+  - $canvas-compose-flow
+  - '!media-added'
+decisions:
+  - id: TD-2026-05-28-media-bin
+    decision: Drop-anywhere ingest no longer auto-creates docs. Files land in media/, compose is an explicit verb.
+    rationale: FCP/Premiere mental model fits creator workflow. The current 'drop file = new doc' conflated acquiring with composing. Dispatcher matrix collapses; UX becomes a clear two-step (acquire then compose).
+  - id: TD-2026-05-28-transcribe-on-bin-add
+    decision: Auto-transcribe runs on bin-add (background), not on compose
+    rationale: Hides whisper latency. By the time the creator drags a clip onto canvas, transcript is usually ready. Local CPU only — no API cost. Transcripts are media-bin metadata, not doc metadata.
+  - id: TD-2026-05-28-timeline-read-only-v1
+    decision: v1.0 bottom timeline ships as read-only (click to select, click ruler to seek). Drag-to-reposition + trim defer to v1.1
+    rationale: Smallest viable scope that's still genuinely useful (creator can SEE the timeline). Avoids mouse-state-machine complexity. Shipping editing affordances was the right call to defer.
+  - id: TD-2026-05-28-sidebar-drag-required
+    decision: Sidebar MEDIA → canvas/timeline drag promoted from v1.1 nice-to-have to v1.0 required
+    rationale: Without it, composing with already-binned media was literally impossible. The bin model creates this requirement.
+learnings:
+  - The 'acquire vs compose' distinction is a real architectural pattern — separating those two verbs unlocks downstream simplifications (dispatcher matrix collapse, transcribe latency hiding, empty-project legitimacy).
+  - 'Aegis''s ''phase: done envelope is missing the fields the browser checks for'' catch was a real blocker that would have shipped a broken toast feature. Cross-builder review (Judge) caught it before commit. The roster pattern (parallel build + parallel review) works.'
+  - Stale Node processes hold OLD code in memory — server-side fixes need a restart, not just a browser hard-refresh. Worth a tooling pass to auto-restart on dist changes for next session.
+  - Autonomous loop execution (kick off S0 → wave → lore → commit → push → next wave) sustains forward motion without re-asking. The team-routing memory + clear task tracking made this feel like one coherent session despite spanning 5+ separate agent runs.
+verification:
+  status: pass
+  details:
+    workspace_tests: 1176 → 1189 (+13)
+    tsc_workspace: exit 0
+    compliance_portal: compliant
+    aspect_drift: '0'
+    aegis_verdict: SHIP, 0 critical, 0 important, 5 informational
+tags:
+  - v1.0
+  - media-bin
+  - timeline-ui
+  - sidebar-drag
+  - milestone
+  - team-orchestrated
+  - autonomous-loop
+linked_lore:
+  - L-2026-05-28-ascend-090321-001
+  - L-2026-05-28-ascend-091716-001
+  - L-2026-05-28-ascend-092158-001
+confidence: 0.88
+git_context:
+  ref: 003d5eac84e0e9f61469899a515b1d900282798b
+  branch: feat/creator-flow-v1-prep
+  dirty: true

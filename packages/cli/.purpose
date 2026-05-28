@@ -163,9 +163,26 @@ components:
     file: src/lib/compose-carousel-project.ts
     tags: [carousel, ingest, project, compose, slides, cycle-safe]
   '#ingest-dispatch':
-    description: 'Drag-drop ingest dispatcher (slice B3). classifyMediaFile(filename) → "video" | "image" | "audio" | "unsupported" via case-insensitive extname lookup (video: .mp4 .mov .webm .mkv .avi; image: .png .jpg .jpeg .webp .gif; audio: .mp3 .wav .m4a .aac .flac .ogg). routeIngest(filename, projectKind|undefined) → { kind, target, error? } with target ∈ { compose-video, compose-image, add-audio-clip, reject }; encodes the full 12-cell routing matrix: video→video/undef = compose-video; image→undef = compose-image; audio→video = add-audio-clip; everything else rejects with an explanatory error string. `projectKind === undefined` means "no atelier doc exists yet — scaffold fresh"; only video+undef and image+undef are valid scaffold-on-ingest paths (audio cannot establish a doc on its own). computeIngestDocPath(sourceFilename, projectDir) derives the target doc filename from the source basename (`<slug>.atelier`, collision-suffixed `<slug>-2.atelier`, etc.) — see ~ingest-dispatch-doc-target. Pure / synchronous / no fs — wired from #cli-studio handleMediaIngestRequest after the upload is written to media/<basename>. On reject, the studio handler unlinks the just-uploaded file before responding 400 so media/ never accumulates orphans.'
+    description: 'Drag-drop ingest dispatcher. Post-pivot (TD-2026-05-28 media-bin pivot) the no-target path is COLLAPSED: routeIngest(filename) returns BinIngestRoute { kind, target ∈ {"add-to-bin","reject"}, error? } — no more 12-cell project-kind matrix, no scaffold-on-ingest. Supported video/image/audio always goes to add-to-bin; only unsupported extensions reject. The compose routing matrix (compose-video, compose-image, add-audio-clip) lives in routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute, reached only when the creator explicitly drops onto a specific doc on canvas. classifyMediaFile(filename) → "video" | "image" | "audio" | "unsupported" via case-insensitive extname lookup (video: .mp4 .mov .webm .mkv .avi; image: .png .jpg .jpeg .webp .gif; audio: .mp3 .wav .m4a .aac .flac .ogg). computeIngestDocPath(sourceFilename, projectDir) still resolves a target doc filename from the source basename (`<slug>.atelier`, collision-suffixed) for the target-set branch — see ~ingest-dispatch-doc-target. Pure / synchronous / no fs. Wired from #cli-studio: handleNoTargetBinAdd calls routeIngest; handleMediaIngestRequest (target-set branch) calls routeIngestWithTarget. On reject the studio handler unlinks the just-uploaded file before responding 400 so media/ never accumulates orphans.'
     file: src/lib/ingest-dispatch.ts
     tags: [ingest, dispatch, drag-drop, studio, routing, pure]
+  '#ingest-bin-types':
+    description: 'Pure types + path validator for the v1.0 media-bin pivot (TD-2026-05-28). Exports BinAddResult ({ mediaPath, fileKind, transcribePending }) — shape returned by handleNoTargetBinAdd for sidebar/page-level drops; BinAddRejected ({ error, ext }) — shape when the dispatcher refuses an unsupported file; MediaRefPayload ({ path, kind? }) — the application/x-atelier-media-ref drag payload sent by the sidebar→canvas handoff; and isValidMediaRefPath(path) — the path predicate enforcing "media/<basename>" shape: rejects empty/whitespace, anything not prefixed with "media/", traversal segments (".."), backslashes, ASCII control bytes (0x00-0x1f), and any further "/" after the prefix (basename portion only). Zero I/O — pure type module reused by the studio HTTP layer (^valid-media-ref-path) and the workspace-app drop-target browser code (defense-in-depth).'
+    file: src/lib/ingest-bin-types.ts
+    gates: ['^valid-media-ref-path']
+    tags: [ingest, media-bin, types, validators, pure, v1.0]
+  '#transcribe-orchestrator':
+    description: 'Per-media-file transcription orchestrator. transcribeMediaFile(projectDir, mediaBasename, opts) — legacy compose-time wrapper: calls transcribeProject (preserving the legacy root transcript.json write) then mirrors the result to <projectDir>/transcripts/<stem>.json so multi-source projects don''t overwrite each other''s transcripts. transcribeMediaToBin(projectDir, mediaBasename, opts) — post-pivot standalone-source entrypoint: bypasses transcribeProject entirely so neither the root transcript.json nor project.atelier are touched; probes whisper-cpp, runs it directly, parses, writes the per-file mirror at transcripts/<stem>.json. Idempotent on re-call (existing mirror short-circuits with backend:"cached"). Test injection via opts.transcribeFn lets unit tests stub the whisper subprocess. The bin-side fn is wired into handleNoTargetBinAdd as the background transcribe kicked off after media:list:changed broadcast. See ~transcribe-on-bin-add.'
+    file: src/lib/transcribe-orchestrator.ts
+    tags: [video, audio, transcribe, whisper, media-bin, orchestrator, v1.0]
+  '#timeline-state-types':
+    description: 'Browser-side shared state types for the v1.0 bottom timeline UI. Exports TimelineSelection ({ layerId, trackId }) — what''s currently selected on the timeline track; frameToPixel(frame, totalFrames, widthPx) — clamp-and-scale conversion from composition frame to horizontal pixel offset; pixelToFrame(px, totalFrames, widthPx) — inverse, rounded + clamped to [0, totalFrames]. Pure math + types, zero DOM coupling. Shared between #timeline-view and the canvas-panel so the bottom timeline + the studio top frame ruler stay in lockstep.'
+    file: src/web/timeline-state-types.ts
+    tags: [timeline, web, types, pure, v1.0]
+  '#timeline-view':
+    description: 'Read-only bottom timeline component (v1.0). Single track lane for "track-video-1": clip blocks rendered proportional to startFrame/durationFrames via #timeline-state-types.frameToPixel, with a frame ruler above and a playhead synced to the canvas-panel. Click a clip block → emits selection (TimelineSelection); click the ruler → emits seek. NO drag-to-reposition, NO trim — those are v1.1 (see ~timeline-read-only-v1). computeClipPositions(...) is a pure helper exported for tests. Mounted into the timelineMount sibling created by workspace-app below the canvas (mainBody is now a flex-column). Receives doc updates via the same WS doc-mutated envelope the canvas does.'
+    file: src/web/timeline-view.ts
+    tags: [timeline, web, view, read-only, v1.0]
   '#ingest-dispatch-doc-target':
     description: 'Post-pivot helper inside #ingest-dispatch that resolves the target doc path for a drag-drop ingest. computeIngestDocPath(sourceFilename, projectDir) slugifies the source basename and returns `<slug>.atelier` (or `<slug>-2.atelier`, `<slug>-3.atelier`, … on collision), capped at MAX_COLLISION_ATTEMPTS. Replaces the legacy hardcoded `project.atelier` target — every ingested media file now lands in its own doc, matching the flat-docs model. The studio handler threads the resolved docPath into composeVideoProject / composeImageProject so the composer writes to the right file.'
     file: src/lib/ingest-dispatch.ts
@@ -193,20 +210,34 @@ components:
     gates: ['^valid-doc-name', '^doc-path-inside-project', '^carousel-cycle-safe']
     tags: [doc, cli-lib, cascade, carousel, v1.0.x]
   '#studio-doc-endpoints':
-    description: 'HTTP doc endpoints on the studio dev server. Post-pivot: there is no manifest-refusal branch — every .atelier doc is equal, so project.atelier can be duplicated and deleted like any other doc. GET /api/project/:name/docs → listDocs(projectDir) → flat DocListEntry[]. POST /api/project/:name/docs → ^valid-doc-name + ^doc-path-inside-project → createDoc → writes file → broadcasts {type:"doc:list:changed", projectName} on the bridge WS. POST /api/project/:name/docs/duplicate?path=... → ^valid-doc-name on the source basename + ^doc-path-inside-project → duplicateDoc → broadcast. DELETE /api/project/:name/docs?path=... → same gates → deleteDoc → broadcast. Every path query is URL-decoded, normalized, and prefix-checked against the project root with a trailing-separator boundary so sibling /a/project-x is not treated as inside /a/project. The mutating routes share the existing ^localhost-only Origin check.'
+    description: 'HTTP doc endpoints on the studio dev server. Post-pivot: there is no manifest-refusal branch — every .atelier doc is equal, so project.atelier can be duplicated and deleted like any other doc. GET /api/project/:name/docs → listDocs(projectDir) → flat DocListEntry[]. POST /api/project/:name/docs → ^valid-doc-name + ^doc-path-inside-project → createDoc → writes file → broadcasts {type:"doc:list:changed", projectName} on the bridge WS. POST /api/project/:name/docs/duplicate?path=... → ^valid-doc-name on the source basename + ^doc-path-inside-project → duplicateDoc → broadcast. DELETE /api/project/:name/docs?path=... → same gates → deleteDoc → broadcast. Every path query is URL-decoded, normalized, and prefix-checked against the project root with a trailing-separator boundary so sibling /a/project-x is not treated as inside /a/project. The mutating routes share the existing ^localhost-only Origin check. POST /api/media/ingest is the sibling media endpoint — see #handle-no-target-bin-add (no targetDocPath branch) and the ?source=existing handler (sidebar→canvas drag handoff, ^valid-media-ref-path gated).'
     file: src/commands/studio.ts
     gates: ['^localhost-only', '^valid-doc-name', '^doc-path-inside-project']
     signals: ['!doc-list-changed']
     tags: [doc, studio, http, security, v1.0.x]
+  '#handle-no-target-bin-add':
+    description: 'POST /api/media/ingest no-target branch (post-pivot, TD-2026-05-28). handleNoTargetBinAdd({ res, projectName, projectDir, filename, destPath, totalBytes, modelHeader, bridgeClients }) runs after the upload stream has landed at media/<basename>: calls routeIngest(filename) → BinIngestRoute, unlinks + 400s on reject, otherwise broadcasts {type:"media:list:changed", projectName} (the !media-added signal flavor for this path) and — for video/audio — kicks off a fire-and-forget transcribeMediaToBin(projectDir, filename, …). Broadcasts media:ingest:progress envelopes through phases: transcribing → done | error, plus transcript:added on the mirror write. HTTP response returns synchronously with { ok, mediaPath, fileKind, transcribePending }. CRITICAL post-pivot invariant: this handler does NOT call composeVideoProject / composeImageProject — composition is now a separate creator-driven verb. Replaces the pre-pivot auto-doc-creation path that ran the 12-cell dispatch matrix on every drop.'
+    file: src/commands/studio.ts
+    signals: ['!media-added']
+    tags: [ingest, media-bin, studio, http, v1.0]
   '#studio-new-doc-modal':
     description: 'NewDocDialog — three-tile kind picker (video / image / carousel) in the workspace-app sidebar. Live slug preview shows the slugified filename as the creator types. Post-pivot the "Add as slide" toggle is gone — adding a slide to a carousel is done via #carousel-add-slide-button on the carousel canvas, which calls into the same dialog with title="Add slide" and POSTs asCarouselSlide:true directly. Cancel / Escape closes; Enter submits when the name passes isValidDocName at the field level. Returns NewDocSelection | null to the caller.'
     file: src/web/workspace-app.ts
     gates: ['^valid-doc-name']
     tags: [doc, studio, sidebar, modal, web, v1.0.x]
   '#studio-doc-sidebar':
-    description: 'Single flat DOCS group under the active project in the workspace app. Every .atelier doc — including project.atelier when present — renders as a regular row with a type icon (no privileged manifest "pin"), alphabetical by path (server-sorted via listDocs). The "+ new doc" affordance sits on the DOCS label row. The active doc is visually flagged via the loaded-state class on the row. Each row is left-click-to-open + right-click-to-context-menu; the menu offers Duplicate / Delete…, with Delete… going through a ConfirmDialog before firing the DELETE request. Refreshes on every "doc:list:changed" WS envelope; when the currently-open doc gets deleted out from under the bridge, falls back to the next available doc in the project.'
+    description: 'Single flat DOCS group under the active project in the workspace app. Every .atelier doc — including project.atelier when present — renders as a regular row with a type icon (no privileged manifest "pin"), alphabetical by path (server-sorted via listDocs). The "+ new doc" affordance sits on the DOCS label row. The active doc is visually flagged via the loaded-state class on the row. Each row is left-click-to-open + right-click-to-context-menu; the menu offers Duplicate / Delete…, with Delete… going through a ConfirmDialog before firing the DELETE request. Refreshes on every "doc:list:changed" WS envelope; when the currently-open doc gets deleted out from under the bridge, falls back to the next available doc in the project. Post-pivot (v1.0 media-bin): the file-drop half of the sidebar is relabeled "Add to media" to surface the bin-add intent (no auto-doc), and the DOCS empty-state hint extends when MEDIA is populated to point at the "+ new doc" + sidebar-drag-to-canvas compose flow.'
     file: src/web/workspace-app.ts
     tags: [doc, studio, sidebar, web, v1.0.x]
+  '#bin-add-toast':
+    description: 'ToastHost singleton + media:ingest:progress WS handler in the workspace app (v1.0 media-bin pivot). ToastHost is a fixed bottom-right stack (anchored at bottom: 48px so it clears the 32px status bar plus a 16px breath) of small dark cards with an --atel-accent left border; ToastHost.show(message) appends a card, triggers an enter transition on the next frame, and auto-dismisses after 4s. Used to surface no-target bin-add results — e.g. "Added <name> to media[. Transcribing in background…]" — without thrashing the status bar (which other ops already churn). The status bar still receives the canvas-attach progress envelopes; toasts are only for the "drop file into sidebar → goes to media/" success path.'
+    file: src/web/workspace-app.ts
+    tags: [toast, ui, media-bin, sidebar, web, v1.0]
+  '#media-ref-drop-target':
+    description: 'attachMediaRefDropTarget(el, getActiveProject, getCurrentDocPath) + the sidebar→canvas/timeline drag handoff helper (v1.0 media-bin pivot). Attaches dragenter/dragover/dragleave/drop listeners that DISCRIMINATE FROM file-drops via dataTransfer.types.includes("application/x-atelier-media-ref") — so the existing FILE-drop DropZone (which looks for the "Files" type) stays intact; this handler only engages when the drag carries the media-ref MIME. On drop: parses the MediaRefPayload, validates payload.path via isValidMediaRefPath (defense-in-depth — the server endpoint validates again behind ^valid-media-ref-path), then POSTs to /api/media/ingest?source=existing&path=<media/...> with the current doc as targetDocPath so composeVideoProject / add-audio-clip runs with the already-binned media + cached transcript. Wired into both canvasMount and timelineMount in workspace-app. See ~media-ref-drag-discriminated.'
+    file: src/web/workspace-app.ts
+    gates: ['^valid-media-ref-path']
+    tags: [drag-drop, media-bin, sidebar, canvas, timeline, web, v1.0]
   '#workspace-create-project':
     description: 'createProjectInWorkspace(workspaceDir, opts) — programmatic Project creation inside an existing workspace, used by the studio''s /api/workspace/projects HTTP handler. Post-pivot: projects start EMPTY — no auto-scaffolded project.atelier. Runs `runInit` with writeManifest:false so the new dir is recognized as a Project by its `.atelier/` metadata subdir alone; the first composed doc lands when the creator drops in media or asks an agent to compose one. Refuses to clobber an existing project (hasProjectMarker check accepts either project.atelier OR `.atelier/`), inherits workspace default_mode unless overridden, and refreshes the workspace manifest''s advisory projects[] list as a best-effort post-step.'
     file: src/commands/init.ts
@@ -218,21 +249,51 @@ components:
     tags: [doc, studio, carousel, slides, button, v1.0.x]
 flows:
   $media-ingest-flow:
-    description: 'Drag-drop in the studio → file lands in media/ via /api/media/ingest → #ingest-dispatch classifyMediaFile derives kind (video / image / audio / unsupported) → routeIngest pairs (file-kind, project-kind|undefined) into the 12-cell matrix → dispatcher routes to the right composer or rejects + unlinks the upload. Scaffold-on-ingest is permitted only for video+undef and image+undef; audio cannot establish a project on its own. Spans the studio HTTP handler, #ingest-dispatch, and one of the three composers depending on the route.'
+    description: 'TARGET-SET ingest path (post-pivot): the browser drags a file onto a SPECIFIC doc on canvas → POST /api/media/ingest with targetDocPath → #ingest-dispatch routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute dispatch to compose-video / add-audio-clip / reject. The no-target path that historically scaffolded a doc-per-drop is gone — see $media-bin-flow + $canvas-compose-flow for the post-pivot creator loop. Spans the studio HTTP handler, #ingest-dispatch (routeIngestWithTarget only), and #compose-video-project or #timeline-ops depending on the route.'
     steps:
       - component: '#cli-studio'
-        action: receive POST /api/media/ingest, stream upload into media/<basename>
+        action: receive POST /api/media/ingest with targetDocPath, stream upload into media/<basename>
       - component: '#ingest-dispatch'
-        action: classifyMediaFile + routeIngest (file-kind, project-kind|undefined)
+        action: classifyMediaFile + routeIngestWithTarget (file-kind, target doc kind)
       - component: '#compose-video-project'
-        action: ingest video into video project (compose-video target)
-      - component: '#compose-image-project'
-        action: ingest single image into image project (compose-image target)
+        action: compose-video target — add clip layer to existing video doc
       - component: '#timeline-ops'
         action: add-audio-clip target — register audio clip on audio track
       - component: '#cli-studio'
         action: on reject, unlink the just-uploaded file and respond 400
-    tags: [ingest, drag-drop, studio, dispatch, v1]
+    tags: [ingest, drag-drop, studio, dispatch, target-set, v1]
+  $media-bin-flow:
+    description: 'NO-TARGET media-bin acquire path (v1.0 media-bin pivot, TD-2026-05-28). Creator drops a file onto the sidebar / page level → POST /api/media/ingest with no targetDocPath → upload stream lands at media/<basename> → #handle-no-target-bin-add invokes routeIngest (kind+add-to-bin/reject only) → on accept: broadcasts {type:"media:list:changed"} (!media-added), fires background transcribeMediaToBin for video/audio, emits media:ingest:progress envelopes (transcribing→done|error) → workspace-app refreshes MEDIA sidebar + #bin-add-toast surfaces success → transcripts/<stem>.json written. CRITICAL: this path does NOT compose. Replaces the pre-pivot $media-ingest-flow no-target branch (which auto-scaffolded a doc per drop).'
+    steps:
+      - component: '#cli-studio'
+        action: receive POST /api/media/ingest (no targetDocPath), stream upload into media/<basename>
+      - component: '#handle-no-target-bin-add'
+        action: routeIngest → reject (unlink + 400) or add-to-bin
+      - component: '#handle-no-target-bin-add'
+        action: broadcast !media-added (media:list:changed); start background transcribe for video/audio
+      - component: '#transcribe-orchestrator'
+        action: transcribeMediaToBin writes transcripts/<stem>.json (idempotent on re-call)
+      - component: '#bin-add-toast'
+        action: workspace-app receives media:ingest:progress envelopes, ToastHost surfaces success
+    tags: [ingest, media-bin, drag-drop, studio, acquire, v1.0]
+  $canvas-compose-flow:
+    description: 'Explicit-compose path (v1.0 media-bin pivot). Creator clicks "+ new doc" → #studio-new-doc-modal three-tile picker → empty .atelier created via $doc-create-flow → drags a media-ref row from the MEDIA sidebar onto canvasMount or timelineMount → #media-ref-drop-target validates payload via isValidMediaRefPath, POSTs /api/media/ingest?source=existing&path=media/<basename> with the current doc as targetDocPath → server runs ^valid-media-ref-path then dispatches through routeIngestWithTarget → composeVideoProject (or add-audio-clip) runs against the already-binned media + cached transcript → doc-mutated WS envelope → canvas + #timeline-view refresh. The compose verb is decoupled from the acquire verb — see ~media-bin-acquire-vs-compose.'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: creator clicks "+ new doc" on the DOCS row
+      - component: '#studio-new-doc-modal'
+        action: three-tile picker → POST /api/project/:name/docs creates empty .atelier
+      - component: '#studio-doc-sidebar'
+        action: creator drags a MEDIA sidebar row (application/x-atelier-media-ref payload) onto canvas/timeline
+      - component: '#media-ref-drop-target'
+        action: attachMediaRefDropTarget validates path, POSTs /api/media/ingest?source=existing&path=<media-ref>&targetDocPath=<doc>
+      - component: '#cli-studio'
+        action: handleExistingSourceIngest → ^valid-media-ref-path → routeIngestWithTarget
+      - component: '#compose-video-project'
+        action: compose against existing media + cached transcript, write doc, broadcast doc-mutated
+      - component: '#timeline-view'
+        action: refresh bottom timeline from updated doc.timeline
+    tags: [compose, canvas, media-bin, sidebar-drag, v1.0]
   $rename-cascade-flow:
     description: 'One rename op cascades through media/, transcripts/, and project.atelier (assets, layers, timeline). Phase 1 stages every change in memory (load doc → apply rename walk → recompute timeline → scan artifacts for warnings) without touching disk. Phase 2 writes in order: media file → transcript (if present) → doc; on any mid-step failure the prior writes are reverse-rolled-back best-effort before the original error is rethrown. Triggered from either the studio HTTP endpoint or the MCP tool wrapper; both gate on ^valid-media-basename before entry, and both join straight into <projectDir>/media/<basename> so the basename guard is load-bearing.'
     steps:
@@ -292,6 +353,10 @@ gates:
     description: 'User-typed doc names (the "name" field on POST /api/project/:name/docs and the source/dest basenames on POST /api/project/:name/docs/duplicate) must pass isValidDocName: rejects path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), empty / whitespace-only strings, and anything over 200 chars. Enforced at BOTH the HTTP layer (studio.ts) AND the core fn (doc-management.ts / mcp/tools/docs.ts) for defense-in-depth — the basename is joined straight into <projectDir>/<slug>.atelier, so the guard IS the path-traversal defense.'
     enforcement: isValidDocName guard at every external entry point (studio HTTP, MCP tool, CLI core)
     appliesTo: ["#doc-management-types", "#doc-management", "#studio-doc-endpoints", "#mcp-tool-create-doc", "#mcp-tool-duplicate-doc"]
+  ^valid-media-ref-path:
+    description: 'The `path` query parameter on POST /api/media/ingest?source=existing must be a real media-bin ref: starts with "media/", contains no traversal segments (".."), no backslashes, no ASCII control bytes (0x00-0x1f), and no further "/" after the "media/" prefix (basename-only). Enforced server-side by isValidMediaRefPath in #ingest-bin-types before any fs op or composer dispatch. Mirror of the browser-side guard in #media-ref-drop-target — defense-in-depth so a tampered client can never POST a path outside <projectDir>/media/. The basename guard IS the path-traversal defense (the source path is joined straight into <projectDir>/<path> with no further sanitization).'
+    enforcement: isValidMediaRefPath guard at HTTP entry before any fs op (studio.ts handleExistingSourceIngest)
+    appliesTo: ["#ingest-bin-types", "#media-ref-drop-target", "#studio-doc-endpoints"]
   ^doc-path-inside-project:
     description: 'The ?path query on /api/project/:name/docs (delete, duplicate) and every resolved doc path must stay inside <projectDir>. Path traversal (../, absolute paths, paths that resolve outside via decoded chains) is rejected before any fs op. Resolved-prefix containment check with trailing path-separator boundary so sibling /a/project-x does NOT pass for /a/project. Mirrors #studio-rename-endpoint''s ^valid-media-basename + isSafePath posture.'
     enforcement: decode + resolve + startsWith(projectDir + sep) containment check
@@ -851,7 +916,7 @@ aspects:
       - core-invariant
     anchors:
       - packages/cli/src/commands/studio.ts:256-276
-      - packages/cli/src/commands/studio.ts:2865-2890
+      - packages/cli/src/commands/studio.ts:3200-3230
     enforcement: strict origin for bridge, tolerant for mcp
     appliesTo: ["#cli-studio"]
   studio-ws-upgrade-rechecks-origin:
@@ -861,7 +926,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:2855-2900
+      - packages/cli/src/commands/studio.ts:3195-3230
     enforcement: re-run origin check on WS upgrade
     appliesTo: ["#cli-studio"]
   studio-llm-only-broadcast:
@@ -871,8 +936,8 @@ aspects:
       - attribution
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:281-296
-      - packages/cli/src/commands/studio.ts:2420-2440
+      - packages/cli/src/commands/studio.ts:283-298
+      - packages/cli/src/commands/studio.ts:2755-2770
     enforcement: broadcast/persist only source === llm
     appliesTo: ["#cli-studio"]
   studio-contained-path-guard:
@@ -1058,12 +1123,13 @@ aspects:
     enforcement: visited-Set walk, depth cap 64, refuse on duplicate
     appliesTo: ["#ref-cycle", "#compose-carousel-project"]
   image-kind-single-image:
-    description: 'A kind:"image" project holds EXACTLY ONE image — multi-image is kind:"carousel". composeImageProject refuses a second image with "image project already has an image; rename or delete the existing image before adding another" when the doc already carries an img-* ImageVisual layer pointing at a DIFFERENT basename; same-basename re-add is idempotent (addedImageLayer:false). The decision is intentional: image projects render as a single frame with NO transcription and NO timeline block, so they''re a degenerate composition; a creator who wants two images uses a carousel.'
+    description: 'A kind:"image" doc holds EXACTLY ONE image — multi-image is kind:"carousel". composeImageProject refuses a second image with "image project already has an image; rename or delete the existing image before adding another" when the doc already carries an img-* ImageVisual layer pointing at a DIFFERENT basename; same-basename re-add is idempotent (addedImageLayer:false). The invariant is unchanged post-pivot but the entry point narrows: image docs are NEVER auto-scaffolded on drop (the v1.0 media-bin pivot removes drop-driven doc creation entirely — see ~media-bin-acquire-vs-compose). The only way to reach composeImageProject is the explicit "+ new doc" → image tile flow, after which sidebar-drag-to-canvas of an already-binned image adds it. Image docs render as a single frame with NO transcription and NO timeline block, so they''re a degenerate composition; a creator who wants two images uses a carousel.'
     tags:
       - image
       - kind
       - invariant
       - v1
+      - v1.0
     anchors:
       - packages/cli/src/lib/compose-image-project.ts:118
     enforcement: refuse second image with different basename, idempotent on same
@@ -1192,8 +1258,63 @@ aspects:
       - packages/cli/src/web/workspace-app.ts:381-425
     enforcement: single flat group render, no manifest pinning, no slides-section split
     appliesTo: ["#studio-doc-sidebar", "#studio-new-doc-modal", "#carousel-add-slide-button"]
+  # ── v1.0 media-bin pivot aspects (TD-2026-05-28) ──────
+  media-bin-acquire-vs-compose:
+    description: 'Architectural decision (v1.0 media-bin pivot, TD-2026-05-28): bin-add and compose are SEPARATE verbs with no implicit handoff. A drag-drop with no targetDocPath ONLY adds the file to <projectDir>/media/ — there is NO auto-doc-creation, no compose, no scaffold-on-ingest. Composition is the explicit follow-up: creator clicks "+ new doc" → three-tile picker → drags the now-binned media row from the MEDIA sidebar onto canvas/timeline → server runs composeVideoProject (or add-audio-clip) via the ?source=existing branch. This split lets transcripts pre-bake in the background (see ~transcribe-on-bin-add) and lets a single media file participate in many docs without the "first drop creates the doc" coupling. The pre-pivot 12-cell dispatch matrix (routeIngest(file-kind, project-kind|undefined) → compose-video|compose-image|add-audio-clip) is COLLAPSED on the no-target path; only routeIngestWithTarget keeps a compose-routing surface, used by canvas-area drops onto a specific doc.'
+    tags:
+      - media-bin
+      - architecture
+      - core-invariant
+      - v1.0
+    anchors:
+      - packages/cli/src/lib/ingest-dispatch.ts:47-52
+      - packages/cli/src/lib/ingest-dispatch.ts:104-110
+      - packages/cli/src/commands/studio.ts:2250-2356
+    enforcement: BinIngestRoute (kind+add-to-bin/reject) on no-target; handleNoTargetBinAdd never calls composeVideoProject
+    appliesTo: ["#ingest-dispatch", "#ingest-bin-types", "#handle-no-target-bin-add", "#studio-doc-sidebar"]
+  transcribe-on-bin-add:
+    description: 'Transcription runs in the BACKGROUND on bin-add, not on compose (v1.0 media-bin pivot). handleNoTargetBinAdd kicks off a fire-and-forget transcribeMediaToBin for any video/audio that lands in media/; by the time the creator composes a doc with that clip the transcript at transcripts/<stem>.json is usually ready, so caption rebuild is instant. transcribeMediaToBin is idempotent (existing mirror short-circuits with backend:"cached"), so re-running the same media''s bin-add (e.g. after a server restart) does no extra work. Progress is surfaced through media:ingest:progress envelopes (transcribing→done|error) so the bin-add toast can show "Transcribing in background…" without blocking the UI. The legacy compose-time transcribeMediaFile is still wired into composeVideoProject for the target-set path.'
+    tags:
+      - media-bin
+      - transcribe
+      - background
+      - latency
+      - v1.0
+    anchors:
+      - packages/cli/src/lib/transcribe-orchestrator.ts:172-292
+      - packages/cli/src/commands/studio.ts:2298-2335
+    enforcement: handleNoTargetBinAdd fires-and-forgets transcribeMediaToBin; idempotent on re-call
+    appliesTo: ["#transcribe-orchestrator", "#handle-no-target-bin-add"]
+  timeline-read-only-v1:
+    description: 'The bottom timeline component (#timeline-view) is a READ-ONLY viewer in v1.0. Supported interactions: click a clip block → emits TimelineSelection (canvas selects the layer); click the ruler → emits seek (canvas-panel updates playhead). NOT supported in v1.0: drag-to-reposition clips, trim handles, drag-to-create empty clips, ripple edit. These belong to v1.1 (an upcoming Kit will extend timeline-view with editable handles). Until then, all clip mutations go through the existing CLI / MCP / canvas surfaces; the bottom timeline only mirrors what they produce.'
+    tags:
+      - timeline
+      - ui
+      - read-only
+      - v1.0
+      - cautionary
+    anchors:
+      - packages/cli/src/web/timeline-view.ts:110
+    enforcement: no drag-to-reposition listeners; click handlers only emit select + seek
+    appliesTo: ["#timeline-view"]
+  media-ref-drag-discriminated:
+    description: 'The sidebar→canvas/timeline media-ref drag uses the custom MIME type "application/x-atelier-media-ref" (with a JSON-encoded MediaRefPayload as the data). Drop handlers in attachMediaRefDropTarget guard EVERY listener (dragenter/dragover/dragleave/drop) on dataTransfer.types.includes("application/x-atelier-media-ref") — without that guard the canvas/timeline drop target would conflict with the existing FILE-drop DropZone (which keys off the "Files" type). The discrimination is what keeps the two drop modalities coexisting on the same DOM element: real OS files still trigger upload + bin-add, sidebar drags trigger compose-against-existing. Browser-side path validation via isValidMediaRefPath runs before the POST as defense-in-depth; the server gate ^valid-media-ref-path is the authoritative check.'
+    tags:
+      - drag-drop
+      - mime-type
+      - ui
+      - core-invariant
+      - v1.0
+    anchors:
+      - packages/cli/src/web/workspace-app.ts:1808-1830
+    enforcement: every drag listener guards on dataTransfer.types.includes("application/x-atelier-media-ref")
+    appliesTo: ["#media-ref-drop-target", "#studio-doc-sidebar"]
 signals:
   '!doc-list-changed':
     description: 'Emitted by the studio HTTP doc endpoints after a successful create, duplicate, or delete (broadcast on the bridge WS as {type:"doc:list:changed", projectName}). Received by every connected workspace-app sidebar to refresh the single flat DOCS group, and by the bridge layer to fall back to the next available doc in the project (or the empty-canvas state) if the currently-open doc was the one deleted. The envelope intentionally carries only projectName (not a path or kind) — the receiver re-fetches GET /api/project/:name/docs to get the full DocListEntry[] truth.'
     emittedBy: ["#studio-doc-endpoints"]
     tags: [doc, sidebar, websocket, v1.0.x]
+  '!media-added':
+    description: 'Emitted on every successful no-target bin-add (v1.0 media-bin pivot, TD-2026-05-28). Broadcast on the bridge WS as {type:"media:list:changed", projectName} from #handle-no-target-bin-add right after the upload lands in media/<basename> and before background transcription kicks off. The signal-system name (!media-added) and the on-the-wire envelope ("media:list:changed") differ deliberately — the symbol describes the semantic event ("a media file landed in the bin"), the envelope describes the receiver action ("refresh the media list"). Received by every connected workspace-app sidebar to refresh the MEDIA group. Replaces the pre-pivot "media-ingest-done" flavor for the no-target path. Future: the WS layer can fan this out to live agents (Lux, Iris) so they see the bin update in real time. Companion progress envelopes (media:ingest:progress: transcribing → done | error) and transcript:added fire from the same handler but are NOT this signal.'
+    emittedBy: ["#handle-no-target-bin-add"]
+    tags: [media-bin, websocket, ingest, v1.0]

@@ -1,7 +1,7 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779959836454,
+  "lastActivity": 1779961146562,
   "breadcrumbs": [
     {
       "timestamp": 1779745464436,
@@ -278,6 +278,30 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: Wave B — sidebar drag affordance (closes the loop)"
+    },
+    {
+      "timestamp": 1779960981551,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779961092983,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779961146221,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779961289371,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1.0 media-bin pivot + bottom timeline — full bundle landed "
     }
   ],
   "symbolsModified": [],

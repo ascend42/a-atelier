@@ -70,4 +70,9 @@ gates:
     type: security
     location: packages/mcp/src/tools/docs.ts
     prizes: []
+  valid-media-ref-path:
+    description: 'The ?source=existing&path= query parameter on POST /api/media/ingest is validated via isValidMediaRefPath — must start with "media/", must contain a single basename segment after the prefix (no nested subdirs), must not contain "..", "\", null bytes, or control bytes (NUL through 0x1f), and must not be empty/whitespace. Server-side defense — the browser sends the payload via dataTransfer but the validator runs INDEPENDENTLY on every request, no client trust.'
+    type: security
+    location: packages/cli/src/lib/ingest-bin-types.ts
+    prizes: []
 routes: {}

@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T09:17:39.516Z'
+generated: '2026-05-28T09:28:24.358Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -4428,6 +4428,53 @@ by_symbol:
     fragility: low
     recent:
       - *ref_53
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#media-ref-drop-target':
+    symbol: '#media-ref-drop-target'
+    total_changes: 1
+    last_modified: '2026-05-28T09:28:22Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_57
+        id: h0089
+        ts: '2026-05-28T09:28:22Z'
+        type: implement
+        symbols:
+          - '#media-ref-drop-target'
+          - '#workspace-app'
+        author:
+          type: human
+          id: ascend
+        commit: 003d5eac84e0e9f61469899a515b1d900282798b
+        intent: feature
+        files:
+          - .claude/settings.local.json
+          - .paradigm/events/debates.jsonl
+          - .paradigm/events/nominations.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-092158-001.lore
+          - .paradigm/lore/timeline.yaml
+          - .paradigm/session-breadcrumbs.json
+          - packages/cli/src/web/workspace-app.ts
+        description: 'feat(#workspace-app): Wave B — sidebar MEDIA → canvas/timeline drag (closes the loop)'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#workspace-app':
+    symbol: '#workspace-app'
+    total_changes: 1
+    last_modified: '2026-05-28T09:28:22Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_57
     contributors:
       human:
         - ascend

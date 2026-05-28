@@ -165,6 +165,17 @@ export interface MediaIngestProgressEnvelope {
   total?: number | null;
   /** Error message when phase === "error". */
   error?: string;
+  /**
+   * Bin-add fields (v1.0 media-bin pivot). Present on `phase: "done"`
+   * envelopes that came from a no-target ingest. The browser's ToastHost
+   * discriminates bin-add from target-drop completion by checking
+   * `mediaPath && !targetDocPath`.
+   */
+  mediaPath?: string;
+  fileKind?: "video" | "image" | "audio";
+  transcribePending?: boolean;
+  /** Set on target-drop progress to differentiate from bin-add envelopes. */
+  targetDocPath?: string;
 }
 
 /**
