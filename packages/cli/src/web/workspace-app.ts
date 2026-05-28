@@ -2993,11 +2993,10 @@ function injectStyles(): void {
   .atel-drop-zone__project { color: #C75B39; font-family: monospace; }
   .atel-drop-zone__hint { font-size: 11px; color: #A89F95; margin-top: 6px; }
 
-  /* ── v1.0 UI shell rework (Kit-C) ──
-     Toast host — bottom-right column above the 32px status bar. Each
-     `.atel-toast` is a small dark card with an accent left border, fades in
-     for ~140ms, lives 4s, fades out for ~200ms before removal. Stacks vertically
-     when multiple drops happen in quick succession. */
+  /* v1.0 UI shell rework (Kit-C). Toast host: bottom-right column above the
+     32px status bar. Each .atel-toast is a small dark card with an accent
+     left border, fades in for ~140ms, lives 4s, fades out for ~200ms before
+     removal. Stacks vertically when multiple drops happen in quick succession. */
   .atel-toast-stack {
     position: fixed; right: 16px; bottom: 48px;
     display: flex; flex-direction: column; gap: 8px;

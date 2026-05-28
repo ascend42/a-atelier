@@ -77,8 +77,8 @@ aspects:
     anchors:
       - packages/studio/src/studio.ts:247
       - packages/studio/src/studio.ts:287-293
-      - packages/studio/src/studio.ts:434-437
-      - packages/studio/src/studio.ts:444
+      - packages/studio/src/studio.ts:439-442
+      - packages/studio/src/studio.ts:449
     enforcement: suppressNotify flag cleared on queueMicrotask
     appliesTo: ["#atelier-studio"]
   apply-mutation-preserves-state-and-selection:
@@ -119,8 +119,8 @@ aspects:
       - performance
       - history
     anchors:
-      - packages/studio/src/studio.ts:434-437
-      - packages/studio/src/studio.ts:439-469
+      - packages/studio/src/studio.ts:439-442
+      - packages/studio/src/studio.ts:444-474
     enforcement: canvas-only preview, snapshot only on commit
     appliesTo: ["#atelier-studio"]
   undo-redo-preserves-state:
@@ -130,7 +130,7 @@ aspects:
       - ux-invariant
       - edge-case
     anchors:
-      - packages/studio/src/studio.ts:496-515
+      - packages/studio/src/studio.ts:501-520
     enforcement: existence-checked stateName preserve
     appliesTo: ["#atelier-studio"]
   player-loop-and-clamp:

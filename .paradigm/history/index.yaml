@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T09:41:55.000Z'
+generated: '2026-05-28T09:53:21.839Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -2369,8 +2369,7 @@ by_symbol:
           - packages/cli/package.json
           - packages/cli/src/commands/studio.ts
         description: 'fix(#studio): resolve Vite pre-transform error on macOS [0.27.1]'
-      - &ref_33
-        id: h0051
+      - id: h0051
         ts: '2026-03-03T15:38:19Z'
         type: implement
         symbols:
@@ -2395,12 +2394,32 @@ by_symbol:
       agent: []
   '#studio':
     symbol: '#studio'
-    total_changes: 5
-    last_modified: '2026-03-03T20:19:05Z'
+    total_changes: 6
+    last_modified: '2026-05-28T09:53:18Z'
     stability_score: 1
     fragility: low
     recent:
-      - &ref_36
+      - &ref_41
+        id: h0091
+        ts: '2026-05-28T09:53:18Z'
+        type: implement
+        symbols:
+          - '#studio'
+          - '#studio-inline-app'
+        author:
+          type: human
+          id: ascend
+        commit: 751d7fd7b716321eee9438f0a7ec1bd629c21c84
+        intent: fix
+        files:
+          - .claude/settings.local.json
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/history/log.jsonl
+          - packages/cli/src/web/inline-app.ts
+          - packages/studio/src/studio.ts
+        description: 'fix(#studio,#inline-app): defensive destroy when container was wiped'
+      - &ref_35
         id: h0057
         ts: '2026-03-03T20:19:05Z'
         type: implement
@@ -2422,7 +2441,7 @@ by_symbol:
           - packages/studio/src/index.ts
           - packages/studio/src/studio.ts
         description: 'feat(#studio): export filename from loaded file, add Export All batch export [0.28.0]'
-      - &ref_34
+      - &ref_33
         id: h0056
         ts: '2026-03-03T17:38:46Z'
         type: implement
@@ -2444,7 +2463,6 @@ by_symbol:
         description: 'chore: bump subpackages to 0.25.2, CLI to 0.27.4 for npm publish'
       - *ref_31
       - *ref_32
-      - *ref_33
     contributors:
       human:
         - ascend
@@ -2456,7 +2474,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_35
+      - &ref_34
         id: h0055
         ts: '2026-03-03T17:01:45Z'
         type: implement
@@ -2487,8 +2505,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
+      - *ref_33
       - *ref_34
-      - *ref_35
     contributors:
       human:
         - ascend
@@ -2500,7 +2518,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_35
+      - *ref_34
     contributors:
       human:
         - ascend
@@ -2814,7 +2832,7 @@ by_symbol:
           - packages/cli/package.json
           - packages/cli/scripts/bundle-university.mjs
         description: 'feat(#cli-studio): ship the Atelier University pack in the npm package [0.37.0]'
-      - &ref_38
+      - &ref_37
         id: h0067
         ts: '2026-05-20T04:42:40Z'
         type: implement
@@ -2848,7 +2866,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_37
+      - &ref_36
         id: h0059
         ts: '2026-03-03T20:43:46Z'
         type: implement
@@ -2866,7 +2884,7 @@ by_symbol:
           - packages/studio/package.json
           - packages/studio/src/export/video-exporter.ts
         description: 'fix(#studio): try H.264 High Profile for MP4 export at 1080p+ [0.28.2]'
-      - *ref_36
+      - *ref_35
     contributors:
       human:
         - ascend
@@ -2878,7 +2896,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_37
+      - *ref_36
     contributors:
       human:
         - ascend
@@ -3080,7 +3098,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_39
+      - &ref_38
         id: h0062
         ts: '2026-05-20T03:55:11Z'
         type: implement
@@ -3111,8 +3129,8 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_38
-      - &ref_40
+      - *ref_37
+      - &ref_39
         id: h0063
         ts: '2026-05-20T04:10:46Z'
         type: implement
@@ -3132,7 +3150,7 @@ by_symbol:
           - packages/mcp/src/index.test.ts
           - packages/mcp/src/tools/import-images.ts
         description: 'fix(#cli-studio, #mcp-import-images, #recipe-lib): six reviewer- and smoke-test-confirmed defects'
-      - *ref_39
+      - *ref_38
     contributors:
       human:
         - ascend
@@ -3144,7 +3162,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_39
+      - *ref_38
     contributors:
       human:
         - ascend
@@ -3156,7 +3174,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_38
+      - *ref_37
       - id: h0064
         ts: '2026-05-20T04:23:04Z'
         type: implement
@@ -3175,7 +3193,7 @@ by_symbol:
           - packages/cli/src/lib/render-image.ts
           - pnpm-lock.yaml
         description: 'fix(#render-image): PNG export works on plain install — node-canvas → @napi-rs/canvas'
-      - *ref_39
+      - *ref_38
     contributors:
       human:
         - ascend
@@ -3188,8 +3206,8 @@ by_symbol:
     fragility: low
     recent:
       - *ref_17
-      - *ref_38
-      - *ref_40
+      - *ref_37
+      - *ref_39
     contributors:
       human:
         - ascend
@@ -3201,7 +3219,7 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - &ref_41
+      - &ref_40
         id: h0065
         ts: '2026-05-20T04:30:02Z'
         type: implement
@@ -3233,20 +3251,21 @@ by_symbol:
     stability_score: 1
     fragility: low
     recent:
-      - *ref_38
-      - *ref_41
+      - *ref_37
+      - *ref_40
     contributors:
       human:
         - ascend
       agent: []
   '#studio-inline-app':
     symbol: '#studio-inline-app'
-    total_changes: 2
-    last_modified: '2026-05-20T04:42:40Z'
+    total_changes: 3
+    last_modified: '2026-05-28T09:53:18Z'
     stability_score: 1
     fragility: low
     recent:
-      - *ref_38
+      - *ref_41
+      - *ref_37
       - id: h0066
         ts: '2026-05-20T04:41:48Z'
         type: implement
