@@ -1,0 +1,42 @@
+id: L-2026-05-28-ascend-171548-001
+type: incident
+timestamp: '2026-05-28T17:15:48.990Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: CLI atelier render fixed — source video + audio passthrough via ffmpeg two-input overlay (agent team RENDER-AUDIO-ISSUE.md)
+summary: |-
+  Agent team filed creator/demo/exports/RENDER-AUDIO-ISSUE.md identifying three bugs in atelier render: canvas-only output (47 kbps synthetic vs 5 Mbps reference), no audio, no source-video pixels in output. Same class of issue as the browser export bugs fixed earlier today (no videoFrameProvider wiring), different code path — CLI render spawns ffmpeg + pipes raw BGRA frames. Fix: instead of decoding video in Node (node-canvas can't), use ffmpeg's two-input filter_complex pattern. Input 0 is the source video file (auto-decoded, audio preserved), Input 1 is canvas overlay frames on stdin (now transparent backgrounds thanks to earlier clearRect fix). Filter scales source to doc canvas dims with letterbox-pad then overlays canvas on top. Audio mapped through verbatim with `-c:a copy`. Detection via new findPrimaryVideoSource() that walks layers for first VideoVisual + resolves src against docPath dir. Verification on demo/vid.atelier: 48.8 KB no-audio → 23 MB AAC stereo 174kbps + 23.5 Mbps source-pixel video at 1080x1920. Backward-compatible: docs without video layers keep legacy canvas-only path. v1.1 follow-ups: multi-clip filter graph (currently first VideoVisual only), state-level audio (atelier_set_audio not yet honored), time-warped clips (overlay assumes frame-for-frame alignment).</summary>
+  <parameter name="symbols_touched">["#render-pipeline", "#cli-render"]
+files_modified:
+  - packages/cli/src/commands/render-pipeline.ts
+  - packages/cli/src/commands/render.ts
+  - creator/demo/exports/RENDER-AUDIO-ISSUE.md
+learnings:
+  - 'When fixing ''no video in export'' across multiple export paths, the symptom is the same but the architecture is different per path: the browser path needs WebCodecs + a VideoFrameProvider; the CLI path needs ffmpeg''s filter_complex overlay. Don''t port code; pick the idiom that fits the underlying encoder.'
+  - Lean on ffmpeg's filter graph for compositing-with-source-video instead of decoding video in Node. node-canvas can't do video decode, and pulling in WebCodecs polyfills or fluent-ffmpeg wrappers adds weight. The two-input + overlay pattern is purpose-built for this and runs at native speed.
+  - Source video resolution may not match doc canvas resolution (iPhone records 4K, doc may target 1080p portrait). Always scale source to canvas dims with `force_original_aspect_ratio=decrease` + pad for letterboxing, never let ffmpeg auto-pick the output resolution from the largest input.
+  - Agent team's diagnostic reports (this one in particular) can be exceptional. They identified all three bugs, the shared root cause, AND proposed three fix paths in increasing properness. The 'best' option they outlined (canvas overlay + source decode + source audio) is exactly what shipped.
+verification:
+  status: pass
+  details:
+    ffprobe: 2 streams now (h264 1080x1920 23.5Mbps + AAC stereo 48kHz 174kbps)
+    build: clean
+    tests: 556/556 in cli, no test regressions
+    agent-issue-resolved: appended resolution to RENDER-AUDIO-ISSUE.md
+tags:
+  - v1.0
+  - cli-render
+  - ffmpeg
+  - audio-mux
+  - agent-reported
+  - owner-verified-pending
+linked_lore:
+  - L-2026-05-28-ascend-163734-001
+  - L-2026-05-28-ascend-152556-001
+confidence: 0.95
+git_context:
+  ref: e84e68f3c6020605fb481460aa01f337356f710b
+  branch: feat/creator-flow-v1-prep
+  dirty: true

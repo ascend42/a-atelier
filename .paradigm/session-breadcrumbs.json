@@ -1,14 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779984565910,
+  "lastActivity": 1779986254806,
   "breadcrumbs": [
-    {
-      "timestamp": 1779966144170,
-      "action": "tool-call",
-      "tool": "paradigm_lore_timeline",
-      "summary": "lore_timeline"
-    },
     {
       "timestamp": 1779966786465,
       "action": "tool-call",
@@ -302,6 +296,12 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: v1.0 export pipeline functional — video + captions + audio i"
+    },
+    {
+      "timestamp": 1779988548957,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: CLI atelier render fixed — source video + audio passthrough "
     }
   ],
   "symbolsModified": [],
