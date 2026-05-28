@@ -4,6 +4,8 @@
  */
 
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
+import { dirname, resolve, isAbsolute } from "node:path";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
 import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
@@ -17,6 +19,19 @@ export interface RenderOptions {
   format: RenderFormat;
   states?: string[];
   onProgress?: (info: ProgressInfo) => void;
+  /**
+   * Absolute path of the .atelier document being rendered. Used to resolve
+   * relative `media/...` src paths in VideoVisual layers. When set, the
+   * pipeline detects the first video layer, passes the source MOV/MP4 to
+   * ffmpeg as a SECOND input, and uses an overlay filter to composite the
+   * caption canvas ON TOP of the source video frames (instead of feeding
+   * the encoder a synthetic canvas-only stream). Source audio is also
+   * mapped through verbatim. This is what closes the
+   * RENDER-AUDIO-ISSUE.md gap reported by the agent team on 2026-05-28.
+   *
+   * Omitted → legacy behaviour (canvas-only frames, no audio).
+   */
+  docPath?: string;
 }
 
 export interface ProgressInfo {
@@ -45,14 +60,79 @@ export async function checkFfmpeg(): Promise<boolean> {
   });
 }
 
-/** Build the FFmpeg argument array for the given format. Pure function. */
+/**
+ * Build the FFmpeg argument array for the given format. Pure function.
+ *
+ * When `sourceVideoPath` is provided, ffmpeg gets TWO inputs:
+ *   - Input 0: the source video file (decoded photographic frames + audio)
+ *   - Input 1: raw BGRA canvas frames on stdin (the caption overlay)
+ *
+ * A `[0:v][1:v]overlay` filter composites the canvas on top of the source
+ * video at matching timestamps. Source audio is copied through with
+ * `-map 0:a -c:a copy` (no re-encode). The MP4 output then has full source
+ * video bitrate + source audio + caption overlays — what the studio's
+ * MediaRecorder path produces by accident, but deterministically and
+ * scriptable for agent use.
+ *
+ * When `sourceVideoPath` is omitted, falls back to the legacy stdin-only
+ * mode (canvas frames only, no source pixels, no audio). Used by docs
+ * without any VideoVisual layers (e.g. text-only animations, image
+ * carousels).
+ */
 export function buildFfmpegArgs(
   width: number,
   height: number,
   fps: number,
   format: RenderFormat,
   output: string,
+  sourceVideoPath?: string,
 ): string[] {
+  if (sourceVideoPath && format === "mp4") {
+    // Two-input overlay mode — closes the canvas-only / no-audio gap.
+    return [
+      "-y",
+      // Input 0: source video (+ audio). ffmpeg auto-decodes via libavformat.
+      "-i", sourceVideoPath,
+      // Input 1: canvas overlay frames on stdin. Same dimensions + fps as
+      // the doc so the overlay aligns frame-for-frame with input 0.
+      "-f", "rawvideo",
+      "-pix_fmt", "bgra",
+      "-s", `${width}x${height}`,
+      "-r", String(fps),
+      "-i", "pipe:0",
+      // Filter graph:
+      //   1. Scale + pad the source video to the doc's canvas dimensions
+      //      with `force_original_aspect_ratio=decrease` (letterbox-fit, no
+      //      crop) so a 4K iPhone source rendered into a 1080x1920 doc
+      //      respects the doc's intent instead of upscaling everything to
+      //      source dimensions. The pad fills gutters with black if the
+      //      source aspect differs from the canvas aspect.
+      //   2. Overlay the caption canvas on top. Canvas frames must have
+      //      transparent backgrounds — renderFrame's clearRect (fixed
+      //      2026-05-28) gives true transparency by default.
+      "-filter_complex",
+      `[0:v]scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=black[bg];[bg][1:v]overlay=0:0[v]`,
+      "-map", "[v]",
+      // Copy the source audio track verbatim. No re-encode.
+      "-map", "0:a?",
+      "-c:v", "libx264",
+      "-pix_fmt", "yuv420p",
+      "-preset", "medium",
+      "-crf", "18",
+      "-c:a", "copy",
+      // `-shortest` so the output ends with whichever stream finishes first
+      // (typically the source video — we render exactly that many canvas
+      // frames). Without it, if the canvas had a few extra frames the
+      // output would have a silent tail.
+      "-shortest",
+      "-movflags", "+faststart",
+      output,
+    ];
+  }
+
+  // Legacy stdin-only path — canvas frames only, no source video, no audio.
+  // Used when the doc has no VideoVisual layers, OR for GIF (which has no
+  // audio container anyway).
   const input = [
     "-y",
     "-f", "rawvideo",
@@ -81,6 +161,33 @@ export function buildFfmpegArgs(
     "-loop", "0",
     output,
   ];
+}
+
+/**
+ * Locate the first VideoVisual layer's source file as an absolute filesystem
+ * path. Returns null when no video layer exists, or when the layer's src is
+ * relative and we don't know the doc's directory.
+ *
+ * Multi-clip rendering is v1.1 — for now we pick the first VideoVisual,
+ * which matches the v1.0 single-clip composition path.
+ */
+export function findPrimaryVideoSource(
+  doc: AtelierDocument,
+  docPath: string | undefined,
+): string | null {
+  for (const layer of doc.layers) {
+    if (layer.visual.type !== "video") continue;
+    const v = layer.visual as { src?: string; assetId?: string };
+    const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+    if (!src) continue;
+    if (isAbsolute(src)) {
+      return existsSync(src) ? src : null;
+    }
+    if (!docPath) return null;
+    const absolute = resolve(dirname(docPath), src);
+    return existsSync(absolute) ? absolute : null;
+  }
+  return null;
 }
 
 // ─── Image Pre-loading ───────────────────────────────────────
@@ -219,8 +326,12 @@ export async function renderDocument(
   const canvas = createCanvas(width, height) as { getContext(id: "2d"): unknown; toBuffer(format: "raw"): Buffer };
   const ctx = canvas.getContext("2d");
 
+  // Detect the source video (if any) so ffmpeg can overlay the canvas on
+  // top of the decoded source pixels AND copy the source audio track —
+  // the agent team's RENDER-AUDIO-ISSUE.md root cause.
+  const sourceVideoPath = findPrimaryVideoSource(doc, opts.docPath) ?? undefined;
   // Spawn FFmpeg
-  const ffmpegArgs = buildFfmpegArgs(width, height, fps, format, output);
+  const ffmpegArgs = buildFfmpegArgs(width, height, fps, format, output, sourceVideoPath);
   const ffmpeg = spawn("ffmpeg", ffmpegArgs, {
     stdio: ["pipe", "pipe", "pipe"],
   });

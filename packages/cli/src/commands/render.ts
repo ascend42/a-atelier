@@ -109,6 +109,12 @@ export function renderCommand(program: Command): void {
             output: resolve(output),
             format,
             states: options.state,
+            // Absolute path of the input doc — the pipeline uses this to
+            // resolve relative `media/...` paths in VideoVisual layers so
+            // ffmpeg can read the source video as a second input (overlay
+            // base + audio passthrough). Without this, render falls back to
+            // canvas-only mode — no source pixels, no audio.
+            docPath: resolve(file),
             onProgress: ({ frame, totalFrames, state, percent }) => {
               const elapsed = (Date.now() - startTime) / 1000;
               const rate = elapsed > 0 ? frame / elapsed : 0;
