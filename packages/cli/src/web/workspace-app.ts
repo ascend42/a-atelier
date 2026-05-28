@@ -2778,6 +2778,75 @@ function injectStyles(): void {
   }
   /* ── end Kit-C ── */
 
+  /* ── v1.0 bottom timeline (Kit-B) ──
+     TimelineView (timeline-view.ts) renders a ruler + lane + playhead inside
+     timelineMount. The JS sets only 'left' / 'width' inline on ticks, clips,
+     and playhead — without these 'position:absolute' rules they would stack
+     vertically as block divs (which is exactly the bug owner saw: the frame
+     ruler numbers wrapping one-per-line on the left edge of the timeline).
+     Ruler + lane are positioned containers so absolute children anchor to
+     them, not to the viewport. */
+  .atel-timeline-view {
+    position: relative;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    color: var(--atel-text, #F5F0EB);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .atel-timeline-view__ruler {
+    position: relative;
+    flex: 0 0 22px; height: 22px;
+    border-bottom: 1px solid var(--atel-border, #4A4A4A);
+    cursor: pointer;
+    user-select: none;
+  }
+  .atel-timeline-view__tick {
+    position: absolute; top: 0;
+    transform: translateX(-50%);
+    font-size: 10px; color: var(--atel-text-muted, #A89F95);
+    padding: 4px 0;
+    pointer-events: none;
+  }
+  .atel-timeline-view__lane {
+    position: relative;
+    flex: 1 1 auto; min-height: 0;
+    background: var(--atel-bg-3, #181818);
+  }
+  .atel-timeline-view__clip {
+    position: absolute; top: 6px; bottom: 6px;
+    background: var(--atel-button-bg, #3D3D3D);
+    border: 1px solid var(--atel-border, #4A4A4A);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex; align-items: center;
+    padding: 0 6px;
+    box-sizing: border-box;
+  }
+  .atel-timeline-view__clip:hover { background: #4A4A4A; }
+  .atel-timeline-view__clip--selected {
+    border-color: var(--atel-accent, #C75B39);
+    background: rgba(199, 91, 57, 0.15);
+  }
+  .atel-timeline-view__clip-label {
+    font-size: 11px; color: var(--atel-text, #F5F0EB);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .atel-timeline-view__playhead {
+    position: absolute; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--atel-accent, #C75B39);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .atel-timeline-view__empty {
+    position: absolute; inset: 22px 0 0 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--atel-text-muted, #A89F95);
+    pointer-events: none;
+  }
+  /* ── end Kit-B ── */
+
   /* ── v1.0 sidebar drag (Kit-D) ──
      - Dim the dragged MEDIA row while a drag is in-flight (mirrors the
        OS-native ghost more cleanly than a transform).

@@ -43,6 +43,15 @@ Six MCP tools so Lux + Iris can drive multi-clip projects programmatically: `ate
 - **`AtelierDocument.timeline`** — derived clip-placement summary; writer-regenerated, reader-tolerant
 - **Multi-clip authoring** — `clip-<slug>` layer IDs (one-to-one with assets), `track-video-1` lazy Group, captions parented to clips with clip-local delta time. Renderer applies ancestor `startFrame` offset on parented layers.
 
+### Fixed — v1.0 triage round 2 (TD-2026-05-28-studio-workspace-link)
+
+The first triage round's "Kit-β letterbox-fit" and "Kit-γ canvas-size dropdown" never reached the running CLI — they shipped to `packages/studio/src` (local v0.28.1) but `packages/cli` depended on `@a-company/atelier-studio: ">=0.25.1"` which pnpm resolved to npm-published **v0.26.1**. Confirmed by grepping the installed dist: zero matches for `atel-canvas-size` / `computeLetterboxFit`. The prior "verified via grep in source + dist" was checking the producer's own dist, not the CLI's `node_modules` copy.
+
+- **Studio workspace link** — `packages/cli/package.json` dep changed from `">=0.25.1"` → `"workspace:^"` so pnpm symlinks the local studio. Letterbox-fit + canvas-size dropdown now actually load. On CLI publish, pnpm rewrites `workspace:^` to the exact studio version at publish time.
+- **`.atel-timeline-view*` CSS** — added to `workspace-app.ts` inline styles. `TimelineView` (Kit-B) set only inline `left`/`width` on ticks, clips, and playhead — without the missing `position:absolute` rules, the frame ruler numbers stacked vertically as block elements (exactly the symptom in the owner screenshot). Ruler + lane now `position:relative`; tick / clip / playhead now `position:absolute`. Empty-state centered.
+
+Runtime verification pending owner restart of `atelier studio`. Tests green: 1177 across 10 packages.
+
 ### Team execution
 
 This release was built almost entirely via Paradigm agent orchestration:

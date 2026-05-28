@@ -1,38 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779965192725,
+  "lastActivity": 1779966144239,
   "breadcrumbs": [
-    {
-      "timestamp": 1779757765854,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Content-gen agents Quill/Lux/Iris ship with Atelier as a Cla"
-    },
-    {
-      "timestamp": 1779757768708,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Atelier Studio gets a hosted tier as an additive layer on th"
-    },
-    {
-      "timestamp": 1779775449788,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Creator agent-team learning protocol: ask at setup, two mode"
-    },
-    {
-      "timestamp": 1779775849261,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Atelier–Paradigm relationship: standalone surface, Paradigm-"
-    },
-    {
-      "timestamp": 1779775954726,
-      "action": "tool-call",
-      "tool": "paradigm_decision_record",
-      "summary": "decision_record: Atelier is an open-source framework and tool — no marketplac"
-    },
     {
       "timestamp": 1779775980645,
       "action": "tool-call",
@@ -302,6 +272,36 @@
       "action": "tool-call",
       "tool": "paradigm_lore_record",
       "summary": "lore_record: Triage bundle — stale doc fix + canvas aspect-fit + canvas-s"
+    },
+    {
+      "timestamp": 1779965974042,
+      "action": "tool-call",
+      "tool": "paradigm_session_checkpoint",
+      "summary": "Checkpoint: phase=validating, v1.0 media-bin + timeline + sidebar-drag bundle landed acros"
+    },
+    {
+      "timestamp": 1779965989573,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Open bugs after v1.0 media-bin + timeline + triage — handoff"
+    },
+    {
+      "timestamp": 1779966040645,
+      "action": "tool-call",
+      "tool": "paradigm_session_recover",
+      "summary": "session_recover"
+    },
+    {
+      "timestamp": 1779966144170,
+      "action": "tool-call",
+      "tool": "paradigm_lore_timeline",
+      "summary": "lore_timeline"
+    },
+    {
+      "timestamp": 1779966786465,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Root cause for v1.0 triage bugs: CLI loads npm studio v0.26."
     }
   ],
   "symbolsModified": [],

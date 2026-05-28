@@ -90,8 +90,8 @@ importers:
         specifier: workspace:*
         version: link:../mcp
       '@a-company/atelier-studio':
-        specifier: '>=0.25.1'
-        version: 0.26.1
+        specifier: workspace:^
+        version: link:../studio
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
         version: 1.26.0(zod@3.25.76)
@@ -406,33 +406,6 @@ importers:
         version: 3.2.4(@types/node@22.19.11)(happy-dom@17.6.3)(yaml@2.8.2)
 
 packages:
-
-  '@a-company/atelier-canvas@0.25.1':
-    resolution: {integrity: sha512-+3jS17w2Rq+1YeTqvPHqhUjG7DTOxHy7fTvkkba5C53d+QOmgS+dFLmSQqzMha2FK8Ulg/nxV78V/bxvkBqReQ==}
-
-  '@a-company/atelier-core@0.25.1':
-    resolution: {integrity: sha512-NqrR9kfsII9B+DWz8SV4lJfaVrVHvwQFrJECPfIQZXbjzVcBvDsSVYXZhY4edrX7r1bFuX37Ws2kjzj2kLjzeg==}
-
-  '@a-company/atelier-core@0.25.3':
-    resolution: {integrity: sha512-ZRuBggBonwio7D4uvJe4A0FBbjrf9Gid+C4hidxM6E5oRKxgqmJ2qcoczWRXyEr0sfQQtReQchR7Dg512ptQ0Q==}
-
-  '@a-company/atelier-math@0.25.1':
-    resolution: {integrity: sha512-Uwwd2etOxLLVNVpTryB7fDlZaGscQsfpQBg/0clCMpLcKMl+7FnO/4hD48CixJ92yTMvUV0Z+DbX/+S/iuTM7A==}
-
-  '@a-company/atelier-schema@0.25.1':
-    resolution: {integrity: sha512-inp/pWuiQvXWvC4Un7JrnEA5raiJYcU7GSN+sZuFBffjFNbdZO1akTaKneqKZff56IUJLpsSzKc+VWZsjOcNKA==}
-
-  '@a-company/atelier-schema@0.25.3':
-    resolution: {integrity: sha512-yxhcDdGej1JF8Aqq6KSJKHtDA/Kr83rAljlwYdijmETDqGsrxM9AeMVzTGW7MoPfbt/ZLNFNZsaw89QkSAKYzA==}
-
-  '@a-company/atelier-studio@0.26.1':
-    resolution: {integrity: sha512-vPBAzOtfcwqSojCw5edHrVtgVj8CMmt393iGtSbJEoCujIqEE9RmXTrd1lL1muSUDzg30/vfa8005hOVrWUXPg==}
-
-  '@a-company/atelier-types@0.25.1':
-    resolution: {integrity: sha512-S1fi20vNF2YYxDYWNsBBHwwRvkhATfAy4dfyThHbhbOcaEffIcKbGYh/4ZVZV91YhhsherbJsHRfXI7oebg4tw==}
-
-  '@a-company/atelier-types@0.25.3':
-    resolution: {integrity: sha512-wje09fWSNUOP3J2329p/7Q5pNQGxoosZd88zcsTgofck6zZ8y/wx8MbWcOzHTlTecNETaWYMCIyd+uD6Wzvskg==}
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -2025,52 +1998,6 @@ packages:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
-
-  '@a-company/atelier-canvas@0.25.1':
-    dependencies:
-      '@a-company/atelier-core': 0.25.1
-      '@a-company/atelier-math': 0.25.1
-      '@a-company/atelier-types': 0.25.1
-
-  '@a-company/atelier-core@0.25.1':
-    dependencies:
-      '@a-company/atelier-math': 0.25.1
-      '@a-company/atelier-schema': 0.25.1
-      '@a-company/atelier-types': 0.25.1
-
-  '@a-company/atelier-core@0.25.3':
-    dependencies:
-      '@a-company/atelier-math': 0.25.1
-      '@a-company/atelier-schema': 0.25.3
-      '@a-company/atelier-types': 0.25.3
-
-  '@a-company/atelier-math@0.25.1': {}
-
-  '@a-company/atelier-schema@0.25.1':
-    dependencies:
-      '@a-company/atelier-types': 0.25.1
-      yaml: 2.8.2
-      zod: 3.25.76
-
-  '@a-company/atelier-schema@0.25.3':
-    dependencies:
-      '@a-company/atelier-types': 0.25.3
-      yaml: 2.8.2
-      zod: 3.25.76
-
-  '@a-company/atelier-studio@0.26.1':
-    dependencies:
-      '@a-company/atelier-canvas': 0.25.1
-      '@a-company/atelier-core': 0.25.3
-      '@a-company/atelier-math': 0.25.1
-      '@a-company/atelier-schema': 0.25.3
-      '@a-company/atelier-types': 0.25.3
-      mp4-muxer: 5.2.2
-      webm-muxer: 5.1.4
-
-  '@a-company/atelier-types@0.25.1': {}
-
-  '@a-company/atelier-types@0.25.3': {}
 
   '@babel/code-frame@7.29.0':
     dependencies:

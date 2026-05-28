@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@a-company/atelier-mcp": "workspace:*",
-    "@a-company/atelier-studio": ">=0.25.1",
+    "@a-company/atelier-studio": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@napi-rs/canvas": "^0.1.0",
     "commander": "^13.0.0",
