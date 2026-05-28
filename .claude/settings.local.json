@@ -158,7 +158,13 @@
       "Bash(awk '/setActiveProject/ {print NR\": \"$0}' /Users/ascend/Documents/GitHub/a-atelier/packages/cli/src/lib/workspace.ts)",
       "Bash(echo \"\\(error count: $\\(pnpm -r exec tsc --noEmit 2>&1)",
       "Bash(paradigm aspect-drift *)",
-      "Bash(awk '/source-tagged-mutation:/,/appliesTo/' packages/cli/.purpose)"
+      "Bash(awk '/source-tagged-mutation:/,/appliesTo/' packages/cli/.purpose)",
+      "Bash(awk '/deleteProject/,/^}/' packages/cli/src/lib/workspace-delete.ts)",
+      "Bash(awk '/^export function deleteProject/,/^}/' packages/cli/src/lib/workspace-delete.ts)",
+      "Bash(awk '/^export/' packages/cli/src/lib/workspace-delete.ts)",
+      "Bash(awk -F'Tests' '{ print $2 }')",
+      "Bash(awk '{ sum += $1 } END { print \"TOTAL:\", sum }')",
+      "Bash(awk '/export function hasProjectMarker/,/^}/' packages/cli/src/lib/workspace.ts)"
     ]
   },
   "enableAllProjectMcpServers": true,

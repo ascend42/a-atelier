@@ -25,6 +25,7 @@ import {
   findWorkspace,
   isProjectDir,
   isValidProjectName,
+  hasProjectMarker,
   listProjects,
   readActiveProject,
   setActiveProject,
@@ -691,6 +692,13 @@ export async function handleCreateProject(
  * Resolve a project subdir name to its absolute directory inside the served
  * workspace, validating the name through `isValidProjectName` so a crafted
  * `..`-name can't escape. Returns null on invalid name or missing project.
+ *
+ * Post-flat-docs-pivot (v1.0.x): a project is identified by `hasProjectMarker`
+ * (either a legacy `project.atelier` OR an `.atelier/` metadata subdir). New
+ * projects created via `createProjectInWorkspace` are "lazy" — they have the
+ * `.atelier/` subdir but no auto-scaffolded `project.atelier`. Earlier this
+ * function required `project.atelier`, which produced "project not found"
+ * errors when creating docs in freshly-created projects.
  */
 export function resolveProjectInWorkspace(
   workspaceDir: string,
@@ -698,7 +706,7 @@ export function resolveProjectInWorkspace(
 ): string | null {
   if (!isValidProjectName(name)) return null;
   const dir = join(resolve(workspaceDir), name);
-  if (!existsSync(join(dir, "project.atelier"))) return null;
+  if (!hasProjectMarker(dir)) return null;
   return dir;
 }
 

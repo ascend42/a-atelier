@@ -910,5 +910,81 @@ describe("handleMediaIngestRequest — kind-aware dispatch", () => {
   });
 });
 
+// ─── handleDeleteProject — HTTP layer ───────────────────────────────────
+//
+// The project-delete HTTP handler had ZERO direct test coverage before this
+// suite. That gap surfaced when the flat-docs pivot let the user delete +
+// re-create projects: the lib-level deleteProject works (see
+// workspace-delete.test.ts) but the HTTP surface needs its own contract
+// locked so future refactors don't regress the wire shape.
+
+describe("handleDeleteProject — HTTP handler", () => {
+  let wsDir: string;
+
+  beforeEach(async () => {
+    wsDir = mkdtempSync(join(tmpdir(), "atelier-handle-delete-project-"));
+    writeFileSync(
+      join(wsDir, "workspace.atelier"),
+      `version: '1.0'\nname: testws\ncreated: '2026-05-28T00:00:00.000Z'\ndefault_mode: explicit\nprojects: []\n`,
+    );
+    mkdirSync(join(wsDir, ".atelier"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(wsDir, { recursive: true, force: true });
+  });
+
+  it("returns 200 + deleted report on a real project", async () => {
+    const { createProjectInWorkspace } = await import("./commands/init.js");
+    const { handleDeleteProject } = await import("./commands/studio.js");
+    await createProjectInWorkspace(wsDir, { name: "alpha" });
+    const result = handleDeleteProject(wsDir, "alpha");
+    expect(result.status).toBe(200);
+    const body = result.body as { deleted: boolean; name: string; wasActive: boolean; manifestUpdated: boolean };
+    expect(body.deleted).toBe(true);
+    expect(body.name).toBe("alpha");
+    // After delete, the dir is gone.
+    expect(existsSync(join(wsDir, "alpha"))).toBe(false);
+  });
+
+  it("returns 404 for a non-existent project", async () => {
+    const { handleDeleteProject } = await import("./commands/studio.js");
+    const result = handleDeleteProject(wsDir, "ghost");
+    expect(result.status).toBe(404);
+    const body = result.body as { error: string };
+    expect(body.error).toMatch(/not found/);
+  });
+
+  it("returns 400 for an invalid project name", async () => {
+    const { handleDeleteProject } = await import("./commands/studio.js");
+    expect(handleDeleteProject(wsDir, "../escape").status).toBe(400);
+    expect(handleDeleteProject(wsDir, ".hidden").status).toBe(400);
+    expect(handleDeleteProject(wsDir, "a/b").status).toBe(400);
+  });
+
+  it("returns 400 when the name is missing/non-string", async () => {
+    const { handleDeleteProject } = await import("./commands/studio.js");
+    expect(handleDeleteProject(wsDir, undefined).status).toBe(400);
+    expect(handleDeleteProject(wsDir, null).status).toBe(400);
+    expect(handleDeleteProject(wsDir, 123).status).toBe(400);
+  });
+
+  it("reports wasActive: true when the deleted project was active", async () => {
+    const { createProjectInWorkspace } = await import("./commands/init.js");
+    const { handleDeleteProject } = await import("./commands/studio.js");
+    await createProjectInWorkspace(wsDir, { name: "alpha" });
+    writeFileSync(
+      join(wsDir, ".atelier", "active.yaml"),
+      `version: '1.0'\nname: alpha\nset_at: '2026-05-28T00:00:00.000Z'\n`,
+    );
+    const result = handleDeleteProject(wsDir, "alpha");
+    expect(result.status).toBe(200);
+    const body = result.body as { wasActive: boolean };
+    expect(body.wasActive).toBe(true);
+    // active.yaml is cleared as a side effect of the cascade.
+    expect(existsSync(join(wsDir, ".atelier", "active.yaml"))).toBe(false);
+  });
+});
+
 // Defensive: keep the existsSync import referenced for tooling stability.
 void existsSync;
