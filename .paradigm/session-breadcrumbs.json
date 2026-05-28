@@ -1,56 +1,8 @@
 {
   "sessionId": "smplqhnx8",
   "startTime": 1779745452380,
-  "lastActivity": 1779988549166,
+  "lastActivity": 1779994650477,
   "breadcrumbs": [
-    {
-      "timestamp": 1779968001274,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Round 3 — BrowserVideoFrameProvider + srcResolver close the "
-    },
-    {
-      "timestamp": 1779968079925,
-      "action": "tool-call",
-      "tool": "paradigm_aspect_drift",
-      "summary": "aspect_drift"
-    },
-    {
-      "timestamp": 1779968510359,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
-    {
-      "timestamp": 1779968514423,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
-    {
-      "timestamp": 1779968517932,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
-    {
-      "timestamp": 1779968521519,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
-    {
-      "timestamp": 1779968525491,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
-    {
-      "timestamp": 1779968529544,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_add_aspect",
-      "summary": "purpose_add_aspect: packages/studio/.purpose"
-    },
     {
       "timestamp": 1779968537764,
       "action": "tool-call",
@@ -302,6 +254,54 @@
       "action": "tool-call",
       "tool": "paradigm_decision_record",
       "summary": "decision_record: v2.0 pivot — Atelier becomes a Hyperframes-management layer "
+    },
+    {
+      "timestamp": 1779994626075,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_init",
+      "summary": "purpose_init: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994636289,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994641359,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994642282,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994644834,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994647825,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994650309,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
+    },
+    {
+      "timestamp": 1779994659650,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [],

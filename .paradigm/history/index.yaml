@@ -1,5 +1,5 @@
 version: '1.0'
-generated: '2026-05-28T17:16:01.364Z'
+generated: '2026-05-28T18:56:22.392Z'
 by_symbol:
   '#atelier-types':
     symbol: '#atelier-types'
@@ -5182,6 +5182,60 @@ by_symbol:
     fragility: low
     recent:
       - *ref_17
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#atelier-v2':
+    symbol: '#atelier-v2'
+    total_changes: 1
+    last_modified: '2026-05-28T18:56:21Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - &ref_70
+        id: h0109
+        ts: '2026-05-28T18:56:21Z'
+        type: implement
+        symbols:
+          - '#atelier-v2'
+          - '#hyperframes-adapter'
+        author:
+          type: human
+          id: ascend
+        commit: c37b4a285fd0af797ea1dfb087785b5475941ea8
+        intent: feature
+        files:
+          - .paradigm/decisions/TD-2026-05-28-097.yaml
+          - .paradigm/events/compliance-history.jsonl
+          - .paradigm/events/stream.jsonl
+          - .paradigm/history/index.yaml
+          - .paradigm/lore/entries/2026-05-28/L-2026-05-28-ascend-184856-364.lore
+          - .paradigm/session-breadcrumbs.json
+          - docs/v2-hyperframes-migration.md
+          - packages/hyperframes-adapter/package.json
+          - packages/hyperframes-adapter/src/asset-injector.ts
+          - packages/hyperframes-adapter/src/design-to-css.ts
+          - packages/hyperframes-adapter/src/index.ts
+          - packages/hyperframes-adapter/src/producer-runner.ts
+          - packages/hyperframes-adapter/src/scaffolder.ts
+          - packages/hyperframes-adapter/src/storyboard-to-html.ts
+          - packages/hyperframes-adapter/tsconfig.json
+          - packages/hyperframes-adapter/tsup.config.ts
+          - pnpm-lock.yaml
+        description: 'feat(v2,#hyperframes-adapter): pivot foundation — Atelier becomes a Hyperframes-management layer'
+    contributors:
+      human:
+        - ascend
+      agent: []
+  '#hyperframes-adapter':
+    symbol: '#hyperframes-adapter'
+    total_changes: 1
+    last_modified: '2026-05-28T18:56:21Z'
+    stability_score: 1
+    fragility: low
+    recent:
+      - *ref_70
     contributors:
       human:
         - ascend

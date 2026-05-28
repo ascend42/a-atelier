@@ -2,17 +2,22 @@
   "$meta": {
     "version": "1.0.0",
     "project": "a-atelier",
-    "generatedAt": "2026-05-28T16:09:25.833Z",
+    "generatedAt": "2026-05-28T18:57:39.901Z",
     "paradigmVersion": "0.1.0",
     "sources": {
-      "purposeFiles": 14,
+      "purposeFiles": 15,
       "portalFiles": 2,
       "premiseFiles": 0
     },
     "componentTypes": {
       "component": 1,
       "hook": 2,
-      "service": 1
+      "service": 1,
+      "package": 1,
+      "emitter": 2,
+      "io": 1,
+      "orchestrator": 1,
+      "adapter": 1
     }
   },
   "components": {
@@ -529,6 +534,91 @@
       "visualTags": [],
       "related": []
     },
+    "#document-schema": {
+      "id": "#document-schema",
+      "name": "#document Schema",
+      "symbol": "##document-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
+      "visualTags": [],
+      "related": [
+        "#atelier-types"
+      ]
+    },
+    "#layer-schema": {
+      "id": "#layer-schema",
+      "name": "#layer Schema",
+      "symbol": "##layer-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)",
+      "visualTags": [],
+      "related": []
+    },
+    "#delta-schema": {
+      "id": "#delta-schema",
+      "name": "#delta Schema",
+      "symbol": "##delta-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
+      "visualTags": [],
+      "related": []
+    },
+    "#validation-functions": {
+      "id": "#validation-functions",
+      "name": "#validation Functions",
+      "symbol": "##validation-functions",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields",
+      "visualTags": [],
+      "related": [
+        "^valid-video-layer",
+        "^valid-recipe"
+      ]
+    },
+    "#recipe-schema": {
+      "id": "#recipe-schema",
+      "name": "#recipe Schema",
+      "symbol": "##recipe-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.",
+      "visualTags": [],
+      "related": []
+    },
+    "#yaml-parser": {
+      "id": "#yaml-parser",
+      "name": "#yaml Parser",
+      "symbol": "##yaml-parser",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
+      "visualTags": [],
+      "related": []
+    },
+    "#workspace-schema": {
+      "id": "#workspace-schema",
+      "name": "#workspace Schema",
+      "symbol": "##workspace-schema",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "WorkspaceManifestSchema — Zod schema for `workspace.atelier`, the YAML manifest at the root of an Atelier workspace (a layer above Project that holds multiple content Projects with shared creator-level config). Fields: version (literal \"1.0\"), name (display, default basename(dir) at create time), created (ISO 8601), default_mode (ambient|explicit — inherited by new projects via `atelier init`), projects? (advisory relative subdir names; on-disk truth wins — `listProjects` refreshes), description?. .strict() — unknown keys are hard errors so authoring typos surface at validate time, matching the recipe-schema posture. workspace.atelier is intentionally YAML (distinguishes it from project.atelier which is JSON) and shares the .atelier extension as a family marker; the two never collide in a single directory.",
+      "visualTags": [],
+      "related": []
+    },
+    "#artifact-schemas": {
+      "id": "#artifact-schemas",
+      "name": "#artifact Schemas",
+      "symbol": "##artifact-schemas",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).",
+      "visualTags": [],
+      "related": []
+    },
     "canvas-panel": {
       "id": "canvas-panel",
       "name": "Canvas Panel",
@@ -689,91 +779,6 @@
       "category": "components",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "Shared HTML5 drag-and-drop reorder utility — MutationObserver-based handle binding, accent-colored drop indicators, AbortController teardown",
-      "visualTags": [],
-      "related": []
-    },
-    "#document-schema": {
-      "id": "#document-schema",
-      "name": "#document Schema",
-      "symbol": "##document-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema — root Zod schema composing all sub-schemas",
-      "visualTags": [],
-      "related": [
-        "#atelier-types"
-      ]
-    },
-    "#layer-schema": {
-      "id": "#layer-schema",
-      "name": "#layer Schema",
-      "symbol": "##layer-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "LayerSchema and Visual discriminated union validation — includes VideoVisualSchema (startFrame, sourceOffset, sourceEnd, playbackRate, objectFit)",
-      "visualTags": [],
-      "related": []
-    },
-    "#delta-schema": {
-      "id": "#delta-schema",
-      "name": "#delta Schema",
-      "symbol": "##delta-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema with AnimatablePropertySchema (35 members, canonical source imported by MCP) and FrameRange refinement",
-      "visualTags": [],
-      "related": []
-    },
-    "#validation-functions": {
-      "id": "#validation-functions",
-      "name": "#validation Functions",
-      "symbol": "##validation-functions",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateDocument, validateLayer, validateDelta, validateVideoLayer, validateRecipe — typed results with error formatting; validateVideoLayer enforces ^valid-video-layer semantic constraints; validateRecipe enforces ^valid-recipe gate and warns on still-reserved Phase 3 fields",
-      "visualTags": [],
-      "related": [
-        "^valid-video-layer",
-        "^valid-recipe"
-      ]
-    },
-    "#recipe-schema": {
-      "id": "#recipe-schema",
-      "name": "#recipe Schema",
-      "symbol": "##recipe-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Studio Recipe Zod schemas — StudioRecipeSchema (top-level), SilencePolicySchema, CaptionStyleSchema, CaptionGroupingSchema (Phase 1); OverlayRulesSchema + OverlayHandleRuleSchema + OverlayPageNumberRuleSchema + OverlayTextStyleSchema + OverlayAnchorSchema (Phase 1.5 first-class; anchor enum, non-empty handle text, page-number format template validation — balanced braces, recognized {current}/{total} placeholders with optional :0Nd zero-pad). RESERVED_RECIPE_FIELDS still covers caption_highlight, transition_kit, palette, audio_policy, aspect_targets.",
-      "visualTags": [],
-      "related": []
-    },
-    "#yaml-parser": {
-      "id": "#yaml-parser",
-      "name": "#yaml Parser",
-      "symbol": "##yaml-parser",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier (YAML to validated doc) and serializeAtelier (doc to YAML)",
-      "visualTags": [],
-      "related": []
-    },
-    "#workspace-schema": {
-      "id": "#workspace-schema",
-      "name": "#workspace Schema",
-      "symbol": "##workspace-schema",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "WorkspaceManifestSchema — Zod schema for `workspace.atelier`, the YAML manifest at the root of an Atelier workspace (a layer above Project that holds multiple content Projects with shared creator-level config). Fields: version (literal \"1.0\"), name (display, default basename(dir) at create time), created (ISO 8601), default_mode (ambient|explicit — inherited by new projects via `atelier init`), projects? (advisory relative subdir names; on-disk truth wins — `listProjects` refreshes), description?. .strict() — unknown keys are hard errors so authoring typos surface at validate time, matching the recipe-schema posture. workspace.atelier is intentionally YAML (distinguishes it from project.atelier which is JSON) and shares the .atelier extension as a family marker; the two never collide in a single directory.",
-      "visualTags": [],
-      "related": []
-    },
-    "#artifact-schemas": {
-      "id": "#artifact-schemas",
-      "name": "#artifact Schemas",
-      "symbol": "##artifact-schemas",
-      "category": "components",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Front-of-pipeline artifact Zod schemas (Phase 2) — DesignArtifactSchema, ScriptArtifactSchema (discriminatedUnion on mode: narrated|carousel|text-only), StoryboardArtifactSchema; SlotRefSchema enforces closed-kind / open-tail vocabulary (kind ∈ image|video|audio|text|font|voice|logo); TechniqueLibrarySchema registers versioned technique sets (v1 ships text.split-reveal, image.ken-burns.slow, super.weight-pulse-on-keyword, background.color-shift-to-token); parseDesign/parseScript/parseStoryboard split YAML frontmatter from Markdown body and validate; validateArtifactSet runs cross-artifact rules (storyboard-id ⊆ script-ids ∪ b-roll.*, slot kind closure, technique-library membership, duration overrun = warn-only pre-VO).",
       "visualTags": [],
       "related": []
     },
@@ -1453,6 +1458,81 @@
       "description": "Audio playback state at a given frame — frameToTime, timeToFrame, shouldPlay/currentTime/volume computation",
       "visualTags": [],
       "related": []
+    },
+    "hyperframes-adapter": {
+      "id": "hyperframes-adapter",
+      "name": "Hyperframes Adapter",
+      "symbol": "#hyperframes-adapter",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "The v2 Atelier renderer bridge. Public API surface: scaffoldHyperframesProject (creates Hyperframes project dir from a doc-shaped input), runRender (thin wrapper over @hyperframes/producer's createRenderJob + executeRenderJob). Composed of 4 sub-components.",
+      "visualTags": [],
+      "related": [
+        "#design-to-css",
+        "#storyboard-to-html",
+        "#asset-injector",
+        "#scaffolder",
+        "#producer-runner"
+      ],
+      "componentType": "package"
+    },
+    "design-to-css": {
+      "id": "design-to-css",
+      "name": "Design To Css",
+      "symbol": "#design-to-css",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "Translate a DesignArtifact brand slice (palette + typography) into a :root CSS variables stylesheet for Hyperframes index.html. Pure function; no I/O. Naming convention: --brand-palette-&lt;role&gt;, --brand-font-&lt;usage&gt;.",
+      "visualTags": [],
+      "related": [],
+      "componentType": "emitter"
+    },
+    "storyboard-to-html": {
+      "id": "storyboard-to-html",
+      "name": "Storyboard To Html",
+      "symbol": "#storyboard-to-html",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "Produce a minimal Hyperframes index.html from a video filename + transcript segments + optional brand slice. Emits a single &lt;video&gt; with native audio + per-caption divs with data-start/data-duration timing. Pure function; no I/O. v0 scope: single-clip; full storyboard emission is v1.0 follow-up.",
+      "visualTags": [],
+      "related": [],
+      "componentType": "emitter"
+    },
+    "asset-injector": {
+      "id": "asset-injector",
+      "name": "Asset Injector",
+      "symbol": "#asset-injector",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "Copy or symlink creator media files into a Hyperframes project's assets/ dir. Symlinks by default (zero-copy fast iteration); falls back to copy on cross-filesystem failures. Idempotent — unlinks any prior dest before linking so re-scaffolding doesn't EEXIST.",
+      "visualTags": [],
+      "related": [],
+      "componentType": "io"
+    },
+    "scaffolder": {
+      "id": "scaffolder",
+      "name": "Scaffolder",
+      "symbol": "#scaffolder",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "Materialize a complete Hyperframes project from a doc-shaped input. Composes storyboard-to-html + asset-injector + meta.json emission. Idempotent: re-running over an existing scaffold updates index.html + meta.json + asset symlinks but never touches Hyperframes-managed dirs (renders/, snapshots/).",
+      "visualTags": [],
+      "related": [
+        "#storyboard-to-html",
+        "#asset-injector"
+      ],
+      "componentType": "orchestrator"
+    },
+    "producer-runner": {
+      "id": "producer-runner",
+      "name": "Producer Runner",
+      "symbol": "#producer-runner",
+      "category": "components",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/hyperframes-adapter/.purpose",
+      "description": "Thin wrapper around @hyperframes/producer's createRenderJob + executeRenderJob with Atelier-sensible defaults (MP4 H.264 at quality:high, integer fps converted to Hyperframes rational). Surfaces only the inputs the agent team works with (project dir, output path, dimensions, fps). Exposes progress + abort signal.",
+      "visualTags": [],
+      "related": [],
+      "componentType": "adapter"
     },
     "cli-lint": {
       "id": "cli-lint",
@@ -3810,6 +3890,197 @@
       "description": "escapeXml replaces exactly five entities — & < > \" ' — and & MUST be replaced first or the subsequent entity ampersands would be double-escaped. Applied to every user-supplied string emitted into markup (text content, fontFamily, image href), it is the boundary defense against malformed/injected SVG.",
       "related": []
     },
+    "document-shape-asymmetry": {
+      "id": "document-shape-asymmetry",
+      "name": "Document Shape Asymmetry",
+      "symbol": "~document-shape-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
+      "related": []
+    },
+    "visual-discriminated-union": {
+      "id": "visual-discriminated-union",
+      "name": "Visual Discriminated Union",
+      "symbol": "~visual-discriminated-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
+      "related": []
+    },
+    "video-bound-asymmetry": {
+      "id": "video-bound-asymmetry",
+      "name": "Video Bound Asymmetry",
+      "symbol": "~video-bound-asymmetry",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
+      "related": []
+    },
+    "layer-clamps-and-min-points": {
+      "id": "layer-clamps-and-min-points",
+      "name": "Layer Clamps And Min Points",
+      "symbol": "~layer-clamps-and-min-points",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
+      "related": []
+    },
+    "animatable-property-canonical-enum": {
+      "id": "animatable-property-canonical-enum",
+      "name": "Animatable Property Canonical Enum",
+      "symbol": "~animatable-property-canonical-enum",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
+      "related": []
+    },
+    "frame-range-ordering-refinement": {
+      "id": "frame-range-ordering-refinement",
+      "name": "Frame Range Ordering Refinement",
+      "symbol": "~frame-range-ordering-refinement",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
+      "related": []
+    },
+    "delta-values-unvalidated-at-parse": {
+      "id": "delta-values-unvalidated-at-parse",
+      "name": "Delta Values Unvalidated At Parse",
+      "symbol": "~delta-values-unvalidated-at-parse",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
+      "related": []
+    },
+    "flat-ai-readable-error-shape": {
+      "id": "flat-ai-readable-error-shape",
+      "name": "Flat Ai Readable Error Shape",
+      "symbol": "~flat-ai-readable-error-shape",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
+      "related": []
+    },
+    "video-semantic-checks-beyond-zod": {
+      "id": "video-semantic-checks-beyond-zod",
+      "name": "Video Semantic Checks Beyond Zod",
+      "symbol": "~video-semantic-checks-beyond-zod",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
+      "related": [
+        "^valid-video-layer"
+      ]
+    },
+    "recipe-warnings-side-channel": {
+      "id": "recipe-warnings-side-channel",
+      "name": "Recipe Warnings Side Channel",
+      "symbol": "~recipe-warnings-side-channel",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
+      "related": []
+    },
+    "recipe-strict-no-unknown-keys": {
+      "id": "recipe-strict-no-unknown-keys",
+      "name": "Recipe Strict No Unknown Keys",
+      "symbol": "~recipe-strict-no-unknown-keys",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
+      "related": []
+    },
+    "page-number-format-template-syntax": {
+      "id": "page-number-format-template-syntax",
+      "name": "Page Number Format Template Syntax",
+      "symbol": "~page-number-format-template-syntax",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
+      "related": []
+    },
+    "recipe-phase-split-strict-vs-opaque": {
+      "id": "recipe-phase-split-strict-vs-opaque",
+      "name": "Recipe Phase Split Strict Vs Opaque",
+      "symbol": "~recipe-phase-split-strict-vs-opaque",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
+      "related": []
+    },
+    "yaml-parse-never-throws": {
+      "id": "yaml-parse-never-throws",
+      "name": "Yaml Parse Never Throws",
+      "symbol": "~yaml-parse-never-throws",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
+      "related": []
+    },
+    "artifact-slot-closed-kind-open-tail": {
+      "id": "artifact-slot-closed-kind-open-tail",
+      "name": "Artifact Slot Closed Kind Open Tail",
+      "symbol": "~artifact-slot-closed-kind-open-tail",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "SlotRefSchema enforces a hybrid contract — the first dot-separated segment (kind) is a CLOSED Zod enum (image|video|audio|text|font|voice|logo); everything after the first dot is OPEN and creator-extensible, with the only structural rule being ≥1 non-empty tail segment. This is what reconciles the artifact spec's own examples mixing two-segment (font.display) and four-segment (audio.sfx.transition.whoosh) refs while still failing fast on a typo'd kind.",
+      "related": []
+    },
+    "artifact-script-discriminated-union": {
+      "id": "artifact-script-discriminated-union",
+      "name": "Artifact Script Discriminated Union",
+      "symbol": "~artifact-script-discriminated-union",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "ScriptArtifactSchema is a z.discriminatedUnion on the literal \"mode\" field across narrated | carousel | text-only — narrated has the four ordered blocks (hook/story/proof/cta), carousel and text-only use a flat beats list. A wrong or missing mode yields a single clear error instead of unioning every branch error. Adding a new script mode requires both a literal(\"mode\") member and a union entry.",
+      "related": []
+    },
+    "artifact-validator-result-shape-deviates-from-recipe-idiom": {
+      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom",
+      "name": "Artifact Validator Result Shape Deviates From Recipe Idiom",
+      "symbol": "~artifact-validator-result-shape-deviates-from-recipe-idiom",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "validateArtifactSet returns { ok: boolean, warnings: string[], errors: string[] } — intentionally different from validateRecipe's { success: true, warnings?: [] } idiom. The artifacts surface validates multiple independent rules whose severities differ (some warn-only pre-VO, others hard fails) and flattening to a single discriminated result loses that. Callers handle warn vs. error decisions themselves; the validator never throws.",
+      "related": []
+    },
+    "artifact-technique-library-validated-cross-artifact": {
+      "id": "artifact-technique-library-validated-cross-artifact",
+      "name": "Artifact Technique Library Validated Cross Artifact",
+      "symbol": "~artifact-technique-library-validated-cross-artifact",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "StoryboardArtifactSchema validates techniques as `string[]` at the pure-Zod level — the closed-enum membership check happens in validateArtifactSet, which resolves the active library via technique_library_version (integer; per artifact spec §9 Q4). This keeps the schema version-agnostic while still hard-failing on unknown technique strings at validate time. v1 ships four techniques drawn from the artifact spec's STORYBOARD EXAMPLE.",
+      "related": []
+    },
+    "artifact-b-roll-id-exemption": {
+      "id": "artifact-b-roll-id-exemption",
+      "name": "Artifact B Roll Id Exemption",
+      "symbol": "~artifact-b-roll-id-exemption",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "Cross-artifact beat-id matching has one explicit exemption — a STORYBOARD beat whose id starts with `b-roll.` does NOT need a matching SCRIPT beat. This is what lets Lux add storyboard-only B-roll beats without forcing Quill to write a corresponding script line. The prefix is checked literally via String#startsWith('b-roll.'); any other dot-namespaced id (e.g. `intro.cards`) still requires a script match.",
+      "related": []
+    },
+    "artifact-parser-frontmatter-plus-body-universal": {
+      "id": "artifact-parser-frontmatter-plus-body-universal",
+      "name": "Artifact Parser Frontmatter Plus Body Universal",
+      "symbol": "~artifact-parser-frontmatter-plus-body-universal",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "All three artifact parsers share the same outer shape — leading `---` fence, YAML frontmatter mapping, closing `---` fence, then a Markdown body. splitFrontmatter() is the shared splitter (rejects missing-fence with a clear error and never throws on otherwise-valid YAML failures without context). Per-artifact parsers then lift body content into typed fields: DESIGN keeps the body verbatim, SCRIPT extracts `# Hook/Story/Proof/CTA` H1 lists in narrated mode (flat YAML list otherwise), STORYBOARD extracts `## <beat-id>` H2 sections each with a YAML mapping. Beats live in the body (not frontmatter) so single-beat edits diff cleanly — the load-bearing re-entry property per artifact spec §7.",
+      "related": []
+    },
+    "yaml-safe-by-default-data-only": {
+      "id": "yaml-safe-by-default-data-only",
+      "name": "Yaml Safe By Default Data Only",
+      "symbol": "~yaml-safe-by-default-data-only",
+      "category": "aspects",
+      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
+      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
+      "related": []
+    },
     "apply-mutation-one-tick-suppress": {
       "id": "apply-mutation-one-tick-suppress",
       "name": "Apply Mutation One Tick Suppress",
@@ -4134,197 +4405,6 @@
       "category": "aspects",
       "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/studio/.purpose",
       "description": "All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.",
-      "related": []
-    },
-    "document-shape-asymmetry": {
-      "id": "document-shape-asymmetry",
-      "name": "Document Shape Asymmetry",
-      "symbol": "~document-shape-asymmetry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AtelierDocumentSchema is pure composition with one load-bearing asymmetry — layers is an ARRAY (order-significant) while states is a RECORD keyed by state name; canvas width/height/fps must all be positive integers (z.number().int().positive). Mixing these up (record of layers, array of states) silently breaks every downstream resolver.",
-      "related": []
-    },
-    "visual-discriminated-union": {
-      "id": "visual-discriminated-union",
-      "name": "Visual Discriminated Union",
-      "symbol": "~visual-discriminated-union",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VisualSchema is a discriminatedUnion on the literal \"type\" field across shape/text/image/video/group/ref — Zod uses type to pick exactly one branch, so a wrong or missing type yields a single clear error instead of unioning every branch error. Adding a new visual kind requires both a literal(\"type\") member and a union entry.",
-      "related": []
-    },
-    "video-bound-asymmetry": {
-      "id": "video-bound-asymmetry",
-      "name": "Video Bound Asymmetry",
-      "symbol": "~video-bound-asymmetry",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "VideoVisual numeric bounds are deliberately asymmetric — sourceOffset is min(0) (a 0-second start is valid) but sourceEnd is positive() (an end of 0 is meaningless), playbackRate is positive(), and volume is clamped min(0).max(1). These are Zod-level shape checks only; the semantic sourceEnd > sourceOffset relation is enforced separately by validateVideoLayer.",
-      "related": []
-    },
-    "layer-clamps-and-min-points": {
-      "id": "layer-clamps-and-min-points",
-      "name": "Layer Clamps And Min Points",
-      "symbol": "~layer-clamps-and-min-points",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Layer normalized properties are clamped to physical ranges — opacity and tint.amount are min(0).max(1), and a MotionPath must have at least 2 points (min(2)) since a path needs a start and an end. assetId/id/src use min(1) so empty strings are rejected as missing rather than accepted as blank.",
-      "related": []
-    },
-    "animatable-property-canonical-enum": {
-      "id": "animatable-property-canonical-enum",
-      "name": "Animatable Property Canonical Enum",
-      "symbol": "~animatable-property-canonical-enum",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "AnimatablePropertySchema is THE canonical enumeration of every animatable property path (frame.x, opacity, visual.fill.color, tint.amount, etc.) and is imported by the MCP layer as the single source of truth. A delta whose property is not in this enum fails validation — adding a new animatable property means editing this list, not just the resolver.",
-      "related": []
-    },
-    "frame-range-ordering-refinement": {
-      "id": "frame-range-ordering-refinement",
-      "name": "Frame Range Ordering Refinement",
-      "symbol": "~frame-range-ordering-refinement",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "FrameRangeSchema is a 2-tuple of non-negative integers (min(0)) with a refine guaranteeing end >= start, so a range is always well-ordered. Note end == start is permitted (zero-length / instantaneous range), matching the resolver treating start == end as instantaneous progress 1.",
-      "related": []
-    },
-    "delta-values-unvalidated-at-parse": {
-      "id": "delta-values-unvalidated-at-parse",
-      "name": "Delta Values Unvalidated At Parse",
-      "symbol": "~delta-values-unvalidated-at-parse",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "DeltaSchema declares from and to as z.unknown() — their type compatibility with the target property (number vs hex color vs boolean) is intentionally NOT checked at parse time. Value/type correctness is the resolver's interpolateValue concern, so a delta can parse cleanly yet still carry a mismatched from/to.",
-      "related": []
-    },
-    "flat-ai-readable-error-shape": {
-      "id": "flat-ai-readable-error-shape",
-      "name": "Flat Ai Readable Error Shape",
-      "symbol": "~flat-ai-readable-error-shape",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "formatErrors flattens every Zod issue into { path, message } where path is the issue path joined with \".\" and falls back to \"(root)\" for top-level errors. This flat shape is the contract the MCP/AI layer relies on — nested Zod error trees never leak out, so callers can render or reason over a simple list.",
-      "related": []
-    },
-    "video-semantic-checks-beyond-zod": {
-      "id": "video-semantic-checks-beyond-zod",
-      "name": "Video Semantic Checks Beyond Zod",
-      "symbol": "~video-semantic-checks-beyond-zod",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateVideoLayer enforces the ^valid-video-layer constraints that Zod cannot express — sourceEnd must be > the effective sourceOffset (defaulting to 0), and when a videoMetaDuration is supplied both sourceEnd and sourceOffset must stay within it. Error messages interpolate the actual offending values so an author sees the exact numbers, not just a rule name.",
-      "related": [
-        "^valid-video-layer"
-      ]
-    },
-    "recipe-warnings-side-channel": {
-      "id": "recipe-warnings-side-channel",
-      "name": "Recipe Warnings Side Channel",
-      "symbol": "~recipe-warnings-side-channel",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateRecipe returns success: true for a structurally valid recipe but attaches a separate warnings array (not errors) for every RESERVED_RECIPE_FIELDS member that is present — reserved Phase 3 fields are forward-compatible, not fatal. The warnings key is only added when non-empty, so consumers must treat its absence as zero warnings.",
-      "related": []
-    },
-    "recipe-strict-no-unknown-keys": {
-      "id": "recipe-strict-no-unknown-keys",
-      "name": "Recipe Strict No Unknown Keys",
-      "symbol": "~recipe-strict-no-unknown-keys",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Every recipe block is .strict() — SilencePolicy, CaptionStyle, CaptionGrouping, OverlayTextStyle, the overlay rules, OverlayRules, and StudioRecipe itself all reject unknown keys. A typo'd or unsupported field is a hard validation error, not silently dropped, which is what makes recipes a precise authoring contract rather than a loose bag of options.",
-      "related": []
-    },
-    "page-number-format-template-syntax": {
-      "id": "page-number-format-template-syntax",
-      "name": "Page Number Format Template Syntax",
-      "symbol": "~page-number-format-template-syntax",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validatePageNumberFormat is a superRefine guarding the page-number template: it rejects an empty string, requires balanced braces (count of \"{\" == count of \"}\"), requires every \"{...}\" group to match (current|total) with an optional \":0Nd\" zero-pad suffix, and requires at least one {current} or {total} placeholder. It validates SYNTAX only — render-time substitution is a separate concern.",
-      "related": []
-    },
-    "recipe-phase-split-strict-vs-opaque": {
-      "id": "recipe-phase-split-strict-vs-opaque",
-      "name": "Recipe Phase Split Strict Vs Opaque",
-      "symbol": "~recipe-phase-split-strict-vs-opaque",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "StudioRecipe splits fields by phase — Phase 1 / 1.5 blocks (silence_policy, caption_style, caption_grouping, overlay_rules) are fully typed and strictly validated, while Phase 3 reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) are z.unknown() and pass through parse-opaque. RESERVED_RECIPE_FIELDS is the single tuple that both documents the split and drives the validateRecipe warnings.",
-      "related": []
-    },
-    "yaml-parse-never-throws": {
-      "id": "yaml-parse-never-throws",
-      "name": "Yaml Parse Never Throws",
-      "symbol": "~yaml-parse-never-throws",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier wraps yamlParse in try/catch and converts a parse failure into a ValidationResult with path \"(yaml)\" rather than throwing, so YAML syntax errors and schema errors flow back through the SAME ValidationResult shape. Callers handle one unified failure type instead of mixing exceptions with result objects.",
-      "related": []
-    },
-    "artifact-slot-closed-kind-open-tail": {
-      "id": "artifact-slot-closed-kind-open-tail",
-      "name": "Artifact Slot Closed Kind Open Tail",
-      "symbol": "~artifact-slot-closed-kind-open-tail",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "SlotRefSchema enforces a hybrid contract — the first dot-separated segment (kind) is a CLOSED Zod enum (image|video|audio|text|font|voice|logo); everything after the first dot is OPEN and creator-extensible, with the only structural rule being ≥1 non-empty tail segment. This is what reconciles the artifact spec's own examples mixing two-segment (font.display) and four-segment (audio.sfx.transition.whoosh) refs while still failing fast on a typo'd kind.",
-      "related": []
-    },
-    "artifact-script-discriminated-union": {
-      "id": "artifact-script-discriminated-union",
-      "name": "Artifact Script Discriminated Union",
-      "symbol": "~artifact-script-discriminated-union",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "ScriptArtifactSchema is a z.discriminatedUnion on the literal \"mode\" field across narrated | carousel | text-only — narrated has the four ordered blocks (hook/story/proof/cta), carousel and text-only use a flat beats list. A wrong or missing mode yields a single clear error instead of unioning every branch error. Adding a new script mode requires both a literal(\"mode\") member and a union entry.",
-      "related": []
-    },
-    "artifact-validator-result-shape-deviates-from-recipe-idiom": {
-      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom",
-      "name": "Artifact Validator Result Shape Deviates From Recipe Idiom",
-      "symbol": "~artifact-validator-result-shape-deviates-from-recipe-idiom",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "validateArtifactSet returns { ok: boolean, warnings: string[], errors: string[] } — intentionally different from validateRecipe's { success: true, warnings?: [] } idiom. The artifacts surface validates multiple independent rules whose severities differ (some warn-only pre-VO, others hard fails) and flattening to a single discriminated result loses that. Callers handle warn vs. error decisions themselves; the validator never throws.",
-      "related": []
-    },
-    "artifact-technique-library-validated-cross-artifact": {
-      "id": "artifact-technique-library-validated-cross-artifact",
-      "name": "Artifact Technique Library Validated Cross Artifact",
-      "symbol": "~artifact-technique-library-validated-cross-artifact",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "StoryboardArtifactSchema validates techniques as `string[]` at the pure-Zod level — the closed-enum membership check happens in validateArtifactSet, which resolves the active library via technique_library_version (integer; per artifact spec §9 Q4). This keeps the schema version-agnostic while still hard-failing on unknown technique strings at validate time. v1 ships four techniques drawn from the artifact spec's STORYBOARD EXAMPLE.",
-      "related": []
-    },
-    "artifact-b-roll-id-exemption": {
-      "id": "artifact-b-roll-id-exemption",
-      "name": "Artifact B Roll Id Exemption",
-      "symbol": "~artifact-b-roll-id-exemption",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "Cross-artifact beat-id matching has one explicit exemption — a STORYBOARD beat whose id starts with `b-roll.` does NOT need a matching SCRIPT beat. This is what lets Lux add storyboard-only B-roll beats without forcing Quill to write a corresponding script line. The prefix is checked literally via String#startsWith('b-roll.'); any other dot-namespaced id (e.g. `intro.cards`) still requires a script match.",
-      "related": []
-    },
-    "artifact-parser-frontmatter-plus-body-universal": {
-      "id": "artifact-parser-frontmatter-plus-body-universal",
-      "name": "Artifact Parser Frontmatter Plus Body Universal",
-      "symbol": "~artifact-parser-frontmatter-plus-body-universal",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "All three artifact parsers share the same outer shape — leading `---` fence, YAML frontmatter mapping, closing `---` fence, then a Markdown body. splitFrontmatter() is the shared splitter (rejects missing-fence with a clear error and never throws on otherwise-valid YAML failures without context). Per-artifact parsers then lift body content into typed fields: DESIGN keeps the body verbatim, SCRIPT extracts `# Hook/Story/Proof/CTA` H1 lists in narrated mode (flat YAML list otherwise), STORYBOARD extracts `## <beat-id>` H2 sections each with a YAML mapping. Beats live in the body (not frontmatter) so single-beat edits diff cleanly — the load-bearing re-entry property per artifact spec §7.",
-      "related": []
-    },
-    "yaml-safe-by-default-data-only": {
-      "id": "yaml-safe-by-default-data-only",
-      "name": "Yaml Safe By Default Data Only",
-      "symbol": "~yaml-safe-by-default-data-only",
-      "category": "aspects",
-      "path": "/Users/ascend/Documents/GitHub/a-atelier/packages/schema/.purpose",
-      "description": "parseAtelier uses the yaml package's parse, which returns plain JavaScript data (objects, arrays, scalars) with no tag-based code execution — untrusted document YAML cannot instantiate arbitrary classes or run code. The parsed value is then immediately fed through validateDocument, so raw untrusted input is never trusted before schema validation.",
       "related": []
     },
     "canvas-intrinsic-not-css-size": {
@@ -6594,6 +6674,38 @@
       "category": "components",
       "id": "#svg-properties"
     },
+    "##document-schema": {
+      "category": "components",
+      "id": "#document-schema"
+    },
+    "##layer-schema": {
+      "category": "components",
+      "id": "#layer-schema"
+    },
+    "##delta-schema": {
+      "category": "components",
+      "id": "#delta-schema"
+    },
+    "##validation-functions": {
+      "category": "components",
+      "id": "#validation-functions"
+    },
+    "##recipe-schema": {
+      "category": "components",
+      "id": "#recipe-schema"
+    },
+    "##yaml-parser": {
+      "category": "components",
+      "id": "#yaml-parser"
+    },
+    "##workspace-schema": {
+      "category": "components",
+      "id": "#workspace-schema"
+    },
+    "##artifact-schemas": {
+      "category": "components",
+      "id": "#artifact-schemas"
+    },
     "#canvas-panel": {
       "category": "components",
       "id": "canvas-panel"
@@ -6649,38 +6761,6 @@
     "#drag-reorder": {
       "category": "components",
       "id": "drag-reorder"
-    },
-    "##document-schema": {
-      "category": "components",
-      "id": "#document-schema"
-    },
-    "##layer-schema": {
-      "category": "components",
-      "id": "#layer-schema"
-    },
-    "##delta-schema": {
-      "category": "components",
-      "id": "#delta-schema"
-    },
-    "##validation-functions": {
-      "category": "components",
-      "id": "#validation-functions"
-    },
-    "##recipe-schema": {
-      "category": "components",
-      "id": "#recipe-schema"
-    },
-    "##yaml-parser": {
-      "category": "components",
-      "id": "#yaml-parser"
-    },
-    "##workspace-schema": {
-      "category": "components",
-      "id": "#workspace-schema"
-    },
-    "##artifact-schemas": {
-      "category": "components",
-      "id": "#artifact-schemas"
     },
     "#animation": {
       "category": "components",
@@ -6933,6 +7013,30 @@
     "##audio-timing": {
       "category": "components",
       "id": "#audio-timing"
+    },
+    "#hyperframes-adapter": {
+      "category": "components",
+      "id": "hyperframes-adapter"
+    },
+    "#design-to-css": {
+      "category": "components",
+      "id": "design-to-css"
+    },
+    "#storyboard-to-html": {
+      "category": "components",
+      "id": "storyboard-to-html"
+    },
+    "#asset-injector": {
+      "category": "components",
+      "id": "asset-injector"
+    },
+    "#scaffolder": {
+      "category": "components",
+      "id": "scaffolder"
+    },
+    "#producer-runner": {
+      "category": "components",
+      "id": "producer-runner"
     },
     "#cli-lint": {
       "category": "components",
@@ -7554,6 +7658,90 @@
       "category": "aspects",
       "id": "escape-xml-five-entities"
     },
+    "~document-shape-asymmetry": {
+      "category": "aspects",
+      "id": "document-shape-asymmetry"
+    },
+    "~visual-discriminated-union": {
+      "category": "aspects",
+      "id": "visual-discriminated-union"
+    },
+    "~video-bound-asymmetry": {
+      "category": "aspects",
+      "id": "video-bound-asymmetry"
+    },
+    "~layer-clamps-and-min-points": {
+      "category": "aspects",
+      "id": "layer-clamps-and-min-points"
+    },
+    "~animatable-property-canonical-enum": {
+      "category": "aspects",
+      "id": "animatable-property-canonical-enum"
+    },
+    "~frame-range-ordering-refinement": {
+      "category": "aspects",
+      "id": "frame-range-ordering-refinement"
+    },
+    "~delta-values-unvalidated-at-parse": {
+      "category": "aspects",
+      "id": "delta-values-unvalidated-at-parse"
+    },
+    "~flat-ai-readable-error-shape": {
+      "category": "aspects",
+      "id": "flat-ai-readable-error-shape"
+    },
+    "~video-semantic-checks-beyond-zod": {
+      "category": "aspects",
+      "id": "video-semantic-checks-beyond-zod"
+    },
+    "~recipe-warnings-side-channel": {
+      "category": "aspects",
+      "id": "recipe-warnings-side-channel"
+    },
+    "~recipe-strict-no-unknown-keys": {
+      "category": "aspects",
+      "id": "recipe-strict-no-unknown-keys"
+    },
+    "~page-number-format-template-syntax": {
+      "category": "aspects",
+      "id": "page-number-format-template-syntax"
+    },
+    "~recipe-phase-split-strict-vs-opaque": {
+      "category": "aspects",
+      "id": "recipe-phase-split-strict-vs-opaque"
+    },
+    "~yaml-parse-never-throws": {
+      "category": "aspects",
+      "id": "yaml-parse-never-throws"
+    },
+    "~artifact-slot-closed-kind-open-tail": {
+      "category": "aspects",
+      "id": "artifact-slot-closed-kind-open-tail"
+    },
+    "~artifact-script-discriminated-union": {
+      "category": "aspects",
+      "id": "artifact-script-discriminated-union"
+    },
+    "~artifact-validator-result-shape-deviates-from-recipe-idiom": {
+      "category": "aspects",
+      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom"
+    },
+    "~artifact-technique-library-validated-cross-artifact": {
+      "category": "aspects",
+      "id": "artifact-technique-library-validated-cross-artifact"
+    },
+    "~artifact-b-roll-id-exemption": {
+      "category": "aspects",
+      "id": "artifact-b-roll-id-exemption"
+    },
+    "~artifact-parser-frontmatter-plus-body-universal": {
+      "category": "aspects",
+      "id": "artifact-parser-frontmatter-plus-body-universal"
+    },
+    "~yaml-safe-by-default-data-only": {
+      "category": "aspects",
+      "id": "yaml-safe-by-default-data-only"
+    },
     "~apply-mutation-one-tick-suppress": {
       "category": "aspects",
       "id": "apply-mutation-one-tick-suppress"
@@ -7689,90 +7877,6 @@
     "~drag-reorder-aborts-clean": {
       "category": "aspects",
       "id": "drag-reorder-aborts-clean"
-    },
-    "~document-shape-asymmetry": {
-      "category": "aspects",
-      "id": "document-shape-asymmetry"
-    },
-    "~visual-discriminated-union": {
-      "category": "aspects",
-      "id": "visual-discriminated-union"
-    },
-    "~video-bound-asymmetry": {
-      "category": "aspects",
-      "id": "video-bound-asymmetry"
-    },
-    "~layer-clamps-and-min-points": {
-      "category": "aspects",
-      "id": "layer-clamps-and-min-points"
-    },
-    "~animatable-property-canonical-enum": {
-      "category": "aspects",
-      "id": "animatable-property-canonical-enum"
-    },
-    "~frame-range-ordering-refinement": {
-      "category": "aspects",
-      "id": "frame-range-ordering-refinement"
-    },
-    "~delta-values-unvalidated-at-parse": {
-      "category": "aspects",
-      "id": "delta-values-unvalidated-at-parse"
-    },
-    "~flat-ai-readable-error-shape": {
-      "category": "aspects",
-      "id": "flat-ai-readable-error-shape"
-    },
-    "~video-semantic-checks-beyond-zod": {
-      "category": "aspects",
-      "id": "video-semantic-checks-beyond-zod"
-    },
-    "~recipe-warnings-side-channel": {
-      "category": "aspects",
-      "id": "recipe-warnings-side-channel"
-    },
-    "~recipe-strict-no-unknown-keys": {
-      "category": "aspects",
-      "id": "recipe-strict-no-unknown-keys"
-    },
-    "~page-number-format-template-syntax": {
-      "category": "aspects",
-      "id": "page-number-format-template-syntax"
-    },
-    "~recipe-phase-split-strict-vs-opaque": {
-      "category": "aspects",
-      "id": "recipe-phase-split-strict-vs-opaque"
-    },
-    "~yaml-parse-never-throws": {
-      "category": "aspects",
-      "id": "yaml-parse-never-throws"
-    },
-    "~artifact-slot-closed-kind-open-tail": {
-      "category": "aspects",
-      "id": "artifact-slot-closed-kind-open-tail"
-    },
-    "~artifact-script-discriminated-union": {
-      "category": "aspects",
-      "id": "artifact-script-discriminated-union"
-    },
-    "~artifact-validator-result-shape-deviates-from-recipe-idiom": {
-      "category": "aspects",
-      "id": "artifact-validator-result-shape-deviates-from-recipe-idiom"
-    },
-    "~artifact-technique-library-validated-cross-artifact": {
-      "category": "aspects",
-      "id": "artifact-technique-library-validated-cross-artifact"
-    },
-    "~artifact-b-roll-id-exemption": {
-      "category": "aspects",
-      "id": "artifact-b-roll-id-exemption"
-    },
-    "~artifact-parser-frontmatter-plus-body-universal": {
-      "category": "aspects",
-      "id": "artifact-parser-frontmatter-plus-body-universal"
-    },
-    "~yaml-safe-by-default-data-only": {
-      "category": "aspects",
-      "id": "yaml-safe-by-default-data-only"
     },
     "~canvas-intrinsic-not-css-size": {
       "category": "aspects",
