@@ -7,7 +7,7 @@
 
 import type { AtelierDocument } from "@a-company/atelier-types";
 import type { ImageCache } from "@a-company/atelier-canvas";
-import { exportDocument, supportsWebCodecs, type ExportFormat, type ExportResult } from "./video-exporter.js";
+import { exportDocument, supportsWebCodecs, type ExportFormat, type ExportResult, type VideoSeekResolver } from "./video-exporter.js";
 
 export class ExportDialog {
   private overlay: HTMLElement | null = null;
@@ -20,15 +20,26 @@ export class ExportDialog {
    * Mount the export overlay into the given parent element.
    * Typically called with the studio root.
    */
+  /**
+   * `videoSeek` — async per-frame video resolver. Pass
+   * `provider.awaitSeek.bind(provider)` from the canvas-panel's
+   * BrowserVideoFrameProvider. Without it, video layers don't render in
+   * the export output (silently no-op via renderFrame's `if (provider)`
+   * guard) — the bug owner caught in animation (1).mp4.
+   */
+  private videoSeek: VideoSeekResolver | undefined;
+
   show(
     doc: AtelierDocument,
     canvas: HTMLCanvasElement,
     imageCache: ImageCache,
     parentEl: HTMLElement,
     filename?: string,
+    videoSeek?: VideoSeekResolver,
   ): void {
     this.filename = filename ?? null;
     this.parentEl = parentEl;
+    this.videoSeek = videoSeek;
 
     // Overlay
     this.overlay = document.createElement("div");
@@ -178,6 +189,7 @@ export class ExportDialog {
 
     exportDocument(doc, canvas, imageCache, {
       format,
+      videoSeek: this.videoSeek,
       onProgress: ({ frame, total, percent }) => {
         progress.value = percent;
         statusText.textContent = `Rendering frame ${frame} / ${total}`;

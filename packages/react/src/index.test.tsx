@@ -15,6 +15,7 @@ function createMockCanvas(): HTMLCanvasElement {
     scale: vi.fn(),
     fillRect: vi.fn(),
     strokeRect: vi.fn(),
+    clearRect: vi.fn(),
     beginPath: vi.fn(),
     closePath: vi.fn(),
     moveTo: vi.fn(),

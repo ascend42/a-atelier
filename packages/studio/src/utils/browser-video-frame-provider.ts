@@ -173,6 +173,50 @@ export class BrowserVideoFrameProvider {
   }
 
   /**
+   * Async seek-and-wait — used by the deterministic frame-by-frame export
+   * pipeline. Issues `currentTime = sourceTime` and resolves on the next
+   * `seeked` event so the caller can be sure drawImage will paint the
+   * intended frame (the sync provider's null-return-and-retry model doesn't
+   * work for export, which needs to encode every frame exactly once in
+   * order). Lazy-creates + waits for `loadeddata` on first call for a src
+   * so cold exports work too.
+   */
+  async awaitSeek(src: string, sourceTime: number): Promise<HTMLVideoElement> {
+    const resolved = this.srcResolver(src);
+    let entry = VIDEO_CACHE.get(resolved);
+    if (!entry) {
+      entry = this.create(resolved);
+      VIDEO_CACHE.set(resolved, entry);
+    }
+    if (!entry.ready) {
+      await new Promise<void>((resolve) => {
+        const handler = (): void => {
+          entry!.video.removeEventListener("loadeddata", handler);
+          resolve();
+        };
+        entry!.video.addEventListener("loadeddata", handler);
+      });
+      entry.ready = true;
+    }
+    // Already at the right time within epsilon — no seek needed.
+    if (Math.abs(entry.video.currentTime - sourceTime) <= SEEK_EPSILON_S) {
+      return entry.video;
+    }
+    await new Promise<void>((resolve) => {
+      const handler = (): void => {
+        entry!.video.removeEventListener("seeked", handler);
+        resolve();
+      };
+      entry!.video.addEventListener("seeked", handler);
+      entry!.requestedTime = sourceTime;
+      try { entry!.video.currentTime = sourceTime; } catch {
+        // OOB seek — listener still fires when clamped by the browser.
+      }
+    });
+    return entry.video;
+  }
+
+  /**
    * Provider signature matching `VideoFrameProvider` in @a-company/atelier-canvas.
    * Bound version is what gets handed to `renderFrame({ videoFrameProvider })`.
    */

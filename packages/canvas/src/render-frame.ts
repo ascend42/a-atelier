@@ -44,9 +44,28 @@ export function renderFrame(
   }
   const { width, height } = doc.canvas;
 
-  // Clear canvas
-  ctx.fillStyle = doc.canvas.background ?? "transparent";
-  ctx.fillRect(0, 0, width, height);
+  // Clear canvas, then apply background if explicitly set.
+  //
+  // The naive `fillStyle = "transparent"; fillRect(...)` was a NO-OP under
+  // default `source-over` compositing — transparent pixels source-over
+  // existing pixels = existing pixels unchanged. The canvas accumulated
+  // content between renders, which was MASKED in the live editor by
+  // full-canvas video layers (drawImage overwrites every pixel) but exposed
+  // catastrophically in the MP4 exporter, where captions stacked up over
+  // every frame because nothing else ever overwrote them (export had no
+  // videoFrameProvider wired, so the video layer was a no-op). Owner saw
+  // a "single static frame with all captions overlapping" in
+  // /Users/ascend/Downloads/animation (1).mp4.
+  //
+  // `clearRect` resets every pixel to fully-transparent black regardless of
+  // compositing. Then we fill the explicit background if the doc set one
+  // (image/video docs may set "#000" or a brand color so letterboxed gutters
+  // aren't transparent).
+  ctx.clearRect(0, 0, width, height);
+  if (doc.canvas.background) {
+    ctx.fillStyle = doc.canvas.background;
+    ctx.fillRect(0, 0, width, height);
+  }
 
   // Build effective layers into a map for ancestor transform lookups
   const effMap = new Map<string, EffectiveLayer>();

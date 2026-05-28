@@ -648,12 +648,19 @@ export class AtelierStudio {
     if (!this.doc) return;
     this.canvasPanel.pause();
     const dialog = new ExportDialog();
+    // Forward the canvas-panel's video provider so video layers actually
+    // paint in the export. Without `videoSeek`, the exporter falls back
+    // to the legacy no-provider path and video layers silently no-op
+    // (the bug owner caught in animation (1).mp4: static frame + caption
+    // accumulation).
+    const provider = this.canvasPanel.getVideoProvider();
     dialog.show(
       this.doc,
       this.canvasPanel.getCanvas(),
       this.canvasPanel.getImageCache(),
       this.root,
       this.currentFilename ?? undefined,
+      provider.awaitSeek.bind(provider),
     );
   }
 }

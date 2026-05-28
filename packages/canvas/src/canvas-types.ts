@@ -16,6 +16,16 @@ export interface RenderContext {
   // Rect
   fillRect(x: number, y: number, w: number, h: number): void;
   strokeRect(x: number, y: number, w: number, h: number): void;
+  /**
+   * Reset every pixel in the rect to fully-transparent black, regardless of
+   * compositing mode. Both CanvasRenderingContext2D and node-canvas's 2D
+   * context expose this; we expose it on the abstraction so renderFrame can
+   * truly wipe the canvas between frames (a `fillRect("transparent")` under
+   * default source-over compositing is a no-op, which let the export's
+   * caption layers accumulate frame-over-frame — bug caught in
+   * animation (1).mp4 by owner on 2026-05-28).
+   */
+  clearRect(x: number, y: number, w: number, h: number): void;
 
   // Path
   beginPath(): void;

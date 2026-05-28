@@ -326,6 +326,15 @@ export class CanvasPanel {
     return this.imageCache;
   }
 
+  /**
+   * The preview-mode video provider. Studio exposes this so the export
+   * dialog can drive its async-seek path (`videoSeek` option) without
+   * standing up a second decoder for the same source.
+   */
+  getVideoProvider(): BrowserVideoFrameProvider {
+    return this.videoProvider;
+  }
+
   pause(): void {
     this.player?.pause();
     // Flip the provider back to seek-mode + mute so audio stops the moment

@@ -35,12 +35,34 @@ export function supportsGifExport(): boolean {
 
 export type ExportFormat = "mp4" | "gif" | "webm";
 
+/**
+ * Async per-frame video seek resolver used by the export loop. Returns the
+ * underlying drawable (HTMLVideoElement) once the seek has completed, so
+ * the deterministic frame-by-frame encoder can be sure drawImage paints
+ * the intended frame. The studio supplies a `BrowserVideoFrameProvider`
+ * instance whose `awaitSeek` matches this signature.
+ *
+ * Without this hook, video layers silently no-op in the exported file
+ * because renderFrame's `if (videoFrameProvider)` guard short-circuits —
+ * the output then shows a transparent canvas painted only with non-video
+ * layers (text/shape/image), reproducing the "single static frame +
+ * captions stacked" bug owner caught in animation (1).mp4.
+ */
+export type VideoSeekResolver = (src: string, sourceTime: number) => Promise<object>;
+
 export interface ExportOptions {
   format: ExportFormat;
   /** Which states to render. Defaults to all states in document order. */
   states?: string[];
   /** Progress callback — called after each frame. */
   onProgress?: (info: { frame: number; total: number; percent: number }) => void;
+  /**
+   * Optional async video seek. Pass `provider.awaitSeek.bind(provider)`
+   * from a BrowserVideoFrameProvider — without this, video layers don't
+   * render in the export output. Omitted → video layers silently skip
+   * (legacy behaviour).
+   */
+  videoSeek?: VideoSeekResolver;
 }
 
 export interface ExportResult {
@@ -207,6 +229,15 @@ async function exportMP4(
     canvas.height = encHeight;
   }
 
+  // Build a per-frame videoFrameProvider that returns the already-seeked
+  // <video> element from our local cache. seekVideosForFrame populates the
+  // cache by awaiting the host's async seek BEFORE renderFrame runs; this
+  // sync provider just hands it the result.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   try {
     for (let i = 0; i < totalFrames; i++) {
       checkError();
@@ -214,7 +245,29 @@ async function exportMP4(
 
       const { state, frame } = frames[i];
       const resolved = resolveFrame(doc, state, frame);
-      renderFrame(ctx as any, resolved, doc, imageCache);
+
+      // For every VideoVisual layer in the resolved frame, await a seek to
+      // the layer's sourceTime BEFORE rendering. Without this, the renderer's
+      // sync `videoFrameProvider(src, time)` would return null (no cached
+      // frame for this time) and the video layer would be skipped, exactly
+      // reproducing the "single static frame" export bug.
+      if (opts.videoSeek) {
+        seekedFrames.clear();
+        for (const r of resolved.layers) {
+          if (r.layer.visual.type !== "video") continue;
+          const v = r.layer.visual;
+          const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+          if (!src) continue;
+          const sourceTime = r.videoSourceTime ?? 0;
+          const drawable = await opts.videoSeek(src, sourceTime);
+          seekedFrames.set(src, drawable);
+        }
+      }
+
+      renderFrame(ctx as any, resolved, doc, {
+        imageCache,
+        videoFrameProvider,
+      });
 
       const timestamp = i * frameDurationUs;
       const videoFrame = new VideoFrame(canvas, { timestamp });
@@ -343,14 +396,35 @@ async function exportWebM(
   alphaCanvas.height = height;
   const ctx = alphaCanvas.getContext("2d", { alpha: hasAlpha })!;
 
+  // Per-frame video seek cache, see exportMP4 for full rationale.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   for (let i = 0; i < totalFrames; i++) {
     checkError();
     await waitForDrain();
 
     const { state, frame } = frames[i];
     const resolved = resolveFrame(doc, state, frame);
+    if (opts.videoSeek) {
+      seekedFrames.clear();
+      for (const r of resolved.layers) {
+        if (r.layer.visual.type !== "video") continue;
+        const v = r.layer.visual;
+        const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+        if (!src) continue;
+        const sourceTime = r.videoSourceTime ?? 0;
+        const drawable = await opts.videoSeek(src, sourceTime);
+        seekedFrames.set(src, drawable);
+      }
+    }
     ctx.clearRect(0, 0, width, height);
-    renderFrame(ctx as any, resolved, doc, imageCache);
+    renderFrame(ctx as any, resolved, doc, {
+      imageCache,
+      videoFrameProvider,
+    });
 
     const timestamp = i * frameDurationUs;
     const frameOpts: VideoFrameInit = { timestamp };
@@ -414,6 +488,12 @@ async function exportGIF(
   let accGifTimeMs = 0;
   let gifFrameCount = 0;
 
+  // Per-frame video seek cache, see exportMP4 for full rationale.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   for (let i = 0; i < totalFrames; i++) {
     const frameEndMs = ((i + 1) * 1000) / fps;
 
@@ -430,7 +510,22 @@ async function exportGIF(
 
     const { state, frame } = frames[i];
     const resolved = resolveFrame(doc, state, frame);
-    renderFrame(ctx as any, resolved, doc, imageCache);
+    if (opts.videoSeek) {
+      seekedFrames.clear();
+      for (const r of resolved.layers) {
+        if (r.layer.visual.type !== "video") continue;
+        const v = r.layer.visual;
+        const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+        if (!src) continue;
+        const sourceTime = r.videoSourceTime ?? 0;
+        const drawable = await opts.videoSeek(src, sourceTime);
+        seekedFrames.set(src, drawable);
+      }
+    }
+    renderFrame(ctx as any, resolved, doc, {
+      imageCache,
+      videoFrameProvider,
+    });
 
     const delayCentiseconds = Math.max(MIN_DELAY_CS, Math.round((frameEndMs - accGifTimeMs) / 10));
     accGifTimeMs += delayCentiseconds * 10;
