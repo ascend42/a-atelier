@@ -2185,6 +2185,10 @@ export async function bootWorkspaceApp(): Promise<void> {
     // ── v1.0 UI shell rework (Kit-C) ── only clear the canvas half;
     // timelineMount lives below and is owned by Kit-B's TimelineView.
     canvasMount.innerHTML = "";
+    // Also clear the bottom timeline so it doesn't show stale clips from
+    // a previous doc when the user switches to a non-doc panel (markdown,
+    // media preview) or an empty canvas state.
+    timelineView.setDoc(null);
     // ── end Kit-C ──
     // Reset doc-kind metadata too — `openProjectDoc` resets it on the very
     // next line for the doc-load path, but non-doc panels (markdown / media /
@@ -2307,6 +2311,11 @@ export async function bootWorkspaceApp(): Promise<void> {
       });
       currentStudio.setTheme(theme);
       currentStudio.loadDocument(parsed.data as Parameters<AtelierStudio["loadDocument"]>[0]);
+      // Bottom timeline must populate on doc LOAD, not just on mutation.
+      // Kit-α's mutation handler was the only path syncing the timeline —
+      // the initial-load path was missed. Without this, the timeline stays
+      // "No clips" until the user drags media in.
+      timelineView.setDoc(parsed.data as never);
       // Kit-K: carousel docs get a "+ add slide" overlay button anchored to
       // the canvas top-right. The button opens NewDocDialog (retitled "Add
       // slide") and POSTs with `asCarouselSlide: true` so the new doc is
@@ -2753,7 +2762,13 @@ function injectStyles(): void {
   }
   .atel-workspace-canvas {
     flex: 1 1 auto; min-height: 0;
-    overflow: auto; position: relative;
+    /* overflow: hidden — was 'auto', but that lets the embedded AtelierStudio
+       grow past the visible viewport; the canvas-panel's letterbox-fit then
+       reads getBoundingClientRect against the unconstrained height and the
+       canvas spills below the timeline lane. Constraining here lets the
+       studio's INTERNAL flex layout (flex:1 + min-height:0) own the height.
+       Scrollable children (markdown view, etc.) manage their own overflow. */
+    overflow: hidden; position: relative;
   }
   .atel-workspace-timeline {
     flex: 0 0 120px; height: 120px;
