@@ -8,6 +8,16 @@ Format: [major.minor.fix] — based on milestone progression.
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
+### Added — v2 workspace onboarding (TD-2026-05-28-097)
+
+Hardening for the v2 pure-knowledge pivot, validated by the Ascend brand-establishment retro. Makes a scaffolded workspace correct and self-explanatory for a fresh creator.
+
+- **`atelier workspace` ships `cascade-merge.md`** — the canonical brand-cascade protocol now lands at `.paradigm/personas/_shared/cascade-merge.md` in every scaffolded workspace (the persona shims + `CLAUDE.md` link it as a workspace-relative path). A drift-guard test asserts the shipped copy stays byte-identical to the repo canonical.
+- **Persona shims reference the global registry** — the Iris/Lux shims no longer point at an in-workspace `.paradigm/personas/*/skills/` path that isn't shipped; canonical skills/knowledge resolve to `~/.paradigm/notebooks/{persona}/` (matching the agent-def + Quill conventions), with the dev-repo skills path noted as an aside.
+- **`SETUP.md` agent-run onboarding runbook** — a creator can ask the agent team **"get me set up"** and they walk an executable checklist (check → pass → fix → re-check → ✓/✗ report): Node 22+, the render toolchain via `npx hyperframes doctor` (ffmpeg + ffprobe + Chrome), optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks. Wired through the workspace `CLAUDE.md` so the request reliably triggers the runbook. Verified against the live Hyperframes v0.6.57 CLI contract.
+- **Workspace `README.md` prerequisites** rewritten to explain Hyperframes (the render engine; `npx` auto-fetches it — no manual install), ffmpeg + headless Chrome render deps, and the "get me set up" flow.
+- **`docs/getting-started.md` retired** — stamped with a v2 redirect banner; it documented the deprecated v1 animation engine and is kept for reference only.
+
 ### Added — v1.0 media-bin model (TD-2026-05-28)
 
 The drop-anywhere-creates-a-doc model is retired. The new model mirrors FCP/Premiere: media goes into a bin, composition is an explicit verb.
