@@ -1,0 +1,50 @@
+id: L-2026-05-28-ascend-152556-001
+type: milestone
+timestamp: '2026-05-28T15:25:56.852Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Pre-test polish sweep — typography overhaul + objectFit + video cache + cross-fade reorder + tsup ESM-only
+summary: |-
+  Five-item polish pass before owner begins manual testing. (1) TYPOGRAPHY: Cormorant Garamond → Inter (UI-optimized variable sans, was hard to read in dense chrome per owner feedback). Body 15px/1.45, sidebar items 12→13, toolbar buttons 12→13, badge labels +1-2px, font smoothing antialiased on Retina. Updated getInlineHTML to preload Inter from Google Fonts. (2) renderVideo HONORS objectFit: defaults to 'contain' (aspect-preserved letterbox) instead of stretching; 'cover' and 'fill' implemented; falls back to fill when source dims unreadable. (3) MODULE-LEVEL VIDEO CACHE: BrowserVideoFrameProvider's video elements moved to module-level VIDEO_CACHE keyed by resolved URL; dispose() now only removes listeners, never aborts the in-flight 87MB MOV fetch. Workspace-app's mount cascade no longer wastes bandwidth re-downloading. Runtime-verified: ERR_ABORTED count 5→3 (remaining 3 are normal Chrome Range fragments at page close). New evictFromCache export for media-delete flows. (4) CAPTION CROSS-FADE REORDERED: buildPhraseDeltas moved fade-in from [start-fadeF, start] to [start, start+fadeF] so touching phrases don't overlap. Eliminates the 2-frame cross-fade that produced the false-bug 'captions stacking' report. Existing docs need re-transcribe to pick up. (5) TSUP CJS WARNING FIX: split cli.ts + mcp.ts entries into ESM-only configs (binaries are ESM, .cjs would crash on import.meta.url anyway). Library index.ts keeps ESM+CJS. Build is now warning-free. All 1212 tests pass. Runtime verification on a fresh studio confirms typography lands (Inter at 15px body, 1.45 line-height), video paints, captions display singly at frame 86, dropdown + ruler + letterbox intact.</summary>
+  <parameter name="symbols_touched">["#workspace-app", "#inline-app", "#atelier-studio", "#canvas-panel", "#browser-video-frame-provider", "#video-renderer", "#caption-builder"]
+symbols_created:
+  - '#video-cache'
+files_modified:
+  - packages/cli/tsup.config.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/web/workspace-app.ts
+  - packages/cli/src/web/inline-app.ts
+  - packages/cli/src/lib/caption-builder.ts
+  - packages/canvas/src/renderers/video-renderer.ts
+  - packages/studio/src/styles.css
+  - packages/studio/src/theme.ts
+  - packages/studio/src/utils/browser-video-frame-provider.ts
+  - CHANGELOG.md
+learnings:
+  - Module-level singletons keyed by URL are the right cache scope for browser media (HTMLVideoElement, HTMLImageElement) when consumers have short lifecycles relative to media downloads. Per-consumer caches force redundant fetches; module-level survives consumer disposal cycles.
+  - 'tsup''s `format: [''esm'', ''cjs'']` blindly builds both formats even for entries that use ESM-only features (import.meta.url). Split entries by binary vs library role: binaries that use ESM-only features should be ESM-only configs; library entries that need require() compat keep dual.'
+  - Caption cross-fades that overlap on the SAME frame range produce visible 2-frame 'stacking' artifacts (~66ms at 30fps) where both captions render at intermediate opacity. Move the fade-in INSIDE the phrase window to sequence cleanly without overlap, instead of pre-fading.
+verification:
+  status: pass
+  details:
+    build: clean, no warnings (tsup CJS import.meta fixed)
+    tests: 1212/1212 across 12 packages
+    runtime: Inter loaded (15px/1.45), video paints, single caption at frame 86, ERR_ABORTED 5→3
+tags:
+  - v1.0
+  - polish
+  - typography
+  - video-cache
+  - caption-timing
+  - build-cleanup
+  - pre-test
+linked_lore:
+  - L-2026-05-28-ascend-151000-001
+  - L-2026-05-28-ascend-113321-001
+confidence: 0.92
+git_context:
+  ref: b4131b50afe2d21a327553bd14f65a54d8a5b0f8
+  branch: feat/creator-flow-v1-prep
+  dirty: true

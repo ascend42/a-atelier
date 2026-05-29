@@ -35,12 +35,47 @@ export function supportsGifExport(): boolean {
 
 export type ExportFormat = "mp4" | "gif" | "webm";
 
+/**
+ * Async per-frame video seek resolver used by the export loop. Returns the
+ * underlying drawable (HTMLVideoElement) once the seek has completed, so
+ * the deterministic frame-by-frame encoder can be sure drawImage paints
+ * the intended frame. The studio supplies a `BrowserVideoFrameProvider`
+ * instance whose `awaitSeek` matches this signature.
+ *
+ * Without this hook, video layers silently no-op in the exported file
+ * because renderFrame's `if (videoFrameProvider)` guard short-circuits —
+ * the output then shows a transparent canvas painted only with non-video
+ * layers (text/shape/image), reproducing the "single static frame +
+ * captions stacked" bug owner caught in animation (1).mp4.
+ */
+export type VideoSeekResolver = (src: string, sourceTime: number) => Promise<object>;
+
 export interface ExportOptions {
   format: ExportFormat;
   /** Which states to render. Defaults to all states in document order. */
   states?: string[];
   /** Progress callback — called after each frame. */
   onProgress?: (info: { frame: number; total: number; percent: number }) => void;
+  /**
+   * Optional async video seek. Pass `provider.awaitSeek.bind(provider)`
+   * from a BrowserVideoFrameProvider — without this, video layers don't
+   * render in the export output. Omitted → video layers silently skip
+   * (legacy behaviour).
+   */
+  videoSeek?: VideoSeekResolver;
+  /**
+   * Optional resolved URL of a source video whose audio track should be
+   * muxed into the output (MP4/WebM only — GIF has no audio container).
+   * Mediabunny demuxes the URL's audio packets in-codec and feeds them
+   * to mp4-muxer's `addAudioChunkRaw` — no re-encoding. Pass the SAME
+   * resolved URL the videoSeek provider uses (i.e. already run through
+   * the host's srcResolver). Omitted → silent export, current default.
+   *
+   * Limitation: only the FIRST video layer's audio is muxed. Multi-clip
+   * audio composition is v1.1 — would need an AudioMixer or per-clip
+   * EncodedAudioChunk re-timing.
+   */
+  audioSource?: string;
 }
 
 export interface ExportResult {
@@ -174,6 +209,27 @@ async function exportMP4(
     );
   }
 
+  // Pre-resolve the source audio track's codec/channels/rate via Mediabunny
+  // so we can configure the muxer's audio track BEFORE writing any chunks
+  // (mp4-muxer requires the audio config up-front, not lazily on first
+  // addAudioChunk). If no audioSource was given or the URL has no decodable
+  // audio, fall through to a silent export. This call is the only thing
+  // that could block on network — keep it small + fail-soft.
+  let audioConfig: {
+    codec: "aac" | "opus";
+    channels: number;
+    sampleRate: number;
+    decoderConfig?: AudioDecoderConfig;
+    extract: () => Promise<Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }>>;
+  } | null = null;
+  if (opts.audioSource) {
+    try {
+      audioConfig = await resolveAudioConfig(opts.audioSource);
+    } catch (err) {
+      console.warn("[atelier export] audio mux skipped:", err);
+    }
+  }
+
   const target = new ArrayBufferTarget();
   const muxer = new Muxer({
     target,
@@ -182,6 +238,13 @@ async function exportMP4(
       width: encWidth,
       height: encHeight,
     },
+    ...(audioConfig ? {
+      audio: {
+        codec: audioConfig.codec,
+        numberOfChannels: audioConfig.channels,
+        sampleRate: audioConfig.sampleRate,
+      },
+    } : {}),
     fastStart: "in-memory",
   });
 
@@ -207,6 +270,15 @@ async function exportMP4(
     canvas.height = encHeight;
   }
 
+  // Build a per-frame videoFrameProvider that returns the already-seeked
+  // <video> element from our local cache. seekVideosForFrame populates the
+  // cache by awaiting the host's async seek BEFORE renderFrame runs; this
+  // sync provider just hands it the result.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   try {
     for (let i = 0; i < totalFrames; i++) {
       checkError();
@@ -214,7 +286,29 @@ async function exportMP4(
 
       const { state, frame } = frames[i];
       const resolved = resolveFrame(doc, state, frame);
-      renderFrame(ctx as any, resolved, doc, imageCache);
+
+      // For every VideoVisual layer in the resolved frame, await a seek to
+      // the layer's sourceTime BEFORE rendering. Without this, the renderer's
+      // sync `videoFrameProvider(src, time)` would return null (no cached
+      // frame for this time) and the video layer would be skipped, exactly
+      // reproducing the "single static frame" export bug.
+      if (opts.videoSeek) {
+        seekedFrames.clear();
+        for (const r of resolved.layers) {
+          if (r.layer.visual.type !== "video") continue;
+          const v = r.layer.visual;
+          const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+          if (!src) continue;
+          const sourceTime = r.videoSourceTime ?? 0;
+          const drawable = await opts.videoSeek(src, sourceTime);
+          seekedFrames.set(src, drawable);
+        }
+      }
+
+      renderFrame(ctx as any, resolved, doc, {
+        imageCache,
+        videoFrameProvider,
+      });
 
       const timestamp = i * frameDurationUs;
       const videoFrame = new VideoFrame(canvas, { timestamp });
@@ -233,6 +327,26 @@ async function exportMP4(
     await encoder.flush();
     checkError();
     encoder.close();
+
+    // Mux audio AFTER video encode finishes. Doing it before would race the
+    // video encoder's interleave with mp4-muxer's internal track interleaver
+    // and risk out-of-order chunks; doing it serially is simpler + correct.
+    // Audio chunks are pre-encoded in-source-codec (no re-encode pass), so
+    // this is just an I/O loop, not a decode loop.
+    if (audioConfig) {
+      const audioPackets = await audioConfig.extract();
+      const decoderConfig = audioConfig.decoderConfig;
+      for (const p of audioPackets) {
+        muxer.addAudioChunkRaw(
+          p.data,
+          p.type,
+          p.timestamp,
+          p.duration,
+          decoderConfig ? { decoderConfig } : undefined,
+        );
+      }
+    }
+
     muxer.finalize();
   } finally {
     // Restore canvas dimensions even if encoding fails
@@ -248,6 +362,94 @@ async function exportMP4(
     format: "mp4",
     totalFrames,
     durationMs,
+  };
+}
+
+// ── Mediabunny audio extract helper ─────────────────────────────
+
+/**
+ * Demux the audio track from a source URL, returning the encoded packets
+ * and the muxer-config it needs (codec, channels, sample rate). Bytes are
+ * returned in source codec — no decode/re-encode pass, so a 4-minute AAC
+ * source takes well under 100ms to extract.
+ *
+ * Throws if Mediabunny can't open the URL or the file has no audio track.
+ * Caller (exportMP4) catches + warns + falls back to silent export.
+ */
+async function resolveAudioConfig(audioSourceUrl: string): Promise<{
+  codec: "aac" | "opus";
+  channels: number;
+  sampleRate: number;
+  decoderConfig?: AudioDecoderConfig;
+  extract: () => Promise<Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }>>;
+}> {
+  // Mediabunny is a ~1MB dep; dynamic-import so silent-audio exports don't
+  // pay the parse cost. Same pattern mp4-muxer + webm-muxer follow.
+  const { Input, UrlSource, ALL_FORMATS, EncodedPacketSink } = await import("mediabunny");
+  const input = new Input({
+    source: new UrlSource(audioSourceUrl),
+    formats: ALL_FORMATS,
+  });
+  const tracks = await input.getTracks();
+  // isAudioTrack() narrows InputTrack → InputAudioTrack so we can hit
+  // getNumberOfChannels / getSampleRate / getDecoderConfig without a cast.
+  const audioTrack = tracks.find((t) => t.isAudioTrack());
+  if (!audioTrack || !audioTrack.isAudioTrack()) {
+    throw new Error(`no audio track in ${audioSourceUrl}`);
+  }
+
+  const codecName = await audioTrack.getCodec();
+  // mp4-muxer accepts only aac/opus. Other codecs (mp3, flac, vorbis) would
+  // require a transcode pass — out of scope for v1.0.
+  const muxerCodec: "aac" | "opus" | null =
+    codecName === "aac" ? "aac" :
+    codecName === "opus" ? "opus" :
+    null;
+  if (!muxerCodec) {
+    throw new Error(`source audio codec '${codecName}' isn't mp4-muxer compatible (need aac/opus)`);
+  }
+
+  const channels = await audioTrack.getNumberOfChannels();
+  const sampleRate = await audioTrack.getSampleRate();
+  const decoderConfig = (await audioTrack.getDecoderConfig()) ?? undefined;
+
+  return {
+    codec: muxerCodec,
+    channels,
+    sampleRate,
+    decoderConfig: decoderConfig ?? undefined,
+    extract: async () => {
+      const sink = new EncodedPacketSink(audioTrack);
+      const packets: Array<{ data: Uint8Array; type: "key" | "delta"; timestamp: number; duration: number }> = [];
+      // Some containers (AAC in MOV/MP4) report priming-sample packets with
+      // a small negative timestamp (typically -0.024s for 24ms of encoder
+      // priming). mp4-muxer rejects negative timestamps via "must be a
+      // non-negative real number". We rebase the timestamps so the first
+      // packet sits at 0 — losing the priming offset is acceptable for our
+      // single-source use case where AV-sync is already approximate (no
+      // sub-frame Player-side audio compensation either).
+      let firstTimestampS: number | null = null;
+      for await (const packet of sink.packets()) {
+        if (firstTimestampS === null) firstTimestampS = packet.timestamp;
+        // Skip packets with non-finite times (corrupt container or live
+        // stream we're not handling); also skip if duration is NaN/0 since
+        // mp4-muxer needs a real duration for muxing.
+        if (!Number.isFinite(packet.timestamp) || !Number.isFinite(packet.duration)) continue;
+        const rebasedTimestampS = packet.timestamp - firstTimestampS;
+        const tsUs = Math.max(0, Math.round(rebasedTimestampS * 1_000_000));
+        const durUs = Math.max(0, Math.round(packet.duration * 1_000_000));
+        packets.push({
+          data: packet.data,
+          // mp4-muxer treats audio packets uniformly; mediabunny exposes
+          // delta/key but for typical AAC every packet is independently
+          // decodable so 'key' is the safer default.
+          type: "key",
+          timestamp: tsUs,
+          duration: durUs,
+        });
+      }
+      return packets;
+    },
   };
 }
 
@@ -343,14 +545,35 @@ async function exportWebM(
   alphaCanvas.height = height;
   const ctx = alphaCanvas.getContext("2d", { alpha: hasAlpha })!;
 
+  // Per-frame video seek cache, see exportMP4 for full rationale.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   for (let i = 0; i < totalFrames; i++) {
     checkError();
     await waitForDrain();
 
     const { state, frame } = frames[i];
     const resolved = resolveFrame(doc, state, frame);
+    if (opts.videoSeek) {
+      seekedFrames.clear();
+      for (const r of resolved.layers) {
+        if (r.layer.visual.type !== "video") continue;
+        const v = r.layer.visual;
+        const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+        if (!src) continue;
+        const sourceTime = r.videoSourceTime ?? 0;
+        const drawable = await opts.videoSeek(src, sourceTime);
+        seekedFrames.set(src, drawable);
+      }
+    }
     ctx.clearRect(0, 0, width, height);
-    renderFrame(ctx as any, resolved, doc, imageCache);
+    renderFrame(ctx as any, resolved, doc, {
+      imageCache,
+      videoFrameProvider,
+    });
 
     const timestamp = i * frameDurationUs;
     const frameOpts: VideoFrameInit = { timestamp };
@@ -414,6 +637,12 @@ async function exportGIF(
   let accGifTimeMs = 0;
   let gifFrameCount = 0;
 
+  // Per-frame video seek cache, see exportMP4 for full rationale.
+  const seekedFrames = new Map<string, object>();
+  const videoFrameProvider = opts.videoSeek
+    ? (src: string): object | null => seekedFrames.get(src) ?? null
+    : undefined;
+
   for (let i = 0; i < totalFrames; i++) {
     const frameEndMs = ((i + 1) * 1000) / fps;
 
@@ -430,7 +659,22 @@ async function exportGIF(
 
     const { state, frame } = frames[i];
     const resolved = resolveFrame(doc, state, frame);
-    renderFrame(ctx as any, resolved, doc, imageCache);
+    if (opts.videoSeek) {
+      seekedFrames.clear();
+      for (const r of resolved.layers) {
+        if (r.layer.visual.type !== "video") continue;
+        const v = r.layer.visual;
+        const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
+        if (!src) continue;
+        const sourceTime = r.videoSourceTime ?? 0;
+        const drawable = await opts.videoSeek(src, sourceTime);
+        seekedFrames.set(src, drawable);
+      }
+    }
+    renderFrame(ctx as any, resolved, doc, {
+      imageCache,
+      videoFrameProvider,
+    });
 
     const delayCentiseconds = Math.max(MIN_DELAY_CS, Math.round((frameEndMs - accGifTimeMs) / 10));
     accGifTimeMs += delayCentiseconds * 10;

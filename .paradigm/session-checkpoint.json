@@ -1,88 +1,88 @@
 {
-  "phase": "complete",
-  "context": "Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, added # prefix to 2 core components, created svg + lottie .purpose files, added 6 missing type definitions, 2 missing core components, updated root .purpose with accurate counts (52 tools, 9 commands, 60+ types).",
-  "timestamp": 1771718013012,
-  "sessionId": "smlwywrdn",
-  "modifiedFiles": [
-    "packages/schema/.purpose",
-    "packages/types/.purpose",
-    "packages/math/.purpose",
-    "packages/core/.purpose",
-    "packages/svg/.purpose",
-    "packages/lottie/.purpose",
-    ".purpose"
-  ],
+  "phase": "validating",
+  "context": "v1.0 media-bin + timeline + sidebar-drag bundle landed across many commits (last: e962981 on feat/creator-flow-v1-prep). Three UI bugs remain open from owner testing — canvas still doesn't aspect-fit properly, bottom timeline shows frame-ruler numbers even when empty (confusing), and the canvas-size dropdown (Kit-γ) isn't visible in the toolbar despite being wired in source + dist. Studio process was killed before context ran out; owner will provide a fresh screenshot for next session.",
+  "timestamp": 1779965974062,
+  "sessionId": "smplqhnx8",
+  "plan": "Next session pickup: (1) Canvas aspect-fit — applyLetterboxFit reads this.el (panel container) bounds + subtracts padding/gap/playbackH constants. The overflow:hidden change on canvasMount in e962981 should have constrained heights but the canvas still overflows per owner screenshot. Likely the constants don't match the actual studio.ts CSS pads/gaps, OR the playbackH measurement reads zero before first paint. Add a one-shot requestAnimationFrame-deferred re-fit after loadDocument so the ResizeObserver isn't fighting a partial layout. (2) Empty-timeline ruler — TimelineView renders the frame ruler unconditionally; when doc.timeline is missing/empty the ruler still draws. Either gate the ruler on tracks.length > 0 OR show a clearer empty-state hint over it (\"Drop media or + add clip to see timeline\"). (3) Canvas-size dropdown invisible — source + dist both have it (verified via grep), so the issue is browser-render. Likely candidates: (a) the dropdown's parent container is outside the visible toolbar overflow, (b) Vite's module cache is serving an older studio.ts (force-restart with cache clear), (c) flex sizing collapses the dropdown to 0 width. Check via devtools first — has the user inspected the DOM around the canvasSizeSelect element? If it's in the DOM but hidden, it's CSS; if not in the DOM, it's a stale-bundle issue.</plan>\n<parameter name=\"modifiedFiles\">[\"packages/cli/src/web/workspace-app.ts\", \"packages/cli/src/commands/studio.ts\", \"packages/cli/src/lib/ingest-dispatch.ts\", \"packages/cli/src/lib/transcribe-orchestrator.ts\", \"packages/cli/src/lib/ingest-bin-types.ts\", \"packages/cli/src/web/timeline-state-types.ts\", \"packages/cli/src/web/timeline-view.ts\", \"packages/studio/src/studio.ts\", \"packages/studio/src/panels/canvas-panel.ts\", \"packages/studio/src/panels/canvas-size-presets.ts\"]",
   "symbolsTouched": [
-    "#atelier-types",
-    "#atelier-core",
-    "#atelier-mcp",
-    "#atelier-cli",
-    "#atelier-svg",
-    "#atelier-lottie",
-    "#expression-evaluator",
-    "#audio-timing",
-    "#shadow-types",
-    "#audio-types",
-    "#asset-types",
-    "#variable-types",
-    "#interaction-types",
-    "#preset-types"
+    "#workspace-app",
+    "#canvas-panel",
+    "#atelier-studio",
+    "#timeline-view",
+    "#compute-letterbox-fit",
+    "#canvas-size-presets",
+    "#handle-no-target-bin-add",
+    "#ingest-bin-types",
+    "#transcribe-media-to-bin"
+  ],
+  "decisions": [
+    "v1.0 ships with media-bin pivot — drag-drop NO LONGER auto-creates docs (TD-2026-05-28-media-bin)",
+    "Transcribe-on-bin-add — background whisper on every video/audio file landed in media/ (TD-2026-05-28-transcribe-on-bin-add)",
+    "Bottom timeline ships read-only in v1.0 (click to select + seek; drag-to-reposition is v1.1)",
+    "Canvas-size dropdown ships 4 closed presets (1080×1920, 1920×1080, 1080×1080, 1080×1350); Custom is v1.1",
+    "Server emits llm:mutation on ?source=existing compose-success; browser WS filter loosened from hardcoded project.atelier to currentDocPath (latent flat-docs-pivot bug)",
+    "canvasMount changed from overflow:auto to overflow:hidden so studio's internal flex owns the height bound"
   ],
   "recentBreadcrumbs": [
     {
-      "timestamp": 1771717609390,
+      "timestamp": 1779959836279,
       "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Wave A — media-bin backend + bottom timeline UI + studio she"
     },
     {
-      "timestamp": 1771717612051,
+      "timestamp": 1779960118255,
       "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Wave B — sidebar drag affordance (closes the loop)"
     },
     {
-      "timestamp": 1771717620816,
-      "action": "tool-call",
-      "tool": "paradigm_navigate",
-      "symbol": "aspects",
-      "summary": "Navigate explore: aspects"
-    },
-    {
-      "timestamp": 1771717743783,
-      "action": "tool-call",
-      "tool": "paradigm_session_recover",
-      "summary": "session_recover"
-    },
-    {
-      "timestamp": 1771717808941,
-      "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
-    },
-    {
-      "timestamp": 1771717984671,
-      "action": "tool-call",
-      "tool": "paradigm_purpose_validate",
-      "summary": "purpose_validate"
-    },
-    {
-      "timestamp": 1771717984717,
+      "timestamp": 1779960981551,
       "action": "tool-call",
       "tool": "paradigm_reindex",
       "summary": "Rebuilt static index files"
     },
     {
-      "timestamp": 1771718005665,
+      "timestamp": 1779961092983,
       "action": "tool-call",
-      "tool": "paradigm_status",
-      "summary": "Checked project status"
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
     },
     {
-      "timestamp": 1771718013011,
+      "timestamp": 1779961146221,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779961289371,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1.0 media-bin pivot + bottom timeline — full bundle landed "
+    },
+    {
+      "timestamp": 1779965192222,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779965192647,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779965236914,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Triage bundle — stale doc fix + canvas aspect-fit + canvas-s"
+    },
+    {
+      "timestamp": 1779965974042,
       "action": "tool-call",
       "tool": "paradigm_session_checkpoint",
-      "summary": "Checkpoint: phase=complete, Paradigm doctor fixes complete. Fixed 3 YAML syntax errors, "
+      "summary": "Checkpoint: phase=validating, v1.0 media-bin + timeline + sidebar-drag bundle landed acros"
     }
   ]
 }

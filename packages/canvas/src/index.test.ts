@@ -654,11 +654,17 @@ describe("renderFrame — ref layers", () => {
       documentResolver: (src) => src === "sub.atelier" ? subDoc : undefined,
     });
 
-    // Should have rendered the sub-doc's rect (fillRect for the shape)
-    // Find fillRect calls after the background clear
+    // Should have rendered the sub-doc's rect (fillRect for the shape).
+    // The background clear uses clearRect (no fill), so only the sub-doc's
+    // shape contributes a fillRect call. Pre-2026-05-28 the background
+    // clear was an erroneous `fillStyle = "transparent"; fillRect(...)` and
+    // this assertion expected 2 — the test was reinforcing a no-op pattern
+    // that caused export-canvas-accumulation. Now: 1 fillRect (the shape),
+    // 1 clearRect (the wipe).
     const fillRects = ctx.calls.filter(c => c[0] === "fillRect");
-    // Background clear + sub-doc rect = 2
-    expect(fillRects.length).toBeGreaterThanOrEqual(2);
+    expect(fillRects.length).toBeGreaterThanOrEqual(1);
+    const clearRects = ctx.calls.filter(c => c[0] === "clearRect");
+    expect(clearRects.length).toBeGreaterThanOrEqual(1);
 
     // Should NOT have rendered placeholder text
     const texts = ctx.calls.filter(c => c[0] === "fillText");

@@ -1,0 +1,53 @@
+id: L-2026-05-27-ascend-194818-001
+type: milestone
+timestamp: '2026-05-27T19:48:18.388Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'v1 UX bundle: workspace-aware studio UI, drag-drop ingest, auto video-layer compose'
+summary: 'Studio-UI-as-creator-interface bundle landed (delegation a9a7338901aeb98a0). Whisper auto-resolve + auto-download via HuggingFace public registry (no more --model-path). compose-video-project helper auto-adds source video as a VideoVisual layer with a default state matching transcript duration (closes the empty-canvas gap). Backend endpoints: /api/media/ingest (multipart upload + auto-transcribe + auto-compose), /api/project/:name/{media,transcripts,artifacts}. Frontend: 1229-line workspace-app.ts with 5 consolidated panels (WorkspaceSidebar, MarkdownView, MediaPreview, TranscriptViewer, DropZone) — bootstrap chain in inline-app.ts picks workspace mode based on server context. Cleanup: 17 drifted anchors re-materialized, mcp tool-count test updated from 62 to 65 (effective-transcript + media-notes tools). All workspace tests green, compliance clean. Truncated final delegation report was mid-fix on compose-video-project asset typing but the build is clean and tests pass — the truncation was after the code landed. This is the v1 UX gate.'
+symbols_touched:
+  - '#cli-studio'
+  - '#studio-workspace-app'
+  - '#cli-media'
+  - '#compose-video-project'
+  - '#whisper-model-resolution'
+symbols_created:
+  - '#studio-workspace-app'
+  - '#compose-video-project'
+files_created:
+  - packages/cli/src/web/workspace-app.ts
+  - packages/cli/src/lib/compose-video-project.ts
+files_modified:
+  - packages/cli/src/lib/whisper.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/commands/transcribe.ts
+  - packages/cli/src/web/inline-app.ts
+  - packages/mcp/src/index.test.ts
+learnings:
+  - The 5-panel UI was consolidated into one workspace-app.ts (1229 lines) rather than separate panel files — the right call given session-scoped panels don't need a separate publish cycle from the studio package.
+  - auto-add-video-layer-on-ingest closes the empty-canvas gap from the prior test (caption layers existed but no source video layer, so canvas showed nothing). compose-video-project is the helper both the CLI media-ingest and the new HTTP endpoint call into.
+  - Whisper auto-resolve via HuggingFace registry means creators never type --model-path. First-use download is one-shot; cached forever. Per TD-2026-05-27-723, no runtime online dependency.
+verification:
+  status: pass
+  details:
+    workspace_tests: all green across 12 packages (mcp tool count corrected 62 → 65)
+    compliance: clean (17 anchors re-materialized)
+    portal: compliant
+    build: clean ESM + CJS + dts across workspace
+tags:
+  - v1-ux
+  - studio-ui
+  - creator-interface
+  - drag-drop
+  - workspace-aware
+linked_lore:
+  - L-2026-05-27-ascend-193441-001
+  - L-2026-05-27-ascend-184035-001
+  - L-2026-05-27-ascend-180956-001
+  - TD-2026-05-27-723
+git_context:
+  ref: 415cdc8b5c94b6466f09434395f1e1bf20a59ca3
+  branch: feat/creator-flow-v1-prep
+  dirty: true

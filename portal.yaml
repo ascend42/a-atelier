@@ -26,8 +26,53 @@ gates:
     location: packages/schema/src/validate.ts
     prizes: []
   localhost-only:
-    description: 'atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user''s CWD.'
+    description: atelier studio dev server is bound to 127.0.0.1 only (not 0.0.0.0) and rejects POST/PUT/DELETE/PATCH on /api/* whose Origin header is not http://localhost:<port> or http://127.0.0.1:<port> — prevents cross-site browser tabs from writing .atelier files in the user's CWD.
     type: security
     location: packages/cli/src/commands/studio.ts
+    prizes: []
+  valid-artifact-set:
+    description: 'Validates a set of Atelier front-of-pipeline artifacts (DESIGN/SCRIPT/STORYBOARD) — cross-artifact rules: STORYBOARD beat ids exist in SCRIPT (except b-roll.* prefix), slot references use closed kind enum, sum of beat durations within target_duration_s (warn-only pre-VO).'
+    type: validation
+    location: packages/schema/src/artifacts/validate.ts
+    prizes: []
+  valid-mind-map-query:
+    description: Validates atelier_mind_map_query input — projectDir resolves to an extant directory, kind is from the closed SlotKind enum, hints array is non-empty if provided, limit within bounds.
+    type: validation
+    location: packages/mcp/src/tools/mind-map.ts
+    prizes: []
+  carousel-cycle-safe:
+    description: Adding a SlideRef to a carousel project MUST NOT create a cycle (direct self-ref or transitive ref back to the carousel). Enforced by detectCarouselCycle in #ref-cycle. Depth-limited (64 hops) defends against pathological graphs.
+    type: validation
+    location: packages/cli/src/lib/ref-cycle.ts
+    prizes: []
+  valid-media-basename:
+    description: Media basenames passed to rename-media must not contain path separators (/, \), parent-dir refs (..), leading dot (hidden files), control bytes (NUL through 0x1f), or be empty/whitespace. Enforced at both HTTP layer (studio.ts) and the rename-media core fn for defense-in-depth.
+    type: security
+    location: packages/cli/src/lib/rename-media.ts
+    prizes: []
+  workspace-scoped-project-dir:
+    description: atelier_rename_media MCP tool requires the supplied projectDir to resolve inside workspaceDir (defaults to process.cwd()). Prevents agents (including via prompt injection) from renaming media in arbitrary directories on the host fs. Workspace scoping check runs before any fs op.
+    type: security
+    location: packages/mcp/src/tools/rename-media.ts
+    prizes: []
+  valid-doc-name:
+    description: User-typed doc names must pass isValidDocName — rejects path separators (/, \), parent-dir refs (..), leading dot (hidden files), control bytes (NUL through 0x1f), empty/whitespace-only, and names longer than 200 chars. Enforced at BOTH the HTTP endpoint layer and the doc-management core fn for defense-in-depth.
+    type: security
+    location: packages/cli/src/lib/doc-management-types.ts
+    prizes: []
+  doc-path-inside-project:
+    description: The ?path query parameter on POST /api/project/:name/docs/duplicate and DELETE /api/project/:name/docs is validated via single decodeURIComponent + reject (/, \, .., leading-., control bytes, empty); the resolved absolute path must then be inside <projectDir>/ (containment assert). Blocks path traversal attempts at the HTTP layer.
+    type: security
+    location: packages/cli/src/commands/studio.ts
+    prizes: []
+  workspace-scoped-doc-tool:
+    description: atelier_create_doc / atelier_duplicate_doc / atelier_delete_doc / atelier_list_docs MCP tools require projectDir (or workspaceDir + projectName) to resolve inside workspaceDir (defaults to process.cwd()). Mirrors workspace-scoped-project-dir but applies to the doc-management tool surface. Prevents agents from creating/deleting docs in arbitrary host directories.
+    type: security
+    location: packages/mcp/src/tools/docs.ts
+    prizes: []
+  valid-media-ref-path:
+    description: 'The ?source=existing&path= query parameter on POST /api/media/ingest is validated via isValidMediaRefPath — must start with "media/", must contain a single basename segment after the prefix (no nested subdirs), must not contain "..", "\", null bytes, or control bytes (NUL through 0x1f), and must not be empty/whitespace. Server-side defense — the browser sends the payload via dataTransfer but the validator runs INDEPENDENTLY on every request, no client trust.'
+    type: security
+    location: packages/cli/src/lib/ingest-bin-types.ts
     prizes: []
 routes: {}

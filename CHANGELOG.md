@@ -4,6 +4,193 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [Unreleased] — v1.0 creator-flow surface
+
+The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
+
+### Added — v2 workspace onboarding (TD-2026-05-28-097)
+
+Hardening for the v2 pure-knowledge pivot, validated by the Ascend brand-establishment retro. Makes a scaffolded workspace correct and self-explanatory for a fresh creator.
+
+- **`atelier workspace` ships `cascade-merge.md`** — the canonical brand-cascade protocol now lands at `.paradigm/personas/_shared/cascade-merge.md` in every scaffolded workspace (the persona shims + `CLAUDE.md` link it as a workspace-relative path). A drift-guard test asserts the shipped copy stays byte-identical to the repo canonical.
+- **Persona shims reference the global registry** — the Iris/Lux shims no longer point at an in-workspace `.paradigm/personas/*/skills/` path that isn't shipped; canonical skills/knowledge resolve to `~/.paradigm/notebooks/{persona}/` (matching the agent-def + Quill conventions), with the dev-repo skills path noted as an aside.
+- **`SETUP.md` agent-run onboarding runbook** — a creator can ask the agent team **"get me set up"** and they walk an executable checklist (check → pass → fix → re-check → ✓/✗ report): Node 22+, the render toolchain via `npx hyperframes doctor` (ffmpeg + ffprobe + Chrome), optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks. Wired through the workspace `CLAUDE.md` so the request reliably triggers the runbook. Verified against the live Hyperframes v0.6.57 CLI contract.
+- **Workspace `README.md` prerequisites** rewritten to explain Hyperframes (the render engine; `npx` auto-fetches it — no manual install), ffmpeg + headless Chrome render deps, and the "get me set up" flow.
+- **`docs/getting-started.md` retired** — stamped with a v2 redirect banner; it documented the deprecated v1 animation engine and is kept for reference only.
+
+### Added — v1.0 media-bin model (TD-2026-05-28)
+
+The drop-anywhere-creates-a-doc model is retired. The new model mirrors FCP/Premiere: media goes into a bin, composition is an explicit verb.
+
+- **`POST /api/media/ingest` (no `targetDocPath`)** — copies the dragged file to `media/`, kicks off background `transcribeMediaToBin` for video/audio, broadcasts `media:ingest:progress` with `phase: "done"` carrying `mediaPath` + `fileKind` + `transcribePending`. Does NOT auto-create a doc.
+- **`POST /api/media/ingest?source=existing&path=media/<basename>`** — the sidebar→canvas drag handoff. The file is already in `media/`; this short-circuits the upload step and routes through `composeVideoProject` (or audio-add) against the existing media + cached transcript. Validated server-side via `^valid-media-ref-path` (defense-in-depth: independent of browser-side payload trust).
+- **`transcribeMediaToBin`** — new orchestrator entrypoint. Runs whisper.cpp on a standalone source file, writes `transcripts/<stem>.json`, doesn't touch any `.atelier` doc. Idempotent on re-call. Lets the transcript be ready by the time the creator composes with the clip.
+- **`routeIngest` collapse** — no-target ingest dispatcher shrinks from a 12-cell file-kind×project-kind matrix to `BinIngestRoute { kind, target: "add-to-bin" | "reject" }`. Project kind no longer matters for bin-add.
+- **`MediaRefPayload`** — typed payload `{ path, kind? }` carried over `application/x-atelier-media-ref` MIME for the sidebar→canvas drag. `isValidMediaRefPath` enforces `media/<basename>` shape (no traversal, no nesting, no NUL/control bytes, no backslashes).
+
+### Added — bottom timeline UI (TD-2026-05-28)
+
+A read-only timeline below the canvas. No more "the timeline is just a data block."
+
+- **`TimelineView`** (`packages/cli/src/web/timeline-view.ts`) — single track lane for `track-video-1`, clip blocks proportional to `startFrame`→`endFrame`, frame ruler with second-tick marks, playhead synced with canvas-panel scrubber. Click clip → select; click ruler → seek. Reads `doc.timeline`; shows empty state when no doc loaded.
+- **Layout reflow** — `canvasMount` (flex:1) + `timelineMount` (120px fixed) as a flex-column. `AtelierStudio` + `MarkdownView` + `MediaPreview` + `TranscriptViewer` mount into `canvasMount`; `TimelineView` mounts into `timelineMount`.
+- **Read-only in v1.0** — click for selection + seek. Drag-to-reposition + trim are explicit v1.1 scope.
+
+### Added — flat-docs UI model (TD-2026-05-27)
+
+The manifest concept retired. `project.atelier` becomes a regular doc; empty projects valid; sidebar collapses to one flat DOCS group. Every doc gets the same context menu (Duplicate, Delete). `+ new doc` modal with 3 kind tiles (video / image / carousel). Carousel `+ add slide` button on the canvas toolbar.
+
+### Added — agent authoring surface (TD-2026-05-27)
+
+Six MCP tools so Lux + Iris can drive multi-clip projects programmatically: `atelier_add_clip`, `atelier_move_clip`, `atelier_trim_clip`, `atelier_remove_clip`, `atelier_transcribe_clip`, `atelier_move_slide`. Plus doc-management (`atelier_create_doc` / `_duplicate_doc` / `_delete_doc` / `_list_docs`) and rename cascade (`atelier_rename_media`).
+
+### Added — v1.0 schema lock (TD-2026-05-27)
+
+- **`AudioVisual`** layer type replaces the per-state `State.audio` field
+- **`AtelierDocument.kind`** — `"video" | "image" | "carousel"` (default video)
+- **`AtelierDocument.design`** — per-file brand block; self-contained, lineage via `relatedTo[]`
+- **`AtelierDocument.slides`** — carousel manifest of `SlideRef[]`; cycle-safe via `detectCarouselCycle`
+- **`AtelierDocument.timeline`** — derived clip-placement summary; writer-regenerated, reader-tolerant
+- **Multi-clip authoring** — `clip-<slug>` layer IDs (one-to-one with assets), `track-video-1` lazy Group, captions parented to clips with clip-local delta time. Renderer applies ancestor `startFrame` offset on parented layers.
+
+### Fixed — v1.0 triage round 2 (TD-2026-05-28-studio-workspace-link)
+
+The first triage round's "Kit-β letterbox-fit" and "Kit-γ canvas-size dropdown" never reached the running CLI — they shipped to `packages/studio/src` (local v0.28.1) but `packages/cli` depended on `@a-company/atelier-studio: ">=0.25.1"` which pnpm resolved to npm-published **v0.26.1**. Confirmed by grepping the installed dist: zero matches for `atel-canvas-size` / `computeLetterboxFit`. The prior "verified via grep in source + dist" was checking the producer's own dist, not the CLI's `node_modules` copy.
+
+- **Studio workspace link** — `packages/cli/package.json` dep changed from `">=0.25.1"` → `"workspace:^"` so pnpm symlinks the local studio. Letterbox-fit + canvas-size dropdown now actually load. On CLI publish, pnpm rewrites `workspace:^` to the exact studio version at publish time.
+- **`.atel-timeline-view*` CSS** — added to `workspace-app.ts` inline styles. `TimelineView` (Kit-B) set only inline `left`/`width` on ticks, clips, and playhead — without the missing `position:absolute` rules, the frame ruler numbers stacked vertically as block elements (exactly the symptom in the owner screenshot). Ruler + lane now `position:relative`; tick / clip / playhead now `position:absolute`. Empty-state centered.
+
+Runtime verification pending owner restart of `atelier studio`. Tests green: 1177 across 10 packages.
+
+### Fixed — v1.0 triage round 3 (preview-mode video provider)
+
+Owner restart of round 2 made the dropdown + ruler + letterbox visible (verified). The canvas was still black where the video should play — diagnosis: `renderFrame()` accepts a `videoFrameProvider` callback that returns a drawable for a `(src, sourceTime)` pair, but **no preview-mode implementation existed anywhere in the codebase**. The interface was defined, the renderer was wired, the export path (Mediabunny/WebCodecs) was apparently written — the browser-side HTMLVideoElement-backed provider was never written, and the studio's `canvas-panel` was calling `renderFrame(ctx, resolved, doc, imageCache)` with no provider at all. Every `VideoVisual` layer therefore silently skipped via the `if (videoFrameProvider)` guard.
+
+- **`BrowserVideoFrameProvider`** (`packages/studio/src/utils/browser-video-frame-provider.ts`) — backs each video src with a lazy `HTMLVideoElement` (muted, playsInline, crossOrigin=anonymous, preload=auto). Debounces `currentTime` seeks at a 16ms epsilon so playback doesn't thrash. Returns `null` while seek is in flight; fires `onReady` on `loadeddata` and `seeked` so canvas-panel re-paints when the freshly decoded frame is actually drawable. `dispose()` releases cached elements on doc swap.
+- **`CanvasPanelOptions.srcResolver`** — function that maps a doc-stored relative src (e.g. `media/IMG_7346.MOV`) to a browser-fetchable URL. Used by BOTH the image cache and the video provider so the two stay in lockstep. Defaults to identity. Closes a latent gap: disk-loaded docs with image layers ALSO couldn't fetch their bytes (drag-drop image-drop was data-URL'd, masking it).
+- **`StudioOptions.srcResolver`** — forwarded into `CanvasPanel`. The studio doesn't have to know about the host's file API surface; it just hands the function through.
+- **Workspace-app + inline-app supply the resolver** — builds `/api/file?path=${encodeURIComponent(joinPath(docDir, src))}` rooted at the loaded doc's directory. Pass-through guard for absolute/protocol/data URLs.
+
+Runtime verification pending owner restart again. Tests green: 1212 across 12 packages.
+
+### Polish — v1.0 pre-test sweep (2026-05-28)
+
+A pre-test polish pass closing the small papercuts surfaced during R2/R3 runtime verification, before owner begins manual testing.
+
+- **Typography overhaul** — switched from Cormorant Garamond (editorial serif, hard to read at dense UI sizes per owner feedback) to Inter (UI-optimized variable sans). Bumped body to 15px / 1.45 line-height, sidebar items 12px → 13px, toolbar buttons 12px → 13px, table-of-contents labels +1-2px each. Antialiased font smoothing on macOS Retina. Updated `getInlineHTML` to preload Inter weights 400/500/600/700 from Google Fonts.
+- **`renderVideo` honors `objectFit`** — defaults to `"contain"` (aspect-preserved fit-inside with transparent letterbox) instead of stretching to layer bounds. `"cover"` and `"fill"` work as documented; falls back to fill if the source's intrinsic dimensions can't be read mid-load.
+- **Module-level video cache** — `BrowserVideoFrameProvider`'s video elements moved to a module-level `VIDEO_CACHE` keyed by resolved URL, surviving provider disposal. Workspace-app's initial mount cascade (clearMain → currentStudio.destroy → canvasPanel.destroy → videoProvider.dispose) no longer aborts the in-flight 87MB MOV fetch — `dispose()` now just removes listeners. Runtime-verified: 5 ERR_ABORTED → 3 (remaining 3 are normal Chrome Range-request fragments at page close, not the wasteful re-fetch cascade). New `evictFromCache(resolved)` export for media-delete / media-rename flows that need to invalidate.
+- **Caption cross-fade reordered** — `buildPhraseDeltas` moved fade-in window from `[start - fadeF, start]` (BEFORE the phrase) to `[start, start + fadeF]` (INSIDE the phrase). For touching transcript phrases (`end_N === start_{N+1}`, the common case) cap-N fades out `[88, 90]` and cap-(N+1) fades in `[90, 92]` — no overlap, captions transition discretely instead of the 2-frame cross-fade that produced the "captions stacking" false-bug report (L-2026-05-28-ascend-151000-001). Existing v1.0-composed docs retain their old overlap deltas until re-transcribed.
+- **`import.meta` CJS build warning fixed** — split `cli.ts` and `mcp.ts` entries into ESM-only tsup configs (their binaries are ESM via `dist/cli.js` / `dist/mcp.js`; the `.cjs` builds would crash on `import.meta.url` anyway). Library entry `index.ts` keeps ESM + CJS for `require()` consumers. Build is now warning-free.
+
+### Fixed — empty-project `stale` blocker (2026-05-28)
+
+Owner cleared `creator/demo/` for a fresh-build test, then dragging media triggered `"No active project — select one in the sidebar first"` despite the sidebar correctly showing `demo ← active`. Root cause: `/api/workspace/active` checked for `<project>/project.atelier` to compute staleness, but the v1.0 flat-docs pivot (Kit-E) intentionally removed that auto-file — so every empty v1.0 project always reported `stale: true`, and workspace-app skipped initializing `activeProjectName`. Staleness check now verifies the project DIRECTORY exists (the only thing that genuinely makes the pointer stale). Empty projects are a valid starting state.
+
+### Fixed — preview-mode video playback + audio (2026-05-28)
+
+After the BrowserVideoFrameProvider landed in R3, playback was choppy ("few frames then skip") and muted. Two issues:
+
+- **Choppy playback** — the provider was always in seek-on-divergence mode. At 30fps each Player tick advanced sourceTime past the 16ms epsilon, triggering `currentTime = sourceTime` which canceled the previous in-flight seek before the `seeked` event could fire. Per-tick seeks fought the async decoder pipeline. Provider now has a `setPlaying(bool)` mode: native `video.play()` drives frame advance during playback (bypass per-tick seeks entirely; drawImage paints whatever the video has decoded); per-tick seeks resume during scrubbing. CanvasPanel wires this from togglePlay / pause / scrubber events.
+- **No audio** — the provider hardcoded `video.muted = true` (autoplay-policy hedge). togglePlay is a user-gesture, so unmuting is permitted. Provider now unmutes when entering playing mode, with a muted-fallback retry catch if autoplay-policy still rejects.
+- **Random audio stutter** — initial fix included a drift-tolerance sync seek (>250ms divergence between Player.frame and video.currentTime) that interrupted the audio decoder. Removed entirely; native decode is the source of truth during playback.
+
+### Fixed — v1.0 export pipeline: video + captions + audio in MP4 (2026-05-28)
+
+Owner exported `animation (1).mp4` — output showed a single static video frame with all 6 captions stacked, no audio. Three compounding bugs across two code paths:
+
+- **Renderer `clear canvas` was a NO-OP under default compositing** — `fillStyle = "transparent"; fillRect(...)` source-over existing pixels = existing pixels unchanged. Latent for ages; masked in the live editor by full-canvas video drawImage but exposed in export where no video painted. Switched to `ctx.clearRect(0, 0, width, height)` which actually resets pixels regardless of compositing. Added `clearRect` to the `RenderContext` interface (both browser Canvas2D and node-canvas implement it).
+- **Export pipeline never wired a VideoFrameProvider** — same trap canvas-panel hit pre-R3. New `ExportOptions.videoSeek` async resolver. New `BrowserVideoFrameProvider.awaitSeek(src, sourceTime)` that returns a Promise resolved on the `seeked` event (distinct from the streaming `get()` which can return null). Export loop awaits the seek for every VideoVisual layer per frame BEFORE calling renderFrame, then a per-frame sync provider hands the seeked frames back to the renderer. MP4 + WebM + GIF paths all updated symmetrically.
+- **No audio in output** — added **`mediabunny`** dependency (pure-TS MP4/MOV/WebM demuxer). New `ExportOptions.audioSource` takes the resolved URL of the first video layer. `mediabunny.EncodedPacketSink` extracts AAC packets IN-CODEC (no decode/re-encode pass — sub-100ms for typical clips), `mp4-muxer.addAudioChunkRaw` muxes them into the output. First packet timestamp rebased to 0 so AAC priming-sample offset (typically -24ms) doesn't trip mp4-muxer's non-negative-timestamp guard. Sub-frame loss is imperceptible.
+
+Limitations (v1.1):
+- MP4 audio only — WebM + GIF audio paths not implemented
+- Single-clip audio — multi-clip mixing is v1.1 scope
+- AAC + Opus source codecs only (mp4-muxer constraint); MP3/FLAC would need a re-encode pass
+- AAC priming-sample offset lost (sub-frame, imperceptible for non-music content)
+
+### Known v1.1 follow-ups
+
+- **Caption text clipping** — long phrases exceed the `width: 972` bounds with center alignment; composer needs a wrap-or-shrink rule
+- **Caption placement** — y=1632 (85% of 1920) feels low per owner; composer y-ratio tweak
+- **Bottom timeline drag-to-reposition + trim** — explicitly deferred to v1.1
+- **Canvas-size custom dimensions** — explicitly deferred to v1.1
+- **Carousel pick-existing tab** — explicitly deferred to v1.1
+- **Audio in WebM + GIF exports**
+
+### Team execution
+
+This release was built almost entirely via Paradigm agent orchestration:
+- **Arky** (paradigm:architect) decomposed every multi-unit bundle into parallel-safe units
+- **Kit** (paradigm:builder, ×N parallel spawns) implemented Wave A / Wave B units concurrently
+- **Aegis** (paradigm:security) audited every new HTTP endpoint + MCP tool surface (workspace-scoping, path-traversal, manifest refusal, body drain)
+- **Scribe** (paradigm:documentor) maintained `.purpose` files across the 7+ commit arc
+- **Rune** (paradigm:compliance) ran `paradigm_reindex` + `portal.yaml` updates after every wave
+- **Judge** (paradigm:reviewer) cross-builder review caught real bugs (the toast-envelope-fields blocker mid-wave)
+- **Probe** (paradigm:tester) gap analysis + determinism check
+
+The roster is recorded as the project's persistent team — see the [[use-the-paradigm-roster]] memory.
+
+### Added — front-of-pipeline artifacts (Hyperframes-style discipline, Atelier-native)
+- **Artifact schemas** (`@a-company/atelier-schema`) — `DesignArtifactSchema` / `ScriptArtifactSchema` / `StoryboardArtifactSchema`, typed `SlotKind` reference (`<kind>.<category>.<specifier>` with closed kind enum), `TechniqueLibrarySchema`, hand-rolled YAML+Markdown parser, cross-artifact validator (`validateArtifactSet`) for beat-id coverage + slot validation + duration warnings. Pre-Zod spec at `docs/keynote/paradigm/atelier-front-of-pipeline-artifacts.md`.
+- **`atelier artifacts validate <project-dir>`** — reads the three artifacts, runs the validator, exits non-zero on errors. Pure helper `loadArtifactsFromProject(dir)` exported for agent-side reuse.
+- **`atelier artifacts scaffold <project-dir>`** — emits canonical templates (with `--only`, `--force`, `--json`). Freshly-scaffolded triple validates clean by construction; pre-flight refuse-to-overwrite is atomic.
+
+### Added — the agent team
+- **Quill / Lux / Iris** instantiated at `.paradigm/personas/<id>/` with full system prompts, starter skills, canonical notebook seeds, mode-awareness contract, privacy contract. Wired as Claude Code agents (`.claude/agents/atelier-<name>.md`) using `mcp__atelier__<tool>` convention. Tool names reconciled against the actual MCP surface (see `docs/keynote/paradigm/phase-3-reconciliation-notes.md`).
+- **Canonical skill bundles** —
+  - Quill: `write-30s-hook-script`, `draft-design-brief`, `reconstruct-script-from-transcript` (the last subsumes transcript-distillation: reads Whisper word-timing, writes SCRIPT.md with `bind_to_transcript: true` on every beat).
+  - Lux: `decompose-script-to-storyboard`, `resolve-asset-slot`.
+  - Iris: `apply-recipe-to-document`, `run-silence-trim-and-caption`, `compose-animation-from-primitives`, `save-custom-animation-as-preset`.
+- **Mode-aware behavior** — every persona reads `<workspace>/.atelier/learning-mode.yaml` at session start; respects Ambient (silent capture + threshold-surfacing) vs Explicit (ask-before-locking). System never auto-prompts to switch modes.
+- **Active project awareness** — every persona reads `<workspace>/.atelier/active.yaml` before writing; when cwd is a specific project, that overrides.
+
+### Added — workspace concept
+- **`workspace.atelier`** YAML manifest declaring a dir as an Atelier workspace (the layer above Project that holds multiple content Projects with shared creator-level config: learning mode, mind-map, recipes).
+- **Context-aware `atelier studio`** — detects whether cwd is a workspace / project / empty and dispatches. `--new [name]` creates a workspace explicitly; `--mode <ambient|explicit>` skips the interactive prompt; `--no-paradigm-integration` skips augmentation.
+- **`atelier init <project-dir>`** — first-run setup for a creator Project. Inside a workspace, inherits learning mode (skips the prompt) and writes the project at workspace-relative path. Scaffolds the artifact triple + mind-map dir + minimal `project.atelier`. Idempotent on re-run.
+- **HTTP endpoints** on the studio server: `GET /api/workspace`, `GET/POST/DELETE /api/workspace/active`, `POST /api/workspace/projects` — drive workspace-aware UI from the same backend as the existing file API. All localhost-only, origin-checked, safe-path-guarded.
+
+### Added — Paradigm + Atelier symbiosis
+- **`atelier studio --new` detects Paradigm-initialized directories** and runs four idempotent augmentations: sentinel-bracketed Atelier section appended to `CLAUDE.md`, three agent files dropped into `.claude/agents/`, `atelier` MCP server merged into `.mcp.json` alongside `paradigm`, three persona entries added to `.paradigm/personas/index.yaml`. No Paradigm files outside the augmentation contract are touched.
+- **`packages/cli/src/lib/paradigm-augment.ts`** — `detectParadigm`, `augmentClaudeMd`, `augmentMcpJson`, `augmentPersonasIndex`, `augmentClaudeAgents`, `augmentParadigmWithAtelier`. All idempotent (sentinel-replace for markdown, set-merge for JSON/YAML, canonical sync for agent files).
+
+### Added — media pipeline
+- **`media/` folder convention** — canonical place for any source file (video / image / audio / font / other). `atelier media ingest <file>` copies + auto-transcribes (video only, local whisper-cpp) + scaffolds sidecar notes. `atelier media list`, `atelier media note` round out the surface.
+- **Effective transcript derivation** — `applyCuts(raw, cuts) → effective` in `transcript-model.ts`. Pure function: drops word entries inside cut ranges, shifts surviving timestamps. Agents read the *effective* transcript (what's currently in the cut) via the new MCP tool — they reason about the trimmed timeline, not the raw recording.
+- **Sidecar notes convention** — `<filename>.notes.md` next to each media file. Structured YAML frontmatter (file, added, added_by, tags, constraints { do_not, prefer_for }) + per-author Markdown sections (Lux/Quill/Iris/Creator). Read/write via new MCP tools. Idempotent scaffolding on ingest.
+
+### Added — animation craft
+- **Technique library v2** — expanded from 4 starter techniques to ~15 named ones covering text reveals (split-reveal, typewriter, kinetic-keyword-emphasis), image moves (ken-burns, zoom-in, parallax-pan, cross-dissolve), transitions (whip-pan, match-cut, morph-cut, fade-through-color), supers (scale-in-spring, drop-in-staggered), and audio dynamics (fade-under-vo). Each technique decomposes to layers + states + deltas + presets.
+- **Iris's animation skills** — `compose-animation-from-primitives` (translate a named technique into MCP calls) + `save-custom-animation-as-preset` (when Iris invents a new animation and the creator likes it, save as a reusable preset; preset gets its own notes sidecar).
+
+### Added — MCP tools
+- **`atelier_mind_map_query`** — local-only directory walker returning asset paths matching a slot `kind`, with optional hint filtering, mtime-sorted. ~50-line read-only tool; Phase 4 mind-map stub. Portal gate `^valid-mind-map-query`.
+- **`atelier_get_effective_transcript`** — exposes `applyCuts` derivation to agents.
+- **`atelier_get_media_notes`** + **`atelier_write_media_note`** — sidecar notes IO. Author-scoped writes (per-section idempotent).
+
+### Decisions (recorded as `TD-2026-05-*`)
+Twelve strategic decisions ground the architecture. Highlights:
+- **TD-088** image generation stays external (Higgsfield via agents); stable seam for later wrapping.
+- **TD-363** agents ship WITH Atelier as a Claude Code skill (not in `a-paradigm`).
+- **TD-275** standalone surface + Paradigm-native engine (dual citizenship; no hard Paradigm dep at install).
+- **TD-684** open-source. No paid marketplace, no subscriptions, no premium gating.
+- **TD-540** local-first wins. No hosted Studio tier. nevr.land scope is only inert public artifacts (supersedes TD-720).
+- **TD-271** personal notebooks + mind-map are creator-owned, local-only, never uploaded.
+- **TD-229** recipes/skills/asset-packs are inert; assets stay local; recipe install binds slots locally via the mind-map.
+- **TD-902** extracted recipes default to `personal-use: true` — not publishable until creator explicitly flips.
+- **TD-646** creator picks Ambient or Explicit at workspace setup; system never auto-prompts to switch.
+- **TD-210** shared Paradigm-published personas + per-creator notebooks.
+- **TD-2026-05-27-723** local-only by default. All third-party integrations are opt-in; online providers are never the silent fallback.
+
+### Testing
+- Workspace tests across 12 packages — types 6 / math 29 / schema 88 / core 118 / lottie 37 / canvas 26 / video 8 / svg 32 / react 15 / studio 46 / mcp 175 / cli 302 — **all passing**. Compliance check clean across 496 anchors.
+
+### Known follow-ups (pre-v1)
+- **Studio-UI-as-creator-interface bundle** (Phase 2 frontend) — drag-and-drop ingest in the browser, project sidebar + switcher, new-project modal. The creator experience; replaces every "type this CLI command" instruction.
+- **Whisper model auto-resolve + auto-download** — short name `large-v3-turbo` resolves to `~/.cache/whisper.cpp/models/ggml-large-v3-turbo.bin`; missing model auto-downloads on first use. Folds in with the studio-UI bundle per TD-2026-05-27-723.
+- **End-to-end validation** — record → drag into studio → agents do the rest. v1 publish gated on this working cleanly.
+
 ## [0.37.0] — 2026-05-22
 
 ### Added

@@ -33,7 +33,7 @@ export const defaultTheme: StudioTheme = {
   accentHover: "#D4724E",
   sliderTrack: "#4A4A4A",
   sliderThumb: "#C75B39",
-  fontFamily: "'Cormorant Garamond', Georgia, serif",
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   fontMono: "'SF Mono', 'Fira Code', monospace",
   canvasShadow: "0 4px 60px rgba(199, 91, 57, 0.12), 0 0 40px rgba(0,0,0,0.4)",
 };

@@ -1,0 +1,10 @@
+id: T-2026-05-10-012
+blurb: Frame Adapter pattern — RuntimeAdapter interface for external runtimes (GSAP/Anime.js) on the render pipeline
+priority: medium
+status: open
+tags:
+  - phase-3
+  - core
+  - canvas
+  - architecture
+created: '2026-05-10T18:23:26.272Z'

@@ -1,0 +1,13 @@
+id: T-2026-05-10-003
+blurb: packages/video — FFmpeg WASM Worker for client-side MP4/WebM encoding pipeline
+priority: high
+status: open
+tags:
+  - phase-2
+  - video
+  - ffmpeg
+  - encoding
+  - runtime
+created: '2026-05-10T18:23:26.168Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

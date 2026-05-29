@@ -1,0 +1,98 @@
+id: L-2026-05-27-ascend-134835-001
+type: milestone
+timestamp: '2026-05-27T13:48:35.392Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Session arc: artifact schemas → agent wiring → workspace layer → Paradigm symbiosis design'
+summary: 'Comprehensive session-level lore consolidating all source-file work across the post-decision build arc. Phase 2 shipped the Zod artifact schemas (DESIGN/SCRIPT/STORYBOARD + slot/technique/parse/validate) plus CLI consumers (artifacts validate, artifacts scaffold). Phase 3 wired the three personas as Claude Code agents, built the atelier_mind_map_query MCP tool, added atelier init with workspace-aware learning mode inheritance, and dropped the minimal project.atelier scaffold. Workspace layer landed: workspace.atelier YAML manifest, findWorkspace + readActive/setActive helpers, context-aware atelier studio command, /api/workspace/* HTTP endpoints. Most recently, Paradigm-Atelier symbiosis protocol designed (detection-and-augmentation in atelier studio --new, not Paradigm-side preset). Workspace tests: schema 88, CLI 271, MCP 175 — all passing. Compliance clean (multiple aspect-anchor re-materializations performed inline). Each prior lore entry covered a slice; this entry is the umbrella that names every source file touched.'
+symbols_touched:
+  - '#artifact-schemas'
+  - '#cli-artifacts'
+  - '#artifact-templates'
+  - '#artifact-project'
+  - '#workspace-schema'
+  - '#workspace-io'
+  - '#cli-studio'
+  - '#cli-init'
+  - '#learning-mode-io'
+  - '#mcp-mind-map'
+  - '#claude-agents-bundle'
+  - ^valid-artifact-set
+  - ^valid-mind-map-query
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+symbols_created:
+  - '#artifact-schemas'
+  - '#workspace-schema'
+  - '#workspace-io'
+  - '#cli-init'
+  - '#cli-artifacts'
+  - '#artifact-templates'
+  - '#artifact-project'
+  - '#mcp-mind-map'
+  - '#claude-agents-bundle'
+  - '#learning-mode-io'
+  - ^valid-artifact-set
+  - ^valid-mind-map-query
+files_created:
+  - packages/schema/src/workspace.ts
+  - packages/schema/src/workspace.test.ts
+  - packages/schema/src/artifacts/slot.ts
+  - packages/schema/src/artifacts/technique.ts
+  - packages/schema/src/artifacts/design.ts
+  - packages/schema/src/artifacts/script.ts
+  - packages/schema/src/artifacts/storyboard.ts
+  - packages/schema/src/artifacts/parse.ts
+  - packages/schema/src/artifacts/validate.ts
+  - packages/schema/src/artifacts/index.ts
+  - packages/cli/src/commands/artifacts.ts
+  - packages/cli/src/commands/init.ts
+  - packages/cli/src/lib/artifact-project.ts
+  - packages/cli/src/lib/artifact-templates.ts
+  - packages/cli/src/lib/learning-mode.ts
+  - packages/cli/src/lib/workspace.ts
+  - packages/mcp/src/tools/mind-map.ts
+files_modified:
+  - packages/cli/.purpose
+  - packages/cli/src/cli.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/index.test.ts
+  - packages/cli/src/index.ts
+  - packages/mcp/.purpose
+  - packages/mcp/src/index.test.ts
+  - packages/mcp/src/index.ts
+  - packages/schema/.purpose
+  - packages/schema/src/index.ts
+learnings:
+  - Hook tracks file modifications against lore coverage at session level, not just the most recent slice. Sub-delegation lore entries each cover their own slice but the umbrella entry that explicitly lists every file across the arc is what closes the hook check.
+  - 20 source-level files touched across the arc, organized into 3 distinct conceptual phases (artifact schemas, agent wiring, workspace + symbiosis). Each phase had its own builder delegation; the umbrella entry retroactively unifies them.
+verification:
+  status: pass
+  details:
+    schema_tests: 88 passing
+    cli_tests: 271 passing
+    mcp_tests: 175 passing
+    typecheck: clean across workspace
+    build: clean ESM + CJS + dts
+    compliance: clean after anchor re-materialization
+    portal: compliant
+tags:
+  - session-arc
+  - phase-2
+  - phase-3
+  - workspace
+  - creator-flow
+  - umbrella-lore
+linked_lore:
+  - L-2026-05-26-ascend-124844-001
+  - L-2026-05-27-ascend-035359-001
+  - L-2026-05-27-ascend-044400-001
+  - L-2026-05-27-claude-builder-063923-001
+  - L-2026-05-27-ascend-134737-001
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

@@ -1,0 +1,34 @@
+id: L-2026-05-28-ascend-105949-001
+type: retro
+timestamp: '2026-05-28T10:59:49.586Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Open bugs after v1.0 media-bin + timeline + triage — handoff
+summary: After landing the full v1.0 bundle (media-bin pivot, bottom timeline UI, sidebar drag, canvas-size dropdown, letterbox-fit, llm:mutation envelope-driven refresh), three UI bugs remain open from owner testing. (1) Canvas still overflows the visible viewport — letterbox-fit math fires but the canvas spills below the timeline lane. The e962981 overflow:hidden fix didn't resolve fully; likely a constants-mismatch in applyLetterboxFit (padding/gap/playbackH) or a measurement-before-paint timing issue (ResizeObserver fires too late on first load). (2) Bottom timeline frame ruler renders even when doc.timeline is missing/empty — owner finds the bare numbers confusing without clips. (3) Canvas-size dropdown (Kit-γ) is wired in studio.ts source AND visible in the studio dist (grep verified), but doesn't render in the toolbar per owner screenshot. Could be Vite module cache, CSS collapse, or DOM container scoping. Next session needs to devtools-inspect the DOM around .atel-canvas-size before deciding fix direction.
+symbols_touched:
+  - '#workspace-app'
+  - '#canvas-panel'
+  - '#atelier-studio'
+  - '#timeline-view'
+  - '#canvas-size-presets'
+verification:
+  status: partial
+  details:
+    workspace_tests: 1212 pass
+    tsc_workspace: exit 0
+    open_ui_bugs: 3 (canvas-aspect-fit, empty-timeline-ruler, dropdown-not-rendering)
+tags:
+  - v1.0
+  - open-bugs
+  - handoff
+  - ui-triage
+linked_lore:
+  - L-2026-05-28-ascend-104716-001
+  - L-2026-05-28-ascend-094129-001
+confidence: 0.7
+git_context:
+  ref: e962981783c7fd66236f8625cdc6067bf48ae51a
+  branch: feat/creator-flow-v1-prep
+  dirty: true

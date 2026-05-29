@@ -1,32 +1,41 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
-import type { AtelierDocument, ImageVisual } from "@a-company/atelier-types";
+import type { AtelierDocument, ImageVisual, VideoVisual, AudioVisual } from "@a-company/atelier-types";
 import { parseAtelier } from "@a-company/atelier-schema";
 
-/** Asset summary entry */
+/**
+ * Asset summary entry. v1.0: `usedByStates` removed — audio is no longer
+ * state-scoped (it's an AudioVisual layer), so layer-only tracking is now
+ * the complete picture.
+ */
 export interface AssetInfo {
   assetId: string;
   type: string;
   src: string;
   description?: string;
   usedByLayers: string[];
-  usedByStates: string[];
 }
 
 /**
  * Extract asset info from a parsed AtelierDocument.
+ *
+ * Walks all layers (image, video, audio) for assetId references. Pre-v1
+ * docs that still carry `state.audio` are silently migrated by the parser
+ * (audio field stripped); no per-state asset usage is tracked.
  */
 export function getAssets(doc: AtelierDocument): AssetInfo[] {
   const assets = doc.assets ?? {};
   return Object.entries(assets).map(([assetId, asset]) => {
     const usedByLayers = doc.layers
-      .filter(l => l.visual.type === "image" && (l.visual as ImageVisual).assetId === assetId)
+      .filter(l => {
+        const v = l.visual as ImageVisual | VideoVisual | AudioVisual | { type: string; assetId?: string };
+        return (
+          (v.type === "image" || v.type === "video" || v.type === "audio") &&
+          "assetId" in v && v.assetId === assetId
+        );
+      })
       .map(l => l.id);
-
-    const usedByStates = Object.entries(doc.states)
-      .filter(([, state]) => state.audio?.src === assetId)
-      .map(([name]) => name);
 
     return {
       assetId,
@@ -34,7 +43,6 @@ export function getAssets(doc: AtelierDocument): AssetInfo[] {
       src: asset.src,
       description: asset.description,
       usedByLayers,
-      usedByStates,
     };
   });
 }
@@ -51,9 +59,6 @@ function formatAssets(assets: AssetInfo[]): string {
     lines.push(`  - ${a.assetId} (${a.type}): ${a.src}${desc}`);
     if (a.usedByLayers.length > 0) {
       lines.push(`    Layers: ${a.usedByLayers.join(", ")}`);
-    }
-    if (a.usedByStates.length > 0) {
-      lines.push(`    States: ${a.usedByStates.join(", ")}`);
     }
   }
   return lines.join("\n");

@@ -6,6 +6,8 @@ const TYPE_ICONS: Record<string, string> = {
   shape: "\u25A0",
   text: "T",
   image: "\u25A3",
+  video: "\u25B6", // \u25B6
+  audio: "\u266A", // \u266A
   group: "\u25A8",
   ref: "\u2192",
 };

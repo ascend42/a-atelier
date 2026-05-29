@@ -11,8 +11,12 @@ context:
 components:
   cli-lint:
     description: Lint command — runs ^valid-document, ^valid-delta, ^valid-video-layer gates across one or more files; supports --json for CI
+    tags:
+      - lint
+      - gates
+      - ci
+      - video
     file: src/commands/lint.ts
-    tags: [lint, gates, ci, video]
   cli-validate:
     description: Validate command — checks .atelier files for schema validity and delta overlaps (legacy; lint is preferred)
     file: src/commands/validate.ts
@@ -36,16 +40,35 @@ components:
     file: src/commands/export-lottie.ts
   cli-export-image:
     description: 'atelier export-image <file> --out file.png [--frame N] [--state NAME] [--width N] [--height N] — single-frame PNG export. Delegates to the shared #render-image render path (renderDocumentToPng). Aspect-preserving when only one of --width/--height is set; both set uses both verbatim. Foundation for the v1 carousel batch driver and the Studio Export PNG button.'
+    tags:
+      - export
+      - png
+      - image
+      - canvas
+      - studio
     file: src/commands/export-image.ts
-    tags: [export, png, image, canvas, studio]
   '#render-image':
-    description: 'Shared single-frame render-to-PNG path. Rasterizes via @napi-rs/canvas (prebuilt platform binaries — no node-gyp / system libs, so PNG export works on a plain install; loadCanvasModule is now a thin accessor over the static import). renderDocumentToPng (image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer via canvas.toBuffer(image/png)), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError (defensive — fires only if the platform binary is missing). refitImageBounds hook re-fits image layers once the rasterizer decodes natural dims (used by carousel). Consumed by export-image + carousel.'
+    description: Shared single-frame render-to-PNG path. Rasterizes via @napi-rs/canvas (prebuilt platform binaries — no node-gyp / system libs, so PNG export works on a plain install; loadCanvasModule is now a thin accessor over the static import). renderDocumentToPng (image-layer preloading into an ImageCache mirroring render-pipeline, frame resolve + scale-to-output, returns PNG Buffer via canvas.toBuffer(image/png)), resolveExportDimensions (aspect-preserving dimension math), fitImageToCanvas (pure aspect-fit math, inlined from studio so the CLI render path stays DOM-free), CanvasUnavailableError (defensive — fires only if the platform binary is missing). refitImageBounds hook re-fits image layers once the rasterizer decodes natural dims (used by carousel). Consumed by export-image + carousel.
+    tags:
+      - export
+      - png
+      - image
+      - canvas
+      - render
+      - shared
     file: src/lib/render-image.ts
-    tags: [export, png, image, canvas, render, shared]
   '#cli-carousel':
     description: 'atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe, expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + ''i/N'' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.'
+    tags:
+      - export
+      - png
+      - image
+      - carousel
+      - recipe
+      - batch
+      - cli
+      - studio
     file: src/commands/carousel.ts
-    tags: [export, png, image, carousel, recipe, batch, cli, studio]
   cli-assets:
     description: Assets command — lists all assets in a document with usage info
     file: src/commands/assets.ts
@@ -54,64 +77,493 @@ components:
     file: src/commands/variables.ts
   '#video-project':
     description: VideoProject filesystem utilities — createVideoProject, loadVideoProject, readCutList/writeCutList (1.0→1.1 migration), readTranscript/writeTranscript, readComposition/writeComposition, rewriteCutLayers, effectiveSpan — scaffold and manage the source.mp4/project.atelier/transcript.json/cuts.json/export/ folder; layer-tag isolation (silence-trim, caption, overlay) preserves user-authored layers across pipeline re-runs
+    tags:
+      - video
+      - ugc
+      - editing
+      - filesystem
     file: src/lib/video-project.ts
-    tags: [video, ugc, editing, filesystem]
   '#cli-trim':
-    description: 'atelier trim — silence detection + parametric cuts pipeline. Runs ffmpeg silencedetect, inverts to speech intervals, builds CutEntry[] with default padding, preserves user paddingPre/paddingPost on re-run via raw-boundary matching (0.5s tolerance), supports --tighten/--loosen global ms adjustments, --cut single-cut overrides, --reset, --dry-run, --json. Rewrites silence-trim tagged VideoVisual layers in project.atelier; never touches user-authored or other-tagged layers.'
+    description: atelier trim — silence detection + parametric cuts pipeline. Runs ffmpeg silencedetect, inverts to speech intervals, builds CutEntry[] with default padding, preserves user paddingPre/paddingPost on re-run via raw-boundary matching (0.5s tolerance), supports --tighten/--loosen global ms adjustments, --cut single-cut overrides, --reset, --dry-run, --json. Rewrites silence-trim tagged VideoVisual layers in project.atelier; never touches user-authored or other-tagged layers.
+    tags:
+      - video
+      - ugc
+      - trim
+      - silence
+      - ffmpeg
+      - cli
     file: src/commands/trim.ts
-    tags: [video, ugc, trim, silence, ffmpeg, cli]
   '#silence-detect':
     description: ffmpeg silencedetect subprocess + ffprobe duration helpers. probeSilencedetect (filter availability check), probeDuration (ffprobe), runSilenceDetect (silencedetect to null muxer), parseSilenceDetectStderr (pairs silence_start/silence_end lines, tolerates ffmpeg chatter, clamps negative starts). All via node:child_process.spawn; no new npm dependencies.
+    tags:
+      - video
+      - ffmpeg
+      - silence
+      - subprocess
     file: src/lib/silence-detect.ts
-    tags: [video, ffmpeg, silence, subprocess]
   '#cut-model':
     description: Pure functions over CutEntry[] — invertToSpeechIntervals, buildInitialCuts (default 80ms pre / 120ms post padding), resolveOverlaps (split at silence midpoint), clampBoundaries ([0, duration]), mergeWithExisting (preserves user padding on matching raw boundary within tolerance), applyGlobalPadding (tighten/loosen with floor at 0). All unit-tested in isolation.
+    tags:
+      - video
+      - cuts
+      - parametric
+      - pure
     file: src/lib/cut-model.ts
-    tags: [video, cuts, parametric, pure]
   '#cli-transcribe':
-    description: 'atelier transcribe — Whisper transcription pipeline. Probes whisper-cpp/openai-api backend, runs Whisper, parses JSON output, merges with existing transcript (preserves userEdited/userAdded/hidden flags on words matching by timing + detected text), writes transcript.json 1.1, and rewrites caption-tagged TextVisual layers in project.atelier. Supports --model, --language, --reset, --no-captions, --dry-run, --json.'
+    description: atelier transcribe — Whisper transcription pipeline. Probes whisper-cpp/openai-api backend, runs Whisper, parses JSON output, merges with existing transcript (preserves userEdited/userAdded/hidden flags on words matching by timing + detected text), writes transcript.json 1.1, and rewrites caption-tagged TextVisual layers in project.atelier. Supports --model, --language, --reset, --no-captions, --dry-run, --json.
+    tags:
+      - video
+      - ugc
+      - transcribe
+      - whisper
+      - captions
+      - cli
     file: src/commands/transcribe.ts
-    tags: [video, ugc, transcribe, whisper, captions, cli]
   '#cli-transcript':
-    description: 'atelier transcript family — fix (single word or batch --replace), add (insert userAdded word), delete (hide word), merge (concat adjacent), split (fractional split with optional text override), list. All edits set userEdited/userAdded/hidden flags and regenerate caption layers unless --no-regenerate.'
+    description: atelier transcript family — fix (single word or batch --replace), add (insert userAdded word), delete (hide word), merge (concat adjacent), split (fractional split with optional text override), list. All edits set userEdited/userAdded/hidden flags and regenerate caption layers unless --no-regenerate.
+    tags:
+      - video
+      - captions
+      - transcript
+      - editing
+      - cli
     file: src/commands/transcript.ts
-    tags: [video, captions, transcript, editing, cli]
+  '#cli-reconstruct':
+    description: 'atelier reconstruct [project-dir] — primes an Atelier Project for Quill''s `reconstruct-script-from-transcript` skill (the Veteran hero path''s first CLI move). Validates `<project-dir>` (defaults to cwd) is a Project (has `project.atelier`); short-circuits when `transcript.json` is already on disk or a forward-compat `transcripts/*.json` exists; otherwise verifies a `source.<ext>` (mp4 | mov | webm | mkv | avi) is present and calls into the exported `#cli-transcribe` helper `transcribeProject` in-process (NOT a subprocess) to write `transcript.json`. Prints a one-screen hint pointing the creator at `@atelier-quill reconstruct` in Claude Code; the LLM reasoning is Quill''s job, the CLI''s job is to make the inputs exist. `--json` emits a machine-readable payload `{ ok, projectDir, transcriptPath, scriptPath: null|"existing", ready, transcribed, notes }`. Pure helper `runReconstruct(opts)` returns `ReconstructResult`; takes a `transcribeFn` injection point so tests stub the whisper-cpp subprocess. Exit 0 on success, 1 on missing project.atelier / no source video / no transcript could be produced.'
+    tags:
+      - video
+      - ugc
+      - transcribe
+      - script
+      - quill
+      - cli
+      - reconstruction
+    file: src/commands/reconstruct.ts
   '#cli-captions':
-    description: 'atelier captions regenerate — re-derive caption-tagged TextVisual layers from current transcript.json without re-running Whisper. Used when caption styling changes.'
+    description: atelier captions regenerate — re-derive caption-tagged TextVisual layers from current transcript.json without re-running Whisper. Used when caption styling changes.
+    tags:
+      - video
+      - captions
+      - cli
     file: src/commands/captions.ts
-    tags: [video, captions, cli]
   '#whisper':
-    description: 'Whisper subprocess + parser lib. probeWhisper (whisper-cpp / openai-api / none), runWhisperCpp (--output-json --word-thold), parseWhisperCppJson (token-level word timing when available, even-split fallback, filters [_BEG_] / empty tokens). ENOENT translated to clear install guidance. Same subprocess pattern as ffmpeg.'
+    description: Whisper subprocess + parser lib. probeWhisper (whisper-cpp / openai-api / none), runWhisperCpp (--output-json --word-thold), parseWhisperCppJson (token-level word timing when available, even-split fallback, filters [_BEG_] / empty tokens). ENOENT translated to clear install guidance. Same subprocess pattern as ffmpeg.
+    tags:
+      - video
+      - transcribe
+      - whisper
+      - subprocess
     file: src/lib/whisper.ts
-    tags: [video, transcribe, whisper, subprocess]
   '#transcript-model':
-    description: 'Pure functions over VideoTranscript. flattenWords (segments → ordered word array), groupIntoPhrases (break on punctuation / maxWords / pauseGap), mergeTranscriptWithExisting (preserve user edits on word matching by start time ±0.3s AND detected text), applyTextEdit / applyBatchReplace / applyHide / applyAdd / applyMerge / applySplit. All transforms are immutable and set the appropriate flag (userEdited / userAdded / hidden). Unit-tested in isolation.'
+    description: Pure functions over VideoTranscript. flattenWords (segments → ordered word array), groupIntoPhrases (break on punctuation / maxWords / pauseGap), mergeTranscriptWithExisting (preserve user edits on word matching by start time ±0.3s AND detected text), applyTextEdit / applyBatchReplace / applyHide / applyAdd / applyMerge / applySplit. All transforms are immutable and set the appropriate flag (userEdited / userAdded / hidden). Unit-tested in isolation.
+    tags:
+      - video
+      - transcript
+      - captions
+      - pure
     file: src/lib/transcript-model.ts
-    tags: [video, transcript, captions, pure]
   '#caption-builder':
-    description: 'Builds caption-tagged TextVisual layers + opacity fade-in/out deltas from a VideoTranscript. buildCaptionLayers (transcript → Layer[] + Delta[]), rewriteCaptionLayers (drops only caption-tagged layers and their deltas from the default state; preserves silence-trim, overlay, and user-authored layers — the tag-namespace isolation invariant). Caption style overridable.'
+    description: Builds caption-tagged TextVisual layers + opacity fade-in/out deltas from a VideoTranscript. buildCaptionLayers (transcript → Layer[] + Delta[]), rewriteCaptionLayers (drops only caption-tagged layers and their deltas from the default state; preserves silence-trim, overlay, and user-authored layers — the tag-namespace isolation invariant). Caption style overridable.
+    tags:
+      - video
+      - captions
+      - layers
     file: src/lib/caption-builder.ts
-    tags: [video, captions, layers]
   '#cli-recipe':
-    description: 'atelier recipe new/validate/show — Studio Recipe management. recipe new scaffolds a commented starter YAML with every Phase 1 default present; recipe validate runs the ^valid-recipe gate and warns on reserved Phase 3 fields; recipe show prints a recipe with optional --with-defaults overlay.'
+    description: atelier recipe new/validate/show — Studio Recipe management. recipe new scaffolds a commented starter YAML with every Phase 1 default present; recipe validate runs the ^valid-recipe gate and warns on reserved Phase 3 fields; recipe show prints a recipe with optional --with-defaults overlay.
+    tags:
+      - video
+      - ugc
+      - recipe
+      - cli
+      - studio-recipe
     file: src/commands/recipe.ts
-    tags: [video, ugc, recipe, cli, studio-recipe]
   '#cli-apply-recipe':
-    description: 'atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.'
+    description: atelier apply-recipe <project> <recipe> — convenience verb that runs atelier trim then atelier transcribe against the same recipe in one shot. Supports --reset (destructive), --no-trim, --no-transcribe. Surfaces reserved-field warnings at load time.
+    tags:
+      - video
+      - ugc
+      - recipe
+      - cli
+      - studio-recipe
     file: src/commands/apply-recipe.ts
-    tags: [video, ugc, recipe, cli, studio-recipe]
+  '#cli-init':
+    description: 'atelier init <project-dir> — first-run setup for a creator Project (Phase 3, delegation C). Creates <project-dir> if absent (refuses if it exists as a file), prompts for Ambient/Explicit learning mode (or accepts --mode <ambient|explicit> to skip the prompt), writes <project-dir>/.atelier/learning-mode.yaml via #learning-mode-io, creates <project-dir>/.atelier/mind-map/ with a creator-facing README (TD-2026-05-26-271: nothing in the mind-map leaves the machine), delegates to #cli-artifacts `scaffoldArtifacts` to drop DESIGN/SCRIPT/STORYBOARD (unless --no-scaffold), and runs `git init` + writes a minimal .gitignore (unless --no-git or already inside a repo, detected via `git -C <dir> rev-parse --show-toplevel`). Re-entrant: re-running init on an already-initialized dir refreshes learning-mode.yaml with a new timestamp and swallows scaffold''s refuse-to-overwrite as a soft skip. --json emits a machine-readable payload (ok, projectDir, mode, learningModeFile, scaffolded, mindMapDir, gitInitialized, alreadyInRepo, notes) and requires --mode (scripted use must pre-declare). Pure helper runInit(opts) returns InitResult; Commander wrapper catches and process.exit(1)s on error per the same split #cli-artifacts uses.'
+    tags:
+      - init
+      - setup
+      - learning-mode
+      - mind-map
+      - scaffold
+      - git
+      - cli
+      - phase-3
+    file: src/commands/init.ts
+  '#learning-mode-io':
+    description: 'learning-mode.yaml read/write for the Atelier creator autonomy posture (TD-2026-05-26-646). writeLearningMode(dir, mode, opts?) writes <dir>/.atelier/learning-mode.yaml with version, mode (ambient|explicit), and an ISO 8601 chosen_at timestamp (overridable via opts.chosenAt for deterministic tests). readLearningMode(dir) returns undefined when the file is absent; throws on invalid mode or missing chosen_at. resolveLearningMode(cwd) returns { mode, source: workspace|project|default } — walks up from cwd, preferring the workspace-level mode when cwd is inside a workspace (via findWorkspace), else the nearest project-level mode, else { ambient, default } for read-only resolution; writes are still the caller`s responsibility at the right level. Hand-rolled scalar YAML — no YAML dep — matched to whatever the writer emits; the schema is intentionally tiny and stable. Iris and friends read this at session start to calibrate behavior; the system NEVER auto-prompts to switch — the creator changes mode by editing the file.'
+    tags:
+      - init
+      - learning-mode
+      - yaml
+      - io
+      - phase-3
+      - workspace
+    file: src/lib/learning-mode.ts
+  '#workspace-io':
+    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence). createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
+    tags:
+      - workspace
+      - init
+      - studio
+      - yaml
+      - io
+      - discovery
+    file: src/lib/workspace.ts
+  '#paradigm-augment':
+    description: 'Paradigm + Atelier workspace symbiosis. detectParadigm(dir) returns { present, claudeMdPath, mcpJsonPath, configYamlPath, personasIndexPath, agentsDirPath }; present is true iff both <dir>/CLAUDE.md and <dir>/.paradigm/config.yaml exist (the joint marker `paradigm shift` leaves). When present, augmentParadigmWithAtelier(dir, { workspaceName, learningMode, atelierMcpCwd? }) runs four idempotent operations: (1) augmentClaudeMd splices a sentinel-bracketed `## Atelier Creator Workspace` section between ATELIER_CLAUDE_MD_SECTION_BEGIN / _END markers — appends on first run, replaces on re-run, never touches bytes outside the sentinels; (2) augmentClaudeAgents drops atelier-{quill,lux,iris}.md from the snapshot in atelier-agent-templates.ts into <dir>/.claude/agents/ (creates dir if missing; overwrites OK — canonical sync per TD-2026-05-26-210); (3) augmentMcpJson merges an `atelier` entry into mcpServers (command:atelier-mcp, args:["."], cwd:<dir>) alongside any existing paradigm + permissions block — preserves siblings verbatim, returns added/updated/skipped; (4) augmentPersonasIndex block-replaces just the personas: subtree in .paradigm/personas/index.yaml (preserves version/generated/chains/gate_coverage/route_coverage/uncovered_routes byte-for-byte), adding quill-showrunner / lux-cinematographer / iris-composer entries alongside any pre-existing personas. Hand-rolled YAML + JSON merging — no js-yaml dep. Idempotent replay produces stable output (CLAUDE.md replaced, mcp.json skipped, personas skipped, agents updated). Wired into createWorkspace; gated by opts.skipParadigmIntegration (CLI: --no-paradigm-integration).'
+    tags:
+      - workspace
+      - paradigm
+      - augment
+      - claude-md
+      - mcp
+      - personas
+      - agents
+      - symbiosis
+      - phase-3
+    file: src/lib/paradigm-augment.ts
+  '#atelier-agent-templates':
+    description: 'Snapshot of engine .claude/agents/atelier-{quill,lux,iris}.md as TypeScript string constants (ATELIER_QUILL_AGENT_MD, ATELIER_LUX_AGENT_MD, ATELIER_IRIS_AGENT_MD + ATELIER_AGENT_TEMPLATES registry). Generated by escape-aware copy from the engine root .md files; sync convention is manual lockstep when canonical files change. Used by #paradigm-augment.augmentClaudeAgents to drop the three Claude Code agent wrapper files into a workspace .claude/agents/ directory when wiring Paradigm + Atelier symbiosis.'
+    tags:
+      - agents
+      - templates
+      - claude-code
+      - snapshot
+      - paradigm-augment
+    file: src/lib/atelier-agent-templates.ts
+  '#cli-artifacts':
+    description: 'atelier artifacts <validate|scaffold> — first user-facing surface over the Phase 2 front-of-pipeline artifact schemas (DESIGN.md / SCRIPT.md / STORYBOARD.md). `validate <project-dir> [--json]` walks the three artifact files (sibling-of-project.atelier convention per artifact spec §2), parses each present file via parseDesign / parseScript / parseStoryboard, and runs validateArtifactSet on whatever parsed cleanly to enforce ^valid-artifact-set — absent artifacts are noted as [not present] (NOT errors), parse failures and validator errors both exit 1, warnings alone (e.g. pre-VO duration overrun) keep exit 0 per the warn-only posture, --json emits a machine-readable payload (ok, present, missing, parseErrors, validation). `scaffold <project-dir> [--only design|script|storyboard] [--force] [--json]` writes canonical empty templates from #artifact-templates into the dir (recursive-mkdir if absent), refusing-to-overwrite by default with a single error listing every would-clobber path so the conflict surfaces in one pass — closing the author-side of the artifact loop (creators scaffold → fill → validate).'
+    tags:
+      - artifacts
+      - design
+      - script
+      - storyboard
+      - validation
+      - scaffold
+      - cli
+      - phase-2
+    gates:
+      - ^valid-artifact-set
+    file: src/commands/artifacts.ts
+  '#cli-workspace':
+    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, .gitignore, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
+    tags:
+      - workspace
+      - scaffold
+      - templates
+      - personas
+      - cascade
+      - cli
+      - v2
+    file: src/commands/workspace.ts
+  '#artifact-templates':
+    description: 'Canonical empty templates for DESIGN.md / SCRIPT.md / STORYBOARD.md, exported as DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE TS string constants plus the ARTIFACT_TEMPLATES registry. Used by `atelier artifacts scaffold` to write a creator-fillable starting point with TODO markers and Markdown comments inline. INVARIANT: every template is schema-valid (placeholders use defaults sufficient to satisfy the schema package mins — voice.descriptors >= 3, palette/typography/logos/hook/cta non-empty, storyboard window.end_s > start_s, techniques drawn from TECHNIQUE_LIBRARY_V1) so parseDesign/parseScript/parseStoryboard succeed on first save; the triple ALSO cross-validates clean via validateArtifactSet (matching hook-1/cta-1 ids between SCRIPT and STORYBOARD, valid slot refs). Templates are pure TS constants so they version-lock to the consuming code and tree-shake — no external .md files.'
+    tags:
+      - artifacts
+      - templates
+      - scaffold
+      - design
+      - script
+      - storyboard
+      - phase-2
+    file: src/lib/artifact-templates.ts
+  '#artifact-project':
+    description: 'loadArtifactsFromProject(dir) → { projectDir, design?, script?, storyboard?, missing[], parseErrors[] }. Pure filesystem walker for the DESIGN.md / SCRIPT.md / STORYBOARD.md triplet at a Project root. Synchronously throws only on a missing or non-directory projectDir; per-file parse failures (read errors, YAML errors, Zod validation errors) are captured into parseErrors so callers can surface every problem in one pass rather than aborting on the first. ZodError issues are flattened to "path: message" form so multi-issue failures stay legible without a JSON dump. The library layer is reused by the CLI (atelier artifacts validate) and is the consumption point future agent / MCP callers will use to read project artifacts; no stdout / exit-code coupling lives here.'
+    tags:
+      - artifacts
+      - project
+      - filesystem
+      - pure
+      - phase-2
+    file: src/lib/artifact-project.ts
   '#cli-studio':
-    description: 'atelier studio [file] — launches a Vite dev server serving the AtelierStudio widget as a browser-based editor. Lists .atelier files in CWD, autosaves edits with visible save/saving/error indicator + click-to-retry on failure, supports per-file and Export-All (gif/mp4/webm). Server bound to 127.0.0.1 only with Origin check on /api/* mutating endpoints (^localhost-only). No autoplay on file open — the embedded studio is constructed with autoplay:false.'
+    description: atelier studio [file] — launches a Vite dev server serving the AtelierStudio widget as a browser-based editor. Lists .atelier files in CWD, autosaves edits with visible save/saving/error indicator + click-to-retry on failure, supports per-file and Export-All (gif/mp4/webm). Server bound to 127.0.0.1 only with Origin check on /api/* mutating endpoints (^localhost-only). No autoplay on file open — the embedded studio is constructed with autoplay:false.
+    tags:
+      - studio
+      - editor
+      - dev-server
+      - vite
+      - security
+    gates:
+      - ^localhost-only
     file: src/commands/studio.ts
-    gates: ['^localhost-only']
-    tags: [studio, editor, dev-server, vite, security]
   '#recipe-lib':
-    description: 'Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.'
+    description: Studio Recipe runtime. loadRecipe (resolves project-local → ~/.atelier/recipes/ → literal-path, sniffs YAML vs JSON), scaffoldRecipeYaml (commented starter generator), applyRecipeToTrimOptions / applyRecipeToTranscribeOptions / applyRecipeToCaptionOptions (translation layer; CLI options always win over recipe per spec §4.1), renderRecipeWithDefaults (partial recipe overlaid on code defaults), recipeToYaml. Zero new npm deps.
+    tags:
+      - video
+      - recipe
+      - studio-recipe
+      - pure
     file: src/lib/recipe.ts
-    tags: [video, recipe, studio-recipe, pure]
+  '#timeline-ops':
+    description: 'Pure helpers over an AtelierDocument''s track + clip layers, extracted from #compose-video-project and generalized for audio tracks. Exports VIDEO_TRACK_ID / AUDIO_TRACK_ID constants; endOfTrackFrame (max(startFrame+durationFrames) across track children, video OR audio); ensureTrackLayer (lazy-creates a Group layer tagged ["track", kind]); ensureClipLayer (idempotent VideoVisual or AudioVisual placement — kind:"video" → bounds=canvas, objectFit:"contain", playbackRate:1; kind:"audio" → bounds 0×0, no playbackRate default, asset type:"audio"; both register an asset entry keyed by layer id one-to-one); recomputeTimeline (walks every Group layer tagged "track", emits one TimelineTrack per group with kind read from tags, filters children to match the track kind so cross-kind layers are skipped, strips a stale timeline when no track groups exist for byte-stability with legacy single-source projects); rebuildClipCaptions (drops THIS clip''s prior cap-<slug>-* layers + their deltas, builds fresh captions via #caption-builder, renames ids to cap-<slug>-N and parents to clipLayerId, lands deltas in "default" state or first state); stripStaleCaptionArtifacts (drops only the target clip''s captions + unparented legacy captions, preserves other clips'' captions verbatim — the multi-clip preservation invariant). Pure (immutable returns); no fs / no logging side effects. Reused by the MCP per-clip ops surfaces (atelier_transcribe_clip, future audio-track ingest).'
+    tags:
+      - video
+      - audio
+      - timeline
+      - track
+      - clip
+      - captions
+      - pure
+    file: src/lib/timeline-ops.ts
+  '#ref-cycle':
+    description: 'Carousel + ref-visual cycle detector. detectCarouselCycle(rootPath, candidatePath, workspaceRoot) walks .atelier files via slides[].src AND any RefVisual layer''s src (doc.layers[*].visual where visual.type === "ref"), collecting visited absolute paths; returns { cycle: true, path: [visited chain → duplicate] } when candidatePath transitively refs rootPath (or itself), else { cycle: false }. Depth-limited (MAX_HOPS=64) — returns cycle:false gracefully when the cap is hit, never throws on malformed graphs. Missing slide/ref paths emit a console.warn and skip (non-fatal). Refs resolve relative to dirname(currentDocPath) first, then fall back to workspaceRoot. DAG-tolerant (diamond — two slides pointing at the same .atelier — is NOT a cycle). Uses #atelier-schema''s parseAtelier (YAML + JSON tolerant) with a JSON.parse fallback for legacy docs. Consumed by carousel-add / RefVisual-edit tooling that needs to refuse self-referential graphs before they lock the resolver. Pure — no fs writes, no logging beyond the missing-path warn.'
+    tags:
+      - carousel
+      - ref
+      - cycle
+      - slides
+      - refvisual
+      - pure
+    file: src/lib/ref-cycle.ts
+  '#compose-image-project':
+    description: 'composeImageProject({ projectDir, docPath, sourceFile, mediaBasename? }) — ingest a single image into a kind:"image" Atelier doc at the caller-supplied docPath (required post-pivot — no more project.atelier hardcode; every doc is equal). Ensures media/ dir, copies the source into media/<basename> (skipped if dest exists), reads or scaffolds <projectDir>/<docPath> (kind:"image", canvas 1080×1920@30, states.default = { duration: 1, deltas: [] }), then adds an img-<slug> ImageVisual layer (tags ["image"], description = basename, bounds = canvas, frame {0,0}, src = "media/<basename>") plus a one-to-one asset entry. Single-image invariant (TD-2026-05-27): if the doc already has an img-* ImageVisual layer pointing at a DIFFERENT basename, throws "image project already has an image; rename or delete the existing image before adding another"; idempotent for the same basename (returns addedImageLayer:false). NO transcription, NO timeline block — image docs render as a single frame. Reuses readAtelierDoc + slugifyBasename from #compose-video-project for parity.'
+    tags:
+      - image
+      - ingest
+      - project
+      - compose
+      - single-image
+    file: src/lib/compose-image-project.ts
+  '#compose-carousel-project':
+    description: 'composeCarouselProject({ projectDir, docPath, slidePath, workspaceRoot?, insertAt?, transition?, duration?, label? }) — add a slide ref to a kind:"carousel" Atelier doc at the caller-supplied docPath (required post-pivot — no more project.atelier hardcode; every doc is equal). Reads or scaffolds <projectDir>/<docPath> (kind:"carousel", canvas 1080×1920@30, slides:[]); refuses if existing doc has kind:"video" (throws "doc is not a carousel; cannot add slides"). Resolves workspaceRoot to dirname(projectDir) by default, then runs #ref-cycle detectCarouselCycle(<projectDir>/<docPath>, slidePath, workspaceRoot) BEFORE writing — throws "carousel cycle detected: A → B → C → A" when self/transitive cycle found. Computes src as relative(workspaceRoot, slidePath); idempotent on duplicate src (returns addedSlide:false with the existing slideIndex). Default insert = append; insertAt clamps into [0, slides.length]. NO layers added, NO transcription — the carousel doc is a pure slides[] container. Reuses readAtelierDoc from #compose-video-project.'
+    tags:
+      - carousel
+      - ingest
+      - project
+      - compose
+      - slides
+      - cycle-safe
+    file: src/lib/compose-carousel-project.ts
+  '#ingest-dispatch':
+    description: 'Drag-drop ingest dispatcher. Post-pivot (TD-2026-05-28 media-bin pivot) the no-target path is COLLAPSED: routeIngest(filename) returns BinIngestRoute { kind, target ∈ {"add-to-bin","reject"}, error? } — no more 12-cell project-kind matrix, no scaffold-on-ingest. Supported video/image/audio always goes to add-to-bin; only unsupported extensions reject. The compose routing matrix (compose-video, compose-image, add-audio-clip) lives in routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute, reached only when the creator explicitly drops onto a specific doc on canvas. classifyMediaFile(filename) → "video" | "image" | "audio" | "unsupported" via case-insensitive extname lookup (video: .mp4 .mov .webm .mkv .avi; image: .png .jpg .jpeg .webp .gif; audio: .mp3 .wav .m4a .aac .flac .ogg). computeIngestDocPath(sourceFilename, projectDir) still resolves a target doc filename from the source basename (`<slug>.atelier`, collision-suffixed) for the target-set branch — see ~ingest-dispatch-doc-target. Pure / synchronous / no fs. Wired from #cli-studio: handleNoTargetBinAdd calls routeIngest; handleMediaIngestRequest (target-set branch) calls routeIngestWithTarget. On reject the studio handler unlinks the just-uploaded file before responding 400 so media/ never accumulates orphans.'
+    tags:
+      - ingest
+      - dispatch
+      - drag-drop
+      - studio
+      - routing
+      - pure
+    file: src/lib/ingest-dispatch.ts
+  '#ingest-bin-types':
+    description: 'Pure types + path validator for the v1.0 media-bin pivot (TD-2026-05-28). Exports BinAddResult ({ mediaPath, fileKind, transcribePending }) — shape returned by handleNoTargetBinAdd for sidebar/page-level drops; BinAddRejected ({ error, ext }) — shape when the dispatcher refuses an unsupported file; MediaRefPayload ({ path, kind? }) — the application/x-atelier-media-ref drag payload sent by the sidebar→canvas handoff; and isValidMediaRefPath(path) — the path predicate enforcing "media/<basename>" shape: rejects empty/whitespace, anything not prefixed with "media/", traversal segments (".."), backslashes, ASCII control bytes (0x00-0x1f), and any further "/" after the prefix (basename portion only). Zero I/O — pure type module reused by the studio HTTP layer (^valid-media-ref-path) and the workspace-app drop-target browser code (defense-in-depth).'
+    tags:
+      - ingest
+      - media-bin
+      - types
+      - validators
+      - pure
+      - v1.0
+    gates:
+      - ^valid-media-ref-path
+    file: src/lib/ingest-bin-types.ts
+  '#transcribe-orchestrator':
+    description: 'Per-media-file transcription orchestrator. transcribeMediaFile(projectDir, mediaBasename, opts) — legacy compose-time wrapper: calls transcribeProject (preserving the legacy root transcript.json write) then mirrors the result to <projectDir>/transcripts/<stem>.json so multi-source projects don''t overwrite each other''s transcripts. transcribeMediaToBin(projectDir, mediaBasename, opts) — post-pivot standalone-source entrypoint: bypasses transcribeProject entirely so neither the root transcript.json nor project.atelier are touched; probes whisper-cpp, runs it directly, parses, writes the per-file mirror at transcripts/<stem>.json. Idempotent on re-call (existing mirror short-circuits with backend:"cached"). Test injection via opts.transcribeFn lets unit tests stub the whisper subprocess. The bin-side fn is wired into handleNoTargetBinAdd as the background transcribe kicked off after media:list:changed broadcast. See ~transcribe-on-bin-add.'
+    tags:
+      - video
+      - audio
+      - transcribe
+      - whisper
+      - media-bin
+      - orchestrator
+      - v1.0
+    file: src/lib/transcribe-orchestrator.ts
+  '#timeline-state-types':
+    description: 'Browser-side shared state types for the v1.0 bottom timeline UI. Exports TimelineSelection ({ layerId, trackId }) — what''s currently selected on the timeline track; frameToPixel(frame, totalFrames, widthPx) — clamp-and-scale conversion from composition frame to horizontal pixel offset; pixelToFrame(px, totalFrames, widthPx) — inverse, rounded + clamped to [0, totalFrames]. Pure math + types, zero DOM coupling. Shared between #timeline-view and the canvas-panel so the bottom timeline + the studio top frame ruler stay in lockstep.'
+    tags:
+      - timeline
+      - web
+      - types
+      - pure
+      - v1.0
+    file: src/web/timeline-state-types.ts
+  '#timeline-view':
+    description: 'Read-only bottom timeline component (v1.0). Single track lane for "track-video-1": clip blocks rendered proportional to startFrame/durationFrames via #timeline-state-types.frameToPixel, with a frame ruler above and a playhead synced to the canvas-panel. Click a clip block → emits selection (TimelineSelection); click the ruler → emits seek. NO drag-to-reposition, NO trim — those are v1.1 (see ~timeline-read-only-v1). computeClipPositions(...) is a pure helper exported for tests. Mounted into the timelineMount sibling created by workspace-app below the canvas (mainBody is now a flex-column). Receives doc updates via the same WS doc-mutated envelope the canvas does.'
+    tags:
+      - timeline
+      - web
+      - view
+      - read-only
+      - v1.0
+    file: src/web/timeline-view.ts
+  '#ingest-dispatch-doc-target':
+    description: 'Post-pivot helper inside #ingest-dispatch that resolves the target doc path for a drag-drop ingest. computeIngestDocPath(sourceFilename, projectDir) slugifies the source basename and returns `<slug>.atelier` (or `<slug>-2.atelier`, `<slug>-3.atelier`, … on collision), capped at MAX_COLLISION_ATTEMPTS. Replaces the legacy hardcoded `project.atelier` target — every ingested media file now lands in its own doc, matching the flat-docs model. The studio handler threads the resolved docPath into composeVideoProject / composeImageProject so the composer writes to the right file.'
+    tags:
+      - ingest
+      - dispatch
+      - doc-path
+      - slug
+      - v1.0.x
+    file: src/lib/ingest-dispatch.ts
+  '#rename-media':
+    description: 'renameMedia({ projectDir, oldBasename, newBasename, dryRun? }) — atomic two-phase media-file rename cascade. One creator-visible op, multiple effects: (1) media/<old> → media/<new>; (2) transcripts/<oldStem>.json → transcripts/<newStem>.json when present; (3) project.atelier rewrites — assets[key].src (keys preserved per TD-2026-05-27 stable-provenance), layers[*].visual.src (video/audio/image), timeline.tracks[*].clips[*].source via recomputeTimeline; (4) DESIGN.md / SCRIPT.md / STORYBOARD.md substring scan returns warnings (NOT rewritten — v1 warn-only). Phase 1 stages everything in memory (load doc → applyMediaRenameToDoc walk → recomputeTimeline → scanArtifactsForOldBasename); Phase 2 writes (media rename → transcript rename → doc write) with best-effort reverse rollback on any mid-op failure so the project never lands half-renamed. Same-name → no-op short-circuit; missing media/ dir / missing source / pre-existing destination all throw BEFORE any disk write. dryRun returns the would-change lists with every boolean false. Exports `isValidMediaBasenameForRename(name)` as the basename guard used by the studio HTTP layer and the MCP wrapper — rejects empty, leading/trailing whitespace, path separators (/, \), ".", "..", leading dot, and ASCII control chars (0x00-0x1F).'
+    tags:
+      - rename
+      - media
+      - cascade
+      - atomic
+      - rollback
+      - v1
+    gates:
+      - ^valid-media-basename
+    file: src/lib/rename-media.ts
+  '#studio-rename-endpoint':
+    description: 'POST /api/media/rename — HTTP endpoint exposing the rename cascade to the studio drag/rename surface. handleMediaRenameRequest(cwd, projectName, rawBody) parses the JSON body { oldBasename, newBasename, dryRun? }, resolves <cwd>/<projectName> as the project dir, runs `isValidMediaBasenameForRename` on both basenames (path-traversal defense — the rename joins straight into media/<basename>), and delegates to #rename-media renameMedia. Wired into the dev server alongside /api/media/ingest (same family), gated by the same ^localhost-only Origin check that protects every mutating /api/* route. Returns the RenameMediaResult (or { error } on validation/cascade failure) as JSON. Surfaced from the Aegis audit pass and registered explicitly so the security boundary is documented at the symbol level.'
+    tags:
+      - rename
+      - media
+      - studio
+      - http
+      - security
+      - v1
+    gates:
+      - ^localhost-only
+      - ^valid-media-basename
+    file: src/commands/studio.ts
+  '#doc-management-types':
+    description: 'Shared types + validators for the doc-management surface. Exports the DocKind discriminator ("video" | "image" | "carousel"), the CreateDocOptions / DuplicateDocOptions / DeleteDocOptions request shapes, the simplified DocListEntry ({ path, kind? } — no role/slideIndex/slideLabel; every doc is equal post-pivot) / DocDeleteCascadeReport / DocDuplicateReport response shapes, and one predicate: isValidDocName(name) (rejects path separators, ".", "..", leading dot, control bytes 0x00-0x1F, empty/whitespace, >200 chars). The retired isManifestDoc predicate is gone — see ~no-manifest-doc. Pure types + pure predicates; zero I/O. Duplicated into packages/mcp/src/lib/doc-management-types.ts to break the cli↔mcp dep cycle (see ~doc-management-cli-mcp-duplication).'
+    tags:
+      - doc
+      - types
+      - validators
+      - cli-lib
+      - v1.0.x
+    gates:
+      - ^valid-doc-name
+    file: src/lib/doc-management-types.ts
+  '#doc-management':
+    description: 'Core doc CRUD for an Atelier project — createDoc / duplicateDoc / deleteDoc / listDocs. Post-pivot: every .atelier doc is equal — no privileged project manifest (see ~no-manifest-doc, ~docs-are-flat). createDoc slugifies the user-supplied name, picks a non-colliding filename under <projectDir>/<slug>.atelier (suffix -2 / -3 / … on collision), composes a fresh AtelierDocument via composeImageProject / composeVideoProject / composeCarouselProject keyed off DocKind (each composer now takes a required docPath param — no project.atelier hardcode), and (when asCarouselSlide is set) appends a SlideRef via composeCarouselProject so the full cycle detector runs. duplicateDoc file-level-copies the source doc with collision-suffixing, optionally appending the duplicate as a SlideRef. deleteDoc walks EVERY .atelier in EVERY sibling project subdir under the workspace (not just project.atelier): removes matching SlideRef entries from any carousel doc encountered, collects dangling RefVisual layers into refLayersDangling without auto-removing them, and unlinks the target doc. listDocs returns a flat alphabetical DocListEntry[] (isFile()-filtered, ".atelier/" subdir skipped defensively); every doc — including project.atelier when present — is a regular row. Pure-ish — fs reads/writes via node:fs, no logging side-channels.'
+    tags:
+      - doc
+      - cli-lib
+      - cascade
+      - carousel
+      - v1.0.x
+    gates:
+      - ^valid-doc-name
+      - ^doc-path-inside-project
+      - ^carousel-cycle-safe
+    file: src/lib/doc-management.ts
+  '#studio-doc-endpoints':
+    description: 'HTTP doc endpoints on the studio dev server. Post-pivot: there is no manifest-refusal branch — every .atelier doc is equal, so project.atelier can be duplicated and deleted like any other doc. GET /api/project/:name/docs → listDocs(projectDir) → flat DocListEntry[]. POST /api/project/:name/docs → ^valid-doc-name + ^doc-path-inside-project → createDoc → writes file → broadcasts {type:"doc:list:changed", projectName} on the bridge WS. POST /api/project/:name/docs/duplicate?path=... → ^valid-doc-name on the source basename + ^doc-path-inside-project → duplicateDoc → broadcast. DELETE /api/project/:name/docs?path=... → same gates → deleteDoc → broadcast. Every path query is URL-decoded, normalized, and prefix-checked against the project root with a trailing-separator boundary so sibling /a/project-x is not treated as inside /a/project. The mutating routes share the existing ^localhost-only Origin check. POST /api/media/ingest is the sibling media endpoint — see #handle-no-target-bin-add (no targetDocPath branch) and the ?source=existing handler (sidebar→canvas drag handoff, ^valid-media-ref-path gated).'
+    tags:
+      - doc
+      - studio
+      - http
+      - security
+      - v1.0.x
+    gates:
+      - ^localhost-only
+      - ^valid-doc-name
+      - ^doc-path-inside-project
+    signals:
+      - '!doc-list-changed'
+    file: src/commands/studio.ts
+  '#handle-no-target-bin-add':
+    description: 'POST /api/media/ingest no-target branch (post-pivot, TD-2026-05-28). handleNoTargetBinAdd({ res, projectName, projectDir, filename, destPath, totalBytes, modelHeader, bridgeClients }) runs after the upload stream has landed at media/<basename>: calls routeIngest(filename) → BinIngestRoute, unlinks + 400s on reject, otherwise broadcasts {type:"media:list:changed", projectName} (the !media-added signal flavor for this path) and — for video/audio — kicks off a fire-and-forget transcribeMediaToBin(projectDir, filename, …). Broadcasts media:ingest:progress envelopes through phases: transcribing → done | error, plus transcript:added on the mirror write. HTTP response returns synchronously with { ok, mediaPath, fileKind, transcribePending }. CRITICAL post-pivot invariant: this handler does NOT call composeVideoProject / composeImageProject — composition is now a separate creator-driven verb. Replaces the pre-pivot auto-doc-creation path that ran the 12-cell dispatch matrix on every drop.'
+    tags:
+      - ingest
+      - media-bin
+      - studio
+      - http
+      - v1.0
+    signals:
+      - '!media-added'
+    file: src/commands/studio.ts
+  '#studio-new-doc-modal':
+    description: 'NewDocDialog — three-tile kind picker (video / image / carousel) in the workspace-app sidebar. Live slug preview shows the slugified filename as the creator types. Post-pivot the "Add as slide" toggle is gone — adding a slide to a carousel is done via #carousel-add-slide-button on the carousel canvas, which calls into the same dialog with title="Add slide" and POSTs asCarouselSlide:true directly. Cancel / Escape closes; Enter submits when the name passes isValidDocName at the field level. Returns NewDocSelection | null to the caller.'
+    tags:
+      - doc
+      - studio
+      - sidebar
+      - modal
+      - web
+      - v1.0.x
+    gates:
+      - ^valid-doc-name
+    file: src/web/workspace-app.ts
+  '#studio-doc-sidebar':
+    description: 'Single flat DOCS group under the active project in the workspace app. Every .atelier doc — including project.atelier when present — renders as a regular row with a type icon (no privileged manifest "pin"), alphabetical by path (server-sorted via listDocs). The "+ new doc" affordance sits on the DOCS label row. The active doc is visually flagged via the loaded-state class on the row. Each row is left-click-to-open + right-click-to-context-menu; the menu offers Duplicate / Delete…, with Delete… going through a ConfirmDialog before firing the DELETE request. Refreshes on every "doc:list:changed" WS envelope; when the currently-open doc gets deleted out from under the bridge, falls back to the next available doc in the project. Post-pivot (v1.0 media-bin): the file-drop half of the sidebar is relabeled "Add to media" to surface the bin-add intent (no auto-doc), and the DOCS empty-state hint extends when MEDIA is populated to point at the "+ new doc" + sidebar-drag-to-canvas compose flow.'
+    tags:
+      - doc
+      - studio
+      - sidebar
+      - web
+      - v1.0.x
+    file: src/web/workspace-app.ts
+  '#bin-add-toast':
+    description: 'ToastHost singleton + media:ingest:progress WS handler in the workspace app (v1.0 media-bin pivot). ToastHost is a fixed bottom-right stack (anchored at bottom: 48px so it clears the 32px status bar plus a 16px breath) of small dark cards with an --atel-accent left border; ToastHost.show(message) appends a card, triggers an enter transition on the next frame, and auto-dismisses after 4s. Used to surface no-target bin-add results — e.g. "Added <name> to media[. Transcribing in background…]" — without thrashing the status bar (which other ops already churn). The status bar still receives the canvas-attach progress envelopes; toasts are only for the "drop file into sidebar → goes to media/" success path.'
+    tags:
+      - toast
+      - ui
+      - media-bin
+      - sidebar
+      - web
+      - v1.0
+    file: src/web/workspace-app.ts
+  '#media-ref-drop-target':
+    description: 'attachMediaRefDropTarget(el, getActiveProject, getCurrentDocPath) + the sidebar→canvas/timeline drag handoff helper (v1.0 media-bin pivot). Attaches dragenter/dragover/dragleave/drop listeners that DISCRIMINATE FROM file-drops via dataTransfer.types.includes("application/x-atelier-media-ref") — so the existing FILE-drop DropZone (which looks for the "Files" type) stays intact; this handler only engages when the drag carries the media-ref MIME. On drop: parses the MediaRefPayload, validates payload.path via isValidMediaRefPath (defense-in-depth — the server endpoint validates again behind ^valid-media-ref-path), then POSTs to /api/media/ingest?source=existing&path=<media/...> with the current doc as targetDocPath so composeVideoProject / add-audio-clip runs with the already-binned media + cached transcript. Wired into both canvasMount and timelineMount in workspace-app. See ~media-ref-drag-discriminated.'
+    tags:
+      - drag-drop
+      - media-bin
+      - sidebar
+      - canvas
+      - timeline
+      - web
+      - v1.0
+    gates:
+      - ^valid-media-ref-path
+    file: src/web/workspace-app.ts
+  '#workspace-create-project':
+    description: 'createProjectInWorkspace(workspaceDir, opts) — programmatic Project creation inside an existing workspace, used by the studio''s /api/workspace/projects HTTP handler. Post-pivot: projects start EMPTY — no auto-scaffolded project.atelier. Runs `runInit` with writeManifest:false so the new dir is recognized as a Project by its `.atelier/` metadata subdir alone; the first composed doc lands when the creator drops in media or asks an agent to compose one. Refuses to clobber an existing project (hasProjectMarker check accepts either project.atelier OR `.atelier/`), inherits workspace default_mode unless overridden, and refreshes the workspace manifest''s advisory projects[] list as a best-effort post-step.'
+    tags:
+      - workspace
+      - project
+      - create
+      - lazy
+      - v1.0.x
+    file: src/commands/init.ts
+  '#carousel-add-slide-button':
+    description: '"+ add slide" canvas overlay button shown only for kind:"carousel" docs. Rendered as an absolute-positioned sibling of the AtelierStudio root inside `mainBody` (which is position:relative), positioned top:56px / right:16px so it clears the studio toolbar. On click: opens NewDocDialog with title="Add slide", then POSTs /api/project/:name/docs with asCarouselSlide:true + carouselDocPath — composeCarouselProject runs the full cycle check before write. After the WS doc:list:changed broadcast lands, the canvas re-opens the host carousel doc so the updated slides[] count is visible. clearMain()''s innerHTML="" sweeps the button on the next doc load. New affordance for the post-pivot flat-docs model: slides are added via the carousel itself, not via a toggle in the new-doc dialog.'
+    tags:
+      - doc
+      - studio
+      - carousel
+      - slides
+      - button
+      - v1.0.x
+    gates:
+      - ^valid-doc-name
+    file: src/web/workspace-app.ts
+gates:
+  ^carousel-cycle-safe:
+    description: 'A carousel slide ref (or RefVisual src) must not create a cycle back to its own document — direct or transitive. Enforced by detectCarouselCycle in #ref-cycle, which walks slides[].src AND RefVisual src layers, tracks visited absolute paths, is depth-limited at MAX_HOPS=64, and is DAG-tolerant (diamonds OK, cycles refused). compose-carousel-project calls this BEFORE writing any slide ref.'
+  ^valid-media-basename:
+    description: 'Media basenames passed to the rename cascade must not contain path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), or be empty / whitespace-only. Enforced by isValidMediaBasenameForRename in #rename-media. Required because the cascade joins straight into <projectDir>/media/<basename> with no further sanitization — the basename guard IS the path-traversal defense.'
+  ^valid-doc-name:
+    description: 'User-typed doc names (the "name" field on POST /api/project/:name/docs and the source/dest basenames on POST /api/project/:name/docs/duplicate) must pass isValidDocName: rejects path separators (/, \), the dot-segments "." or "..", a leading dot, ASCII control bytes (0x00-0x1F), empty / whitespace-only strings, and anything over 200 chars. Enforced at BOTH the HTTP layer (studio.ts) AND the core fn (doc-management.ts / mcp/tools/docs.ts) for defense-in-depth — the basename is joined straight into <projectDir>/<slug>.atelier, so the guard IS the path-traversal defense.'
+  ^valid-media-ref-path:
+    description: 'The `path` query parameter on POST /api/media/ingest?source=existing must be a real media-bin ref: starts with "media/", contains no traversal segments (".."), no backslashes, no ASCII control bytes (0x00-0x1f), and no further "/" after the "media/" prefix (basename-only). Enforced server-side by isValidMediaRefPath in #ingest-bin-types before any fs op or composer dispatch. Mirror of the browser-side guard in #media-ref-drop-target — defense-in-depth so a tampered client can never POST a path outside <projectDir>/media/. The basename guard IS the path-traversal defense (the source path is joined straight into <projectDir>/<path> with no further sanitization).'
+  ^doc-path-inside-project:
+    description: 'The ?path query on /api/project/:name/docs (delete, duplicate) and every resolved doc path must stay inside <projectDir>. Path traversal (../, absolute paths, paths that resolve outside via decoded chains) is rejected before any fs op. Resolved-prefix containment check with trailing path-separator boundary so sibling /a/project-x does NOT pass for /a/project. Mirrors #studio-rename-endpoint''s ^valid-media-basename + isSafePath posture.'
+signals:
+  '!doc-list-changed':
+    description: Emitted by the studio HTTP doc endpoints after a successful create, duplicate, or delete (broadcast on the bridge WS as {type:"doc:list:changed", projectName}). Received by every connected workspace-app sidebar to refresh the single flat DOCS group, and by the bridge layer to fall back to the next available doc in the project (or the empty-canvas state) if the currently-open doc was the one deleted. The envelope intentionally carries only projectName (not a path or kind) — the receiver re-fetches GET /api/project/:name/docs to get the full DocListEntry[] truth.
+  '!media-added':
+    description: 'Emitted on every successful no-target bin-add (v1.0 media-bin pivot, TD-2026-05-28). Broadcast on the bridge WS as {type:"media:list:changed", projectName} from #handle-no-target-bin-add right after the upload lands in media/<basename> and before background transcription kicks off. The signal-system name (!media-added) and the on-the-wire envelope ("media:list:changed") differ deliberately — the symbol describes the semantic event ("a media file landed in the bin"), the envelope describes the receiver action ("refresh the media list"). Received by every connected workspace-app sidebar to refresh the MEDIA group. Replaces the pre-pivot "media-ingest-done" flavor for the no-target path. Future: the WS layer can fan this out to live agents (Lux, Iris) so they see the bin update in real time. Companion progress envelopes (media:ingest:progress: transcribing → done | error) and transcript:added fire from the same handler but are NOT this signal.'
 aspects:
   lint-gate-cascade-short-circuit:
-    description: 'lintFile runs three gates in order, but a failed ^valid-document aborts the rest with an early return — ^valid-delta and ^valid-video-layer cannot run on an unparseable document, so a parse failure reports exactly one gate, not three. ^valid-video-layer only inspects layers whose visual.type is "video".'
+    description: lintFile runs three gates in order, but a failed ^valid-document aborts the rest with an early return — ^valid-delta and ^valid-video-layer cannot run on an unparseable document, so a parse failure reports exactly one gate, not three. ^valid-video-layer only inspects layers whose visual.type is "video".
     tags:
       - gates
       - ordering
@@ -120,9 +572,8 @@ aspects:
       - packages/cli/src/commands/lint.ts:51-59
       - packages/cli/src/commands/lint.ts:80-90
     enforcement: early-return after document-gate failure
-    appliesTo: ["#cli-lint"]
   validate-legacy-subset-of-lint:
-    description: 'The legacy validate command checks only schema parse + delta overlap (validateAllDeltas per state) — it deliberately omits the ^valid-video-layer semantic gate that lint runs. validateFile is the strict subset; new code should prefer lint. A document that passes validate can still fail lint on video constraints.'
+    description: The legacy validate command checks only schema parse + delta overlap (validateAllDeltas per state) — it deliberately omits the ^valid-video-layer semantic gate that lint runs. validateFile is the strict subset; new code should prefer lint. A document that passes validate can still fail lint on video constraints.
     tags:
       - legacy
       - validation
@@ -130,7 +581,6 @@ aspects:
     anchors:
       - packages/cli/src/commands/validate.ts:33-46
     enforcement: schema + overlap only, no video gate
-    appliesTo: ["#cli-validate"]
   info-counts-from-live-arrays:
     description: 'getInfo derives every count straight off the parsed document arrays/maps (layers.length, Object.keys(states).length, deltas.length, presets ?? {}) with no caching or precomputed metadata — so the summary always reflects the file as written. presets count guards the optional field with `doc.presets ? ... : 0`.'
     tags:
@@ -139,9 +589,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/info.ts:46-62
     enforcement: count off live arrays, guard optionals
-    appliesTo: ["#cli-info"]
   still-png-via-napi-no-preload:
-    description: 'still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) but — unlike the export-image / render paths — does NOT pre-load image layers, so ImageVisual layers render blank in a still PNG. JSON is the default format; an unknown --format value is rejected before any work.'
+    description: still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) but — unlike the export-image / render paths — does NOT pre-load image layers, so ImageVisual layers render blank in a still PNG. JSON is the default format; an unknown --format value is rejected before any work.
     tags:
       - png
       - canvas
@@ -151,9 +600,8 @@ aspects:
       - packages/cli/src/commands/still.ts:95-99
       - packages/cli/src/commands/still.ts:116-126
     enforcement: validate format then rasterize sans preload
-    appliesTo: ["#cli-still"]
   render-ffmpeg-preflight:
-    description: 'The render command runs checkFfmpeg() (spawns `ffmpeg -version`) BEFORE reading/parsing the document, so a missing FFmpeg fails with install guidance up front rather than after a parse. Output format is inferred from the -o extension (.gif → gif, else mp4) only when --format is omitted.'
+    description: The render command runs checkFfmpeg() (spawns `ffmpeg -version`) BEFORE reading/parsing the document, so a missing FFmpeg fails with install guidance up front rather than after a parse. Output format is inferred from the -o extension (.gif → gif, else mp4) only when --format is omitted.
     tags:
       - ffmpeg
       - preflight
@@ -162,53 +610,48 @@ aspects:
       - packages/cli/src/commands/render.ts:73-82
       - packages/cli/src/commands/render.ts:45-50
     enforcement: ffmpeg probe before document load
-    appliesTo: ["#cli-render"]
   pipeline-bgra-rawvideo-pipe:
-    description: 'The render pipeline pipes node-canvas frames to FFmpeg as raw `bgra` rawvideo over stdin (pipe:0) at the document fps — canvas.toBuffer("raw") emits BGRA, which is why ffmpeg input pix_fmt is pinned to bgra. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".'
+    description: The render pipeline pipes node-canvas frames to FFmpeg as raw `bgra` rawvideo over stdin (pipe:0) at the document fps — canvas.toBuffer("raw") emits BGRA, which is why ffmpeg input pix_fmt is pinned to bgra. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
     tags:
       - ffmpeg
       - pixel-format
       - core-invariant
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:56-63
-      - packages/cli/src/commands/render-pipeline.ts:242-248
+      - packages/cli/src/commands/render-pipeline.ts:136-143
+      - packages/cli/src/commands/render-pipeline.ts:353-359
     enforcement: bgra rawvideo over stdin + drain backpressure
-    appliesTo: ["#render-pipeline"]
   pipeline-mp4-even-dimensions:
-    description: 'H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.'
+    description: H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.
     tags:
       - ffmpeg
       - mp4
       - edge-case
       - fail-fast
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:187-192
-      - packages/cli/src/commands/render-pipeline.ts:65-74
+      - packages/cli/src/commands/render-pipeline.ts:294-299
+      - packages/cli/src/commands/render-pipeline.ts:145-154
     enforcement: reject odd dimensions for mp4
-    appliesTo: ["#render-pipeline"]
   pipeline-gif-single-pass-palette:
-    description: 'GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.'
+    description: GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.
     tags:
       - ffmpeg
       - gif
       - technique
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:77-83
+      - packages/cli/src/commands/render-pipeline.ts:157-163
     enforcement: single-pass split palettegen/paletteuse
-    appliesTo: ["#render-pipeline"]
   pipeline-image-load-failure-blank:
-    description: 'preloadImages loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.'
+    description: preloadImages loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
     tags:
       - tolerance
       - async
       - edge-case
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:115-123
-      - packages/cli/src/commands/render-pipeline.ts:128-145
+      - packages/cli/src/commands/render-pipeline.ts:222-230
+      - packages/cli/src/commands/render-pipeline.ts:235-252
     enforcement: swallow per-image load error, nextTick callbacks
-    appliesTo: ["#render-pipeline"]
   export-svg-validate-state-before-render:
-    description: 'export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.'
+    description: export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.
     tags:
       - svg
       - validation
@@ -216,9 +659,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/export-svg.ts:54-66
     enforcement: pre-validate state + frame
-    appliesTo: ["#cli-export-svg"]
   export-lottie-warnings-to-stderr:
-    description: 'exportToLottie returns { json, warnings } for lossy/unsupported features; the command prints warnings to STDERR and the JSON to stdout (or -o file), so the lossy-conversion notices never contaminate piped JSON output. Lottie export takes a state but no frame — it exports the whole timeline.'
+    description: exportToLottie returns { json, warnings } for lossy/unsupported features; the command prints warnings to STDERR and the JSON to stdout (or -o file), so the lossy-conversion notices never contaminate piped JSON output. Lottie export takes a state but no frame — it exports the whole timeline.
     tags:
       - lottie
       - lossy
@@ -226,9 +668,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/export-lottie.ts:46-60
     enforcement: warnings→stderr, json→stdout
-    appliesTo: ["#cli-export-lottie"]
   export-image-shared-render-path:
-    description: 'export-image is a thin CLI wrapper that delegates all rasterization to renderDocumentToPng (#render-image) and only adds arg parsing + a CanvasUnavailableError branch. resolveExportDimensions is re-exported here so legacy import sites (index.ts, tests) keep resolving after the logic moved into the shared lib.'
+    description: export-image is a thin CLI wrapper that delegates all rasterization to renderDocumentToPng (#render-image) and only adds arg parsing + a CanvasUnavailableError branch. resolveExportDimensions is re-exported here so legacy import sites (index.ts, tests) keep resolving after the logic moved into the shared lib.
     tags:
       - export
       - delegation
@@ -237,9 +678,8 @@ aspects:
       - packages/cli/src/commands/export-image.ts:13
       - packages/cli/src/commands/export-image.ts:84-100
     enforcement: delegate to render-image, re-export shim
-    appliesTo: ["#cli-export-image"]
   render-image-napi-canvas-backend:
-    description: 'PNG rasterization is hard-bound to @napi-rs/canvas (statically imported prebuilt platform binaries — no node-gyp, no cairo/pango), distinct from the MP4 path which dynamically imports the native node-canvas. loadCanvasModule is a thin accessor that only throws CanvasUnavailableError if the platform binary is genuinely absent (corrupt install / unsupported platform) — essentially never in practice.'
+    description: PNG rasterization is hard-bound to @napi-rs/canvas (statically imported prebuilt platform binaries — no node-gyp, no cairo/pango), distinct from the MP4 path which dynamically imports the native node-canvas. loadCanvasModule is a thin accessor that only throws CanvasUnavailableError if the platform binary is genuinely absent (corrupt install / unsupported platform) — essentially never in practice.
     tags:
       - canvas
       - architecture
@@ -248,9 +688,8 @@ aspects:
       - packages/cli/src/lib/render-image.ts:16
       - packages/cli/src/lib/render-image.ts:90-115
     enforcement: static @napi-rs/canvas import + typed accessor
-    appliesTo: ["#render-image"]
   render-image-aspect-preserving-dims:
-    description: 'resolveExportDimensions preserves the document aspect ratio when EXACTLY ONE of width/height is supplied (derives the other, floored at 1 via Math.max(1, round)); when BOTH are supplied it uses them verbatim (allowing intentional non-uniform squash); when NEITHER it falls back to the document canvas size.'
+    description: resolveExportDimensions preserves the document aspect ratio when EXACTLY ONE of width/height is supplied (derives the other, floored at 1 via Math.max(1, round)); when BOTH are supplied it uses them verbatim (allowing intentional non-uniform squash); when NEITHER it falls back to the document canvas size.
     tags:
       - dimensions
       - aspect-ratio
@@ -258,9 +697,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/render-image.ts:123-141
     enforcement: one-set derives, both-set verbatim
-    appliesTo: ["#render-image"]
   render-image-scale-context-to-output:
-    description: 'renderDocumentToPng renders at document coordinates then ctx.scale(outW/canvasW, outH/canvasH)s the context to the requested output size — the scale is skipped entirely when both factors are 1, so a same-size export incurs no transform. State/frame are validated (state exists, frame is a non-negative integer within state.duration) before any canvas work.'
+    description: renderDocumentToPng renders at document coordinates then ctx.scale(outW/canvasW, outH/canvasH)s the context to the requested output size — the scale is skipped entirely when both factors are 1, so a same-size export incurs no transform. State/frame are validated (state exists, frame is a non-negative integer within state.duration) before any canvas work.
     tags:
       - scaling
       - validation
@@ -268,9 +706,8 @@ aspects:
       - packages/cli/src/lib/render-image.ts:234-251
       - packages/cli/src/lib/render-image.ts:286-290
     enforcement: scale context, skip when identity
-    appliesTo: ["#render-image"]
   render-image-refit-after-decode:
-    description: 'Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer''s bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.'
+    description: Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer's bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.
     tags:
       - image
       - aspect-fit
@@ -279,7 +716,6 @@ aspects:
       - packages/cli/src/lib/render-image.ts:258-273
       - packages/cli/src/lib/render-image.ts:51-80
     enforcement: refit bounds post-decode
-    appliesTo: ["#render-image"]
   carousel-no-glob-dependency:
     description: 'expandInputs deliberately ships NO glob dependency: it supports only a directory (lists images within), a single literal file, or a single-segment *-glob in the FINAL path component — multi-segment / recursive globs are out of scope (point --inputs at a directory). Results are image-extension filtered (.png/.jpg/.jpeg/.webp) and sorted lexicographically so output ordering is stable.'
     tags:
@@ -290,9 +726,8 @@ aspects:
       - packages/cli/src/commands/carousel.ts:28-62
       - packages/cli/src/commands/carousel.ts:88-92
     enforcement: hand-rolled single-segment glob, no dep
-    appliesTo: ["#cli-carousel"]
   carousel-zero-pad-sortable-names:
-    description: 'carouselFileName zero-pads the index to width max(2, digits-in-N) and prefixes the basename (NN-stem.png) so output files sort in carousel order even past 9/99 items. The two-digit floor keeps small batches tidy.'
+    description: carouselFileName zero-pads the index to width max(2, digits-in-N) and prefixes the basename (NN-stem.png) so output files sort in carousel order even past 9/99 items. The two-digit floor keeps small batches tidy.
     tags:
       - naming
       - sorting
@@ -300,9 +735,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/carousel.ts:144-151
     enforcement: padStart to max(2, len(N))
-    appliesTo: ["#cli-carousel"]
   carousel-one-based-index-threading:
-    description: 'The batch loop converts the 0-based array position n to a 1-based index (n+1) and threads currentIndex=i / totalCount=N into composeCarouselFrameDoc → applyRecipeToOverlay so the page-number overlay renders human "i/N" (e.g. 1/7, not 0/7). composeCarouselFrameDoc is pure/canvas-free and testable without node-canvas.'
+    description: The batch loop converts the 0-based array position n to a 1-based index (n+1) and threads currentIndex=i / totalCount=N into composeCarouselFrameDoc → applyRecipeToOverlay so the page-number overlay renders human "i/N" (e.g. 1/7, not 0/7). composeCarouselFrameDoc is pure/canvas-free and testable without node-canvas.
     tags:
       - carousel
       - indexing
@@ -311,18 +745,16 @@ aspects:
       - packages/cli/src/commands/carousel.ts:242-252
       - packages/cli/src/commands/carousel.ts:105-142
     enforcement: 1-based i/N threaded into overlay ctx
-    appliesTo: ["#cli-carousel"]
   assets-usage-cross-reference:
-    description: 'getAssets cross-references each registered asset against actual usage — image assets matched to layers by ImageVisual.assetId, audio assets matched to states by state.audio.src — so the listing flags orphaned (declared-but-unused) assets implicitly. Reads the optional assets map with a `?? {}` guard.'
+    description: getAssets cross-references each registered asset against actual usage — image assets matched to layers by ImageVisual.assetId, audio assets matched to states by state.audio.src — so the listing flags orphaned (declared-but-unused) assets implicitly. Reads the optional assets map with a `?? {}` guard.
     tags:
       - cross-reference
       - usage
     anchors:
       - packages/cli/src/commands/assets.ts:20-40
     enforcement: match assetId to layers + audio.src to states
-    appliesTo: ["#cli-assets"]
   variables-undeclared-detection:
-    description: 'getVariables diffs the {{template}} variables actually referenced in the document (findTemplateVariables) against the declared variables map — surfacing BOTH unused declarations (referenced=false) and undeclared references (referenced but absent from variables). The undeclared list is the load-bearing lint signal for broken templates.'
+    description: getVariables diffs the {{template}} variables actually referenced in the document (findTemplateVariables) against the declared variables map — surfacing BOTH unused declarations (referenced=false) and undeclared references (referenced but absent from variables). The undeclared list is the load-bearing lint signal for broken templates.
     tags:
       - templates
       - cross-reference
@@ -330,9 +762,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/variables.ts:20-34
     enforcement: diff referenced vs declared both ways
-    appliesTo: ["#cli-variables"]
   video-project-legacy-migration-on-read:
-    description: 'readCutList and readTranscript migrate legacy on-disk shapes to current on the fly (1.0 cuts {start,end} → 1.1 {rawStart,rawEnd}+zero padding; 1.0 transcript word:string → 1.1 detected+text+flags) using an in-object discriminator ("rawStart" in entry / "detected" in w). Writers ALWAYS emit the current version, so re-saving a migrated file upgrades it.'
+    description: readCutList and readTranscript migrate legacy on-disk shapes to current on the fly (1.0 cuts {start,end} → 1.1 {rawStart,rawEnd}+zero padding; 1.0 transcript word:string → 1.1 detected+text+flags) using an in-object discriminator ("rawStart" in entry / "detected" in w). Writers ALWAYS emit the current version, so re-saving a migrated file upgrades it.
     tags:
       - migration
       - versioning
@@ -341,9 +772,8 @@ aspects:
       - packages/cli/src/lib/video-project.ts:215-225
       - packages/cli/src/lib/video-project.ts:264-279
     enforcement: discriminator-keyed read migration
-    appliesTo: ["#video-project"]
   video-project-version-pinned-writes:
-    description: 'Every writer (writeCutList / writeTranscript) spreads the payload then OVERWRITES version with the module constant (VIDEO_CUTLIST_VERSION 1.1 / VIDEO_TRANSCRIPT_VERSION 1.1) — a caller can never persist a stale or mismatched version string. The disk format version is owned by the writer, not the caller.'
+    description: Every writer (writeCutList / writeTranscript) spreads the payload then OVERWRITES version with the module constant (VIDEO_CUTLIST_VERSION 1.1 / VIDEO_TRANSCRIPT_VERSION 1.1) — a caller can never persist a stale or mismatched version string. The disk format version is owned by the writer, not the caller.
     tags:
       - versioning
       - convention
@@ -351,7 +781,6 @@ aspects:
       - packages/cli/src/lib/video-project.ts:235-238
       - packages/cli/src/lib/video-project.ts:289-292
     enforcement: writer overwrites version constant
-    appliesTo: ["#video-project"]
   video-project-idempotent-scaffold:
     description: 'createVideoProject is re-init safe: every filesystem step is existsSync-guarded (source copy, project.atelier, cuts.json, export/ dir) so re-running on an existing project folder never clobbers user work. effectiveSpan clamps a cut to source bounds — start=max(0, rawStart-padPre), end=min(duration, rawEnd+padPost).'
     tags:
@@ -363,7 +792,6 @@ aspects:
       - packages/cli/src/lib/video-project.ts:135-147
       - packages/cli/src/lib/video-project.ts:19-27
     enforcement: existsSync-guard every write
-    appliesTo: ["#video-project"]
   video-project-cumulative-clip-frames:
     description: 'rewriteCutLayers lays trim clips end-to-end: each clip''s startFrame is the running cumulativeFrame, and durationFrames is floored at 1 (Math.max(1, round(...))) so a sub-frame cut still produces a visible clip. sourceOffset/sourceEnd are frame-quantized (floor/ceil ÷ fps) so clip boundaries snap to frame grid. Only "silence-trim"-tagged layers are dropped+rebuilt.'
     tags:
@@ -373,7 +801,6 @@ aspects:
     anchors:
       - packages/cli/src/lib/video-project.ts:319-347
     enforcement: cumulative startFrame + min-1 duration
-    appliesTo: ["#video-project"]
   trim-pipeline-ordering:
     description: 'trimProject runs the cut transforms in a load-bearing order: build defaults → merge-with-existing (preserve user padding, skipped under --reset) → global tighten/loosen → per-cut --cut override → resolveOverlaps → clampBoundaries. Tighten/loosen apply AFTER the merge so they adjust the preserved padding, not the fresh defaults. --reset is what forces a clean re-detect.'
     tags:
@@ -383,9 +810,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/trim.ts:88-118
     enforcement: fixed transform order, merge before adjust
-    appliesTo: ["#cli-trim"]
   trim-cut-index-bounds:
-    description: 'The single-cut --cut <index> override bounds-checks the index against the current cut count and throws (not clamps) when out of range, so a typo''d index fails loudly rather than silently editing the wrong / no cut. --tighten and --loosen are passed as positive ms and converted to ±seconds when applied.'
+    description: The single-cut --cut <index> override bounds-checks the index against the current cut count and throws (not clamps) when out of range, so a typo'd index fails loudly rather than silently editing the wrong / no cut. --tighten and --loosen are passed as positive ms and converted to ±seconds when applied.
     tags:
       - bounds
       - fail-fast
@@ -394,9 +820,8 @@ aspects:
       - packages/cli/src/commands/trim.ts:107-115
       - packages/cli/src/commands/trim.ts:99-104
     enforcement: throw on out-of-range cut index
-    appliesTo: ["#cli-trim"]
   silence-detect-filter-preflight:
-    description: 'probeSilencedetect greps `ffmpeg -filters` for the silencedetect filter and throws early if absent — some minimal ffmpeg builds compile filters out, and failing here gives a clear install message instead of an empty silence list later. Run before any detection work.'
+    description: probeSilencedetect greps `ffmpeg -filters` for the silencedetect filter and throws early if absent — some minimal ffmpeg builds compile filters out, and failing here gives a clear install message instead of an empty silence list later. Run before any detection work.
     tags:
       - ffmpeg
       - preflight
@@ -404,9 +829,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/silence-detect.ts:21-29
     enforcement: filter-availability grep + throw
-    appliesTo: ["#silence-detect"]
   silence-detect-null-muxer-tolerant-exit:
-    description: 'silencedetect runs to the `-f null -` muxer (filter walks the audio, decodes no frames). The stderr-capture helper resolves on ANY exit code because the null muxer exits non-zero on EOF in some ffmpeg builds — treating that as success is required, where the stdout-capture helper still rejects non-zero. ENOENT is translated to a brew/apt install hint.'
+    description: silencedetect runs to the `-f null -` muxer (filter walks the audio, decodes no frames). The stderr-capture helper resolves on ANY exit code because the null muxer exits non-zero on EOF in some ffmpeg builds — treating that as success is required, where the stdout-capture helper still rejects non-zero. ENOENT is translated to a brew/apt install hint.
     tags:
       - ffmpeg
       - subprocess
@@ -415,9 +839,8 @@ aspects:
       - packages/cli/src/lib/silence-detect.ts:128-143
       - packages/cli/src/lib/silence-detect.ts:66-73
     enforcement: accept any exit code for null muxer
-    appliesTo: ["#silence-detect"]
   silence-detect-clamp-negative-start:
-    description: 'parseSilenceDetectStderr pairs silence_start/silence_end lines in order (tolerating interleaved filter chatter) and clamps a negative silence_start to 0 via Math.max(0, ...) — silencedetect emits a sub-zero start when the audio opens already in silence. A start with no matching end is dropped.'
+    description: parseSilenceDetectStderr pairs silence_start/silence_end lines in order (tolerating interleaved filter chatter) and clamps a negative silence_start to 0 via Math.max(0, ...) — silencedetect emits a sub-zero start when the audio opens already in silence. A start with no matching end is dropped.
     tags:
       - parsing
       - clamp
@@ -425,9 +848,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/silence-detect.ts:83-103
     enforcement: ordered pair + clamp start to 0
-    appliesTo: ["#silence-detect"]
   cut-model-default-padding-constants:
-    description: 'buildInitialCuts applies asymmetric default padding — DEFAULT_PADDING_PRE 0.08s leading, DEFAULT_PADDING_POST 0.12s trailing — because speech needs a longer tail than head to avoid clipping word-ends. These constants are the recipe-overridable baseline; changing them shifts every fresh cut.'
+    description: buildInitialCuts applies asymmetric default padding — DEFAULT_PADDING_PRE 0.08s leading, DEFAULT_PADDING_POST 0.12s trailing — because speech needs a longer tail than head to avoid clipping word-ends. These constants are the recipe-overridable baseline; changing them shifts every fresh cut.
     tags:
       - magic-number
       - cuts
@@ -436,9 +858,8 @@ aspects:
       - packages/cli/src/lib/cut-model.ts:11-12
       - packages/cli/src/lib/cut-model.ts:57-68
     enforcement: 0.08 pre / 0.12 post defaults
-    appliesTo: ["#cut-model"]
   cut-model-match-tolerance:
-    description: 'mergeWithExisting preserves user padding (and label) only when BOTH the fresh raw start AND raw end fall within DEFAULT_MATCH_TOLERANCE 0.5s of an existing cut — a re-detect that nudges a boundary under 0.5s keeps the human override, beyond it the cut is treated as new and gets defaults. Returns a new array; inputs untouched.'
+    description: mergeWithExisting preserves user padding (and label) only when BOTH the fresh raw start AND raw end fall within DEFAULT_MATCH_TOLERANCE 0.5s of an existing cut — a re-detect that nudges a boundary under 0.5s keeps the human override, beyond it the cut is treated as new and gets defaults. Returns a new array; inputs untouched.
     tags:
       - magic-number
       - re-run
@@ -447,9 +868,8 @@ aspects:
       - packages/cli/src/lib/cut-model.ts:14-15
       - packages/cli/src/lib/cut-model.ts:121-141
     enforcement: 0.5s start+end tolerance match
-    appliesTo: ["#cut-model"]
   cut-model-overlap-split-at-midpoint:
-    description: 'resolveOverlaps detects when paddingPost[i] + paddingPre[i+1] eats past the silence gap and splits the silence at its MIDPOINT ((rawEnd+nextRawStart)/2) — neither cut "wins", each gets an equal share. Mutates in place. Padding shares are floored at 0 so a cut never gets negative padding.'
+    description: resolveOverlaps detects when paddingPost[i] + paddingPre[i+1] eats past the silence gap and splits the silence at its MIDPOINT ((rawEnd+nextRawStart)/2) — neither cut "wins", each gets an equal share. Mutates in place. Padding shares are floored at 0 so a cut never gets negative padding.
     tags:
       - cuts
       - overlap
@@ -457,9 +877,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/cut-model.ts:77-90
     enforcement: split silence at midpoint, floor 0
-    appliesTo: ["#cut-model"]
   cut-model-padding-floor-zero:
-    description: 'applyGlobalPadding (tighten/loosen) and clampBoundaries both floor padding at 0 via Math.max(0, ...) — tightening past zero never produces negative padding, and the first/last cut padding is clamped so the effective span stays inside [0, duration]. The boundary clamp only touches the first cut''s pre and last cut''s post.'
+    description: applyGlobalPadding (tighten/loosen) and clampBoundaries both floor padding at 0 via Math.max(0, ...) — tightening past zero never produces negative padding, and the first/last cut padding is clamped so the effective span stays inside [0, duration]. The boundary clamp only touches the first cut's pre and last cut's post.
     tags:
       - clamp
       - cuts
@@ -468,7 +887,6 @@ aspects:
       - packages/cli/src/lib/cut-model.ts:149-154
       - packages/cli/src/lib/cut-model.ts:98-108
     enforcement: Math.max(0, ...) padding floor
-    appliesTo: ["#cut-model"]
   transcribe-backend-gate:
     description: 'transcribeProject probes the Whisper backend first and gates on it: "none" throws install guidance, and "openai-api" throws a not-yet-implemented error (reserved for the --use-api opt-in) — so only the whisper-cpp path actually transcribes in this milestone. Backend selection happens before any subprocess work.'
     tags:
@@ -478,9 +896,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/transcribe.ts:60-72
     enforcement: gate on probed backend before run
-    appliesTo: ["#cli-transcribe"]
   transcribe-merge-unless-reset:
-    description: 'Unless --reset is passed, a fresh transcript is merged with the existing one (mergeTranscriptWithExisting) to preserve user edits across re-runs; --reset and --no-captions are the two destructive/skip switches. The word count reported is summed across all segments after merge.'
+    description: Unless --reset is passed, a fresh transcript is merged with the existing one (mergeTranscriptWithExisting) to preserve user edits across re-runs; --reset and --no-captions are the two destructive/skip switches. The word count reported is summed across all segments after merge.
     tags:
       - re-run
       - whisper
@@ -489,9 +906,8 @@ aspects:
       - packages/cli/src/commands/transcribe.ts:80-88
       - packages/cli/src/commands/transcribe.ts:102-107
     enforcement: merge with existing unless --reset
-    appliesTo: ["#cli-transcribe"]
   transcript-edits-set-provenance-flags:
-    description: 'Every transcript edit subcommand routes to a transcript-model transform that stamps the right provenance flag — fix→userEdited, add→userAdded, delete→hidden, merge/split→userEdited — which is exactly what lets a later re-transcribe preserve the human change. Edits regenerate caption layers by default; --no-regenerate (regenerate:false) skips the rewrite.'
+    description: Every transcript edit subcommand routes to a transcript-model transform that stamps the right provenance flag — fix→userEdited, add→userAdded, delete→hidden, merge/split→userEdited — which is exactly what lets a later re-transcribe preserve the human change. Edits regenerate caption layers by default; --no-regenerate (regenerate:false) skips the rewrite.
     tags:
       - provenance
       - editing
@@ -500,9 +916,8 @@ aspects:
       - packages/cli/src/commands/transcript.ts:33-45
       - packages/cli/src/commands/transcript.ts:82-89
     enforcement: edit sets flag, regenerate unless opted out
-    appliesTo: ["#cli-transcript"]
   transcript-fix-requires-an-edit:
-    description: 'transcript fix accepts EITHER --replace pairs (batch, repeatable, validated "detected=replacement") OR --word + --text (single), and throws if neither is supplied — there is no no-op fix. A --replace pair missing either side is rejected with a format hint.'
+    description: transcript fix accepts EITHER --replace pairs (batch, repeatable, validated "detected=replacement") OR --word + --text (single), and throws if neither is supplied — there is no no-op fix. A --replace pair missing either side is rejected with a format hint.
     tags:
       - cli
       - validation
@@ -510,9 +925,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/transcript.ts:68-87
     enforcement: require replace-or-word, validate pair shape
-    appliesTo: ["#cli-transcript"]
   captions-regenerate-without-whisper:
-    description: 'captions regenerate re-derives caption-tagged layers from the EXISTING transcript.json (rewriteCaptionLayers) without re-running Whisper — the styling-only path used when caption_style / grouping changes. It throws if no transcript.json exists yet (pointing at `atelier transcribe`), since there is nothing to render from.'
+    description: captions regenerate re-derives caption-tagged layers from the EXISTING transcript.json (rewriteCaptionLayers) without re-running Whisper — the styling-only path used when caption_style / grouping changes. It throws if no transcript.json exists yet (pointing at `atelier transcribe`), since there is nothing to render from.
     tags:
       - captions
       - re-run
@@ -520,7 +934,6 @@ aspects:
     anchors:
       - packages/cli/src/commands/captions.ts:25-35
     enforcement: rebuild from transcript, no whisper run
-    appliesTo: ["#cli-captions"]
   whisper-backend-probe-order:
     description: 'probeWhisper checks backends in priority order: a `whisper-cli` binary on PATH wins ("whisper-cpp"), else OPENAI_API_KEY in env ("openai-api"), else "none". commandExists short-circuits to existsSync when given an absolute path, otherwise spawns which/where (platform-branched) — the local CLI is always preferred over the API.'
     tags:
@@ -531,9 +944,8 @@ aspects:
       - packages/cli/src/lib/whisper.ts:31-35
       - packages/cli/src/lib/whisper.ts:152-164
     enforcement: PATH binary first, then env key, then none
-    appliesTo: ["#whisper"]
   whisper-token-vs-even-split:
-    description: 'parseWhisperCppJson prefers token-level word timing when the segment carries a `tokens` array (--output-json-full), and falls back to EVEN-SPLITTING the segment span across whitespace tokens when only segment boundaries are present (--output-json) — so word timing is always populated, just coarser without per-token detail. Offsets are ms on disk, divided by 1000 to seconds.'
+    description: parseWhisperCppJson prefers token-level word timing when the segment carries a `tokens` array (--output-json-full), and falls back to EVEN-SPLITTING the segment span across whitespace tokens when only segment boundaries are present (--output-json) — so word timing is always populated, just coarser without per-token detail. Offsets are ms on disk, divided by 1000 to seconds.
     tags:
       - parsing
       - whisper
@@ -541,9 +953,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/whisper.ts:104-140
     enforcement: token timing else even-split fallback
-    appliesTo: ["#whisper"]
   whisper-special-token-filter:
-    description: 'Token-level parsing filters out whisper.cpp special/empty tokens — any token whose text is blank or starts with "[_" (e.g. [_BEG_], [_TT_...]) is dropped so control tokens never leak into the word list as fake words.'
+    description: Token-level parsing filters out whisper.cpp special/empty tokens — any token whose text is blank or starts with "[_" (e.g. [_BEG_], [_TT_...]) is dropped so control tokens never leak into the word list as fake words.
     tags:
       - parsing
       - whisper
@@ -551,18 +962,16 @@ aspects:
     anchors:
       - packages/cli/src/lib/whisper.ts:112-113
     enforcement: drop blank / [_-prefixed tokens
-    appliesTo: ["#whisper"]
   transcript-model-match-tolerance:
-    description: 'mergeTranscriptWithExisting preserves a user edit only when the fresh word matches an existing one within DEFAULT_TRANSCRIPT_MATCH_TOLERANCE 0.3s of start AND the `detected` string is unchanged AND the existing word is not userAdded — a TIGHTER tolerance than the cut model''s 0.5s because word boundaries are denser than speech segments. The detected-text equality guard means correcting then re-transcribing keeps the correction only if Whisper still hears the same raw word.'
+    description: mergeTranscriptWithExisting preserves a user edit only when the fresh word matches an existing one within DEFAULT_TRANSCRIPT_MATCH_TOLERANCE 0.3s of start AND the `detected` string is unchanged AND the existing word is not userAdded — a TIGHTER tolerance than the cut model's 0.5s because word boundaries are denser than speech segments. The detected-text equality guard means correcting then re-transcribing keeps the correction only if Whisper still hears the same raw word.
     tags:
       - magic-number
       - re-run
       - core-invariant
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:3-4
-      - packages/cli/src/lib/transcript-model.ts:99-116
+      - packages/cli/src/lib/transcript-model.ts:12-13
+      - packages/cli/src/lib/transcript-model.ts:108-125
     enforcement: 0.3s start + unchanged detected match
-    appliesTo: ["#transcript-model"]
   transcript-model-phrase-break-rules:
     description: 'groupIntoPhrases ends a caption phrase when ANY of three conditions hits: phrase reaches DEFAULT_PHRASE_MAX_WORDS 5, the word ends in . ! ? , ; : (END_PUNCT), or the gap to the next word exceeds DEFAULT_PHRASE_PAUSE_GAP_SECONDS 0.4s. Hidden words are filtered out before grouping, so a deleted word never appears in a caption but stays in the transcript.'
     tags:
@@ -570,33 +979,30 @@ aspects:
       - captions
       - phrasing
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:6-11
-      - packages/cli/src/lib/transcript-model.ts:41-72
+      - packages/cli/src/lib/transcript-model.ts:15-20
+      - packages/cli/src/lib/transcript-model.ts:50-81
     enforcement: maxWords / punct / pauseGap break, skip hidden
-    appliesTo: ["#transcript-model"]
   transcript-model-orphan-userAdded-reinsert:
-    description: 'userAdded words have no fresh match by definition, so the merge re-inserts them as ORPHANS into the segment whose [start,end] contains their timing (falling back to the last segment), spliced at the first word with a later start — preserving human-inserted words across a re-transcribe. All edit transforms are immutable (return new transcript) and bounds-check the global word index.'
+    description: userAdded words have no fresh match by definition, so the merge re-inserts them as ORPHANS into the segment whose [start,end] contains their timing (falling back to the last segment), spliced at the first word with a later start — preserving human-inserted words across a re-transcribe. All edit transforms are immutable (return new transcript) and bounds-check the global word index.
     tags:
       - re-run
       - immutability
       - edge-case
     anchors:
-      - packages/cli/src/lib/transcript-model.ts:120-133
-      - packages/cli/src/lib/transcript-model.ts:314-337
+      - packages/cli/src/lib/transcript-model.ts:129-142
+      - packages/cli/src/lib/transcript-model.ts:323-346
     enforcement: re-insert orphans by timing, immutable maps
-    appliesTo: ["#transcript-model"]
   caption-builder-fade-frame-math:
-    description: 'buildPhraseDeltas converts fadeSeconds to frames (Math.max(1, round(fadeSeconds*fps)) — at least 1 frame), emits a fade-in delta ending at the phrase start and a fade-out delta clamped so fadeOutStart >= startFrame+1 (a very short phrase can''t invert its fade window). startFrame floors, endFrame ceils — captions err toward staying on screen a frame longer rather than cutting a word.'
+    description: buildPhraseDeltas converts fadeSeconds to frames (Math.max(1, round(fadeSeconds*fps)) — at least 1 frame), emits a fade-in delta ending at the phrase start and a fade-out delta clamped so fadeOutStart >= startFrame+1 (a very short phrase can't invert its fade window). startFrame floors, endFrame ceils — captions err toward staying on screen a frame longer rather than cutting a word.
     tags:
       - captions
       - frame-math
       - edge-case
     anchors:
-      - packages/cli/src/lib/caption-builder.ts:160-192
+      - src/lib/caption-builder.ts:160-210
     enforcement: min-1 fade frames, clamp fade-out start
-    appliesTo: ["#caption-builder"]
   caption-builder-tag-isolated-delta-rewrite:
-    description: 'rewriteCaptionLayers drops only "caption"-tagged layers AND only the deltas on those caption layer ids from the target state — preserving every other layer and every non-caption delta. Deltas are written into the "default" state, or the first state if there is no "default". This is the delta-scoped half of the layer-tag-isolation invariant.'
+    description: rewriteCaptionLayers drops only "caption"-tagged layers AND only the deltas on those caption layer ids from the target state — preserving every other layer and every non-caption delta. Deltas are written into the "default" state, or the first state if there is no "default". This is the delta-scoped half of the layer-tag-isolation invariant.
     tags:
       - captions
       - tag-isolation
@@ -604,7 +1010,6 @@ aspects:
     anchors:
       - packages/cli/src/lib/caption-builder.ts:93-122
     enforcement: drop caption layers + their deltas only
-    appliesTo: ["#caption-builder"]
   recipe-new-double-extension-guard:
     description: 'recipe new guards against double-extension footguns: if the supplied name already carries a recognized extension (.recipe.yaml / .recipe.json / .yaml / .yml / .json) it is treated as a literal filename, else `.recipe.yaml` is appended — so `recipe new foo.recipe.yaml` does NOT produce foo.recipe.yaml.recipe.yaml. The scaffolded recipe name strips any extension so it matches what `recipe validate <bare-name>` resolves.'
     tags:
@@ -614,9 +1019,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/recipe.ts:30-37
     enforcement: detect known ext, append only if absent
-    appliesTo: ["#cli-recipe"]
   recipe-new-refuses-overwrite:
-    description: 'recipe new throws rather than overwrite an existing recipe at the target path — authored recipes are never silently clobbered. recipe validate / show resolve a bare name project-local-first (passing process.cwd() as projectDir) so they agree with where `recipe new` wrote it.'
+    description: recipe new throws rather than overwrite an existing recipe at the target path — authored recipes are never silently clobbered. recipe validate / show resolve a bare name project-local-first (passing process.cwd() as projectDir) so they agree with where `recipe new` wrote it.
     tags:
       - cli
       - safety
@@ -624,9 +1028,8 @@ aspects:
       - packages/cli/src/commands/recipe.ts:33-35
       - packages/cli/src/commands/recipe.ts:55
     enforcement: existsSync refuse-to-overwrite
-    appliesTo: ["#cli-recipe"]
   apply-recipe-trim-then-transcribe-order:
-    description: 'apply-recipe runs trim THEN transcribe THEN overlay against one recipe, because captions are derived after cuts and overlays sit on top of both. --no-trim / --no-transcribe skip a stage; --reset is forwarded to both pipelines and is explicitly destructive (discards user padding + transcript edits). Each stage reuses the same applyRecipeTo* translators the standalone commands use.'
+    description: apply-recipe runs trim THEN transcribe THEN overlay against one recipe, because captions are derived after cuts and overlays sit on top of both. --no-trim / --no-transcribe skip a stage; --reset is forwarded to both pipelines and is explicitly destructive (discards user padding + transcript edits). Each stage reuses the same applyRecipeTo* translators the standalone commands use.
     tags:
       - pipeline
       - ordering
@@ -634,9 +1037,8 @@ aspects:
     anchors:
       - packages/cli/src/commands/apply-recipe.ts:41-64
     enforcement: trim → transcribe → overlay sequence
-    appliesTo: ["#cli-apply-recipe"]
   apply-recipe-skips-page-number-single-frame:
-    description: 'In the single-frame apply-recipe path there is no carousel currentIndex/totalCount, so applyRecipeToOverlay is called WITHOUT a ctx — page_number overlays are silently skipped (only the handle is applied), keeping apply-recipe safe outside a carousel batch. Overlay rewrite runs only when recipe.overlay_rules is present.'
+    description: In the single-frame apply-recipe path there is no carousel currentIndex/totalCount, so applyRecipeToOverlay is called WITHOUT a ctx — page_number overlays are silently skipped (only the handle is applied), keeping apply-recipe safe outside a carousel batch. Overlay rewrite runs only when recipe.overlay_rules is present.
     tags:
       - recipe
       - overlay
@@ -644,7 +1046,6 @@ aspects:
     anchors:
       - packages/cli/src/commands/apply-recipe.ts:58-64
     enforcement: no overlay ctx → page_number skipped
-    appliesTo: ["#cli-apply-recipe"]
   studio-localhost-only-bind:
     description: '^localhost-only: the Vite dev server is pinned to 127.0.0.1 (HOSTNAME constant, not Vite''s default "localhost") so the editor is unreachable from other machines on the network even if Vite''s default ever changes. The loopback bind is the primary protection; the Origin checks are defense-in-depth.'
     tags:
@@ -652,10 +1053,9 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:500
-      - packages/cli/src/commands/studio.ts:559-568
+      - src/commands/studio.ts:256-271
+      - src/commands/studio.ts:1804-1826
     enforcement: explicit 127.0.0.1 host bind
-    appliesTo: ["#cli-studio"]
   studio-origin-check-bridge-vs-mcp-split:
     description: '^localhost-only: mutating /api/* requests AND the /bridge WS upgrade enforce STRICT same-origin (isAllowedOrigin: a present Origin matching the server''s own loopback), but /mcp uses isAllowedMcpOrigin which TOLERATES a missing Origin — non-browser MCP clients (Claude Desktop) send no Origin and would otherwise 403, while a present-but-foreign Origin (a browser tab on evil.com) is still rejected on both.'
     tags:
@@ -663,10 +1063,9 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:94-112
-      - packages/cli/src/commands/studio.ts:584-594
+      - src/commands/studio.ts:256-276
+      - src/commands/studio.ts:3210-3240
     enforcement: strict origin for bridge, tolerant for mcp
-    appliesTo: ["#cli-studio"]
   studio-ws-upgrade-rechecks-origin:
     description: '^localhost-only: WebSocket upgrade requests bypass connect middleware (Node fires "upgrade" before connect), so the upgrade handler MUST re-run the Origin check before accepting /bridge or /mcp — without it the bridge would be cross-origin-reachable from any tab. A failed check writes a raw 403 and destroys the socket.'
     tags:
@@ -674,9 +1073,8 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:719-736
+      - src/commands/studio.ts:3210-3240
     enforcement: re-run origin check on WS upgrade
-    appliesTo: ["#cli-studio"]
   studio-llm-only-broadcast:
     description: 'shouldBroadcastMutation returns true ONLY for source "llm": "human" edits (the browser is already current) and "system" edits (GET-hydration of a just-opened file) are NOT broadcast or re-persisted — otherwise a plain file-open would fire a phantom "agent edited document" toast, a bogus undo entry, and a needless rewrite of the just-read bytes. This is the studio half of the source-tagged-mutation invariant.'
     tags:
@@ -684,22 +1082,20 @@ aspects:
       - attribution
       - core-invariant
     anchors:
-      - packages/cli/src/commands/studio.ts:122-124
-      - packages/cli/src/commands/studio.ts:538-557
+      - src/commands/studio.ts:283-298
+      - src/commands/studio.ts:2776-2790
     enforcement: broadcast/persist only source === llm
-    appliesTo: ["#cli-studio"]
   studio-contained-path-guard:
-    description: 'isSafePath rejects absolute inputs and any path resolving outside cwd using an exact-or-trailing-separator prefix match (so sibling `/a/project-x` is NOT treated as inside cwd `/a/proj`); it deliberately does NOT reject a literal ".." substring (that would block legit names like my..backup.atelier and adds no real security — the resolved containment check is the actual guard). All file API handlers gate on it.'
+    description: isSafePath rejects absolute inputs and any path resolving outside cwd using an exact-or-trailing-separator prefix match (so sibling `/a/project-x` is NOT treated as inside cwd `/a/proj`); it deliberately does NOT reject a literal ".." substring (that would block legit names like my..backup.atelier and adds no real security — the resolved containment check is the actual guard). All file API handlers gate on it.
     tags:
       - security
       - path-traversal
       - edge-case
     anchors:
-      - packages/cli/src/commands/studio.ts:70-75
+      - packages/cli/src/commands/studio.ts:121-141
     enforcement: resolved-containment prefix check
-    appliesTo: ["#cli-studio"]
   recipe-lib-resolution-chain:
-    description: 'resolveRecipePath resolves a bare name through a fixed chain — <projectDir>/.atelier/recipes/ first, then ~/.atelier/recipes/ — across extensions [.recipe.yaml, .recipe.json, .yaml, .yml, .json], project-local winning over the user library. A name that is absolute or contains a path separator skips the chain and loads literally. A miss throws listing every path searched.'
+    description: resolveRecipePath resolves a bare name through a fixed chain — <projectDir>/.atelier/recipes/ first, then ~/.atelier/recipes/ — across extensions [.recipe.yaml, .recipe.json, .yaml, .yml, .json], project-local winning over the user library. A name that is absolute or contains a path separator skips the chain and loads literally. A miss throws listing every path searched.
     tags:
       - resolution
       - recipe
@@ -707,9 +1103,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/recipe.ts:41-64
     enforcement: project-local then user dir, ext sweep
-    appliesTo: ["#recipe-lib"]
   recipe-lib-cli-options-win:
-    description: 'The applyRecipeTo* translators fill TrimOptions/caption options from the recipe ONLY where the CLI did not specify (cliOptions.x ?? policy.x) — CLI flags always win over the recipe per spec §4.1. matchTolerance is recipe-only at the trim layer (no CLI flag yet), so the recipe is its sole source.'
+    description: The applyRecipeTo* translators fill TrimOptions/caption options from the recipe ONLY where the CLI did not specify (cliOptions.x ?? policy.x) — CLI flags always win over the recipe per spec §4.1. matchTolerance is recipe-only at the trim layer (no CLI flag yet), so the recipe is its sole source.
     tags:
       - precedence
       - recipe
@@ -718,9 +1113,8 @@ aspects:
       - packages/cli/src/lib/recipe.ts:176-193
       - packages/cli/src/lib/recipe.ts:202-226
     enforcement: cliOption ?? recipeValue precedence
-    appliesTo: ["#recipe-lib"]
   recipe-lib-format-token-substitution:
-    description: 'renderPageNumberFormat substitutes {current} / {total} placeholders including zero-pad forms {current:02d} / {total:02d} via a single regex with an optional :0Nd group → padStart(N, "0"). The schema (^valid-recipe) already guarantees >=1 placeholder, so this is render-time substitution only — no placeholder validation here.'
+    description: renderPageNumberFormat substitutes {current} / {total} placeholders including zero-pad forms {current:02d} / {total:02d} via a single regex with an optional :0Nd group → padStart(N, "0"). The schema (^valid-recipe) already guarantees >=1 placeholder, so this is render-time substitution only — no placeholder validation here.
     tags:
       - templates
       - recipe
@@ -728,9 +1122,8 @@ aspects:
     anchors:
       - packages/cli/src/lib/recipe.ts:449-466
     enforcement: regex placeholder + optional zero-pad
-    appliesTo: ["#recipe-lib"]
   recipe-lib-overlay-copy-on-write-idempotent:
-    description: 'applyRecipeToOverlay returns a NEW document (input never mutated), dropping every "overlay"-tagged layer before re-appending the freshly-derived handle/page_number layers — so re-applying is idempotent. page_number is emitted only when BOTH currentIndex and totalCount are provided (one-shot console.warn + skip otherwise), keeping non-carousel callers safe.'
+    description: applyRecipeToOverlay returns a NEW document (input never mutated), dropping every "overlay"-tagged layer before re-appending the freshly-derived handle/page_number layers — so re-applying is idempotent. page_number is emitted only when BOTH currentIndex and totalCount are provided (one-shot console.warn + skip otherwise), keeping non-carousel callers safe.
     tags:
       - immutability
       - tag-isolation
@@ -738,9 +1131,108 @@ aspects:
     anchors:
       - packages/cli/src/lib/recipe.ts:329-363
     enforcement: drop overlay tag, rebuild, new doc
-    appliesTo: ["#recipe-lib"]
+  artifact-templates-self-validate:
+    description: 'The DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE constants in #artifact-templates are not just illustrative — they are a load-bearing invariant. Every placeholder field carries a value sufficient to satisfy the schema mins (voice.descriptors has 3 entries even though they are TODO strings; palette/typography/logos have at least one entry; storyboard window.end_s > start_s; techniques come from TECHNIQUE_LIBRARY_V1; SCRIPT ships hook-1+cta-1 and STORYBOARD ships matching ## hook-1+## cta-1). A freshly-scaffolded triple must therefore parse via parseDesign/parseScript/parseStoryboard AND cross-validate via validateArtifactSet with ok:true — verified directly in tests. Loosening a template default to break this invariant means a creator''s first `atelier artifacts validate` after `scaffold` fails, breaking the documented author loop.'
+    tags:
+      - artifacts
+      - templates
+      - core-invariant
+      - schema-valid
+    anchors:
+      - src/lib/artifact-templates.ts:35-231
+      - src/index.test.ts:3194-3230
+    applies-to:
+      - '#artifact-templates'
+    enforcement: schema mins satisfied; hook-1+cta-1 cross-match
+  artifacts-scaffold-refuse-overwrite-atomic:
+    description: 'atelier artifacts scaffold runs a pre-flight existsSync sweep over EVERY target file before writing any of them — if any one exists and --force is absent, the operation aborts with a single error message listing every would-clobber path. This is atomicity by abort: either every requested file is written or none are, never a partial scaffold that leaves a project dir in a half-written state. --force flips the pre-flight check off, allowing overwrite. Mirrors recipe new''s refuse-to-overwrite idiom (#cli-recipe) but extends it to the multi-file case.'
+    tags:
+      - artifacts
+      - scaffold
+      - safety
+      - atomic
+    anchors:
+      - packages/cli/src/commands/artifacts.ts
+    enforcement: pre-flight existsSync sweep, abort listing every clobber
+  artifacts-warnings-do-not-fail:
+    description: atelier artifacts validate exits 0 when validateArtifactSet returns errors:[] even if warnings is non-empty — the artifact spec §9 is explicit that pre-VO duration overrun (sum of est_duration_s > target_duration_s) is warn-only at the Phase 2 surface, with hard-fail deferred to post-transcript binding inside the Iris pipeline. Parse errors and ok:false on the validator both flip exit to 1; missing artifact files are reported as [not present] and do not affect the exit code.
+    tags:
+      - artifacts
+      - exit-code
+      - warn-only
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/artifacts.ts:64-83
+    enforcement: errors and parseErrors flip exit 1, warnings do not
+  artifacts-absent-not-failure:
+    description: loadArtifactsFromProject reports unfound files via the missing[] array and continues — only what is present is parsed, only what is parsed is validated. The schema-package validator mirrors this posture (it gates blocks of cross-artifact rules on the presence of each artifact). A project dir containing only DESIGN.md is a valid input and exits 0 if DESIGN.md is itself valid.
+    tags:
+      - artifacts
+      - filesystem
+      - convention
+    anchors:
+      - packages/cli/src/lib/artifact-project.ts:85-95
+    enforcement: missing[] accumulates, parsing continues
+  artifacts-parse-errors-aggregated:
+    description: 'Per-file parse failures (read error, YAML syntax error, Zod schema rejection) are caught and pushed into parseErrors[]; the walker never throws on a parseable directory. ZodError.issues are flattened to "path: message" semicolon-joined so a multi-issue failure surfaces every problem on one line without a JSON dump. Only a missing or non-directory projectDir throws synchronously — the caller decides whether parse aggregation also flips an exit code (the CLI command does; programmatic consumers can choose otherwise).'
+    tags:
+      - artifacts
+      - error-handling
+      - aggregate
+    anchors:
+      - packages/cli/src/lib/artifact-project.ts:97-114
+      - packages/cli/src/lib/artifact-project.ts:120-138
+    enforcement: try/catch per file, flatten ZodError issues
+  init-idempotent-re-run-safe:
+    description: 'atelier init is explicitly re-entrant: running it a second time on an already-initialized project dir succeeds without clobbering creator work. Concretely: learning-mode.yaml is overwritten with a fresh chosen_at timestamp (and the new --mode if changed); the mind-map README is preserved via existsSync-guard so creator edits survive; the DESIGN/SCRIPT/STORYBOARD scaffold step swallows the underlying refuse-to-overwrite error as a soft-skip note (--force still routes through scaffoldArtifacts for real overwrite); git init is skipped when isInsideGitRepo() detects an existing work tree; .gitignore is existsSync-guarded so a hand-edited ignore file is never clobbered. The only error paths in re-init are the same as first-init: file-not-dir, invalid --mode (validated before any fs writes), or a genuine fs failure.'
+    tags:
+      - init
+      - idempotent
+      - re-run
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/init.ts
+    enforcement: existsSync-guard README + scaffold soft-skip + git in-repo detect
+  init-mode-validated-before-writes:
+    description: A bad --mode value (e.g. --mode loose) exits 1 BEFORE any filesystem write — the dir is not created, learning-mode.yaml is not written, the mind-map is not scaffolded. runInit validates the supplied mode against LEARNING_MODES at the top of the function, before the mkdir step. The interactive prompt path is separately bounded at 3 attempts; --json without --mode is rejected because scripted use must pre-declare the autonomy posture (no prompt can run when stdout is being parsed). All three "couldn't determine mode" exits are clean — no partial state.
+    tags:
+      - init
+      - validation
+      - fail-fast
+    anchors:
+      - packages/cli/src/commands/init.ts
+    enforcement: validate --mode before mkdir; --json requires --mode; 3-attempt prompt cap
+  learning-mode-no-yaml-dep:
+    description: learning-mode.yaml is rendered + parsed by a hand-rolled writer/reader (renderLearningModeYaml + the inline parser in readLearningMode), NOT a YAML library. The schema is intentionally tiny (version / mode / chosen_at scalars + header comments) and stable, so a real YAML parser would be over-engineering. The reader tolerates blank lines and comment lines, strips single/double-quoted scalars, and throws clear errors on invalid mode or missing chosen_at. If the on-disk shape ever needs to grow beyond scalars, that's the moment to add a YAML dep here — not before.
+    tags:
+      - learning-mode
+      - no-dependency
+      - convention
+    anchors:
+      - packages/cli/src/lib/learning-mode.ts
+    enforcement: hand-rolled scalar parser, no YAML dep
+  reconstruct-chains-transcribe-if-needed:
+    description: 'atelier reconstruct is a chain-or-skip verb: if `transcript.json` already exists at the project root (or a `transcripts/*.json` forward-compat secondary), the transcribe step is skipped entirely and `transcribed:false` is reported — Quill can reconstruct against a fresh OR a long-lived transcript. If neither path exists, the command verifies a `source.<ext>` video is in the project dir (mp4 | mov | webm | mkv | avi) FIRST and only then calls into the exported `transcribeProject` helper from #cli-transcribe to write `transcript.json`. The source-file pre-check exists because whisper-cpp''s stderr is noisy — "no source video found" is a clear creator-facing error, while a missing-file failure from inside whisper would be buried in a subprocess stack trace.'
+    tags:
+      - reconstruct
+      - chain
+      - re-use
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/reconstruct.ts
+    enforcement: skip when transcript present; pre-check source.<ext> before invoking transcribe
+  reconstruct-no-llm-call-from-cli:
+    description: 'atelier reconstruct deliberately does NOT invoke any LLM. The CLI''s only job is to prepare the inputs (verify Project shape, ensure transcript.json exists, optionally chain `atelier transcribe`) and print a one-screen hint pointing the creator at `@atelier-quill reconstruct` in Claude Code. Reasoning over the transcript — walking word timings, identifying beats, inferring hook/story/proof/CTA, writing SCRIPT.md with `bind_to_transcript: true` — is Quill''s job, executed inside Claude Code per the canonical `reconstruct-script-from-transcript` skill bundle. This split keeps the CLI inert (no network, no model calls, no API keys) and makes the chat invocation one sentence. The transcribe step is in-process via the exported `transcribeProject` helper, NOT a subprocess shell-out, so failures surface cleanly through normal exception flow.'
+    tags:
+      - reconstruct
+      - inert
+      - llm-boundary
+      - core-invariant
+    anchors:
+      - packages/cli/src/commands/reconstruct.ts
+    enforcement: no LLM invocation; transcribe is an in-process helper call
   recipe-lib-defaults-overlay:
-    description: 'renderRecipeWithDefaults overlays a partial recipe on the canonical code defaults (silence_policy / caption_style / caption_grouping spread defaults-first then recipe) so `recipe show --with-defaults` shows the effective values a pipeline would actually use. The default constants here MUST stay in sync with cut-model / caption-builder defaults — they are duplicated, not imported.'
+    description: renderRecipeWithDefaults overlays a partial recipe on the canonical code defaults (silence_policy / caption_style / caption_grouping spread defaults-first then recipe) so `recipe show --with-defaults` shows the effective values a pipeline would actually use. The default constants here MUST stay in sync with cut-model / caption-builder defaults — they are duplicated, not imported.
     tags:
       - defaults
       - recipe
@@ -748,4 +1240,269 @@ aspects:
     anchors:
       - packages/cli/src/lib/recipe.ts:249-280
     enforcement: defaults-first spread, recipe overrides
-    appliesTo: ["#recipe-lib"]
+  cycle-safe-resolution:
+    description: 'ALL .atelier ref walks (slides[].src on carousels, RefVisual src layers) MUST track visited absolute paths in a Set and refuse to recurse into a path already seen — otherwise a self/transitive ref locks the resolver. detectCarouselCycle owns the canonical implementation: visited-set keyed by absolute path, DAG-tolerant (diamond — two slides pointing at the same .atelier — is NOT a cycle), depth-limited at MAX_HOPS=64 (returns cycle:false gracefully when the cap is hit, never throws on malformed graphs). Missing slide/ref paths emit a console.warn and skip (non-fatal). New ref-walking code MUST share this discipline.'
+    tags:
+      - carousel
+      - ref
+      - cycle
+      - core-invariant
+    anchors:
+      - packages/cli/src/lib/ref-cycle.ts:77-95
+      - packages/cli/src/lib/ref-cycle.ts:33
+    enforcement: visited-Set walk, depth cap 64, refuse on duplicate
+  image-kind-single-image:
+    description: 'A kind:"image" doc holds EXACTLY ONE image — multi-image is kind:"carousel". composeImageProject refuses a second image with "image project already has an image; rename or delete the existing image before adding another" when the doc already carries an img-* ImageVisual layer pointing at a DIFFERENT basename; same-basename re-add is idempotent (addedImageLayer:false). The invariant is unchanged post-pivot but the entry point narrows: image docs are NEVER auto-scaffolded on drop (the v1.0 media-bin pivot removes drop-driven doc creation entirely — see ~media-bin-acquire-vs-compose). The only way to reach composeImageProject is the explicit "+ new doc" → image tile flow, after which sidebar-drag-to-canvas of an already-binned image adds it. Image docs render as a single frame with NO transcription and NO timeline block, so they''re a degenerate composition; a creator who wants two images uses a carousel.'
+    tags:
+      - image
+      - kind
+      - invariant
+      - v1
+      - v1.0
+    anchors:
+      - packages/cli/src/lib/compose-image-project.ts:118
+    enforcement: refuse second image with different basename, idempotent on same
+  slide-ref-no-ownership:
+    description: Carousel slides do NOT own their referenced docs — a slide.src may point to any .atelier in the workspace (canonical project.atelier files, free-standing slide-N.atelier files, image projects, or even other carousel projects). There is no "slides/" subdirectory convention. The carousel is a MANIFEST, not a container. Tooling that walks slides[].src must therefore (a) treat refs as arbitrary workspace paths, (b) cycle-protect via ~cycle-safe-resolution, and (c) never assume the slide doc lives under the carousel project dir.
+    tags:
+      - carousel
+      - slides
+      - ownership
+      - core-invariant
+    anchors:
+      - packages/types/src/slides.ts:2-13
+    enforcement: type-level documentation + cycle-safe resolution at every walk
+  rename-atomicity:
+    description: 'renameMedia is two-phase with best-effort rollback. Phase 1 stages every change in memory (load doc → applyMediaRenameToDoc walk → recomputeTimeline → scanArtifactsForOldBasename) and never touches disk. Phase 2 writes in order: (a) media rename → (b) transcript rename if present → (c) doc write. On any mid-step failure the prior writes are reverse-rolled-back best-effort BEFORE the original error is rethrown — each rollback runs in its own try/catch so a rollback failure cannot swallow the original error (it logs CRITICAL via console.error). Pre-flight checks (no media/ dir, missing source, pre-existing destination, missing project.atelier) throw BEFORE any disk write so a half-renamed state is impossible from validation alone.'
+    tags:
+      - rename
+      - atomic
+      - rollback
+      - core-invariant
+      - v1
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:290-350
+      - packages/cli/src/lib/rename-media.ts:225-265
+    enforcement: stage-in-memory then ordered writes with reverse rollback
+  rename-not-concurrent-safe:
+    description: 'renameMedia has NO concurrency guard today: two concurrent calls against the same projectDir can interleave their Phase 2 writes (media rename vs transcript rename vs doc write) and produce inconsistent on-disk state — the rollback paths assume single-writer semantics. Callers MUST serialize rename ops per project at the caller layer (studio HTTP queue, MCP server single-thread). A future Kit pass is expected to add a per-project mutex inside the lib and reframe this aspect as ~rename-per-project-serialized.'
+    tags:
+      - rename
+      - concurrency
+      - gotcha
+      - cautionary
+      - v1
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:225-360
+    enforcement: caller-side serialization (no lib-level lock yet)
+  rename-symlink-passthrough:
+    description: 'renameSync (node:fs) does NOT follow symlinks: if media/<oldBasename> is a symlink, renameSync renames the link itself, NOT its target. This is the intended behavior — the rename cascade is operating on the project''s view of media/, not the underlying file an admin may have symlinked in. Asset/visual.src rewrites happen at the doc layer regardless. Document, do not "fix".'
+    tags:
+      - rename
+      - symlink
+      - convention
+      - edge-case
+    anchors:
+      - packages/cli/src/lib/rename-media.ts:294
+      - packages/cli/src/lib/rename-media.ts:306
+    enforcement: renameSync semantics — rename the link, not the target
+  doc-slug-stable:
+    description: Doc layer ids survive duplicate / rename of the host doc file. The slug-as-id pattern (e.g. img-<slug>, clip-<slug>, cap-<slug>-N) means a layer id is derived from the basename of the MEDIA source, NOT the .atelier file containing it — so duplicating a doc copies the layer set verbatim and the new doc keeps the same layer ids. .src values on assets / visuals cascade (rename-media rewrites them), but the layer id is stable across the doc-level duplicate. Callers that need a stable handle into a duplicated doc can therefore key off layer.id without re-mapping.
+    tags:
+      - doc
+      - slug
+      - duplicate
+      - convention
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:195-310
+    enforcement: layer ids derived from media slug, not doc filename
+  doc-symlink-followed:
+    description: 'listDocs and the deleteDoc workspace-cascade walk use statSync (NOT lstatSync) when classifying entries inside the workspace, so symlinks ARE followed. Acceptable under the local-only threat model (Aegis confirmed): the studio binds 127.0.0.1, only the local creator can plant symlinks in their own workspace, and following them matches how the rest of the rename / ingest pipeline already treats media/. If the threat model ever broadens (multi-user workspace, sandboxed creators), revisit and switch to lstatSync.'
+    tags:
+      - doc
+      - symlink
+      - convention
+      - cautionary
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:346-360
+      - packages/cli/src/lib/doc-management.ts:498-545
+    enforcement: statSync follows symlinks (intentional)
+  doc-dangling-refvisual-reported:
+    description: deleteDoc scrubs every workspace-wide SlideRef pointing at the doc being deleted (removed from slides[]), but RefVisual layers (layer.visual.type === "ref") that point at it are REPORTED in refLayersDangling, NOT auto-removed. The renderer tolerates missing refs (renders blank), so the v1 posture is to surface dangling refs as a studio warning rather than silently mutate sibling docs' layer lists. A future Kit pass may add an opt-in "scrub dangling refs too" mode; until then the report is the contract.
+    tags:
+      - doc
+      - refvisual
+      - dangling
+      - cascade
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:395-430
+    enforcement: collect dangling RefVisual layers into report, do not mutate
+  doc-management-cli-mcp-duplication:
+    description: 'packages/mcp/src/lib/doc-management.ts and packages/mcp/src/lib/doc-management-types.ts are intentional duplicates of their cli/lib counterparts (mirrors the convention already documented for timeline-ops, rename-media, recipes, overlays). Header comments on the MCP twins call out the dep-cycle constraint: cli depends on mcp (studio launches the MCP server in-process), so a cli→mcp import in the other direction would close a cycle. Rule: when one twin changes behavior, the other MUST be updated in the same commit. The MCP twin uses a SIMPLER cycle check (see ~doc-cycle-v1-simple-check) — that''s the one intentional behavioral divergence; everything else stays in lockstep.'
+    tags:
+      - duplication
+      - dep-cycle
+      - convention
+      - doc
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:1-30
+      - packages/cli/src/lib/doc-management-types.ts:1-20
+    enforcement: sentinel header comment on MCP twin + manual lockstep edit
+  no-manifest-doc:
+    description: 'Architectural decision (Wave 1 flat-docs pivot): the "project manifest" concept is RETIRED. There is no privileged project.atelier — every .atelier file inside a project dir is a regular doc of equal status. The retired isManifestDoc predicate, the retired manifest-doc-protected gate, and the manifest-refusal branches in HTTP / MCP doc endpoints are gone. project.atelier may still EXIST as a doc (legacy projects ship one, new projects can create one), but it carries no special semantics: it can be deleted, duplicated, renamed, and listed like any other doc. A project is identified by its `.atelier/` metadata subdir (see #workspace-create-project), not by the presence of a project.atelier file. The post-pivot header comment on doc-management.ts is the canonical statement of this invariant; ~docs-are-flat is the UI half.'
+    tags:
+      - doc
+      - manifest
+      - architecture
+      - core-invariant
+      - v1.0.x
+    anchors:
+      - packages/cli/src/lib/doc-management.ts:22-26
+    enforcement: no isManifestDoc predicate, no manifest-refusal branches anywhere in the stack
+  docs-are-flat:
+    description: 'Architectural decision (Wave 1 flat-docs pivot): the studio sidebar collapses the historical three-group split (DOCUMENT / SLIDES / OTHER DOCS) into ONE flat DOCS group, alphabetical by path, server-sorted via listDocs. Every doc renders as a regular row with a type icon — no pinned manifest row, no separate slides section, no other-docs catch-all. The "+ new doc" affordance sits on the DOCS label row; the "+ add slide" affordance is the canvas overlay on carousel docs (#carousel-add-slide-button), not a section header. The UI half of ~no-manifest-doc: if every doc is equal in the data layer, the sidebar treats them equally too.'
+    tags:
+      - doc
+      - sidebar
+      - architecture
+      - ui
+      - core-invariant
+      - v1.0.x
+    anchors:
+      - src/web/workspace-app.ts:394-440
+    enforcement: single flat group render, no manifest pinning, no slides-section split
+  media-bin-acquire-vs-compose:
+    description: 'Architectural decision (v1.0 media-bin pivot, TD-2026-05-28): bin-add and compose are SEPARATE verbs with no implicit handoff. A drag-drop with no targetDocPath ONLY adds the file to <projectDir>/media/ — there is NO auto-doc-creation, no compose, no scaffold-on-ingest. Composition is the explicit follow-up: creator clicks "+ new doc" → three-tile picker → drags the now-binned media row from the MEDIA sidebar onto canvas/timeline → server runs composeVideoProject (or add-audio-clip) via the ?source=existing branch. This split lets transcripts pre-bake in the background (see ~transcribe-on-bin-add) and lets a single media file participate in many docs without the "first drop creates the doc" coupling. The pre-pivot 12-cell dispatch matrix (routeIngest(file-kind, project-kind|undefined) → compose-video|compose-image|add-audio-clip) is COLLAPSED on the no-target path; only routeIngestWithTarget keeps a compose-routing surface, used by canvas-area drops onto a specific doc.'
+    tags:
+      - media-bin
+      - architecture
+      - core-invariant
+      - v1.0
+    anchors:
+      - src/lib/ingest-dispatch.ts:47-52
+      - src/lib/ingest-dispatch.ts:104-110
+      - src/commands/studio.ts:2252-2370
+    enforcement: BinIngestRoute (kind+add-to-bin/reject) on no-target; handleNoTargetBinAdd never calls composeVideoProject
+  transcribe-on-bin-add:
+    description: Transcription runs in the BACKGROUND on bin-add, not on compose (v1.0 media-bin pivot). handleNoTargetBinAdd kicks off a fire-and-forget transcribeMediaToBin for any video/audio that lands in media/; by the time the creator composes a doc with that clip the transcript at transcripts/<stem>.json is usually ready, so caption rebuild is instant. transcribeMediaToBin is idempotent (existing mirror short-circuits with backend:"cached"), so re-running the same media's bin-add (e.g. after a server restart) does no extra work. Progress is surfaced through media:ingest:progress envelopes (transcribing→done|error) so the bin-add toast can show "Transcribing in background…" without blocking the UI. The legacy compose-time transcribeMediaFile is still wired into composeVideoProject for the target-set path.
+    tags:
+      - media-bin
+      - transcribe
+      - background
+      - latency
+      - v1.0
+    anchors:
+      - src/lib/transcribe-orchestrator.ts:172-292
+      - src/commands/studio.ts:2298-2345
+    enforcement: handleNoTargetBinAdd fires-and-forgets transcribeMediaToBin; idempotent on re-call
+  timeline-read-only-v1:
+    description: 'The bottom timeline component (#timeline-view) is a READ-ONLY viewer in v1.0. Supported interactions: click a clip block → emits TimelineSelection (canvas selects the layer); click the ruler → emits seek (canvas-panel updates playhead). NOT supported in v1.0: drag-to-reposition clips, trim handles, drag-to-create empty clips, ripple edit. These belong to v1.1 (an upcoming Kit will extend timeline-view with editable handles). Until then, all clip mutations go through the existing CLI / MCP / canvas surfaces; the bottom timeline only mirrors what they produce.'
+    tags:
+      - timeline
+      - ui
+      - read-only
+      - v1.0
+      - cautionary
+    anchors:
+      - packages/cli/src/web/timeline-view.ts:110
+    enforcement: no drag-to-reposition listeners; click handlers only emit select + seek
+  media-ref-drag-discriminated:
+    description: 'The sidebar→canvas/timeline media-ref drag uses the custom MIME type "application/x-atelier-media-ref" (with a JSON-encoded MediaRefPayload as the data). Drop handlers in attachMediaRefDropTarget guard EVERY listener (dragenter/dragover/dragleave/drop) on dataTransfer.types.includes("application/x-atelier-media-ref") — without that guard the canvas/timeline drop target would conflict with the existing FILE-drop DropZone (which keys off the "Files" type). The discrimination is what keeps the two drop modalities coexisting on the same DOM element: real OS files still trigger upload + bin-add, sidebar drags trigger compose-against-existing. Browser-side path validation via isValidMediaRefPath runs before the POST as defense-in-depth; the server gate ^valid-media-ref-path is the authoritative check.'
+    anchors:
+      - src/web/workspace-app.ts:1807-1840
+    tags:
+      - drag-drop
+      - mime-type
+      - ui
+      - core-invariant
+      - v1.0
+    enforcement: every drag listener guards on dataTransfer.types.includes("application/x-atelier-media-ref")
+flows:
+  $media-ingest-flow:
+    description: 'TARGET-SET ingest path (post-pivot): the browser drags a file onto a SPECIFIC doc on canvas → POST /api/media/ingest with targetDocPath → #ingest-dispatch routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute dispatch to compose-video / add-audio-clip / reject. The no-target path that historically scaffolded a doc-per-drop is gone — see $media-bin-flow + $canvas-compose-flow for the post-pivot creator loop. Spans the studio HTTP handler, #ingest-dispatch (routeIngestWithTarget only), and #compose-video-project or #timeline-ops depending on the route.'
+    steps:
+      - component: '#cli-studio'
+        action: receive POST /api/media/ingest with targetDocPath, stream upload into media/<basename>
+      - component: '#ingest-dispatch'
+        action: classifyMediaFile + routeIngestWithTarget (file-kind, target doc kind)
+      - component: '#compose-video-project'
+        action: compose-video target — add clip layer to existing video doc
+      - component: '#timeline-ops'
+        action: add-audio-clip target — register audio clip on audio track
+      - component: '#cli-studio'
+        action: on reject, unlink the just-uploaded file and respond 400
+  $media-bin-flow:
+    description: 'NO-TARGET media-bin acquire path (v1.0 media-bin pivot, TD-2026-05-28). Creator drops a file onto the sidebar / page level → POST /api/media/ingest with no targetDocPath → upload stream lands at media/<basename> → #handle-no-target-bin-add invokes routeIngest (kind+add-to-bin/reject only) → on accept: broadcasts {type:"media:list:changed"} (!media-added), fires background transcribeMediaToBin for video/audio, emits media:ingest:progress envelopes (transcribing→done|error) → workspace-app refreshes MEDIA sidebar + #bin-add-toast surfaces success → transcripts/<stem>.json written. CRITICAL: this path does NOT compose. Replaces the pre-pivot $media-ingest-flow no-target branch (which auto-scaffolded a doc per drop).'
+    steps:
+      - component: '#cli-studio'
+        action: receive POST /api/media/ingest (no targetDocPath), stream upload into media/<basename>
+      - component: '#handle-no-target-bin-add'
+        action: routeIngest → reject (unlink + 400) or add-to-bin
+      - component: '#handle-no-target-bin-add'
+        action: broadcast !media-added (media:list:changed); start background transcribe for video/audio
+      - component: '#transcribe-orchestrator'
+        action: transcribeMediaToBin writes transcripts/<stem>.json (idempotent on re-call)
+      - component: '#bin-add-toast'
+        action: workspace-app receives media:ingest:progress envelopes, ToastHost surfaces success
+  $canvas-compose-flow:
+    description: 'Explicit-compose path (v1.0 media-bin pivot). Creator clicks "+ new doc" → #studio-new-doc-modal three-tile picker → empty .atelier created via $doc-create-flow → drags a media-ref row from the MEDIA sidebar onto canvasMount or timelineMount → #media-ref-drop-target validates payload via isValidMediaRefPath, POSTs /api/media/ingest?source=existing&path=media/<basename> with the current doc as targetDocPath → server runs ^valid-media-ref-path then dispatches through routeIngestWithTarget → composeVideoProject (or add-audio-clip) runs against the already-binned media + cached transcript → doc-mutated WS envelope → canvas + #timeline-view refresh. The compose verb is decoupled from the acquire verb — see ~media-bin-acquire-vs-compose.'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: creator clicks "+ new doc" on the DOCS row
+      - component: '#studio-new-doc-modal'
+        action: three-tile picker → POST /api/project/:name/docs creates empty .atelier
+      - component: '#studio-doc-sidebar'
+        action: creator drags a MEDIA sidebar row (application/x-atelier-media-ref payload) onto canvas/timeline
+      - component: '#media-ref-drop-target'
+        action: attachMediaRefDropTarget validates path, POSTs /api/media/ingest?source=existing&path=<media-ref>&targetDocPath=<doc>
+      - component: '#cli-studio'
+        action: handleExistingSourceIngest → ^valid-media-ref-path → routeIngestWithTarget
+      - component: '#compose-video-project'
+        action: compose against existing media + cached transcript, write doc, broadcast doc-mutated
+      - component: '#timeline-view'
+        action: refresh bottom timeline from updated doc.timeline
+  $rename-cascade-flow:
+    description: 'One rename op cascades through media/, transcripts/, and project.atelier (assets, layers, timeline). Phase 1 stages every change in memory (load doc → apply rename walk → recompute timeline → scan artifacts for warnings) without touching disk. Phase 2 writes in order: media file → transcript (if present) → doc; on any mid-step failure the prior writes are reverse-rolled-back best-effort before the original error is rethrown. Triggered from either the studio HTTP endpoint or the MCP tool wrapper; both gate on ^valid-media-basename before entry, and both join straight into <projectDir>/media/<basename> so the basename guard is load-bearing.'
+    steps:
+      - component: '#studio-rename-endpoint'
+        action: validate basenames (^valid-media-basename), parse JSON body
+      - component: '#rename-media'
+        action: Phase 1 — load doc, applyMediaRenameToDoc, recomputeTimeline, scan artifacts
+      - component: '#rename-media'
+        action: Phase 2 — rename media file
+      - component: '#rename-media'
+        action: Phase 2 — rename transcript if present (rollback media on failure)
+      - component: '#rename-media'
+        action: Phase 2 — write project.atelier (rollback transcript + media on failure)
+  $doc-create-flow:
+    description: 'Sidebar "+ new doc" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject (each with its docPath) builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:"doc:list:changed", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its single flat DOCS group. Adding a slide to a carousel goes through the parallel #carousel-add-slide-button affordance on the carousel canvas, which POSTs asCarouselSlide:true so createDoc additionally runs composeCarouselProject to append a SlideRef (cycle-checked).'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: render "+ new doc" affordance on the DOCUMENT label row
+      - component: '#studio-new-doc-modal'
+        action: collect kind + name (+ slide toggle), preview slug
+      - component: '#studio-doc-endpoints'
+        action: POST /api/project/:name/docs, gate ^valid-doc-name + ^doc-path-inside-project
+      - component: '#doc-management'
+        action: createDoc → composeImage|Video|Carousel (each with docPath), write file
+      - component: '#studio-doc-endpoints'
+        action: broadcast !doc-list-changed envelope
+      - component: '#studio-doc-sidebar'
+        action: refresh single flat DOCS group on doc:list:changed
+  $doc-delete-cascade-flow:
+    description: 'Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, scans every .atelier doc encountered, removes matching SlideRef entries from any carousel doc, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the target doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the next available doc in the project (post-pivot: there is no privileged manifest to fall back to — see ~no-manifest-doc) or shows the empty-canvas state if the project has no docs left.'
+    steps:
+      - component: '#studio-doc-sidebar'
+        action: right-click → context menu → Delete…
+      - component: '#studio-doc-endpoints'
+        action: DELETE /api/project/:name/docs?path=, gate ^valid-doc-name + ^doc-path-inside-project
+      - component: '#doc-management'
+        action: deleteDoc → workspace-wide SlideRef scrub across every .atelier + RefVisual dangling scan + unlink
+      - component: '#studio-doc-endpoints'
+        action: broadcast !doc-list-changed
+      - component: '#studio-doc-sidebar'
+        action: refresh; bridge falls back to next available doc or empty-canvas state

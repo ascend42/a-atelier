@@ -1,0 +1,41 @@
+id: TD-2026-05-27-723
+timestamp: '2026-05-27T18:21:58.339Z'
+title: Local-only by default — all third-party integrations are opt-in, never required
+decision: >-
+  Every capability Atelier ships (transcription, future TTS, future image/video generation, any downstream AI calls
+  outside the user's chosen LLM substrate) defaults to local + free + offline software. Online / SaaS providers (OpenAI
+  Whisper API, Higgsfield, ElevenLabs, etc.) are opt-in extensions that require explicit creator action — never a silent
+  fallback, never the default path, never required to use Atelier. Today's transcribe pipeline's OpenAI fallback gets
+  reframed: whisper-cpp is THE path; OpenAI is gated behind explicit configuration. Same for every future integration.
+  The generation seam (TD-2026-05-26-088) stands but the seam's default implementation is local-or-nothing; wrapping an
+  online provider remains a creator-opted-into future tier.
+rationale: >-
+  Aligns with the open-source/no-subscription/local-first values stance (TD-2026-05-26-684, TD-540, TD-271). A 'free for
+  creators' tool that silently falls back to a paid API contradicts those values — the moment Whisper.cpp isn't
+  installed, the creator might unknowingly send their content to OpenAI and incur cost. Defaulting to local makes the
+  privacy + cost posture honest by architecture, not by policy.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: claude
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Online fallback OK as long as creator is warned at call time
+    rejected_because: Surprise costs + privacy leakage during creator flow. The values stance is architectural, not warning-based.
+  - option: Bundle online providers as first-class equivalents alongside local
+    rejected_because: >-
+      Implies parity that doesn't exist when one path requires payment/account/network and the other doesn't. Defer
+      until explicitly tier-able.
+symbols_affected:
+  - '#cli-transcribe'
+  - '#cli-reconstruct'
+  - '#mcp-mind-map'
+status: active
+tags:
+  - values
+  - local-first
+  - open-source
+  - creator-flow
+  - no-online-default

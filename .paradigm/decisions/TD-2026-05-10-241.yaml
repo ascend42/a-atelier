@@ -1,0 +1,36 @@
+id: TD-2026-05-10-241
+timestamp: '2026-05-10T18:22:44.612Z'
+title: Atelier UGC scope boundary — what we own vs. external tools
+decision: >-
+  Atelier owns: multi-take ingest, silence removal, Whisper captions, basic clip timeline (order + trim),
+  agent-generated graphics overlays, MP4 export. External tools (CapCut, DaVinci etc.) own: body tracking, effects,
+  color grading, fancy transitions.
+rationale: >-
+  User's explicit need is removing editor tedium from a daily UGC workflow — not building a general NLE. Staying on the
+  tight scope keeps the build achievable, makes the agent-native differentiator clear, and avoids competing with
+  specialized tools on their home turf.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+  - id: advocate
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Build a full NLE with effects, color grading, multi-track audio
+    rejected_because: Years of work, no differentiation vs. CapCut/DaVinci, not what user asked for
+  - option: No timeline at all — agent handles all ordering
+    rejected_because: User explicitly wants to be able to order clips and trim sections themselves — basic human agency over the edit
+symbols_affected:
+  - '#video-project'
+  - '#timeline-ui'
+  - '#caption-pipeline'
+status: active
+tags:
+  - ugc
+  - scope
+  - video
+  - phase-2

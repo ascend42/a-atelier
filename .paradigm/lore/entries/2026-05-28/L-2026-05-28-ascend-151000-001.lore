@@ -1,0 +1,40 @@
+id: L-2026-05-28-ascend-151000-001
+type: review
+timestamp: '2026-05-28T15:10:00.931Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Runtime verification — R3 video provider paints; "caption stacking" was a 2-frame cross-fade artifact
+summary: |-
+  Drove the studio under headless Puppeteer (transient install in /tmp/verify-rig) from creator/ so workspace mode boots. Confirmed all R3 + R2 fixes at runtime via DOM evidence + canvas.toDataURL() snapshots: video paints inside the portrait 9:16 canvas (BrowserVideoFrameProvider works end-to-end with srcResolver → /api/file?path=… → 87MB MOV streaming with Range support); canvas-size dropdown intact (4 presets, "Portrait 9:16 — 1080×1920" selected); timeline ruler horizontal (8 ticks at 0/30/60/90/120/150/180/210, left styles 0px → 1334.75px); canvas letterbox-fits (1080×1920 raster, 468×832 CSS). Caption gating confirmed at frame 0 (only cap-0 "Just"), frame 86 (only cap-1 "recording a quic[k]"), frame 115 (only cap-2 "some au[dio]"), frame 200 (only cap-5 "."). KEY FINDING: scrubbed to frame 89 and CAPTURED THE CROSS-FADE — cap-1 (1→0) and cap-2 (0→1) over [88,90] both render at ~0.6846 opacity for 2 frames (66ms at 30fps), producing exactly the "stacked text" visual the owner reported. The doc data, resolver, and renderer were all correct then too; the owner just scrubbed into the 2-frame cross-fade window and assumed it was a renderer bug. Resolver math probe from earlier session was bulletproof; runtime now confirms it. Also caught a benign-but-wasteful issue: 5× net::ERR_ABORTED on the 87MB MOV during initial mount cascade — workspace-app's clearMain → currentStudio.destroy → canvas-panel.destroy → videoProvider.dispose calls video.removeAttribute('src') + load() mid-fetch each time. Video eventually loads on the final mount (proven by painted frames). Worth a v1.1 polish: defer provider.create() until first get() for a renderable video layer, or pool the video cache across AtelierStudio instances.</summary>
+  <parameter name="symbols_touched">["#browser-video-frame-provider", "#canvas-panel", "#atelier-studio", "#workspace-app", "#timeline-view"]
+learnings:
+  - Cross-fade animations have a runtime-visible window — for a 2-frame cross-fade at 30fps that's only 66ms, but a scrubbed/paused screenshot at exactly that frame shows BOTH layers at ~0.68 opacity, looking visually identical to a 'multiple captions stacking simultaneously' bug. When investigating animation rendering bugs from static screenshots, account for the possibility of capturing a transition frame.
+  - Detached HTMLVideoElement (created with document.createElement('video') but never appendChild'd) is a valid pattern for canvas frame sources via drawImage. document.querySelectorAll('video') WON'T find them — they're not in the live DOM tree. Look for them in the provider's internal Map instead.
+  - Vite's /@fs/ path serves source files directly from disk — useful for verifying that a deep package's source has reached the browser without grepping the bundled output. curl http://localhost:PORT/@fs/<absolute-path> bypasses the bundler entirely.
+  - video.removeAttribute('src') + video.load() during a dispose() aborts any in-flight HTTP fetch with net::ERR_ABORTED. Harmless for correctness (the next mount re-fetches and succeeds) but wasteful — for a 87MB file across 5 abort/retry cycles that's 435MB of unnecessary bandwidth on every initial doc load.
+verification:
+  status: pass
+  details:
+    video-paints: PASS — video frame visible in canvas at frames 0/86/115/200 with distinct sourceTime per frame
+    caption-gating: PASS — exact resolver match at probed frames
+    cross-fade: PASS — frame 89 reproduces the 'stacking' the owner reported
+    canvas-size-dropdown: PASS — 4 presets, correct selection
+    timeline-ruler: PASS — 8 horizontal ticks at correct positions
+    letterbox-fit: PASS — 1080×1920 raster, 468×832 CSS
+tags:
+  - v1.0
+  - runtime-verification
+  - puppeteer
+  - cross-fade
+  - false-bug-report
+  - wasteful-rerender
+linked_lore:
+  - L-2026-05-28-ascend-113321-001
+  - L-2026-05-28-ascend-111306-001
+confidence: 0.95
+git_context:
+  ref: 55f9a1f77c65343ddf12c5d9f5aa92f0de496d62
+  branch: feat/creator-flow-v1-prep
+  dirty: true

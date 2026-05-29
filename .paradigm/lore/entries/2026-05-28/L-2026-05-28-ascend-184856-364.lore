@@ -1,0 +1,27 @@
+id: L-2026-05-28-ascend-184856-364
+type: insight
+timestamp: '2026-05-28T18:48:56.690Z'
+author: ascend
+title: Decision TD-2026-05-28-097 recorded
+summary: Companion lore entry for decision record TD-2026-05-28-097. See .paradigm/decisions/TD-2026-05-28-097.yaml.
+symbols_touched:
+  - '#atelier-studio'
+  - '#canvas-panel'
+  - '#render-pipeline'
+  - '#video-exporter'
+  - '#browser-video-frame-provider'
+  - '#compose-video-project'
+  - '#caption-builder'
+  - '#timeline-ops'
+  - '#artifact-templates'
+  - '#workspace'
+  - '#mind-map'
+  - '#recipes'
+  - '#atelier-quill'
+  - '#atelier-lux'
+  - '#atelier-iris'
+references:
+  decision_id: TD-2026-05-28-097
+tags:
+  - companion-lore
+  - decision-reference

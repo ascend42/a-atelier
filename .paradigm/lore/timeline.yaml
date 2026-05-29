@@ -1,8 +1,9 @@
 version: '1.0'
 project: a-atelier
-entries: 11
-last_updated: '2026-05-07T18:41:20.376Z'
+entries: 71
+last_updated: '2026-05-28T17:15:48.990Z'
 authors:
   - unknown
   - claude
   - ascend
+  - claude-builder

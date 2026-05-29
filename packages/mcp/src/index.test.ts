@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync, mkdirSync, utimesSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -276,7 +276,7 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_set_motion_path");
     expect(toolNames).toContain("atelier_set_clip_path");
     expect(toolNames).toContain("atelier_edit_visual");
-    expect(toolNames).toContain("atelier_set_audio");
+    // atelier_set_audio removed in v1.0 — audio is now an AudioVisual layer.
     expect(toolNames).toContain("atelier_configure_transition");
     expect(toolNames).toContain("atelier_set_state_parent");
     expect(toolNames).toContain("atelier_export_svg");
@@ -312,7 +312,25 @@ describe("MCP Tools", () => {
     expect(toolNames).toContain("atelier_recipe_apply");
 
     expect(toolNames).toContain("atelier_import_images");
-    expect(toolNames).toHaveLength(61);
+    expect(toolNames).toContain("atelier_mind_map_query");
+    expect(toolNames).toContain("atelier_get_effective_transcript");
+    expect(toolNames).toContain("atelier_get_media_notes");
+    expect(toolNames).toContain("atelier_write_media_note");
+    // v1.0 clip + slide tools (Slice A)
+    expect(toolNames).toContain("atelier_add_clip");
+    expect(toolNames).toContain("atelier_move_clip");
+    expect(toolNames).toContain("atelier_trim_clip");
+    expect(toolNames).toContain("atelier_remove_clip");
+    expect(toolNames).toContain("atelier_transcribe_clip");
+    expect(toolNames).toContain("atelier_move_slide");
+    // v1.0 rename-media tool (Slice C)
+    expect(toolNames).toContain("atelier_rename_media");
+    // v1.0.x doc tools (Unit B)
+    expect(toolNames).toContain("atelier_create_doc");
+    expect(toolNames).toContain("atelier_duplicate_doc");
+    expect(toolNames).toContain("atelier_delete_doc");
+    expect(toolNames).toContain("atelier_list_docs");
+    expect(toolNames).toHaveLength(75); // atelier_set_audio removed in v1.0; +6 v1.0 clip/slide tools; +1 atelier_rename_media (Slice C); +4 v1.0.x doc tools (Unit B)
   });
 
   // ── Document tools ────────────────────────────────────────
@@ -1421,30 +1439,10 @@ describe("MCP Tools", () => {
       await callTool(client, "atelier_add_state", { id: docId, stateName: "hover", duration: 30 });
     });
 
-    it("atelier_set_audio sets audio on state", async () => {
-      const result = await callTool(client, "atelier_set_audio", {
-        id: docId, stateName: "intro",
-        audio: { src: "music.mp3", volume: 0.8, loop: true },
-      });
-      expect(result.success).toBe(true);
-      expect(result.audioSrc).toBe("music.mp3");
-      expect(store.get(docId)!.states.intro.audio).toBeDefined();
-      expect(store.get(docId)!.states.intro.audio!.volume).toBe(0.8);
-    });
-
-    it("atelier_set_audio removes with null", async () => {
-      await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: { src: "x.mp3" } });
-      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "intro", audio: null });
-      expect(result.success).toBe(true);
-      expect(result.removed).toBe(true);
-      expect(store.get(docId)!.states.intro.audio).toBeUndefined();
-    });
-
-    it("atelier_set_audio errors on nonexistent state", async () => {
-      const result = await callTool(client, "atelier_set_audio", { id: docId, stateName: "gone", audio: { src: "x" } });
-      expect(result._isError).toBe(true);
-      expect(result.error).toContain("not found");
-    });
+    // atelier_set_audio was removed in v1.0 — audio is now an AudioVisual
+    // layer, added via the upcoming atelier_add_clip path (kind="audio").
+    // Three tests deleted with the tool; AudioVisual layer coverage lives
+    // in @a-company/atelier-core (audio-timing tests).
 
     it("atelier_configure_transition configures transition", async () => {
       const result = await callTool(client, "atelier_configure_transition", {
@@ -1636,23 +1634,23 @@ describe("MCP Tools", () => {
     });
 
     it("atelier_list_assets lists with usage info", async () => {
-      // Add asset
+      // v1.0: usage tracking is layer-only (image, video, audio layers via
+      // their assetId). Audio is no longer state-scoped — it's a layer.
       await callTool(client, "atelier_add_asset", {
         id: docId, assetId: "photo", type: "image", src: "photo.jpg",
       });
-      // Add a layer referencing it
       await callTool(client, "atelier_add_layer", {
         id: docId, layerId: "img-layer",
         visual: { type: "image", assetId: "photo" },
         x: 0, y: 0, width: 100, height: 100,
       });
-      // Add audio asset and state referencing it
       await callTool(client, "atelier_add_asset", {
         id: docId, assetId: "music", type: "audio", src: "music.mp3",
       });
-      await callTool(client, "atelier_add_state", { id: docId, stateName: "intro", duration: 30 });
-      await callTool(client, "atelier_set_audio", {
-        id: docId, stateName: "intro", audio: { src: "music" },
+      await callTool(client, "atelier_add_layer", {
+        id: docId, layerId: "bg-music",
+        visual: { type: "audio", assetId: "music" },
+        x: 0, y: 0, width: 0, height: 0,
       });
 
       const result = await callTool(client, "atelier_list_assets", { id: docId });
@@ -1663,7 +1661,7 @@ describe("MCP Tools", () => {
       expect(photo.usedByLayers).toContain("img-layer");
 
       const music = result.assets.find((a: any) => a.assetId === "music");
-      expect(music.usedByStates).toContain("intro");
+      expect(music.usedByLayers).toContain("bg-music");
     });
 
     it("atelier_list_assets returns empty list", async () => {
@@ -2857,6 +2855,282 @@ describe("MCP Tools", () => {
       expect(after.layers).not.toBe(beforeLayers);
       expect(after.assets).not.toBe(beforeAssets);
       expect(after.layers.length).toBe(2);
+    });
+  });
+
+  // ── Mind-map query tool ────────────────────────────────────
+  //
+  // Fixture strategy note: spec calls for fixtures under
+  // packages/mcp/src/__fixtures__/mind-map/, but mtime-sort assertions are
+  // non-deterministic with checked-in files. We use mkdtempSync (matching
+  // the import-images test convention) and set explicit mtimes via
+  // utimesSync where the order matters.
+  describe("mind-map tool", () => {
+    let tmpDir: string;
+
+    // Empty-buffer "files" suffice — the tool only checks extension + stat,
+    // not bytes (mirrors the import-images PNG_SIG convention).
+    function touch(path: string, mtimeSeconds?: number): void {
+      writeFileSync(path, "");
+      if (mtimeSeconds !== undefined) {
+        utimesSync(path, mtimeSeconds, mtimeSeconds);
+      }
+    }
+
+    beforeEach(() => {
+      tmpDir = mkdtempSync(join(tmpdir(), "atelier-mindmap-"));
+    });
+
+    afterEach(() => {
+      rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    it("walks .atelier/mind-map/ and returns image matches sorted by mtime", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      // Explicit mtimes so the sort assertion is deterministic.
+      touch(join(mmDir, "old.png"), 1_000_000);
+      touch(join(mmDir, "newest.png"), 3_000_000);
+      touch(join(mmDir, "middle.png"), 2_000_000);
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.matches).toHaveLength(3);
+      expect(result.matches.map((m: { name: string }) => m.name)).toEqual([
+        "newest.png",
+        "middle.png",
+        "old.png",
+      ]);
+      expect(result.total_candidates).toBe(3);
+      expect(result.searched_dirs).toContain(mmDir);
+      // Every match echoes the requested kind and reports its absolute path.
+      for (const m of result.matches as Array<{ kind: string; path: string }>) {
+        expect(m.kind).toBe("image");
+        expect(m.path.startsWith(mmDir)).toBe(true);
+      }
+    });
+
+    it("kind=image filters non-image extensions out of a mixed dir", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      touch(join(mmDir, "a.png"));
+      touch(join(mmDir, "b.jpg"));
+      touch(join(mmDir, "c.mp4")); // video, not image
+      touch(join(mmDir, "notes.txt")); // unrecognized
+      touch(join(mmDir, "d.webp"));
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+
+      expect(result.success).toBe(true);
+      const names = (result.matches as Array<{ name: string }>).map((m) => m.name).sort();
+      expect(names).toEqual(["a.png", "b.jpg", "d.webp"]);
+      // total_candidates counts ALL files seen, before the kind filter.
+      expect(result.total_candidates).toBe(5);
+    });
+
+    it("falls back to assets/ when .atelier/mind-map/ is absent", async () => {
+      const assets = join(tmpDir, "assets");
+      mkdirSync(assets, { recursive: true });
+      touch(join(assets, "logo.svg"));
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+
+      expect(result.success).toBe(true);
+      expect((result.matches as Array<{ name: string }>).map((m) => m.name)).toEqual(["logo.svg"]);
+      expect(result.searched_dirs[0]).toBe(assets);
+    });
+
+    it("falls back to projectDir itself when neither mind-map nor assets exists", async () => {
+      touch(join(tmpDir, "loose.png"));
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+
+      expect(result.success).toBe(true);
+      expect((result.matches as Array<{ name: string }>).map((m) => m.name)).toEqual(["loose.png"]);
+      expect(result.searched_dirs[0]).toBe(tmpDir);
+    });
+
+    it("narrows by hints (filename OR ancestor directory), OR'd across hints", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      const tech = join(mmDir, "b-roll", "tech");
+      const food = join(mmDir, "b-roll", "food");
+      mkdirSync(tech, { recursive: true });
+      mkdirSync(food, { recursive: true });
+      touch(join(tech, "laptop.png"));
+      touch(join(food, "pizza.png"));
+      touch(join(mmDir, "loose-tech.png")); // filename hit
+
+      // "tech" matches both the laptop (ancestor dir) and loose-tech (filename),
+      // but NOT pizza.png. "skateboard" matches nothing — OR semantics keep
+      // results to the union.
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+        hints: ["tech", "skateboard"],
+      });
+
+      expect(result.success).toBe(true);
+      const names = (result.matches as Array<{ name: string }>).map((m) => m.name).sort();
+      expect(names).toEqual(["laptop.png", "loose-tech.png"]);
+      // matched_hints reports WHICH hints contributed.
+      for (const m of result.matches as Array<{ matched_hints: string[] }>) {
+        expect(m.matched_hints).toContain("tech");
+        expect(m.matched_hints).not.toContain("skateboard");
+      }
+    });
+
+    it("returns an MCP error when projectDir does not exist", async () => {
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: join(tmpDir, "no-such-dir"),
+        kind: "image",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("does not exist");
+    });
+
+    it("returns an MCP error when projectDir is a file, not a directory", async () => {
+      const filePath = join(tmpDir, "i-am-a-file");
+      touch(filePath);
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: filePath,
+        kind: "image",
+      });
+      expect(result._isError).toBe(true);
+      expect(result.error).toContain("is not a directory");
+    });
+
+    it("empty mind-map dir returns no matches but populates searched_dirs", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.matches).toEqual([]);
+      expect(result.total_candidates).toBe(0);
+      expect(result.searched_dirs).toContain(mmDir);
+    });
+
+    it("kind=text returns empty matches with the documented note", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      // Even with files present, text resolves at composition time, not disk.
+      touch(join(mmDir, "ignored.png"));
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "text",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.matches).toEqual([]);
+      expect(result.note).toMatch(/composition time/);
+      // The walk still ran — caller sees what would have been scanned.
+      expect(result.searched_dirs.length).toBeGreaterThan(0);
+    });
+
+    it("respects the depth cap (MAX_DEPTH=4) so deep nests do not blow the stack", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      // Build a chain mind-map/d1/d2/d3/d4/d5/d6 with a file at each level.
+      // Depth 0 = mind-map itself, depth 1 = d1, … depth 5 = d5.
+      // MAX_DEPTH=4 means we descend INTO depth 4 (d4) but not below.
+      let cur = mmDir;
+      mkdirSync(cur, { recursive: true });
+      touch(join(cur, "at-root.png"));
+      const expectedNames: string[] = ["at-root.png"];
+      for (let i = 1; i <= 6; i++) {
+        cur = join(cur, `d${i}`);
+        mkdirSync(cur);
+        touch(join(cur, `f${i}.png`));
+        // d1..d4 contribute; d5/d6 are below the cap.
+        if (i <= 4) expectedNames.push(`f${i}.png`);
+      }
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+        limit: 100,
+      });
+
+      expect(result.success).toBe(true);
+      const names = (result.matches as Array<{ name: string }>).map((m) => m.name).sort();
+      expect(names).toEqual([...expectedNames].sort());
+      // f5.png and f6.png must NOT appear.
+      expect(names).not.toContain("f5.png");
+      expect(names).not.toContain("f6.png");
+    });
+
+    it("limit clamps the response (default 20)", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      for (let i = 0; i < 30; i++) {
+        touch(join(mmDir, `img-${String(i).padStart(2, "0")}.png`));
+      }
+
+      const defaulted = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+      expect(defaulted.success).toBe(true);
+      expect(defaulted.matches).toHaveLength(20);
+      expect(defaulted.total_candidates).toBe(30);
+
+      const explicit = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+        limit: 5,
+      });
+      expect(explicit.matches).toHaveLength(5);
+    });
+
+    it("voice kind reuses the audio extension set", async () => {
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      touch(join(mmDir, "v.mp3"));
+      touch(join(mmDir, "v.wav"));
+      touch(join(mmDir, "irrelevant.png"));
+
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "voice",
+      });
+      expect(result.success).toBe(true);
+      expect((result.matches as Array<{ name: string }>).map((m) => m.name).sort()).toEqual([
+        "v.mp3",
+        "v.wav",
+      ]);
+    });
+
+    it("does not mutate the document store", async () => {
+      // The store parameter is accepted for signature symmetry but unused.
+      // Sanity-check: querying does not produce any new documents.
+      const mmDir = join(tmpDir, ".atelier", "mind-map");
+      mkdirSync(mmDir, { recursive: true });
+      touch(join(mmDir, "x.png"));
+
+      const beforeCount = store.list().length;
+      const result = await callTool(client, "atelier_mind_map_query", {
+        projectDir: tmpDir,
+        kind: "image",
+      });
+      expect(result.success).toBe(true);
+      expect(store.list().length).toBe(beforeCount);
     });
   });
 });

@@ -1,0 +1,15 @@
+id: L-2026-05-10-ascend-182244-422
+type: insight
+timestamp: '2026-05-10T18:22:44.618Z'
+author: ascend
+title: Decision TD-2026-05-10-241 recorded
+summary: Companion lore entry for decision record TD-2026-05-10-241. See .paradigm/decisions/TD-2026-05-10-241.yaml.
+symbols_touched:
+  - '#video-project'
+  - '#timeline-ui'
+  - '#caption-pipeline'
+references:
+  decision_id: TD-2026-05-10-241
+tags:
+  - companion-lore
+  - decision-reference

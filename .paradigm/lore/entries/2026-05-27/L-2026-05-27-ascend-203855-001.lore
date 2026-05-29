@@ -1,0 +1,46 @@
+id: L-2026-05-27-ascend-203855-001
+type: milestone
+timestamp: '2026-05-27T20:38:55.323Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Per-file transcripts + media preview split-pane with click-to-seek
+summary: 'Closed the multi-media transcript-association gap surfaced during v1 UX testing. New `transcribe-orchestrator.ts` exposes `transcribeMediaFile(projectDir, basename, opts)` which wraps the legacy `transcribeProject` and mirrors the result to `<projectDir>/transcripts/<basename>.json` (per-file canonical location). The legacy single-source `transcript.json` continues to be written for back-compat. Updated `listMediaFiles`/`hasTranscript` to check both root and per-file paths; `buildProjectTranscripts` enumerates both. Sidebar in workspace-app.ts subscribes to `media:list:changed`/`transcript:added` WS envelopes for live refresh after ingest. MediaPreview gained a split-pane layout: when the selected media has a transcript, video/audio renders left + per-word clickable transcript renders right with click-to-seek behavior + currently-playing word highlight (atel-transcript-word--current). 323 tests passing (+7 new), compliance clean.'
+symbols_touched:
+  - '#cli-studio'
+  - '#studio-workspace-app'
+  - '#cli-media'
+  - '#compose-video-project'
+symbols_created:
+  - '#transcribe-orchestrator'
+files_created:
+  - packages/cli/src/lib/transcribe-orchestrator.ts
+  - packages/cli/src/workspace-ui.test.ts
+files_modified:
+  - packages/cli/src/lib/compose-video-project.ts
+  - packages/cli/src/lib/media-project.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/web/workspace-app.ts
+learnings:
+  - Per-file transcripts (transcripts/<basename>.json) is the right multi-media convention. The legacy root transcript.json stays for back-compat with the single-source VideoProject flow but doesn't scale beyond one media file. transcribeMediaFile wraps transcribeProject so both contracts coexist.
+  - Live WS subscription for sidebar refresh closes the UX gap where ingest succeeded but the UI didn't show it — the bundle's broadcast envelopes were already there, the subscriber wiring was the missing half.
+verification:
+  status: pass
+  details:
+    cli_tests: 323 passing (+7)
+    compliance: clean
+    portal: compliant
+    build: clean ESM + CJS + DTS
+tags:
+  - multi-media
+  - transcripts
+  - studio-ui
+  - v1-polish
+linked_lore:
+  - L-2026-05-27-ascend-194818-001
+  - L-2026-05-27-ascend-193441-001
+git_context:
+  ref: 415cdc8b5c94b6466f09434395f1e1bf20a59ca3
+  branch: feat/creator-flow-v1-prep
+  dirty: true

@@ -1,0 +1,36 @@
+id: TD-2026-05-26-902
+timestamp: '2026-05-26T06:47:51.652Z'
+title: Extracted recipes default to personal-use, not publishable
+decision: >-
+  Recipes produced by the Imitator-path style extraction (or any "derive a recipe from someone else's content" flow)
+  carry a schema-level default of personal-use: true, which gates the nevr.land publish path. The default floor is 'not
+  publishable' — to prevent Atelier from becoming the tool that strip-mines creators' styles for republication. A future
+  publish path may add explicit attribution or transformation-declaration gates, but the v1 stance is the conservative
+  floor: keep extracted recipes local to the creator who extracted them.
+rationale: >-
+  Style extraction from a reference creator raises real attribution/IP concerns Atelier has never had to touch.
+  Defaulting to personal-use makes the path of least resistance the ethical one; it costs nothing to relax the default
+  later if a thoughtful attribution mechanism emerges, but expensive to retract permissions once granted. Aligns with
+  the open-source, community-respecting values stance.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Publishable by default with attribution prompt
+    rejected_because: Owner picked the conservative floor; opt-in to publish is safer than opt-out
+  - option: Block publishing of extracted recipes entirely (no path ever)
+    rejected_because: Closes a future door unnecessarily; the v1 default is conservative without being permanent
+symbols_affected:
+  - '#mcp-recipe-tools'
+status: active
+tags:
+  - creator-flow
+  - recipes
+  - imitator-path
+  - privacy
+  - ip
+  - values

@@ -6,6 +6,7 @@ import { YamlPanel } from "./panels/yaml-panel.js";
 import { applyStudioTheme, defaultTheme, type StudioTheme } from "./theme.js";
 import { History } from "./history.js";
 import { ExportDialog } from "./export/export-dialog.js";
+import { CANVAS_SIZE_PRESETS, findPresetMatch } from "./panels/canvas-size-presets.js";
 
 export type RightTab = "yaml" | "editor";
 
@@ -39,6 +40,15 @@ export interface StudioOptions {
   autoplay?: boolean;
   onDocumentChange?: (doc: AtelierDocument) => void;
   onSave?: (doc: AtelierDocument) => void;
+  /**
+   * Map a doc-stored relative src (e.g. `media/IMG_7346.MOV`) to a
+   * browser-fetchable URL. Forwarded into `CanvasPanel`, where it backs
+   * both the image cache and the video frame provider. Without it, image
+   * and video layers from disk-loaded docs can't fetch their bytes and
+   * render as empty / black. Identity by default — host (workspace-app)
+   * supplies the `/api/file?path=…` builder rooted at the doc's directory.
+   */
+  srcResolver?: (src: string) => string;
 }
 
 export class AtelierStudio {
@@ -50,6 +60,8 @@ export class AtelierStudio {
   private tabBtns: Map<RightTab, HTMLButtonElement> = new Map();
   private undoBtn!: HTMLButtonElement;
   private redoBtn!: HTMLButtonElement;
+  private canvasSizeSelect!: HTMLSelectElement;
+  private canvasSizeWarn!: HTMLSpanElement;
 
   private canvasPanel: CanvasPanel;
   private layerPanel: LayerPanel;
@@ -113,6 +125,10 @@ export class AtelierStudio {
       // canvas-refresh + layer/yaml panel refresh + the host-side
       // onDocumentChange consumer (which the CLI uses to autosave).
       onDocumentChange: () => this.onDocChange(),
+      // Forward the host's src resolver so image/video layers with
+      // relative paths (e.g. `media/foo.MOV`) actually fetch — without
+      // this, every disk-loaded doc with video layers renders black.
+      srcResolver: opts.srcResolver,
     });
 
     // Right panel → right side of body
@@ -215,6 +231,7 @@ export class AtelierStudio {
     this.layerPanel.loadDocument(this.doc);
     this.propertyPanel.loadDocument(this.doc, this.stateName);
     this.yamlPanel.loadDocument(this.doc);
+    this.refreshCanvasSizeUI();
   }
 
   /**
@@ -284,6 +301,7 @@ export class AtelierStudio {
       }
 
       this.updateUndoRedoButtons();
+      this.refreshCanvasSizeUI();
     } finally {
       // Release the suppression after the current task drains so subsequent
       // human edits resume normal notification.
@@ -313,7 +331,12 @@ export class AtelierStudio {
   destroy(): void {
     this.abortController.abort();
     this.canvasPanel.destroy();
-    this.container.removeChild(this.root);
+    // Defensive: a consumer may have wiped the container (e.g. innerHTML="" on
+    // a parse-error path) which removes our root indirectly. Don't throw on
+    // double-detach — just check parentage before removeChild.
+    if (this.root.parentNode === this.container) {
+      this.container.removeChild(this.root);
+    }
   }
 
   private buildToolbar(): void {
@@ -355,6 +378,49 @@ export class AtelierStudio {
     leftGroup.appendChild(this.redoBtn);
 
     this.toolbar.appendChild(leftGroup);
+
+    // Canvas size dropdown — between Undo/Redo group and Export.
+    // The current selection is computed from doc.canvas.width × doc.canvas.height
+    // via findPresetMatch — non-preset dimensions show a disabled "Custom — W×H"
+    // entry pre-selected. Changing the value mutates this.doc.canvas and routes
+    // through onDocChange (same save + re-render path as other mutations);
+    // canvas-panel picks up the new dimensions on the next refresh via its
+    // ResizeObserver-driven letterbox fit.
+    const canvasSizeGroup = document.createElement("div");
+    canvasSizeGroup.className = "atel-toolbar__group atel-toolbar__group--controls atel-canvas-size";
+
+    const canvasSizeLabel = document.createElement("span");
+    canvasSizeLabel.className = "atel-canvas-size__label";
+    canvasSizeLabel.textContent = "Canvas:";
+    canvasSizeLabel.style.color = "var(--atel-text-muted, #A89F95)";
+    canvasSizeLabel.style.fontSize = "12px";
+    canvasSizeGroup.appendChild(canvasSizeLabel);
+
+    this.canvasSizeSelect = document.createElement("select");
+    this.canvasSizeSelect.className = "atel-toolbar__select atel-canvas-size__select";
+    this.canvasSizeSelect.dataset.action = "canvas-size";
+    for (const p of CANVAS_SIZE_PRESETS) {
+      const o = document.createElement("option");
+      o.value = p.label;
+      o.textContent = p.label;
+      this.canvasSizeSelect.appendChild(o);
+    }
+    this.canvasSizeSelect.addEventListener("change", () => this.onCanvasSizeChange());
+    // Refresh the warning visibility on focus, so the user sees the caption
+    // hint at the moment they open the dropdown.
+    this.canvasSizeSelect.addEventListener("focus", () => this.refreshCanvasSizeUI());
+    canvasSizeGroup.appendChild(this.canvasSizeSelect);
+
+    this.canvasSizeWarn = document.createElement("span");
+    this.canvasSizeWarn.className = "atel-canvas-size__warn";
+    this.canvasSizeWarn.textContent =
+      "Existing captions may need re-position after resize — re-ingest to refresh.";
+    this.canvasSizeWarn.style.color = "var(--atel-text-muted, #A89F95)";
+    this.canvasSizeWarn.style.fontSize = "11px";
+    this.canvasSizeWarn.style.display = "none";
+    canvasSizeGroup.appendChild(this.canvasSizeWarn);
+
+    this.toolbar.appendChild(canvasSizeGroup);
 
     // Spacer
     const spacer = document.createElement("div");
@@ -461,6 +527,7 @@ export class AtelierStudio {
     this.layerPanel.refresh();
 
     this.updateUndoRedoButtons();
+    this.refreshCanvasSizeUI();
 
     // Notify consumer
     if (this.doc) {
@@ -493,6 +560,62 @@ export class AtelierStudio {
     this.redoBtn.disabled = !this.history.canRedo;
   }
 
+  /**
+   * Sync the canvas-size dropdown + caption warning to the current doc.
+   * - Pre-selects the matching preset, OR injects a disabled
+   *   "Custom — W×H" option pre-selected when dimensions don't match any preset.
+   * - Shows the caption-reposition warning iff any layer is tagged "caption".
+   * Called on every panel-reload path (loadDocument / applyMutation /
+   * reloadPanels / onDocChange) so the toolbar always reflects the live doc.
+   */
+  private refreshCanvasSizeUI(): void {
+    if (!this.canvasSizeSelect) return;
+
+    // Strip any previously-injected Custom option so we never accumulate
+    // stale entries across resizes.
+    const stale = this.canvasSizeSelect.querySelector("option[data-custom='1']");
+    if (stale) stale.remove();
+
+    if (!this.doc) {
+      this.canvasSizeSelect.disabled = true;
+      this.canvasSizeWarn.style.display = "none";
+      return;
+    }
+    this.canvasSizeSelect.disabled = false;
+
+    const { width, height } = this.doc.canvas;
+    const match = findPresetMatch(width, height);
+    if (match) {
+      this.canvasSizeSelect.value = match.label;
+    } else {
+      const custom = document.createElement("option");
+      custom.value = `__custom__${width}x${height}`;
+      custom.textContent = `Custom — ${width}×${height}`;
+      custom.disabled = true;
+      custom.dataset.custom = "1";
+      // Pre-selected; sits at the top of the list.
+      this.canvasSizeSelect.insertBefore(custom, this.canvasSizeSelect.firstChild);
+      this.canvasSizeSelect.value = custom.value;
+    }
+
+    const hasCaptionLayers = this.doc.layers.some((l) => l.tags?.includes("caption"));
+    this.canvasSizeWarn.style.display = hasCaptionLayers ? "" : "none";
+  }
+
+  private onCanvasSizeChange(): void {
+    if (!this.doc) return;
+    const preset = CANVAS_SIZE_PRESETS.find((p) => p.label === this.canvasSizeSelect.value);
+    if (!preset) return;
+    this.doc.canvas.width = preset.width;
+    this.doc.canvas.height = preset.height;
+    // Route through the standard mutation path: snapshots history, refreshes
+    // every panel, and notifies the host (autosave + WS bridge). The canvas
+    // panel's ResizeObserver-driven letterbox fit will pick up the new
+    // dimensions on the next render — no direct canvas-panel call needed.
+    this.onDocChange();
+    this.refreshCanvasSizeUI();
+  }
+
   private reloadPanels(): void {
     if (!this.doc) return;
     // Preserve the currently-selected state across undo/redo when it still exists.
@@ -511,6 +634,7 @@ export class AtelierStudio {
       this.stateSelect.value = this.stateName;
     }
     if (this.currentTab === "yaml") this.yamlPanel.refresh();
+    this.refreshCanvasSizeUI();
     this.opts.onDocumentChange?.(this.doc);
   }
 
@@ -524,12 +648,34 @@ export class AtelierStudio {
     if (!this.doc) return;
     this.canvasPanel.pause();
     const dialog = new ExportDialog();
+    // Forward the canvas-panel's video provider so video layers actually
+    // paint in the export. Without `videoSeek`, the exporter falls back
+    // to the legacy no-provider path and video layers silently no-op
+    // (the bug owner caught in animation (1).mp4: static frame + caption
+    // accumulation).
+    const provider = this.canvasPanel.getVideoProvider();
+    // Derive the audio source — first VideoVisual layer's resolved URL.
+    // Mediabunny demuxes its audio track and mp4-muxer rewrites those
+    // packets verbatim into the output (no re-encode). Multi-clip audio
+    // composition is v1.1; here we hand the exporter one source.
+    const resolver = this.opts.srcResolver ?? ((s: string): string => s);
+    let audioSource: string | undefined;
+    for (const layer of this.doc.layers) {
+      if (layer.visual.type !== "video") continue;
+      const v = layer.visual;
+      const src = v.src ?? (v.assetId ? this.doc.assets?.[v.assetId]?.src : undefined);
+      if (!src) continue;
+      audioSource = resolver(src);
+      break;
+    }
     dialog.show(
       this.doc,
       this.canvasPanel.getCanvas(),
       this.canvasPanel.getImageCache(),
       this.root,
       this.currentFilename ?? undefined,
+      provider.awaitSeek.bind(provider),
+      audioSource,
     );
   }
 }

@@ -90,6 +90,30 @@ export { VIDEO_TRANSCRIPT_VERSION } from "./lib/video-project.js";
 // Studio Recipe — Phase 1
 export { recipeCommand } from "./commands/recipe.js";
 export { applyRecipeCommand } from "./commands/apply-recipe.js";
+
+// First-run setup — Phase 3 delegation C
+export { initCommand, runInit, isInsideGitRepo, parseModeAnswer } from "./commands/init.js";
+export type { RunInitOptions, InitResult } from "./commands/init.js";
+export {
+  writeLearningMode,
+  readLearningMode,
+  learningModePath,
+  renderLearningModeYaml,
+  LEARNING_MODES,
+  LEARNING_MODE_VERSION,
+} from "./lib/learning-mode.js";
+export type { LearningMode, LearningModeFile } from "./lib/learning-mode.js";
+
+// Front-of-pipeline artifacts — Phase 2 CLI surface
+export { artifactsCommand } from "./commands/artifacts.js";
+export {
+  loadArtifactsFromProject,
+  ARTIFACT_FILENAMES,
+} from "./lib/artifact-project.js";
+export type {
+  LoadedArtifactProject,
+  ArtifactParseError,
+} from "./lib/artifact-project.js";
 export {
   loadRecipe,
   resolveRecipePath,
@@ -102,3 +126,55 @@ export {
   RECIPE_VERSION,
 } from "./lib/recipe.js";
 export type { LoadedRecipe } from "./lib/recipe.js";
+
+// Compose pipelines — kind:"video" / kind:"image" / kind:"carousel" project ingest.
+export {
+  composeVideoProject,
+  type ComposeVideoProjectOptions,
+  type ComposeVideoProjectResult,
+} from "./lib/compose-video-project.js";
+export {
+  composeImageProject,
+  type ComposeImageProjectOptions,
+  type ComposeImageProjectResult,
+} from "./lib/compose-image-project.js";
+export {
+  composeCarouselProject,
+  type ComposeCarouselProjectOptions,
+  type ComposeCarouselProjectResult,
+} from "./lib/compose-carousel-project.js";
+
+// Drag-drop ingest dispatcher — classify file + route.
+// Post-pivot (Kit-A): `routeIngest` returns `BinIngestRoute` (no-target media
+// bin add); `routeIngestWithTarget` handles canvas-area drops with composition.
+export {
+  classifyMediaFile,
+  routeIngest,
+  routeIngestWithTarget,
+  type IngestKind,
+  type IngestRoute,
+  type BinIngestRoute,
+} from "./lib/ingest-dispatch.js";
+
+// ── doc-management (v1.0.x) ──────────────────────────────────────
+// Public verbs (createDoc / duplicateDoc / deleteDoc / listDocs) shared by
+// the studio HTTP layer and the MCP doc tools. Types live in
+// `doc-management-types.ts`; see that file for the validator surface.
+export {
+  createDoc,
+  duplicateDoc,
+  deleteDoc,
+  listDocs,
+  type CreateDocResult,
+} from "./lib/doc-management.js";
+export {
+  isValidDocName,
+  // isManifestDoc retired with the manifest concept (v1.0.x flat-docs pivot)
+  type DocKind,
+  type CreateDocOptions,
+  type DuplicateDocOptions,
+  type DeleteDocOptions,
+  type DocListEntry,
+  type DocDeleteCascadeReport,
+  type DocDuplicateReport,
+} from "./lib/doc-management-types.js";

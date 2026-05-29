@@ -166,14 +166,28 @@ function buildPhraseDeltas(
   const fadeFrames = Math.max(1, Math.round(fadeSeconds * fps));
   const startFrame = Math.floor(phrase.start * fps);
   const endFrame = Math.ceil(phrase.end * fps);
-  const fadeOutStart = Math.max(startFrame + 1, endFrame - fadeFrames);
+  // Cap fade-in length at HALF the phrase duration so very short phrases
+  // (one-word interjections) don't have a fade-in window that runs past the
+  // fade-out — would otherwise produce a backwards animation.
+  const phraseFrames = Math.max(1, endFrame - startFrame);
+  const fadeInFrames = Math.min(fadeFrames, Math.floor(phraseFrames / 2));
+  const fadeOutStart = Math.max(startFrame + fadeInFrames, endFrame - fadeFrames);
 
   return [
-    // Fade in to visible at phrase start
+    // Fade in AT phrase start (the [start, start+fadeF] window lives INSIDE
+    // the phrase). Previously this was [start - fadeF, start], which placed
+    // the fade-in BEFORE the phrase began — for touching transcript phrases
+    // (end_N === start_{N+1}, the common case), cap-N's fade-out [end-2, end]
+    // and cap-(N+1)'s fade-in [start-2, start] overlapped on the same frame
+    // window, producing a visible 2-frame cross-fade where both captions
+    // rendered at ~0.68 opacity simultaneously (the "captions stacking"
+    // false-bug report L-2026-05-28-ascend-151000-001). Moving the fade-in
+    // INSIDE the phrase means cap-N fades out [88, 90] → cap-(N+1) fades in
+    // [90, 92], no overlap, captions transition discretely.
     {
       layer: layerId,
       property: "opacity",
-      range: [Math.max(0, startFrame - fadeFrames), startFrame],
+      range: [startFrame, startFrame + fadeInFrames],
       from: 0,
       to: 1,
       easing: "ease-out",

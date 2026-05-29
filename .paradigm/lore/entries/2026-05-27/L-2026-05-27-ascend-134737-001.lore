@@ -1,0 +1,40 @@
+id: L-2026-05-27-ascend-134737-001
+type: insight
+timestamp: '2026-05-27T13:47:37.919Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Paradigm + Atelier symbiosis: inspection + protocol design'
+summary: 'Designed the Paradigm-Atelier symbiosis protocol after user ran `paradigm shift` inside the creator/ workspace to verify nested behavior. Confirmed: engine root CLAUDE.md untouched, nested .paradigm/ resolution works correctly (paradigm status from workspace sees workspace setup, not engine), paradigm shift produced complete Paradigm scaffold at workspace level. Identified four concrete symbiosis gaps that atelier studio --new should close when it detects a Paradigm-initialized directory: (1) `.claude/` shadowing — creator''s .claude/ shadows engine''s, hiding Atelier agent definitions; (2) creator/CLAUDE.md is generic Paradigm template, doesn''t know about Atelier personas/artifacts/active.yaml; (3) creator/.mcp.json registers only paradigm-mcp, missing atelier-mcp; (4) creator/.paradigm/personas/index.yaml empty, doesn''t register Quill/Lux/Iris with Paradigm tooling. Settled on a detection-and-augmentation model (user''s instinct) over a Paradigm-side preset — keeps the two codebases decoupled, augmentation lives entirely in atelier studio --new, all changes sentinel-bracketed or set-merged for idempotency. Next: delegate the symbiosis implementation to a builder.'
+symbols_touched:
+  - '#cli-studio'
+  - '#workspace-io'
+  - '#claude-agents-bundle'
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+files_modified: []
+learnings:
+  - Nested .paradigm/ works correctly out of the box — paradigm shift creates files in cwd only, never touches ancestors, and paradigm status walks the tree to find the nearest config.
+  - '`paradigm shift` is much more comprehensive than just CLAUDE.md — it writes .paradigm/ tree (28 entries), .claude/, .cursor/, .github/, .mcp.json, .premise, .purpose, .windsurfrules, AGENTS.md, portal.yaml. Any symbiosis design must reckon with all of those, especially .claude/ which shadows ancestors.'
+  - 'The user''s rejection of the Paradigm-side preset in favor of Atelier-side detection-and-augmentation is the architecturally cleaner call: keeps codebases decoupled, no cross-repo coordination on releases, and all integration logic lives where the integration consumer (atelier studio --new) needs it anyway.'
+verification:
+  status: untested
+  details:
+    paradigm_shift_nesting: verified working (engine untouched, workspace gets own .paradigm)
+    symbiosis_implementation: designed not yet built
+tags:
+  - paradigm-symbiosis
+  - workspace
+  - creator-flow
+  - protocol-design
+linked_lore:
+  - L-2026-05-27-claude-builder-063923-001
+  - L-2026-05-27-ascend-044400-001
+  - TD-2026-05-26-275
+  - TD-2026-05-26-540
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

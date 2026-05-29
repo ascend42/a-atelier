@@ -1,0 +1,42 @@
+id: L-2026-05-20-ascend-012741-001
+type: milestone
+timestamp: '2026-05-20T01:27:41.277Z'
+duration_minutes: 45
+author: ascend
+title: v0.34.0 released — Studio v1 milestone cut + in-app New-file fix
+summary: 'Follow-up session after the v1 push. Fixed the reviewer''s #1 gap that surfaced in real use: atelier studio could list/open existing .atelier files but had no way to CREATE one from inside the app (empty dir dead-ended at a fake --new CLI hint; populated dir had no New action). Added a + New button to the sidebar header and a + New document button to the empty state, both wired to a createNewFile() client function that prompts for a name, builds a minimal starter doc via newStarterDoc() (1080x1080 + one centered title text layer), validates it round-trips through parseAtelier, POSTs to the existing /api/file endpoint, and refreshes+loads. No server change needed (POST /api/file already wrote arbitrary safe paths). Verified for real, not just typecheck: booted the studio against a temp dir, fetched the Vite-transpiled client main.ts (createNewFile/newStarterDoc/+New all present, no transpile error), and confirmed serializeAtelier(newStarterDoc()) round-trips through the schema. Then cut the v0.34.0 release: bumped 5 touched packages (cli 0.34.0, types 0.31.0, schema 0.28.0, studio 0.27.0, mcp 0.26.0), wrote a comprehensive CHANGELOG [0.34.0] entry covering the whole Studio v1 surface, synced the stale README version (was 0.25.1). Full workspace build green (14/14), 649/649 tests, 23/23 typechecks. Pushing 14 commits to origin/main (no tag, no npm publish — user''s chosen scope).'
+symbols_touched:
+  - '#cli-studio'
+  - '#studio-widget'
+  - '#studio-bridge'
+  - '#ws-transport'
+  - '#atelier-university'
+files_modified:
+  - packages/cli/src/commands/studio.ts
+  - CHANGELOG.md
+  - README.md
+  - packages/cli/package.json
+  - packages/types/package.json
+  - packages/schema/package.json
+  - packages/studio/package.json
+  - packages/mcp/package.json
+commit: 6c81a52
+learnings:
+  - The inline studio app is a TS string returned by getInlineApp() and is NOT typechecked by tsc (it is a string literal) — verify client-side edits by actually booting the studio and fetching the Vite-transpiled /main.ts
+  - which surfaces real syntax/transpile errors that tsc misses. macOS has no 'timeout' command; use background process + sleep + lsof-kill for transient server smoke tests.
+tags:
+  - v0.34.0
+  - release
+  - studio-v1
+  - new-file
+  - changelog
+linked_lore:
+  - L-2026-05-18-ascend-203946-001
+linked_commits:
+  - 806eab4
+  - 6c81a52
+confidence: 0.95
+git_context:
+  ref: 6c81a525d8a75f512713655f99d995e916bcfe9a
+  branch: main
+  dirty: true

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-22T18:49:49.731Z",
+  "generatedAt": "2026-05-28T18:57:39.910Z",
   "flows": {
     "$frame-resolution": {
       "id": "$frame-resolution",
@@ -33,6 +33,213 @@
         }
       ],
       "definedIn": "packages/core/.purpose"
+    },
+    "$media-ingest-flow": {
+      "id": "$media-ingest-flow",
+      "description": "TARGET-SET ingest path (post-pivot): the browser drags a file onto a SPECIFIC doc on canvas → POST /api/media/ingest with targetDocPath → #ingest-dispatch routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute dispatch to compose-video / add-audio-clip / reject. The no-target path that historically scaffolded a doc-per-drop is gone — see $media-bin-flow + $canvas-compose-flow for the post-pivot creator loop. Spans the studio HTTP handler, #ingest-dispatch (routeIngestWithTarget only), and #compose-video-project or #timeline-ops depending on the route.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "receive POST /api/media/ingest with targetDocPath, stream upload into media/<basename>",
+          "symbol": "#cli-studio"
+        },
+        {
+          "id": "step-2",
+          "action": "classifyMediaFile + routeIngestWithTarget (file-kind, target doc kind)",
+          "symbol": "#ingest-dispatch"
+        },
+        {
+          "id": "step-3",
+          "action": "compose-video target — add clip layer to existing video doc",
+          "symbol": "#compose-video-project"
+        },
+        {
+          "id": "step-4",
+          "action": "add-audio-clip target — register audio clip on audio track",
+          "symbol": "#timeline-ops"
+        },
+        {
+          "id": "step-5",
+          "action": "on reject, unlink the just-uploaded file and respond 400",
+          "symbol": "#cli-studio"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$media-bin-flow": {
+      "id": "$media-bin-flow",
+      "description": "NO-TARGET media-bin acquire path (v1.0 media-bin pivot, TD-2026-05-28). Creator drops a file onto the sidebar / page level → POST /api/media/ingest with no targetDocPath → upload stream lands at media/<basename> → #handle-no-target-bin-add invokes routeIngest (kind+add-to-bin/reject only) → on accept: broadcasts {type:\"media:list:changed\"} (!media-added), fires background transcribeMediaToBin for video/audio, emits media:ingest:progress envelopes (transcribing→done|error) → workspace-app refreshes MEDIA sidebar + #bin-add-toast surfaces success → transcripts/<stem>.json written. CRITICAL: this path does NOT compose. Replaces the pre-pivot $media-ingest-flow no-target branch (which auto-scaffolded a doc per drop).",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "receive POST /api/media/ingest (no targetDocPath), stream upload into media/<basename>",
+          "symbol": "#cli-studio"
+        },
+        {
+          "id": "step-2",
+          "action": "routeIngest → reject (unlink + 400) or add-to-bin",
+          "symbol": "#handle-no-target-bin-add"
+        },
+        {
+          "id": "step-3",
+          "action": "broadcast !media-added (media:list:changed); start background transcribe for video/audio",
+          "symbol": "#handle-no-target-bin-add"
+        },
+        {
+          "id": "step-4",
+          "action": "transcribeMediaToBin writes transcripts/<stem>.json (idempotent on re-call)",
+          "symbol": "#transcribe-orchestrator"
+        },
+        {
+          "id": "step-5",
+          "action": "workspace-app receives media:ingest:progress envelopes, ToastHost surfaces success",
+          "symbol": "#bin-add-toast"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$canvas-compose-flow": {
+      "id": "$canvas-compose-flow",
+      "description": "Explicit-compose path (v1.0 media-bin pivot). Creator clicks \"+ new doc\" → #studio-new-doc-modal three-tile picker → empty .atelier created via $doc-create-flow → drags a media-ref row from the MEDIA sidebar onto canvasMount or timelineMount → #media-ref-drop-target validates payload via isValidMediaRefPath, POSTs /api/media/ingest?source=existing&path=media/<basename> with the current doc as targetDocPath → server runs ^valid-media-ref-path then dispatches through routeIngestWithTarget → composeVideoProject (or add-audio-clip) runs against the already-binned media + cached transcript → doc-mutated WS envelope → canvas + #timeline-view refresh. The compose verb is decoupled from the acquire verb — see ~media-bin-acquire-vs-compose.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "creator clicks \"+ new doc\" on the DOCS row",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-2",
+          "action": "three-tile picker → POST /api/project/:name/docs creates empty .atelier",
+          "symbol": "#studio-new-doc-modal"
+        },
+        {
+          "id": "step-3",
+          "action": "creator drags a MEDIA sidebar row (application/x-atelier-media-ref payload) onto canvas/timeline",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-4",
+          "action": "attachMediaRefDropTarget validates path, POSTs /api/media/ingest?source=existing&path=<media-ref>&targetDocPath=<doc>",
+          "symbol": "#media-ref-drop-target"
+        },
+        {
+          "id": "step-5",
+          "action": "handleExistingSourceIngest → ^valid-media-ref-path → routeIngestWithTarget",
+          "symbol": "#cli-studio"
+        },
+        {
+          "id": "step-6",
+          "action": "compose against existing media + cached transcript, write doc, broadcast doc-mutated",
+          "symbol": "#compose-video-project"
+        },
+        {
+          "id": "step-7",
+          "action": "refresh bottom timeline from updated doc.timeline",
+          "symbol": "#timeline-view"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$rename-cascade-flow": {
+      "id": "$rename-cascade-flow",
+      "description": "One rename op cascades through media/, transcripts/, and project.atelier (assets, layers, timeline). Phase 1 stages every change in memory (load doc → apply rename walk → recompute timeline → scan artifacts for warnings) without touching disk. Phase 2 writes in order: media file → transcript (if present) → doc; on any mid-step failure the prior writes are reverse-rolled-back best-effort before the original error is rethrown. Triggered from either the studio HTTP endpoint or the MCP tool wrapper; both gate on ^valid-media-basename before entry, and both join straight into <projectDir>/media/<basename> so the basename guard is load-bearing.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "validate basenames (^valid-media-basename), parse JSON body",
+          "symbol": "#studio-rename-endpoint"
+        },
+        {
+          "id": "step-2",
+          "action": "Phase 1 — load doc, applyMediaRenameToDoc, recomputeTimeline, scan artifacts",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-3",
+          "action": "Phase 2 — rename media file",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-4",
+          "action": "Phase 2 — rename transcript if present (rollback media on failure)",
+          "symbol": "#rename-media"
+        },
+        {
+          "id": "step-5",
+          "action": "Phase 2 — write project.atelier (rollback transcript + media on failure)",
+          "symbol": "#rename-media"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$doc-create-flow": {
+      "id": "$doc-create-flow",
+      "description": "Sidebar \"+ new doc\" → NewDocDialog three-tile picker (video / image / carousel) with live slug preview → POST /api/project/:name/docs → handler runs ^valid-doc-name then createDoc → composeImageProject / composeVideoProject / composeCarouselProject (each with its docPath) builds the doc → file written under <projectDir>/<slug>.atelier → handler broadcasts {type:\"doc:list:changed\", projectName} on the bridge WS → every connected workspace-app sidebar refreshes its single flat DOCS group. Adding a slide to a carousel goes through the parallel #carousel-add-slide-button affordance on the carousel canvas, which POSTs asCarouselSlide:true so createDoc additionally runs composeCarouselProject to append a SlideRef (cycle-checked).",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "render \"+ new doc\" affordance on the DOCUMENT label row",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-2",
+          "action": "collect kind + name (+ slide toggle), preview slug",
+          "symbol": "#studio-new-doc-modal"
+        },
+        {
+          "id": "step-3",
+          "action": "POST /api/project/:name/docs, gate ^valid-doc-name + ^doc-path-inside-project",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-4",
+          "action": "createDoc → composeImage|Video|Carousel (each with docPath), write file",
+          "symbol": "#doc-management"
+        },
+        {
+          "id": "step-5",
+          "action": "broadcast !doc-list-changed envelope",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-6",
+          "action": "refresh single flat DOCS group on doc:list:changed",
+          "symbol": "#studio-doc-sidebar"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
+    },
+    "$doc-delete-cascade-flow": {
+      "id": "$doc-delete-cascade-flow",
+      "description": "Right-click on a sidebar doc row → context menu → Delete… → ConfirmDialog → DELETE /api/project/:name/docs?path=<rel> → handler gates ^valid-doc-name (on the basename) + ^doc-path-inside-project → deleteDoc walks every sibling project subdir in the workspace, scans every .atelier doc encountered, removes matching SlideRef entries from any carousel doc, collects dangling RefVisual layers into a report (NOT auto-removed per ~doc-dangling-refvisual-reported), and unlinks the target doc → broadcast !doc-list-changed → sidebars refresh. If the currently-open doc in the bridge was the one deleted, the bridge falls back to the next available doc in the project (post-pivot: there is no privileged manifest to fall back to — see ~no-manifest-doc) or shows the empty-canvas state if the project has no docs left.",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "right-click → context menu → Delete…",
+          "symbol": "#studio-doc-sidebar"
+        },
+        {
+          "id": "step-2",
+          "action": "DELETE /api/project/:name/docs?path=, gate ^valid-doc-name + ^doc-path-inside-project",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-3",
+          "action": "deleteDoc → workspace-wide SlideRef scrub across every .atelier + RefVisual dangling scan + unlink",
+          "symbol": "#doc-management"
+        },
+        {
+          "id": "step-4",
+          "action": "broadcast !doc-list-changed",
+          "symbol": "#studio-doc-endpoints"
+        },
+        {
+          "id": "step-5",
+          "action": "refresh; bridge falls back to next available doc or empty-canvas state",
+          "symbol": "#studio-doc-sidebar"
+        }
+      ],
+      "definedIn": "packages/cli/.purpose"
     }
   },
   "symbolToFlows": {
@@ -44,6 +251,59 @@
     ],
     "#easing-resolver": [
       "$frame-resolution"
+    ],
+    "#cli-studio": [
+      "$media-ingest-flow",
+      "$media-bin-flow",
+      "$canvas-compose-flow"
+    ],
+    "#ingest-dispatch": [
+      "$media-ingest-flow"
+    ],
+    "#compose-video-project": [
+      "$media-ingest-flow",
+      "$canvas-compose-flow"
+    ],
+    "#timeline-ops": [
+      "$media-ingest-flow"
+    ],
+    "#handle-no-target-bin-add": [
+      "$media-bin-flow"
+    ],
+    "#transcribe-orchestrator": [
+      "$media-bin-flow"
+    ],
+    "#bin-add-toast": [
+      "$media-bin-flow"
+    ],
+    "#studio-doc-sidebar": [
+      "$canvas-compose-flow",
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
+    ],
+    "#studio-new-doc-modal": [
+      "$canvas-compose-flow",
+      "$doc-create-flow"
+    ],
+    "#media-ref-drop-target": [
+      "$canvas-compose-flow"
+    ],
+    "#timeline-view": [
+      "$canvas-compose-flow"
+    ],
+    "#studio-rename-endpoint": [
+      "$rename-cascade-flow"
+    ],
+    "#rename-media": [
+      "$rename-cascade-flow"
+    ],
+    "#studio-doc-endpoints": [
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
+    ],
+    "#doc-management": [
+      "$doc-create-flow",
+      "$doc-delete-cascade-flow"
     ]
   }
 }

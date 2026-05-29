@@ -1,0 +1,22 @@
+id: L-2026-05-27-ascend-214154-001
+type: agent-session
+timestamp: '2026-05-27T21:41:54.249Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Studio UX validated end-to-end: drag-drop → per-file transcripts → clean canvas → delete cascade'
+summary: |-
+  Closed the full v1 UX testing arc. Studio drag-drop ingest now works cleanly: drop a video → it lands in media/<basename>, transcribes via whisper-cpp + auto-resolved large-v3-turbo model, writes per-file transcript at transcripts/<stem>.json, composes into project.atelier with one fresh source-video layer + caption layer set, and renders live in the canvas. Multi-media works: dropping a second video DOES NOT overwrite the first's transcript, DOES NOT stack stale layers, DOES NOT create root source.<ext> anymore. Right-click context menus + media-preview Delete button + floating confirmation modal (centered, backdrop-blurred, destructive-button styled) all wired and operational. The four-bug closure: (1) duplicate transcripts from "skip if exists" guard on source.<ext> copy, (2) sidebar showing root source.<ext> as a phantom duplicate of media/<basename>, (3) caption layer stacking across ingests, (4) JSON.parse-only path failing on YAML-saved project.atelier. Architectural improvement: transcribeProject now takes an optional sourcePath, so multi-media ingest passes media/<basename> directly instead of copying to source.<ext>. Project surface stays clean: just DESIGN/SCRIPT/STORYBOARD + project.atelier + media/ + transcripts/ + .atelier/.</summary>
+  <symbols_touched>["#cli-studio", "#compose-video-project", "#transcribe-orchestrator", "#whisper-model-resolution", "#cli-media", "#workspace-project-info", "#studio-workspace-app"]</symbols_touched>
+  <files_modified>["packages/cli/src/commands/studio.ts", "packages/cli/src/commands/transcribe.ts", "packages/cli/src/lib/compose-video-project.ts", "packages/cli/src/lib/transcribe-orchestrator.ts", "packages/cli/src/lib/workspace-project-info.ts", "packages/cli/src/lib/whisper.ts", "packages/cli/src/web/workspace-app.ts", "packages/cli/src/workspace-ui.test.ts"]</files_modified>
+  <type>milestone</type>
+  <tags>["v1-ux", "validated", "creator-flow", "studio-ui", "per-file-transcripts", "delete-cascade", "clean-project-surface"]</tags>
+  <verification>{"status": "pass", "details": {"cli_tests": "325 passing", "build": "clean ESM + CJS + DTS", "compliance": "clean", "portal": "compliant", "user_acceptance": "creator confirmed transcripts + content render correctly in studio after restart"}}</verification>
+  <linked_lore>["L-2026-05-27-ascend-203855-001", "L-2026-05-27-ascend-194818-001", "L-2026-05-27-ascend-184035-001", "L-2026-05-27-ascend-180956-001"]</linked_lore>
+  <learnings>["The 'restart studio to pick up changes' loop is real friction — every node-side code change requires a process restart. Future work: hot-reload server endpoints OR clear documentation that this is expected. The Vite-served browser hot-reloads JS but the Node-side HTTP handlers are baked into the running process.", "Save-and-restore pattern for transcribeProject's root transcript.json is cleaner than dryRun bypass — dryRun also skipped rewriteCaptionLayers which we DO want for the current ingest. Save → run → mirror → restore preserves both invariants (root unchanged, captions land).", "Pre-clean stale layers before adding new ones is essential for re-entrant ingest flows. Without it, each compose accumulates source-video-N + caption-N+M layers, producing the 'overlapping text' canvas-stacking bug.", "transcribeProject's sourcePath override is the architecturally correct fix for multi-media (vs the source.<ext> copy hack). The override threads through cleanly and removes a whole class of legacy-compat clutter from creator-visible state."]</learnings>
+  </invoke>
+git_context:
+  ref: 415cdc8b5c94b6466f09434395f1e1bf20a59ca3
+  branch: feat/creator-flow-v1-prep
+  dirty: true

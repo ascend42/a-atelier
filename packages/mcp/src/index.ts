@@ -22,6 +22,15 @@ import { register as registerPerformanceTools } from "./tools/performance.js";
 import { register as registerOverlayTools } from "./tools/overlays.js";
 import { register as registerRecipeTools } from "./tools/recipes.js";
 import { register as registerImportImageTools } from "./tools/import-images.js";
+import { register as registerMindMapTools } from "./tools/mind-map.js";
+import { register as registerEffectiveTranscriptTools } from "./tools/effective-transcript.js";
+import { register as registerMediaNotesTools } from "./tools/media-notes.js";
+// ── v1.0 clip tools ──────
+import { register as registerClipTools } from "./tools/clips.js";
+// ── v1.0 rename-media tool ──────
+import { register as registerRenameMediaTool } from "./tools/rename-media.js";
+// ── v1.0.x doc tools ──────
+import { register as registerDocTools } from "./tools/docs.js";
 
 export { DocumentStore } from "./store.js";
 export type { MutationSource, ChangeListener } from "./store.js";
@@ -37,6 +46,12 @@ export type {
   DocPatchEnvelope,
   LlmMutationEnvelope,
   ErrorEnvelope,
+  MediaListChangedEnvelope,
+  TranscriptAddedEnvelope,
+  MediaIngestProgressEnvelope,
+  FileDeletedEnvelope,
+  MediaDeletedEnvelope,
+  ProjectDeletedEnvelope,
 } from "./bridge-protocol.js";
 export { WebSocketServerTransport } from "./transports/ws-transport.js";
 export type { WsLike } from "./transports/ws-transport.js";
@@ -59,6 +74,18 @@ export { register as registerPerformanceTools } from "./tools/performance.js";
 export { register as registerOverlayTools } from "./tools/overlays.js";
 export { register as registerRecipeTools } from "./tools/recipes.js";
 export { register as registerImportImageTools } from "./tools/import-images.js";
+export { register as registerMindMapTools } from "./tools/mind-map.js";
+// ── v1.0 clip tools ──────
+export {
+  register as registerClipTools,
+  __setTranscribeClipFn,
+  __setProbeDurationFn,
+  type TranscribeClipFn,
+} from "./tools/clips.js";
+// ── v1.0 rename-media tool ──────
+export { register as registerRenameMediaTool } from "./tools/rename-media.js";
+// ── v1.0.x doc tools ──────
+export { register as registerDocTools } from "./tools/docs.js";
 
 /**
  * Create a fully configured MCP server with all Atelier tools registered.
@@ -98,6 +125,15 @@ export function createServer(
   registerOverlayTools(server, store);
   registerRecipeTools(server, store);
   registerImportImageTools(server, store);
+  registerMindMapTools(server, store);
+  registerEffectiveTranscriptTools(server, store);
+  registerMediaNotesTools(server, store);
+  // ── v1.0 clip tools ──────
+  registerClipTools(server, store);
+  // ── v1.0 rename-media tool ──────
+  registerRenameMediaTool(server, store);
+  // ── v1.0.x doc tools ──────
+  registerDocTools(server, store);
 
   return { server, store };
 }

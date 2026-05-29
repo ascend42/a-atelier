@@ -1,0 +1,42 @@
+id: L-2026-05-10-ascend-182220-001
+type: milestone
+timestamp: '2026-05-10T18:22:20.518Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: UGC video editing workflow defined as Phase 2 north star
+summary: 'Team session defining Atelier''s UGC video workflow scope. User will shoot daily talking-head footage and needs an agent-assisted system to remove editing tedium: multi-take ingestion, silence removal, auto-captions, graphic overlay generation, and a basic timeline for ordering and trimming clips. Atelier is not trying to replace CapCut — it handles the grunt work and produces a clean draft MP4; external tools handle effects, body tracking, color grading if needed. Phase 2 scope updated to include VideoProject folder structure, timeline UI, Whisper transcription, and silence removal. Whisper pulled forward from Phase 3.'
+symbols_touched:
+  - '#video-renderer'
+  - '#cli-lint'
+  - '#frame-resolver'
+  - '#layer-types'
+symbols_created:
+  - '#video-project'
+  - '#timeline-ui'
+  - '#caption-pipeline'
+  - '#silence-removal'
+  - '#atelier-edit-cli'
+decisions:
+  - id: ugc-scope-boundary
+    decision: Atelier handles ingest, silence removal, captions, basic timeline, graphics, export. External tools (CapCut etc.) handle effects, body tracking, color grading.
+    rationale: User explicitly does not want to rebuild CapCut — wants tedium removed, creative control retained, higher-level effects handled by specialized tools
+  - id: whisper-phase2
+    decision: Pull Whisper auto-caption integration from Phase 3 into Phase 2
+    rationale: Captions are core to the UGC daily workflow, not a nice-to-have. Phase 2 without captions would be incomplete for the stated use case
+  - id: timeline-basic-only
+    decision: Timeline UI covers clip ordering, trim in/out, drag to reorder only. No keyframe curves, effects rack, or multi-track audio.
+    rationale: Data model already supports this via startFrame + sourceOffset + sourceEnd. Studio just needs a visual representation. Scope stays tight.
+tags:
+  - ugc
+  - video
+  - phase-2
+  - roadmap
+  - north-star
+  - workflow
+confidence: 0.97
+git_context:
+  ref: cafb4898071a39c067b140e28140d6269396b954
+  branch: main
+  dirty: true

@@ -1,0 +1,47 @@
+id: L-2026-05-28-ascend-113321-001
+type: milestone
+timestamp: '2026-05-28T11:33:21.300Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Round 3 — BrowserVideoFrameProvider + srcResolver close the disk-loaded-media gap
+summary: |-
+  Round 2 fixes verified at runtime by owner: canvas-size dropdown visible, frame ruler horizontal, canvas letterbox-fits. Canvas still showed black where the video should play — diagnosis: renderFrame's videoFrameProvider option was wired through the renderer but NO preview-mode implementation existed anywhere in the codebase, and canvas-panel was calling renderFrame with only ImageCache (no provider). Every VideoVisual layer silently skipped via the if(videoFrameProvider) guard. Wrote BrowserVideoFrameProvider (HTMLVideoElement-backed, seek-debounced at 16ms epsilon, returns null during in-flight seeks, fires onReady on loadeddata/seeked so canvas-panel re-paints). Also added StudioOptions.srcResolver to map doc-stored relative srcs (media/IMG_7346.MOV) → browser-fetchable URLs (/api/file?path=…) — closing a latent gap where disk-loaded docs with image layers ALSO couldn't fetch bytes (drag-drop image-drop was masking it via data-URLs). Workspace-app + inline-app both supply the resolver rooted at the loaded doc's directory. Caption-stacking concern from owner screenshot investigated separately via probe script: resolveFrame is correct — at frame 86 only cap-1 should be visible, at frame 89 cap-1 fading out + cap-2 fading in (cross-fade). Owner likely caught a cross-fade moment in the original screenshot; needs re-verification post-video-render to confirm captions display one at a time.</summary>
+  <parameter name="symbols_touched">["#browser-video-frame-provider", "#canvas-panel", "#atelier-studio", "#workspace-app", "#inline-app"]
+symbols_created:
+  - '#browser-video-frame-provider'
+  - '#src-resolver'
+files_created:
+  - packages/studio/src/utils/browser-video-frame-provider.ts
+files_modified:
+  - packages/studio/src/panels/canvas-panel.ts
+  - packages/studio/src/studio.ts
+  - packages/cli/src/web/workspace-app.ts
+  - packages/cli/src/web/inline-app.ts
+  - CHANGELOG.md
+learnings:
+  - When a renderer accepts an injected provider as an option (videoFrameProvider, documentResolver, etc.) and a class of layers silently doesn't render, suspect the provider was never wired by the caller. The guard 'if (provider)' is invisible at the call site — it looks like the renderer just chose not to draw.
+  - Disk-loaded docs with relative-path media (image OR video) need a srcResolver — data-URL'd drag-drop assets accidentally masked this gap for images, hiding it until video forced the issue.
+  - When debugging 'X looks broken' from a single screenshot, run a probe script that loads the actual doc and asserts resolveFrame's output across multiple frames before touching renderer code. The previous diagnosis path (eyeballing the screenshot) missed that the screenshot might be a cross-fade moment, not a renderer bug.
+  - HTMLVideoElement.currentTime is async — drawImage(<video>) draws the LAST decoded frame, not the requested time. Provider must return null during in-flight seeks and re-invoke caller's refresh on 'seeked' event to avoid drawing stale pixels.
+verification:
+  status: partial
+  details:
+    build: pass (studio + cli)
+    typecheck: pre-existing errors only — no new ones
+    tests: pass (1212/1212 across 12 packages)
+    runtime: untested — owner restart needed to confirm video paints
+tags:
+  - v1.0
+  - video-render
+  - src-resolver
+  - preview-mode
+  - triage-round-3
+linked_lore:
+  - L-2026-05-28-ascend-111306-001
+confidence: 0.85
+git_context:
+  ref: 914106ea110fd00fe6837eb10553252e6a7a3722
+  branch: feat/creator-flow-v1-prep
+  dirty: true

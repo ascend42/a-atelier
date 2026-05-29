@@ -1,0 +1,47 @@
+id: L-2026-05-28-ascend-091716-001
+type: milestone
+timestamp: '2026-05-28T09:17:16.293Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Wave A — media-bin backend + bottom timeline UI + studio shell rework
+summary: Three parallel Kits landed Wave A of the v1.0 media-bin pivot + bottom timeline bundle. Kit-A collapsed the no-target ingest dispatcher to just add-to-bin, added transcribeMediaToBin standalone entrypoint, added ?source=existing endpoint for sidebar→canvas drag, and rewrote /api/media/ingest's no-target branch to stash files in media/ without auto-creating a doc. Kit-B added a read-only bottom timeline component (TimelineView) — single track lane, clip blocks proportional to startFrame/endFrame, frame ruler with playhead, click-to-select, click-ruler-to-seek. Kit-C reworked the studio UI shell — drop-zone sidebar label changed to "Add to media", DOCS empty-state hint extends when MEDIA populated, toast-on-first-drop for bin-add feedback, and a flex-column layout with canvasMount (1fr) + timelineMount (120px) split. Workspace tests 1188→1189, all green.
+symbols_touched:
+  - '#ingest-dispatch'
+  - '#studio-doc-endpoints'
+  - '#transcribe-orchestrator'
+  - '#workspace-app'
+  - '#studio-doc-sidebar'
+symbols_created:
+  - '#timeline-view'
+  - '#bin-add-toast'
+  - '#handle-no-target-bin-add'
+  - '#transcribe-media-to-bin'
+files_created:
+  - packages/cli/src/web/timeline-view.ts
+  - packages/cli/src/web/timeline-view.test.ts
+files_modified:
+  - packages/cli/src/lib/ingest-dispatch.ts
+  - packages/cli/src/lib/ingest-dispatch.test.ts
+  - packages/cli/src/lib/transcribe-orchestrator.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/web/workspace-app.ts
+verification:
+  status: pass
+  details:
+    workspace_tests: 1188 → 1189
+    tsc_workspace: exit 0
+tags:
+  - v1.0
+  - media-bin
+  - timeline-ui
+  - wave-A
+  - team-orchestrated
+linked_lore:
+  - L-2026-05-28-ascend-090321-001
+confidence: 0.85
+git_context:
+  ref: 5655e2228974b0ae064a1fd385d1799b575dfd2d
+  branch: feat/creator-flow-v1-prep
+  dirty: true

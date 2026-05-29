@@ -1,0 +1,53 @@
+id: L-2026-05-18-ascend-203946-001
+type: milestone
+timestamp: '2026-05-18T20:39:46.669Z'
+duration_minutes: 240
+author: ascend
+title: v1 COMPLETE — atelier studio ships locally launchable, LLM↔human loop live, pack v0.1.0 in
+summary: 'Final v1 close. 15/15 tasks shipped, 12 commits, 649/651 tests passing (+71 new since session start), 24 university entries across 4 tracks. atelier studio is now a real local-first product: npm install → atelier studio → land in scaffolded welcome.atelier → drop a photo (replaces placeholder background) → add overlays via layer-type picker or recipe → watch an external MCP client (Claude Desktop / atelier-mcp via the new WebSocket transport) mutate the doc live with attribution toast and Cmd-Z undo → export to PNG via atelier export-image. The symbiotic loop the cold review asked for is real and end-to-end: DocumentStore.onChange + AtelierStudio.applyMutation + WS bridge at /bridge + MCP-over-WS transport at /mcp + suppress-notify flag + last-write-wins conflict policy + source-tagged ops (human|llm|system). Localhost-only security (^localhost-only gate, 127.0.0.1 bind, Origin check) covers HTTP and WS upgrade. Recipe overlay_rules promoted to Phase 1.5 with handle + page-number applyRecipeToOverlay translator. Pack v0.1.0 ships ATEL-001 (Hello), 101 (Document Model), 201 (MCP Authoring), 301 (Visual System) — 24 validated entries, paradigm university validate green. Multi-agent orchestration pattern proved out: 6 paradigm:builder agents across 4 rounds in background, me on pack authoring + integration in foreground, advisor + paradigm:architect + paradigm:reviewer + general-purpose dx consult to set the v1 cut list. Two skipped tests pending node-canvas binary; one carousel-batch driver remains for v1.1.'
+symbols_touched:
+  - '#cli-studio'
+  - '#studio-bridge'
+  - '#ws-transport'
+  - '#bridge-protocol'
+  - '#canvas-panel'
+  - '#layer-panel'
+  - '#image-drop-helper'
+  - '#studio-widget'
+  - '#document-store'
+  - '#cli-export-image'
+  - '#recipe-lib'
+  - '#overlay-translator'
+  - '#mcp-overlay'
+  - '#welcome-template'
+  - '#atelier-university'
+  - '#testing-strategy'
+  - ^localhost-only
+commit: b847c17
+tags:
+  - v1
+  - milestone
+  - v1-close
+  - atelier-studio
+  - live-mutation-bridge
+  - multi-agent
+linked_lore:
+  - L-2026-05-18-ascend-203245-001
+linked_commits:
+  - 77d5b47
+  - 611ed97
+  - 880ee0c
+  - d427461
+  - 93f90ff
+  - d361eb6
+  - '8398137'
+  - 0f33ae2
+  - 0219d28
+  - 2f33ffc
+  - 18eefc0
+  - b847c17
+confidence: 0.95
+git_context:
+  ref: b847c173fd7f6d6b3a3ed4d4fd01eea0a1f6e46d
+  branch: main
+  dirty: true

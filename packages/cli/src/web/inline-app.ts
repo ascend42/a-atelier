@@ -72,11 +72,42 @@ interface FileEntry {
 }
 
 /**
- * Boot the in-browser Atelier Studio client. Wires up the file sidebar, the
- * AtelierStudio editor + autosave, image drag-drop, the WS bridge, and the
- * export-all flow. Called once by the temp-dir entry shim.
+ * Boot the in-browser Atelier Studio client.
+ *
+ * Two modes:
+ *   - **workspace** — when the server reports `/api/workspace` 200 OK, the
+ *     workspace-aware UI (sidebar tree + main-panel adapter + drop-zone)
+ *     boots from `workspace-app.ts`. This is the v1 UX bundle.
+ *   - **project** — legacy single-document UI, untouched (see below).
+ *
+ * The dispatch happens BEFORE any of the legacy DOM is built so workspace mode
+ * gets a clean root; the legacy code path runs only when `/api/workspace`
+ * responds 404 (project mode or detached).
  */
-export function bootStudioApp(config: StudioAppConfig): void {
+export async function bootStudioApp(config: StudioAppConfig): Promise<void> {
+  // Probe the workspace endpoint. A 200 means we're rooted at a workspace dir
+  // and should render the workspace UI; anything else falls through to the
+  // legacy single-document path.
+  try {
+    const probe = await fetch("/api/workspace");
+    if (probe.ok) {
+      const mod = await import("./workspace-app.js");
+      await mod.bootWorkspaceApp();
+      return;
+    }
+  } catch {
+    // Endpoint missing or network failure → legacy path. Non-fatal.
+  }
+
+  bootLegacyApp(config);
+}
+
+/**
+ * Legacy single-document client. Wires up the flat file sidebar, the
+ * AtelierStudio editor + autosave, image drag-drop, the WS bridge, and the
+ * export-all flow. Behavior preserved exactly from pre-workspace days.
+ */
+function bootLegacyApp(config: StudioAppConfig): void {
   // ── State ──
   let studio: AtelierStudio | null = null;
   let currentFile: string | null = null;
@@ -203,7 +234,7 @@ export function bootStudioApp(config: StudioAppConfig): void {
     const overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:10000";
     const card = document.createElement("div");
-    card.style.cssText = "background:#333;border:1px solid #4A4A4A;border-radius:8px;padding:32px 40px;min-width:360px;color:#F5F0EB;font-family:'Cormorant Garamond',Georgia,serif";
+    card.style.cssText = "background:#333;border:1px solid #4A4A4A;border-radius:8px;padding:32px 40px;min-width:360px;color:#F5F0EB;font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
     overlay.appendChild(card);
     document.body.appendChild(overlay);
 
@@ -560,6 +591,13 @@ export function bootStudioApp(config: StudioAppConfig): void {
     const result = parseAtelier(content);
 
     if (!result.success) {
+      // Destroy the prior studio BEFORE wiping the container — otherwise the
+      // next loadFile's destroy() call would try to removeChild on a node
+      // that's already been wiped via innerHTML="" (NotFoundError).
+      if (studio) {
+        studio.destroy();
+        studio = null;
+      }
       editorContainer.innerHTML = "";
       const err = document.createElement("div");
       err.className = "main__empty";
@@ -647,6 +685,19 @@ export function bootStudioApp(config: StudioAppConfig): void {
       mode: "full",
       initialTab: "yaml",
       allowSave: true,
+      // Resolve doc-relative srcs against the currently-loaded file's
+      // directory. inline-app reuses one studio instance across file
+      // switches, so we read `currentFile` at call time (not closure time)
+      // — otherwise switching docs would leave the resolver pinned to the
+      // first one. See workspace-app for the same builder.
+      srcResolver: (src: string): string => {
+        if (/^([a-z]+:|\/|data:)/i.test(src)) return src;
+        const path = currentFile;
+        if (!path) return src;
+        const docDir = path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "";
+        const full = docDir ? `${docDir}/${src}` : src;
+        return `/api/file?path=${encodeURIComponent(full)}`;
+      },
       onDocumentChange: (doc) => {
         // Auto-save with debounce — flip to "saving" immediately so the user
         // knows their edit was registered even while the timeout is pending.

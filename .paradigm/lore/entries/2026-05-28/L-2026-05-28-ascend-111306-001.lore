@@ -1,0 +1,45 @@
+id: L-2026-05-28-ascend-111306-001
+type: incident
+timestamp: '2026-05-28T11:13:06.481Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Root cause for v1.0 triage bugs: CLI loads npm studio v0.26.1, not local v0.28.1 + missing TimelineView CSS'
+summary: |-
+  Owner screenshot from previous session showed canvas black, captions squeezed vertically, frame ruler stacked vertically on the left, and canvas-size dropdown invisible. Investigation found the real root causes are NOT what the prior handoff lore (L-2026-05-28-ascend-105949-001) described. CLI's package.json depended on '@a-company/atelier-studio: >=0.25.1', which pnpm resolved to npm-published v0.26.1 — Kit-β (computeLetterboxFit) and Kit-γ (canvas-size dropdown) added to local packages/studio/src in v0.28.1 NEVER reached the user's running CLI. Prior session's "verified via grep in source + dist" checked packages/studio/dist (local 0.28.1 build), not packages/cli/node_modules/@a-company/atelier-studio/dist (the v0.26.1 the CLI actually loads). Confirmed: grep for atel-canvas-size / canvasSizeSelect / computeLetterboxFit in the v0.26.1 installed dist returns zero matches. Second independent bug: workspace-app.ts never defined CSS for .atel-timeline-view* classes — TimelineView's ticks/clips/playhead set only inline 'left'/'width', so without position:absolute they stack as block elements (exactly matches the vertical ruler symptom). Fix bundle: (1) switched packages/cli dep to 'workspace:^' so pnpm symlinks the local 0.28.1 studio; (2) added 70 lines of .atel-timeline-view CSS to workspace-app inline styles (ruler/lane position:relative, tick/clip/playhead position:absolute). Tests green across all 10 packages (1177 total). Runtime verification still pending — owner must restart studio process.</summary>
+  <parameter name="symbols_touched">["#workspace-app", "#atelier-studio", "#canvas-panel", "#timeline-view", "#canvas-size-presets"]
+files_modified:
+  - packages/cli/package.json
+  - packages/cli/src/web/workspace-app.ts
+  - pnpm-lock.yaml
+decisions:
+  - id: TD-2026-05-28-studio-workspace-link
+    decision: Switch CLI → atelier-studio dep from npm-range '>=0.25.1' to 'workspace:^' so local source edits ship without republish
+    rationale: Three sessions of Kit-β/γ work in packages/studio/src never reached the runtime because pnpm was resolving from the npm registry, not the workspace. Workspace link is the lowest-friction fix; on CLI publish pnpm rewrites 'workspace:^' to the exact studio version at publish time.
+learnings:
+  - 'When verifying that a package edit reached runtime: grep the CONSUMER''s node_modules dist, not the producer''s own dist. packages/studio/dist is what NPM PUBLISH ships; packages/cli/node_modules/@a-company/atelier-studio/dist is what the CLI actually loads at runtime. These can be at different versions.'
+  - Backticks inside CSS comments in a template literal close the literal early and produce confusing TS parse errors (commit fef8c15 fixed the same trap; I repeated it and re-fixed). Single-quotes or escape (\`) are safe.
+  - When a layout looks 'stacked vertically' for elements that set only inline left/width, look for missing position:absolute on the container or children. The DOM is doing exactly what static layout says it should.
+verification:
+  status: partial
+  details:
+    typecheck: pre-existing errors only — no new errors from this change
+    tests: pass (1177/1177 across 10 packages)
+    runtime: untested — studio process killed, owner must restart
+tags:
+  - v1.0
+  - incident
+  - root-cause
+  - package-resolution
+  - css-missing
+  - version-mismatch
+  - previous-session-correction
+linked_lore:
+  - L-2026-05-28-ascend-105949-001
+  - L-2026-05-28-ascend-104716-001
+confidence: 0.9
+git_context:
+  ref: e962981783c7fd66236f8625cdc6067bf48ae51a
+  branch: feat/creator-flow-v1-prep
+  dirty: true

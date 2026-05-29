@@ -1,0 +1,81 @@
+id: L-2026-05-28-ascend-031023-001
+type: milestone
+timestamp: '2026-05-28T03:10:23.769Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Flat-docs pivot — drop manifest concept, fix .atelier/ listing bug
+summary: 'Owner pushed back on the manifest-centric model after testing the just-shipped doc-management UI: "all .atelier files should behave the same... projects probably shouldn''t have a base atelier file." Plus a real bug — the hidden .atelier/ metadata directory was surfacing in the docs list. Pivot landed as commit c479f61. Mostly DELETION: isManifestDoc retired, ^manifest-doc-protected gate retired, DocumentEntry simplified to {path, kind?}, three-group sidebar (DOCUMENT/SLIDES/OTHER DOCS) collapsed to one flat DOCS group, compose-* helpers gained required docPath param, drag-drop retargets to <slug>.atelier, listDocs adds isFile() filter. Plus net-new: + add slide carousel button (v1 scope: create new only), canvas empty state.'
+symbols_touched:
+  - '#doc-management'
+  - '#doc-management-types'
+  - '#compose-video-project'
+  - '#compose-image-project'
+  - '#compose-carousel-project'
+  - '#workspace-create-project'
+  - '#ingest-dispatch'
+  - '#studio-doc-endpoints'
+  - '#studio-doc-sidebar'
+  - '#studio-new-doc-modal'
+  - '#carousel-add-slide-button'
+  - '#mcp-tool-create-doc'
+  - '#mcp-tool-duplicate-doc'
+  - '#mcp-tool-delete-doc'
+  - '#mcp-tool-list-docs'
+  - '#mcp-lib-doc-management'
+symbols_created:
+  - '#workspace-create-project'
+  - '#carousel-add-slide-button'
+  - '#ingest-dispatch-doc-target'
+  - ~no-manifest-doc
+  - ~docs-are-flat
+decisions:
+  - id: TD-2026-05-28-flat-docs
+    decision: Retire the manifest concept entirely. project.atelier becomes a regular doc; empty projects are valid; sidebar is one flat DOCS group.
+    rationale: 'Owner explicit feedback: ''all .atelier files should behave the same... projects probably shouldn''t have a base atelier file.'' The manifest-centric model conflated ''the canvas being edited'' with ''the project''s identity'' and produced exactly the awkward UX distinctions owner pushed back on. Pivot is mostly DELETION.'
+  - id: TD-2026-05-28-docpath-required
+    decision: compose-video/image/carousel helpers gain required docPath parameter (no default)
+    rationale: Post-pivot, compose-* no longer assume project.atelier. Callers (createDoc, drag-drop dispatcher) compute the target slug-based path explicitly. Required-not-defaulted forces every call site to make the choice.
+  - id: TD-2026-05-28-no-active-doc-persistence
+    decision: Active-doc (currently-loaded .atelier) state is in-memory only; not persisted across sessions
+    rationale: Owner picked 'no default — blank canvas until clicked.' Persisting active-doc would re-introduce a default on next load, contradicting that intent. Workspace-level active.yaml stays (workspace navigation) but per-project active doc is ephemeral.
+  - id: TD-2026-05-28-add-slide-toolbar
+    decision: + add slide button lives on the canvas/carousel-doc toolbar, not in the project sidebar's + new doc modal
+    rationale: Slide-add is an action ON a carousel, not a project-level concept. Carousel docs gain the affordance when loaded. NewDocDialog drops its Add-as-slide toggle entirely — cleaner separation.
+  - id: TD-2026-05-28-drag-drop-slug-target
+    decision: Drag-drop ingest writes <slug>.atelier (e.g. img-7346.atelier) instead of project.atelier
+    rationale: 'Multi-file drag-drop becomes natural: each file produces its own doc. Project still ends up with usable content; just multiple docs instead of one with embedded clips.'
+  - id: TD-2026-05-28-listdocs-isfile
+    decision: listDocs filters by statSync.isFile() AND explicitly skips basename === '.atelier'
+    rationale: Defense-in-depth against the hidden .atelier/ metadata directory bug. isFile() catches the case where a fs has it as a dir; the explicit basename skip catches edge cases like symlinks. Both belt-and-braces.
+learnings:
+  - Owner's 'all things equal' framing is a strong simplification heuristic. When you find yourself special-casing one entity ('project.atelier is the manifest'), ask whether the special-casing is load-bearing. In this case it wasn't — the model was simpler without it.
+  - 'Pivoting via team-based parallel execution scales: 13 units across 4 waves, 12 Kit spawns, all parallel where dependencies allowed. The Arky-decompose → Kit-parallel → Scribe+Rune+Aegis+Judge+Probe pattern is now the established workflow for multi-unit refactors on this project.'
+  - 'Truncated subagent reports during parallel waves are common but recoverable: check workspace state directly via git status + grep + test runs rather than waiting for the verbose final report.'
+  - Drifted aspect anchors are EXPECTED after multi-file refactors. paradigm_aspect_drift auto-healed 1 of 19; the remaining 18 need manual re-anchoring or retirement. This is workflow drift, not architectural drift — the aspects' CONCEPTS still hold, just the line ranges they pointed at shifted out of the smart-match window. Filing as separate Scribe sweep.
+  - The 'Add as slide' UX failure was a perfect example of conflating model and affordance. Hiding a checkbox in a modal only-when-carousel makes the action discoverable to no one. Moving slide-add to a context-aware button (only-when-carousel-loaded) restored discoverability without restoring the manifest concept.
+verification:
+  status: pass
+  details:
+    workspace_tests: 1141/1141 across 12 packages (+1 net new)
+    tsc_workspace: exit 0
+    compliance_portal: compliant (^manifest-doc-protected retired)
+    aspect_drift: 18 drifted anchors flagged for separate Scribe sweep (orthogonal)
+tags:
+  - v1.0.x
+  - pivot
+  - simplification
+  - manifest-retirement
+  - team-orchestrated
+  - bug-fix
+linked_lore:
+  - L-2026-05-28-ascend-003430-001
+linked_commits:
+  - c479f61
+  - e78adc7
+confidence: 0.85
+git_context:
+  ref: c479f61c5f33a1f8959c43476a67b53a72ad80dd
+  branch: feat/creator-flow-v1-prep
+  dirty: true

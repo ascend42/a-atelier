@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "description": "CLI tool — validate, preview, render, info commands",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@a-company/atelier-mcp": "workspace:*",
-    "@a-company/atelier-studio": ">=0.25.1",
+    "@a-company/atelier-studio": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@napi-rs/canvas": "^0.1.0",
     "commander": "^13.0.0",

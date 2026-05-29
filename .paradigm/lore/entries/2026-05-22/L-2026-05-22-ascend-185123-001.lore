@@ -1,0 +1,37 @@
+id: L-2026-05-22-ascend-185123-001
+type: milestone
+timestamp: '2026-05-22T18:51:23.447Z'
+duration_minutes: 120
+author: ascend
+title: Full per-component aspect coverage — 0 → 305 aspects across all 137 components
+summary: 'Corrected an earlier misread and delivered the project''s hard rule: EVERY component carries >=1 aspect, multi-responsibility ones several. Started from 4 cross-cutting aspects (wrong interpretation steered by generic advisor guidance) and fanned out per-component coverage across all 12 .purpose files. Approach: core authored as the gold-standard exemplar (11 components, 24 aspects), confirmed depth with the user, then 11 packages via file-write-only builders (each edits its own .purpose, no shared-index race; orchestrator does central reindex+validate+commit per wave). Wave A types/schema/math/canvas (+74), Wave B svg/lottie/video/react (+61), Wave C cli/mcp/studio (+131), plus 11 root package-level aspects. Final: 137 components, 305 aspects, coverage check confirms 0 uncovered. Each aspect captures a NON-OBVIOUS thing to remember (invariants, hardcoded limits, ordering rules, edge cases, failure modes, gotchas) with real verified code anchors + appliesTo binding — not vague restatements. Builders corrected several of my brief inaccuracies against real source (binary-search not Newton easing, analytic-not-integrator spring, no atelier-export command) and surfaced real architectural gotchas as aspects (mcp tools mutate-in-place without store.set so onChange rarely fires; svg combined-shadow-tint drops tint; only document.ts validates post-mutation). 6 commits: 38221e0 core, cd12230 waveA, 70d8d35 waveB, b6a5479 waveC, f1289ee root.'
+symbols_touched:
+  - ~layer-tag-isolation
+  - ~core-engine-no-rendering
+  - ~mcp-shared-store-multi-transport
+  - ~studio-embeddable-widget
+  - '#atelier-core'
+  - '#atelier-mcp'
+commit: f1289ee
+learnings:
+  - 'This project''s aspect convention is STRICTER than generic Paradigm theory: the hard rule is >=1 aspect PER COMPONENT (most components several)'
+  - not just multi-site cross-cutting rules. The advisor's generic 'aspects = only multi-site' steer was wrong for this project — defer to the project owner's stated convention. Per-component aspect authoring fans out cleanly via file-write-only builders editing each package's own .purpose (no paradigm CLI/MCP
+  - no git) with central reindex+validate+commit — avoids the shared scan-index/index race. paradigm_reindex has a one-call LAG when many aspects are added (first call shows stale count
+  - second call picks them up) — always reindex twice and verify the count moved. paradigm_aspect_suggest_scan is NOT implemented (returns error) — aspects are hand-authored. Coverage is verifiable with a script that diffs component keys vs the union of aspect appliesTo targets per .purpose. Hand-written aspect blocks index identically to MCP-tool-added ones as long as the YAML shape (id→description/tags/anchors/enforcement/appliesTo) matches.
+tags:
+  - paradigm
+  - aspects
+  - full-coverage
+  - symbols-pass
+  - multi-agent
+linked_commits:
+  - '38221e0'
+  - cd12230
+  - 70d8d35
+  - b6a5479
+  - f1289ee
+confidence: 0.92
+git_context:
+  ref: f1289ee50ce8cec63b6755147ab47815eafb5e4a
+  branch: main
+  dirty: true

@@ -1,0 +1,10 @@
+id: T-2026-05-10-015
+blurb: Cross-platform skills — Vercel Labs .skill format alongside MCP for portability across AI runtimes
+priority: low
+status: open
+tags:
+  - phase-3
+  - mcp
+  - skills
+  - dx
+created: '2026-05-10T18:23:26.307Z'

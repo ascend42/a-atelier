@@ -1,0 +1,31 @@
+id: TD-2026-05-10-078
+timestamp: '2026-05-10T18:22:44.679Z'
+title: VideoProject as local folder + .atelier file — local-first, git-trackable
+decision: >-
+  Each video project lives in a folder: source.mp4 (original, never touched), project.atelier (the composition),
+  transcript.json (Whisper output), cuts.json (silence removal cut list), export/ (rendered outputs). The .atelier file
+  is the single source of truth for the edit.
+rationale: >-
+  Local-first fits Atelier's existing file-based model. Git-trackable means version history is free. Separating source
+  from project file means the original footage is never destructively modified. Agents read/write project.atelier via
+  MCP tools — same interface as today.
+participants:
+  - id: ascend
+    role: human
+    stance: supported
+  - id: architect
+    role: agent
+    stance: proposed
+alternatives_considered:
+  - option: Database-backed project store
+    rejected_because: Adds infrastructure dependency, breaks local-first model, harder for agents to reason about
+  - option: Single file containing video data
+    rejected_because: Binary video files don't belong in .atelier YAML — keep assets external, referenced by path
+symbols_affected:
+  - '#video-project'
+  - '#atelier-edit-cli'
+status: active
+tags:
+  - video-project
+  - local-first
+  - architecture

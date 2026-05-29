@@ -1,0 +1,45 @@
+version: 1.0.0
+description: |
+  Claude Code agent wrappers for the three Atelier content-generation
+  personas (Quill, Lux, Iris). Each .claude/agents/<name>.md is a thin
+  wrapper around the canonical persona definition under
+  .paradigm/personas/<id>/. The agent files declare an MCP tool allowlist
+  (real tool names from packages/mcp/src/tools/, plus the not-yet-built
+  atelier_mind_map_query stub that ships in Phase 3 delegation B).
+context:
+  - 'Wrappers are inert markdown + YAML frontmatter only — no scripts (TD-229).'
+  - 'Tool names use the Claude Code convention mcp__<server>__<tool>; the Atelier MCP server registers as "atelier" per packages/mcp/src/index.ts.'
+  - 'The audio pipeline (trim, transcribe, captions) is NOT MCP — Iris shells out to the CLI verbs in packages/cli/src/commands/ via Bash and reads transcripts/*.json + cuts.json directly.'
+components:
+  claude-agents-bundle:
+    description: The three Atelier content-generation persona wrappers (#quill-showrunner, #lux-cinematographer, #iris-composer) exposed as Claude Code invokable agents under .claude/agents/. Each wrapper references the canonical persona.yaml and system-prompt.md to prevent drift.
+    file: .claude/agents/
+aspects:
+  agent-files-thin-wrappers:
+    description: Every .claude/agents/<name>.md links back to its canonical .paradigm/personas/<id>/persona.yaml and system-prompt.md as the source of truth. The wrapper holds only the YAML frontmatter (tool allowlist, model preference, description) plus a body that mirrors the system prompt verbatim. Drift between the wrapper and the canonical definition is the antipattern this aspect guards against.
+    tags:
+      - convention
+      - persona
+      - source-of-truth
+    anchors:
+      - .claude/agents/atelier-quill.md
+      - .claude/agents/atelier-lux.md
+      - .claude/agents/atelier-iris.md
+      - .paradigm/personas/quill/persona.yaml
+      - .paradigm/personas/lux/persona.yaml
+      - .paradigm/personas/iris/persona.yaml
+    enforcement: wrapper references canonical persona; update both in the same delegation
+    appliesTo: ["#claude-agents-bundle"]
+  agent-tool-allowlist-matches-real-mcp:
+    description: Every MCP tool listed in a .claude/agents/<name>.md frontmatter must resolve to an actual tool in packages/mcp/src/tools/ (verified by grep). The one intentional exception is atelier_mind_map_query, which is listed-but-not-yet-built — it ships in Phase 3 delegation B and Claude Code surfaces the missing tool gracefully until then. No persona may cite aspirational tool names.
+    tags:
+      - convention
+      - integration
+      - mcp
+    anchors:
+      - .claude/agents/atelier-quill.md
+      - .claude/agents/atelier-lux.md
+      - .claude/agents/atelier-iris.md
+      - docs/keynote/paradigm/phase-3-reconciliation-notes.md
+    enforcement: grep tool names against packages/mcp/src/tools/ before adding to frontmatter
+    appliesTo: ["#claude-agents-bundle"]

@@ -1,0 +1,39 @@
+id: TD-2026-05-26-275
+timestamp: '2026-05-26T06:10:49.271Z'
+title: 'Atelier–Paradigm relationship: standalone surface, Paradigm-native agents, deepening over time'
+decision: >-
+  Atelier is intentionally usable by creators who have no prior Paradigm or nevr.land setup — the skill installs and an
+  agent team appears, no prerequisites. However, the agents that ship (Quill/Lux/Iris and successors) are real Paradigm
+  personas fine-tuned for Atelier's creator flow, not generic agents. The architectural relationship deepens over time
+  as Paradigm/nevr.land infrastructure (notebooks, ambient learning, agent registry, hosted tier, recipe marketplace) is
+  leveraged — with explicit room for monetization paths (premium tiers, marketplace, hosted subscriptions) emerging as
+  the flow tightens.
+rationale: >-
+  Owner wants Atelier accessible standalone to maximize creator reach without forcing Paradigm adoption, but also wants
+  the deep Paradigm integration that already exists architecturally (personas/notebooks/ambient learning/nevr.land) to
+  be the substrate rather than building parallel infrastructure. This is a dual-citizenship stance: open surface,
+  Paradigm-native engine. Refines and sharpens Decision B (TD-2026-05-26-363) rather than reversing it.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Fully decoupled — Atelier agents are generic, not Paradigm-native
+    rejected_because: >-
+      Wastes the Paradigm machinery the owner authored and that already serves this exact problem (learning, notebooks,
+      distribution)
+  - option: Tightly branded — 'Atelier by Paradigm', creator must understand the ecosystem
+    rejected_because: Heavy on-ramp for a UGC creator who just wants to talk and ship; reverses the rejection of B1
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - agents
+  - paradigm
+  - nevr-land
+  - monetization
+  - architecture

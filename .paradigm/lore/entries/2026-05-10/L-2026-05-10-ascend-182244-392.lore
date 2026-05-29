@@ -1,0 +1,14 @@
+id: L-2026-05-10-ascend-182244-392
+type: insight
+timestamp: '2026-05-10T18:22:44.680Z'
+author: ascend
+title: Decision TD-2026-05-10-078 recorded
+summary: Companion lore entry for decision record TD-2026-05-10-078. See .paradigm/decisions/TD-2026-05-10-078.yaml.
+symbols_touched:
+  - '#video-project'
+  - '#atelier-edit-cli'
+references:
+  decision_id: TD-2026-05-10-078
+tags:
+  - companion-lore
+  - decision-reference

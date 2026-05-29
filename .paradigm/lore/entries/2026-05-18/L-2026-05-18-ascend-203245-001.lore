@@ -1,0 +1,122 @@
+id: L-2026-05-18-ascend-203245-001
+type: milestone
+timestamp: '2026-05-18T20:32:45.134Z'
+duration_minutes: 180
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: v1 push — 13/15 tasks shipped, full Atelier University pack v0.1.0, foundation for live LLM↔human bridge
+summary: 'Multi-agent v1 push for "locally launchable Atelier app" goal. Started with cold UX review (advisor + architect + reviewer + DX), corrected the misread that no Atelier app existed (the CLI''s atelier studio command already wraps the Studio widget in a 703-LOC inline app — the gap is creator-grade polish, not greenfield app scaffolding). 11 commits this session across 8 parallel agent tasks (orchestrated 6 paradigm:builder agents in 4 rounds + 4 pack tracks authored by me). Pack v0.1.0 shipped end-to-end — ATEL-001 (Hello Atelier) + ATEL-101 (Document Model Fundamentals) + ATEL-201 (Authoring via MCP) + ATEL-301 (Visual System), 24 entries validated. Studio v1 foundation: three load-bearing bugs fixed (autoplay-on-load, autosave silent-failure, undo state-reset), localhost security hardened (127.0.0.1 bind + Origin check via new ^localhost-only gate), welcome.atelier first-run scaffold prevents the empty-state dead-end, layer-type picker exposes Text/Shape/Image/Handle/Page-Number from the GUI, recipe overlay_rules schema landed as Phase 1.5 with translator + MCP convenience tools, atelier export-image ships single-frame PNG output, DocumentStore.onChange + AtelierStudio.applyMutation foundation for the live mutation bridge (the WS bridge wiring is the in-flight final task). Tests went 578 → 633+ (one Round 4 task still completing). Two remaining: #2 image drag-drop onto canvas (Builder G completed uncommitted; held pending Builder H), #10 WS bridge + MCP-over-WS transport (Builder H still running — the v1 close).'
+symbols_touched:
+  - '#cli-studio'
+  - '#cli-export-image'
+  - '#canvas-panel'
+  - '#layer-panel'
+  - '#studio-widget'
+  - '#document-store'
+  - '#studio-recipe'
+  - '#recipe-lib'
+  - '#mcp-overlay'
+  - '#welcome-template'
+  - '#atelier-university'
+  - '#testing-strategy'
+  - '#overlay-translator'
+  - ^localhost-only
+symbols_created:
+  - '#atelier-university'
+  - '#welcome-template'
+  - '#cli-export-image'
+  - '#overlay-translator'
+  - '#mcp-overlay'
+  - '#testing-strategy'
+  - '#bridge-protocol'
+  - '#ws-transport'
+  - '#studio-bridge'
+  - '#image-drop-helper'
+  - ^localhost-only
+files_created:
+  - .paradigm/university/pack.yaml
+  - .paradigm/university/content/notes/N-atel-001-what-is-atelier.md
+  - .paradigm/university/content/notes/N-atel-001-install-and-launch.md
+  - .paradigm/university/content/notes/N-atel-001-first-render.md
+  - .paradigm/university/content/quizzes/Q-atel-001-orientation.yaml
+  - .paradigm/university/content/paths/LP-atel-001.yaml
+  - .paradigm/university/content/notes/N-atel-101-the-atelier-format.md
+  - .paradigm/university/content/notes/N-atel-101-layers.md
+  - .paradigm/university/content/notes/N-atel-101-states-and-deltas.md
+  - .paradigm/university/content/notes/N-atel-101-easings.md
+  - .paradigm/university/content/quizzes/Q-atel-101-document-model.yaml
+  - .paradigm/university/content/paths/LP-atel-101.yaml
+  - .paradigm/university/content/notes/N-atel-201-mcp-overview.md
+  - .paradigm/university/content/notes/N-atel-201-authoring-tools.md
+  - .paradigm/university/content/notes/N-atel-201-visual-and-effects.md
+  - .paradigm/university/content/notes/N-atel-201-patterns.md
+  - .paradigm/university/content/quizzes/Q-atel-201-mcp-authoring.yaml
+  - .paradigm/university/content/paths/LP-atel-201.yaml
+  - .paradigm/university/content/notes/N-atel-301-shapes-and-text.md
+  - .paradigm/university/content/notes/N-atel-301-images-and-video.md
+  - .paradigm/university/content/notes/N-atel-301-effects.md
+  - .paradigm/university/content/notes/N-atel-301-composition-and-overlays.md
+  - .paradigm/university/content/quizzes/Q-atel-301-visual-system.yaml
+  - .paradigm/university/content/paths/LP-atel-301.yaml
+  - packages/cli/templates/welcome.atelier
+  - packages/cli/src/commands/export-image.ts
+  - packages/mcp/src/tools/overlays.ts
+  - .paradigm/specs/v1-testing-strategy.md
+  - packages/cli/src/__snapshots__/index.test.ts.snap
+decisions:
+  - id: TD-v1-app-already-exists
+    decision: atelier studio CLI command is the v1 app — extend the 703-LOC inline app for v1 polish rather than scaffolding a new apps/studio package
+    rationale: Cold reviewer caught that the supposed gap (no Atelier app) was wrong — the app exists; the v1 problem is creator-grade polish, not greenfield app scaffolding. Extracting inline-app to apps/studio package adds ~half-day of scaffolding cost; deferred to v1.1 once the surface is stable.
+  - id: TD-overlays-as-tagged-text-layers
+    decision: Handle and page-number overlays modeled as parameterized TextVisual layers with tags:[overlay], NOT as new layer types
+    rationale: Architect call — keeps v1 contained, leverages existing TextVisual+TextStyle primitives, plugs into the layer-tag isolation invariant (silence-trim/caption/overlay namespaces) that already powers detected-vs-user-edited.
+  - id: TD-in-memory-bridge-not-file-watch
+    decision: LLM↔human mutation channel is in-memory WS bridge via DocumentStore.onChange + Studio.applyMutation, not file-watch on the .atelier file
+    rationale: 'Advisor pushback against file-watch: reloading the doc on file change resets selection, undo history, scroll position — destroys the live-attribution feel. In-memory bridge preserves UI state; file save is downstream of in-memory edit.'
+  - id: TD-overlay-rules-promoted-to-phase-1-5
+    decision: Promote overlay_rules from reserved Phase 3 to first-class Phase 1.5; other reserved fields (caption_highlight, transition_kit, palette, audio_policy, aspect_targets) remain opaque
+    rationale: v1 headline use case (carousel posts with handle + 01/05) requires overlay_rules to be real now. Other Phase 3 fields don't have current consumers so stay reserved.
+  - id: TD-pack-v0-1-0-scope
+    decision: Pack v0.1.0 ships ATEL-001+101+201+301; 401/501/601/701 deferred to v0.2.0
+    rationale: Four-track v0.1.0 covers what a reader needs to USE Atelier today. ATEL-201 (MCP authoring) kept in v0.1.0 as the AI-native differentiator — advisor pushback against my earlier waver.
+  - id: TD-testing-strategy-phased
+    decision: v1 ships with vitest unit tests + welcome.atelier doc-structure snapshot. Pixel snapshot (pixelmatch) and Playwright e2e deferred to v0.2 with documented activation criteria
+    rationale: Pixel snapshots need a deterministic CI runner with installed fonts; Playwright adds 30MB+ install. Both are real but not v1-blockers. Doc-structure snapshot catches schema drift, default-value changes, easing-output regressions — covers the highest-value regression class for the cost of a vitest snapshot file.
+learnings:
+  - 'Cold reviewer agent caught a load-bearing misread: I had assumed ''no Atelier app exists'' based on packages/studio being a widget. The reviewer inspected packages/cli/src/commands/studio.ts and found a 703-LOC inline Hono+browser app already wrapping the widget. Five of my eight ''v1 blockers'' were already built or partially built. Trust but verify on cold reads.'
+  - Parallel paradigm:builder agents in background mode are highly effective when file boundaries are clean — Round 1 shipped 5 tasks in ~30 min wall clock (Builders A+B + me on pack). When file boundaries overlap (Builder G + H both touching packages/cli/src/commands/studio.ts), expect typecheck red across the in-flight period until both commit.
+  - 'Builders running near their token budget often complete the work but skip the commit. Workflow: builder modifies files → tests pass → token budget exhausted before commit. Orchestrator (me) needs to inspect git status, run typecheck/test, and commit on the builder''s behalf. Use a per-builder commit-message template in the brief so this is mechanical.'
+  - 'YAML quizzes with inline `{x: 0, y: 0}` or `Layer.scale.x: 2.0` syntax inside choice strings fail to parse as compact mappings. Quote them. The university validator catches the resulting ''step references entry that does not exist'' (because the unparseable quiz file isn''t indexed). Quick to diagnose once you parse the YAML directly.'
+  - 'The paradigm university index caches and needs a CLI-mutating command (e.g. add note) to rebuild after a manual write — `validate` alone doesn''t trigger the rebuild. Workaround: add-then-remove a throwaway note when validating fresh hand-authored content.'
+  - advisor agent is one independent reviewer, NOT 'the team' — paradigm_agent_list returns 13 active agents (architect, reviewer, dx-lens via general-purpose, etc.) which is the actual team. Multi-agent consultation requires explicit Agent dispatches in parallel, not advisor().
+verification:
+  status: partial
+  details:
+    build: pass
+    typecheck: fail-in-flight (Builder H imports added without wiring; will pass once H lands)
+    tests: 633/633 at last full run (will be 641+ once H lands)
+    compliance: pass before this entry; lore entry now satisfies stop hook
+tags:
+  - v1
+  - milestone
+  - multi-agent
+  - atelier-studio
+  - university-pack
+  - live-mutation-bridge
+linked_commits:
+  - 77d5b47
+  - 611ed97
+  - 880ee0c
+  - d427461
+  - 93f90ff
+  - d361eb6
+  - '8398137'
+  - 0f33ae2
+  - 0219d28
+  - 2f33ffc
+git_context:
+  ref: 2f33ffc614302da4f1b259553dc121a61b6176fc
+  branch: main
+  dirty: true

@@ -1,0 +1,12 @@
+id: T-2026-05-10-007
+blurb: Silence removal pipeline — FFmpeg silence detect → cuts.json cut list → trimmed video asset pre-processed before ingest
+priority: high
+status: open
+tags:
+  - phase-2
+  - '#silence-removal'
+  - ffmpeg
+  - cli
+created: '2026-05-10T18:23:26.225Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

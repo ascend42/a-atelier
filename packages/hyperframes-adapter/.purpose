@@ -1,0 +1,41 @@
+version: 0.0.1
+description: v2 Atelier renderer bridge — emits Hyperframes projects from DESIGN/SCRIPT/STORYBOARD artifacts + asset bindings, then drives @hyperframes/producer to render MP4/WebM/MOV/PNG-sequence. The replacement for the deprecated packages/canvas + packages/studio + atelier render path.
+context:
+  - v2 pivot — see docs/v2-hyperframes-migration.md + TD-2026-05-28-097
+  - Wraps Apache 2.0 @hyperframes/producer (HTML/CSS-as-composition framework)
+  - Source of truth for the new Hyperframes integration surface
+  - Replaces ~28k LOC of v1 composition + render stack with ~3-5k LOC of emitters + thin producer wrapper
+components:
+  hyperframes-adapter:
+    description: 'The v2 Atelier renderer bridge. Public API surface: scaffoldHyperframesProject (creates Hyperframes project dir from a doc-shaped input), runRender (thin wrapper over @hyperframes/producer''s createRenderJob + executeRenderJob). Composed of 4 sub-components.'
+    type: package
+    components:
+      - '#design-to-css'
+      - '#storyboard-to-html'
+      - '#asset-injector'
+      - '#scaffolder'
+      - '#producer-runner'
+    file: src/index.ts
+  design-to-css:
+    description: 'Translate a DesignArtifact brand slice (palette + typography) into a :root CSS variables stylesheet for Hyperframes index.html. Pure function; no I/O. Naming convention: --brand-palette-&lt;role&gt;, --brand-font-&lt;usage&gt;.'
+    type: emitter
+    file: src/design-to-css.ts
+  storyboard-to-html:
+    description: 'Produce a minimal Hyperframes index.html from a video filename + transcript segments + optional brand slice. Emits a single &lt;video&gt; with native audio + per-caption divs with data-start/data-duration timing. Pure function; no I/O. v0 scope: single-clip; full storyboard emission is v1.0 follow-up.'
+    type: emitter
+    file: src/storyboard-to-html.ts
+  asset-injector:
+    description: Copy or symlink creator media files into a Hyperframes project's assets/ dir. Symlinks by default (zero-copy fast iteration); falls back to copy on cross-filesystem failures. Idempotent — unlinks any prior dest before linking so re-scaffolding doesn't EEXIST.
+    type: io
+    file: src/asset-injector.ts
+  scaffolder:
+    description: 'Materialize a complete Hyperframes project from a doc-shaped input. Composes storyboard-to-html + asset-injector + meta.json emission. Idempotent: re-running over an existing scaffold updates index.html + meta.json + asset symlinks but never touches Hyperframes-managed dirs (renders/, snapshots/).'
+    type: orchestrator
+    components:
+      - '#storyboard-to-html'
+      - '#asset-injector'
+    file: src/scaffolder.ts
+  producer-runner:
+    description: Thin wrapper around @hyperframes/producer's createRenderJob + executeRenderJob with Atelier-sensible defaults (MP4 H.264 at quality:high, integer fps converted to Hyperframes rational). Surfaces only the inputs the agent team works with (project dir, output path, dimensions, fps). Exposes progress + abort signal.
+    file: src/producer-runner.ts
+    type: adapter

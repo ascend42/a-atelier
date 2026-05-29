@@ -1,14 +1,34 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { createWriteStream, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { join, isAbsolute } from "node:path";
+import { homedir, tmpdir } from "node:os";
+import { pipeline } from "node:stream/promises";
+import { Readable } from "node:stream";
 import type { VideoTranscript } from "@a-company/atelier-types";
 
-/** Whisper model selection (size/quality tradeoff) */
+/**
+ * Whisper model selection (size/quality tradeoff).
+ *
+ * The set mirrors whisper.cpp's published model registry on HuggingFace
+ * (https://huggingface.co/ggerganov/whisper.cpp). Quantized variants and
+ * the v3-turbo line are first-class — creators get the best local-quality
+ * tradeoff without needing to know the model-zoo URL by heart.
+ *
+ * Note: the type is intentionally open to `string` via the fallback union so a
+ * creator can pass a future model name (e.g. a new quant variant) without us
+ * having to ship a code change. `resolveWhisperModelPath` will attempt to
+ * resolve any string against the cache + HuggingFace registry.
+ */
 export type WhisperModel =
   | "tiny" | "tiny.en"
   | "base" | "base.en"
   | "small" | "small.en"
   | "medium" | "medium.en"
-  | "large-v3";
+  | "large-v3"
+  | "large-v3-turbo"
+  | "large-v3-turbo-q5_0"
+  | "large-v3-q5_0"
+  | (string & {});
 
 export interface WhisperOptions {
   /** Model size (default: "base.en") */
@@ -17,6 +37,11 @@ export interface WhisperOptions {
   language?: string;
   /** Explicit path to the model file — overrides model lookup by name */
   modelPath?: string;
+  /**
+   * Optional progress callback for model download (bytes received, total bytes
+   * when known). Surfaced as a one-time download on first use of any model name.
+   */
+  onProgress?: (received: number, total: number | null) => void;
 }
 
 /** Backend that produced a transcript run */
@@ -35,31 +60,220 @@ export async function probeWhisper(): Promise<WhisperBackend> {
 }
 
 /**
+ * Standard whisper.cpp cache directory — `~/.cache/whisper.cpp/models/`.
+ * Matches the convention upstream tools (`whisper.cpp/models/download-ggml-model.sh`)
+ * use, so a model cached by one tool is found by another.
+ */
+export function whisperCacheDir(): string {
+  return join(homedir(), ".cache", "whisper.cpp", "models");
+}
+
+/** Build the canonical cache path for a model name. */
+export function modelCachePath(model: string): string {
+  return join(whisperCacheDir(), `ggml-${model}.bin`);
+}
+
+/**
+ * Resolve a `WhisperModel` value to an absolute file path on disk.
+ *
+ * Lookup order:
+ *   1. Absolute path → return as-is if it exists.
+ *   2. Model name → `~/.cache/whisper.cpp/models/ggml-<name>.bin` → return if present.
+ *   3. Missing → invoke `downloadWhisperModel` (HuggingFace public registry),
+ *      stream into cache, return resolved path.
+ *
+ * Local-only at runtime after the first download. No online service is
+ * called per-invocation. Per TD-2026-05-27-723 (local-only by default).
+ */
+export async function resolveWhisperModelPath(
+  model: string,
+  onProgress?: (received: number, total: number | null) => void,
+): Promise<string> {
+  // (1) Absolute path passthrough — supports a creator overriding the default
+  // cache location (e.g. shared models on a mounted drive).
+  if (isAbsolute(model)) {
+    if (!existsSync(model)) {
+      throw new Error(`whisper model file not found at absolute path: ${model}`);
+    }
+    return model;
+  }
+
+  // (2) Try the standard cache path.
+  const cached = modelCachePath(model);
+  if (existsSync(cached)) return cached;
+
+  // (3) Download from HuggingFace, surface progress, then return cache path.
+  await downloadWhisperModel(model, onProgress);
+  if (!existsSync(cached)) {
+    throw new Error(
+      `whisper model download appeared to succeed but the file is missing at ${cached}`,
+    );
+  }
+  return cached;
+}
+
+/**
+ * Download a whisper.cpp model from the HuggingFace public registry into the
+ * local cache. Uses `fetch` + streaming pipeline (no new top-level dep).
+ *
+ * Source: https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-<model>.bin
+ * — the canonical public mirror upstream whisper.cpp tooling targets. No auth
+ * required, no telemetry — a single one-shot fetch on first use.
+ */
+export async function downloadWhisperModel(
+  model: string,
+  onProgress?: (received: number, total: number | null) => void,
+): Promise<string> {
+  const dir = whisperCacheDir();
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  const dest = modelCachePath(model);
+  const url = `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-${model}.bin`;
+
+  // Use a .part file then rename, so an aborted download doesn't masquerade
+  // as a complete cached model on the next run.
+  const partPath = `${dest}.part`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(
+      `failed to download whisper model "${model}" (HTTP ${res.status} ${res.statusText}) ` +
+      `from ${url} — check the model name`,
+    );
+  }
+  if (!res.body) {
+    throw new Error(`whisper model download produced no body (model: ${model})`);
+  }
+
+  const totalHeader = res.headers.get("content-length");
+  const total = totalHeader ? parseInt(totalHeader, 10) : null;
+
+  let received = 0;
+  // Wrap the WHATWG ReadableStream into a Node Readable for pipeline. Tap the
+  // stream for progress accounting via a small Transform-ish pass-through.
+  const nodeStream = Readable.fromWeb(res.body as unknown as import("node:stream/web").ReadableStream);
+  nodeStream.on("data", (chunk: Buffer) => {
+    received += chunk.length;
+    if (onProgress) onProgress(received, total);
+  });
+
+  await pipeline(nodeStream, createWriteStream(partPath));
+
+  // Atomic-ish rename so a partial file never has the canonical name.
+  // Cross-platform rename through fs (synchronous since the file just closed).
+  const { renameSync, unlinkSync } = await import("node:fs");
+  if (existsSync(dest)) {
+    try { unlinkSync(dest); } catch { /* swallow */ }
+  }
+  renameSync(partPath, dest);
+
+  return dest;
+}
+
+/**
  * Run whisper.cpp on a source file and return the raw JSON stdout.
  * Caller passes to parseWhisperCppJson() to get a VideoTranscript.
  *
  * Note: whisper-cli writes JSON to stdout when given --output-json and "-"
  * as the output destination. Some builds always write to a file with the
  * `.json` suffix appended to the input path; we handle both.
+ *
+ * Model resolution: if `options.modelPath` is set, it's passed through. Else
+ * `options.model` (default `base.en`) is resolved via `resolveWhisperModelPath`,
+ * downloading from the HuggingFace public registry on first use. Once the
+ * model is cached, no network call is made.
  */
 export async function runWhisperCpp(
   sourcePath: string,
   options: WhisperOptions = {},
 ): Promise<string> {
-  const model = options.modelPath ?? options.model ?? "base.en";
+  const modelName = options.modelPath ?? options.model ?? "base.en";
+  // resolveWhisperModelPath handles: absolute path passthrough, cache lookup,
+  // and one-time download. Always pass the RESULT to whisper-cli as an
+  // explicit path so we don't depend on whisper-cli's own model resolution.
+  const resolvedModelPath = await resolveWhisperModelPath(modelName, options.onProgress);
 
-  const args = [
-    sourcePath,
-    "--model", model,
-    "--output-json",
-    "--word-thold", "0.01",  // emit word-level timestamps
-    "--print-progress", "false",
-  ];
-  if (options.language) {
-    args.push("--language", options.language);
+  // whisper.cpp can only ingest WAV. For any other container (mp4/mov/webm/m4a/...)
+  // we pre-extract to a 16kHz mono PCM WAV via ffmpeg (the format whisper expects).
+  // Pure local; no online dependency. ffmpeg is a separate install (brew install ffmpeg).
+  const { audioPath, tempDir } = await extractAudioForWhisper(sourcePath);
+
+  try {
+    const args = [
+      audioPath,
+      "--model", resolvedModelPath,
+      "--output-json-full",   // word-level timestamps in the JSON output
+      "--word-thold", "0.01",
+      "--print-progress", "false",
+    ];
+    if (options.language) {
+      args.push("--language", options.language);
+    }
+
+    const stdout = await runCaptureStdout("whisper-cli", args);
+
+    // whisper-cli historically writes the JSON to a file (<input>.json),
+    // not stdout. If the sidecar file exists, prefer it; otherwise fall back
+    // to stdout (some forks/options emit there).
+    const jsonSidecar = `${audioPath}.json`;
+    if (existsSync(jsonSidecar)) {
+      return readFileSync(jsonSidecar, "utf-8");
+    }
+    return stdout;
+  } finally {
+    if (tempDir) {
+      try { rmSync(tempDir, { recursive: true, force: true }); } catch { /* swallow */ }
+    }
+  }
+}
+
+/**
+ * Ensure we hand whisper-cli a WAV file. If the source is already WAV, pass through.
+ * Otherwise extract via ffmpeg into a tempdir we control + cleanup ourselves.
+ * Local-only — ffmpeg is the system tool, no network.
+ */
+async function extractAudioForWhisper(
+  sourcePath: string,
+): Promise<{ audioPath: string; tempDir: string | null }> {
+  const lower = sourcePath.toLowerCase();
+  if (lower.endsWith(".wav")) return { audioPath: sourcePath, tempDir: null };
+
+  if (!(await commandExists("ffmpeg"))) {
+    throw new Error(
+      `ffmpeg not found on PATH. Whisper.cpp only ingests WAV; non-WAV sources ` +
+      `(${sourcePath}) need ffmpeg to extract audio. Install with: brew install ffmpeg.`,
+    );
   }
 
-  return runCaptureStdout("whisper-cli", args);
+  const tempDir = mkdtempSync(join(tmpdir(), "atelier-whisper-"));
+  const audioPath = join(tempDir, "audio.wav");
+
+  // 16kHz mono PCM s16le — exactly what whisper.cpp expects internally.
+  // `-y` overwrites if a stale file somehow exists; `-loglevel error` keeps stderr quiet.
+  await runOk("ffmpeg", [
+    "-loglevel", "error",
+    "-y",
+    "-i", sourcePath,
+    "-ar", "16000",
+    "-ac", "1",
+    "-c:a", "pcm_s16le",
+    audioPath,
+  ]);
+
+  return { audioPath, tempDir };
+}
+
+/** Run a command, throw on non-zero exit. Stdout/stderr discarded. */
+async function runOk(cmd: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const p = spawn(cmd, args, { stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    p.stderr?.on("data", (chunk) => { stderr += chunk.toString(); });
+    p.on("error", reject);
+    p.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`${cmd} exited ${code}: ${stderr.trim() || "(no stderr)"}`));
+    });
+  });
 }
 
 /**
@@ -190,3 +404,4 @@ function runCaptureStdout(cmd: string, args: string[]): Promise<string> {
     });
   });
 }
+

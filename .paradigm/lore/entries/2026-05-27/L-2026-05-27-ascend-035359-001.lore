@@ -1,0 +1,84 @@
+id: L-2026-05-27-ascend-035359-001
+type: agent-session
+timestamp: '2026-05-27T03:53:59.534Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Phase 3 core build: Claude Code agents, mind-map stub, atelier init'
+summary: 'Completed the three Phase 3 delegations that close the core build before raw creator testing. Delegation A wired Quill/Lux/Iris as invokable Claude Code agents via .claude/agents/*.md files and reconciled persona.yaml + system-prompt.md tool references against the real MCP surface. Delegation B built the minimum-viable atelier_mind_map_query MCP tool (~11KB) for local-only slot resolution with portal gate registration, plus reconciled two stale skill markdown files. Delegation C added atelier init command for first-run creator setup (Ambient/Explicit choice, learning-mode.yaml write, scaffold call-through, mind-map directory + README, optional git init). Workspace tests now: schema 80, mcp 175, cli 217 — all passing. Compliance clean (post anchor re-materialization). The team is now ready for raw end-to-end content-creation testing.'
+symbols_touched:
+  - '#quill-showrunner'
+  - '#lux-cinematographer'
+  - '#iris-composer'
+  - '#claude-agents-bundle'
+  - '#mcp-mind-map'
+  - ^valid-mind-map-query
+  - '#cli-init'
+  - '#learning-mode-io'
+  - '#cli-artifacts'
+  - '#artifact-templates'
+symbols_created:
+  - '#claude-agents-bundle'
+  - '#mcp-mind-map'
+  - ^valid-mind-map-query
+  - '#cli-init'
+  - '#learning-mode-io'
+files_created:
+  - .claude/agents/atelier-quill.md
+  - .claude/agents/atelier-lux.md
+  - .claude/agents/atelier-iris.md
+  - .claude/.purpose
+  - packages/mcp/src/tools/mind-map.ts
+  - packages/cli/src/commands/init.ts
+  - packages/cli/src/lib/learning-mode.ts
+  - docs/keynote/paradigm/phase-3-reconciliation-notes.md
+files_modified:
+  - .paradigm/personas/quill/persona.yaml
+  - .paradigm/personas/lux/persona.yaml
+  - .paradigm/personas/iris/persona.yaml
+  - .paradigm/personas/quill/system-prompt.md
+  - .paradigm/personas/lux/system-prompt.md
+  - .paradigm/personas/iris/system-prompt.md
+  - .paradigm/personas/iris/skills/apply-recipe-to-document.md
+  - .paradigm/personas/iris/skills/run-silence-trim-and-caption.md
+  - packages/mcp/src/index.ts
+  - packages/mcp/.purpose
+  - packages/cli/src/cli.ts
+  - packages/cli/src/index.ts
+  - packages/cli/src/index.test.ts
+  - packages/cli/.purpose
+  - portal.yaml
+learnings:
+  - 'Persona-cited MCP tools didn''t match the real surface — 7 names didn''t exist, 1 misnamed. Resolution: rewrite persona references to real tool names; audio pipeline (silence-trim/transcribe/captions) routed to CLI shell-out rather than duplicating as MCP tools.'
+  - Claude Code agents load from .claude/agents/<name>.md with mcp__<server>__<tool> frontmatter convention (matched settings.local.json pattern). Inert markdown wrappers around persona system prompts — no new packaging mechanism needed.
+  - Adding imports at the top of an existing file shifts line numbers and breaks aspect anchors. Both Delegation B and C touched files with anchors — B's drift was real (had to null content hashes for re-materialization); C avoided it because the cli.ts anchors weren't line-pinned. Future builders should preemptively check for anchor drift when inserting imports.
+  - Mind-map stub is intentionally minimal — pure read against local disk with extension-based kind matching, mtime sort, optional hint filtering. Phase 4 will add ingestion/indexing/curation; the stub form unblocks Lux and Iris slot binding without committing to a storage layer.
+verification:
+  status: pass
+  details:
+    schema_tests: 80 passed
+    mcp_tests: 175 passed
+    cli_tests: 217 passed
+    compliance: clean (after anchor re-materialization)
+    portal: compliant
+    typecheck: clean across workspace
+tags:
+  - phase-3
+  - agent-wiring
+  - claude-code
+  - mind-map
+  - cli
+  - core-build
+linked_lore:
+  - L-2026-05-26-ascend-124844-001
+  - TD-2026-05-26-363
+  - TD-2026-05-26-210
+  - TD-2026-05-26-646
+  - TD-2026-05-26-229
+  - TD-2026-05-26-271
+  - TD-2026-05-26-540
+git_context:
+  ref: 7c04a6f98f8fa81b7b73e3672dfc3169314f3feb
+  branch: main
+  dirty: true

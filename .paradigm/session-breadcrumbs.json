@@ -1,109 +1,307 @@
 {
-  "sessionId": "smouosp1h",
-  "startTime": 1778110021061,
-  "lastActivity": 1778178839888,
+  "sessionId": "smplqhnx8",
+  "startTime": 1779745452380,
+  "lastActivity": 1779994650477,
   "breadcrumbs": [
     {
-      "timestamp": 1778110175233,
+      "timestamp": 1779968537764,
       "action": "tool-call",
-      "tool": "paradigm_portal_add_gate",
-      "summary": "portal_add_gate: no-overlap"
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
     },
     {
-      "timestamp": 1778110175375,
+      "timestamp": 1779968539215,
       "action": "tool-call",
-      "tool": "paradigm_portal_add_gate",
-      "summary": "portal_add_gate: valid-document"
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
     },
     {
-      "timestamp": 1778110175419,
+      "timestamp": 1779968549876,
       "action": "tool-call",
-      "tool": "paradigm_portal_add_gate",
-      "summary": "portal_add_gate: valid-delta"
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
     },
     {
-      "timestamp": 1778110175452,
+      "timestamp": 1779968554837,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/studio/.purpose"
+    },
+    {
+      "timestamp": 1779968559405,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: .purpose"
+    },
+    {
+      "timestamp": 1779968565782,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779968593693,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779968596821,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779968626916,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779981000905,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Runtime verification — R3 video provider paints; \"caption st"
+    },
+    {
+      "timestamp": 1779981956834,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: Pre-test polish sweep — typography overhaul + objectFit + vi"
+    },
+    {
+      "timestamp": 1779981976158,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779982016765,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779982431388,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: media-ref-drag-discriminated"
+    },
+    {
+      "timestamp": 1779982431457,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: render-context-no-dom-dependency"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: video-null-provider-retry"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: caption-builder-fade-frame-math"
+    },
+    {
+      "timestamp": 1779982431459,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-localhost-only-bind"
+    },
+    {
+      "timestamp": 1779982431460,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-origin-check-bridge-vs-mcp-split"
+    },
+    {
+      "timestamp": 1779982431460,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-ws-upgrade-rechecks-origin"
+    },
+    {
+      "timestamp": 1779982431461,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: studio-llm-only-broadcast"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: docs-are-flat"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: media-bin-acquire-vs-compose"
+    },
+    {
+      "timestamp": 1779982431462,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_get",
+      "summary": "aspect_get: transcribe-on-bin-add"
+    },
+    {
+      "timestamp": 1779982464660,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/canvas/.purpose"
+    },
+    {
+      "timestamp": 1779982467709,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/canvas/.purpose"
+    },
+    {
+      "timestamp": 1779982472515,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982475203,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982479761,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982483321,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982487800,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982493353,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982501930,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982508605,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982514183,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: packages/cli/.purpose"
+    },
+    {
+      "timestamp": 1779982518330,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779984465988,
+      "action": "tool-call",
+      "tool": "paradigm_aspect_drift",
+      "summary": "aspect_drift"
+    },
+    {
+      "timestamp": 1779984544575,
+      "action": "tool-call",
+      "tool": "paradigm_purpose_add_aspect",
+      "summary": "purpose_add_aspect: .purpose"
+    },
+    {
+      "timestamp": 1779984565538,
+      "action": "tool-call",
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
+    },
+    {
+      "timestamp": 1779986254509,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: v1.0 export pipeline functional — video + captions + audio i"
+    },
+    {
+      "timestamp": 1779988548957,
+      "action": "tool-call",
+      "tool": "paradigm_lore_record",
+      "summary": "lore_record: CLI atelier render fixed — source video + audio passthrough "
+    },
+    {
+      "timestamp": 1779994136648,
+      "action": "tool-call",
+      "tool": "paradigm_decision_record",
+      "summary": "decision_record: v2.0 pivot — Atelier becomes a Hyperframes-management layer "
+    },
+    {
+      "timestamp": 1779994626075,
       "action": "tool-call",
       "tool": "paradigm_purpose_init",
-      "summary": "purpose_init: packages/react"
+      "summary": "purpose_init: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110180325,
+      "timestamp": 1779994636289,
       "action": "tool-call",
       "tool": "paradigm_purpose_add_component",
-      "summary": "purpose_add_component: packages/react"
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110182054,
+      "timestamp": 1779994641359,
       "action": "tool-call",
       "tool": "paradigm_purpose_add_component",
-      "summary": "purpose_add_component: packages/react"
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110183363,
+      "timestamp": 1779994642282,
       "action": "tool-call",
       "tool": "paradigm_purpose_add_component",
-      "summary": "purpose_add_component: packages/react"
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110185205,
+      "timestamp": 1779994644834,
       "action": "tool-call",
       "tool": "paradigm_purpose_add_component",
-      "summary": "purpose_add_component: packages/react"
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110192766,
+      "timestamp": 1779994647825,
       "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: Studio export improvements — batch export, H.264 High Profil"
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110336475,
+      "timestamp": 1779994650309,
       "action": "tool-call",
-      "tool": "paradigm_agent_list",
-      "summary": "agent_list: all"
+      "tool": "paradigm_purpose_add_component",
+      "summary": "purpose_add_component: packages/hyperframes-adapter/.purpose"
     },
     {
-      "timestamp": 1778110842926,
+      "timestamp": 1779994659650,
       "action": "tool-call",
-      "tool": "paradigm_agent_activate",
-      "summary": "agent_activate: performance"
-    },
-    {
-      "timestamp": 1778110842966,
-      "action": "tool-call",
-      "tool": "paradigm_agent_activate",
-      "summary": "agent_activate: dx"
-    },
-    {
-      "timestamp": 1778110842988,
-      "action": "tool-call",
-      "tool": "paradigm_agent_activate",
-      "summary": "agent_activate: release"
-    },
-    {
-      "timestamp": 1778178264820,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: agent-session"
-    },
-    {
-      "timestamp": 1778178662370,
-      "action": "tool-call",
-      "tool": "paradigm_agent_list",
-      "summary": "agent_list: project"
-    },
-    {
-      "timestamp": 1778178839761,
-      "action": "tool-call",
-      "tool": "paradigm_orchestrate_inline",
-      "summary": "orchestrate_inline: Determine the optimal implementation order for the remaining"
-    },
-    {
-      "timestamp": 1778179280364,
-      "action": "tool-call",
-      "tool": "paradigm_lore_record",
-      "summary": "lore_record: agent-session"
+      "tool": "paradigm_reindex",
+      "summary": "Rebuilt static index files"
     }
   ],
   "symbolsModified": [],

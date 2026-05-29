@@ -98,7 +98,7 @@ aspects:
       - video
       - clamp
     anchors:
-      - packages/core/src/resolver/frame-resolver.ts:61-71
+      - packages/core/src/resolver/frame-resolver.ts:73-83
     enforcement: Math.max + Math.min clamp
     appliesTo: ["#frame-resolver"]
   hold-last-completed-delta:

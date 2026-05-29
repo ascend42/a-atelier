@@ -1,0 +1,12 @@
+id: T-2026-05-10-013
+blurb: HyperFrames HTML export — output .atelier composition as HTML with data-* timing attributes for web-embeddable video overlays
+priority: medium
+status: open
+tags:
+  - phase-3
+  - hyperframes
+  - export
+  - web
+created: '2026-05-10T18:23:26.290Z'
+related_lore:
+  - L-2026-05-10-ascend-182220-001

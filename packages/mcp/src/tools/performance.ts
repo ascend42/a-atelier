@@ -206,7 +206,6 @@ export function register(server: McpServer, store: DocumentStore): void {
         duration: number;
         deltaCount: number;
         expressionCount: number;
-        hasAudio: boolean;
         hasParent: boolean;
         transitionCount: number;
       }> = [];
@@ -228,7 +227,9 @@ export function register(server: McpServer, store: DocumentStore): void {
           duration: state.duration,
           deltaCount,
           expressionCount,
-          hasAudio: !!state.audio,
+          // hasAudio removed in v1.0 — audio is no longer per-state, it's an
+          // AudioVisual layer. Audio-layer counts appear in the top-level
+          // layer stats below.
           hasParent: !!state.parent,
           transitionCount: state.transitions ? Object.keys(state.transitions).length : 0,
         });

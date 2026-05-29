@@ -1,0 +1,30 @@
+id: L-2026-05-27-ascend-193441-001
+type: insight
+timestamp: '2026-05-27T19:34:41.491Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Test stance: end-to-end UX validation over piecemeal agent tests'
+summary: 'Owner rejected piecemeal validation (separate @atelier-quill reconstruct + @atelier-iris compose tests via Claude Code chat) in favor of testing the full creator experience once the studio-UI bundle lands. The reasoning: chat-driven agent tests are still effectively manual command execution; the real signal comes from drag-drop in the browser + watching the canvas populate live + the agents working invisibly underneath. Aligns with TD-2026-05-27-723 (local-only-by-default, no-manual-friction) by treating the UI as the canonical test surface, not a polish on top of validated CLI flows. Implication: studio-UI bundle is the v1 validation bottleneck — when it lands cleanly and the end-to-end flow works (drop video → see captions + canvas populate → agents converse), v1 is ready to publish. No need to validate the underlying CLI pipeline separately; if the UI flow works, the foundation by definition works.'
+symbols_touched:
+  - '#cli-studio'
+  - '#paradigm-augment'
+  - '#cli-media'
+  - '#quill-showrunner'
+  - '#iris-composer'
+learnings:
+  - Test-stance decisions matter — validating piecemeal IS a creator-experience anti-pattern when the goal is to ship a self-contained creator tool. The piecemeal CLI flow we've been demoing is dev-tooling, not the product.
+  - The studio-UI bundle is the load-bearing v1 gate. Everything before this (artifact schemas, agents, workspace, symbiosis, media pipeline) was foundation; the UI is the only thing the creator actually touches.
+tags:
+  - test-stance
+  - v1-validation
+  - creator-flow
+  - ux-first
+linked_lore:
+  - L-2026-05-27-ascend-184035-001
+  - L-2026-05-27-ascend-180956-001
+git_context:
+  ref: 415cdc8b5c94b6466f09434395f1e1bf20a59ca3
+  branch: feat/creator-flow-v1-prep
+  dirty: true

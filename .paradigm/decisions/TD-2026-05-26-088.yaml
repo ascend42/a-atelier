@@ -1,0 +1,35 @@
+id: TD-2026-05-26-088
+timestamp: '2026-05-26T01:09:22.622Z'
+title: 'Atelier creator-flow: image generation stays pure now, wrapped provider later'
+decision: >-
+  Atelier continues to own no image generation for now — agents orchestrate external generation (Higgsfield) and ingest
+  via atelier_import_images. The wrapped-provider path is an explicit future commitment; the generation call should be
+  built as a stable seam so a wrapped Atelier MCP tool can drop in later without reshaping the flow.
+rationale: >-
+  Keeps Atelier small, provider-neutral, and dependency-light today while preserving the conversation-first 'edit
+  nothing, just talk' goal as a designed-for future. Building the generation call as a seam avoids rework when the
+  wrapped provider lands.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Wrap a generation provider now (A2 immediately)
+    rejected_because: >-
+      Couples Atelier to a provider's API/pricing/failure modes before the agent layer that would use it exists;
+      deferred until after agents land
+  - option: Stay pure permanently (A1 forever)
+    rejected_because: >-
+      A hard external-generation boundary breaks the 'just talk' UGC loop; owner wants the seam designed for eventual
+      wrapping
+symbols_affected:
+  - '#mcp-import-images'
+status: active
+tags:
+  - creator-flow
+  - image-generation
+  - architecture
+  - phase-2

@@ -1,0 +1,15 @@
+id: L-2026-05-26-ascend-010928-128
+type: insight
+timestamp: '2026-05-26T01:09:28.710Z'
+author: ascend
+title: Decision TD-2026-05-26-720 recorded
+summary: Companion lore entry for decision record TD-2026-05-26-720. See .paradigm/decisions/TD-2026-05-26-720.yaml.
+symbols_touched:
+  - '#studio-bridge'
+  - '#ws-transport'
+  - ^localhost-only
+references:
+  decision_id: TD-2026-05-26-720
+tags:
+  - companion-lore
+  - decision-reference

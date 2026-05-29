@@ -1,0 +1,81 @@
+id: TD-2026-05-28-097
+timestamp: '2026-05-28T18:48:56.681Z'
+title: >-
+  v2.0 pivot — Atelier becomes a Hyperframes-management layer (creative direction + asset packs + agent team) instead of
+  a custom composition/render engine
+decision: >-
+  Pivot Atelier away from custom video composition + render to a creative-direction layer on top of HeyGen Hyperframes
+  (open-source, Apache 2.0, locally-hostable, Node-importable HTML/CSS/JS-as-composition framework). Atelier KEEPS its
+  differentiated front-of-pipeline value (artifact schemas DESIGN/SCRIPT/STORYBOARD, workspace + mind-map, agent
+  personas Quill/Lux/Iris, Paradigm integration, recipes, ingest/transcribe). Atelier DEPRECATES its custom composition
+  stack (~28k LOC across canvas, studio, svg, lottie, video, react, most of core/schema/types, atelier studio CLI,
+  atelier render CLI, browser editor) and DELEGATES rendering to Hyperframes' Node API. Atelier ADAPTS the caption
+  builder, timeline-ops, technique catalog, and asset-touching MCP tools to emit Hyperframes constructs (HTML/CSS)
+  instead of .atelier YAML. New work (~3-5k LOC): Hyperframes scaffolder, DESIGN→CSS-vars generator,
+  STORYBOARD→Hyperframes-timeline emitter, technique→Hyperframes-primitive bindings, MCP tool retarget, file-watcher,
+  adapter shim. Net code reduction: ~23k LOC. Strategic outcome: stop competing with a battle-tested 22k-star
+  actively-developed framework that already does what we built today PLUS alpha channel, HDR10, ProRes, distributed
+  render via Lambda — and instead double down on what's actually differentiated: agent-driven creative direction + brand
+  consistency + asset orchestration.</parameter>
+
+  <parameter name="rationale">Today (2026-05-28) the team spent 13 commits getting v1.0 export functional end-to-end.
+  The agent team's diagnostic report (RENDER-AUDIO-ISSUE.md) proved the core insight: even after a full day of fixes, we
+  shipped a single-clip-MP4-only path with v1.1 caveats (multi-clip, set-audio, time-warp, GIF audio, etc). Hyperframes
+  ships ALL of that + more out of the box: WebM with true alpha (yuva420p), MOV ProRes 4444 10-bit alpha, HDR10/BT.2020,
+  distributed render. They published v0.6.52 the SAME DAY we shipped v1.0 export — and their roadmap is what would have
+  taken us months. The Apache 2.0 license + zero-cloud-dependency + first-class Node API (`executeRenderJob` from
+  `@hyperframes/producer`) means we can integrate without ceding control. Owner phrasing: "us bending over backwards to
+  have yet another open source solution that does a suboptimal and less involved solution for this doesn't seem like a
+  good use of our time" — the agent team's RENDER-AUDIO-ISSUE.md and today's marathon of export fixes are the empirical
+  proof. The differentiated value (artifact schemas + agent personas + workspace + mind-map + recipes + Paradigm) lives
+  in ~7k LOC and survives the pivot intact. The replaceable value (composition + render) is ~28k LOC and gets
+  deleted.</parameter>
+
+  <parameter name="participants">[{"id": "ascend", "role": "human", "stance": "proposed"}, {"id": "claude-opus-4-7",
+  "role": "agent", "stance": "supported"}, {"id": "atelier-team-research-agent", "role": "agent", "stance":
+  "supported"}]
+alternatives_considered:
+  - option: Continue Atelier as a custom composition engine
+    rejected_because: >-
+      Spent a full day on export fixes and shipped a single-clip-MP4-only path with significant v1.1 caveats.
+      Hyperframes ships all that + more out of the box. Continuing means competing with a 22k-star actively-developed
+      framework on its core competency while diluting time from what's actually differentiated.
+  - option: Build a thin export adapter (Atelier doc → Hyperframes HTML) without deprecating the existing stack
+    rejected_because: >-
+      Doesn't solve the cost-of-maintenance problem. Continues to pay for ~28k LOC of
+      canvas/studio/svg/lottie/video/react/render code that has no ongoing strategic value. Two render paths = two
+      surface areas to maintain + two sets of bugs + two sets of tests.
+  - option: Use Remotion (React-based composition framework) instead of Hyperframes
+    rejected_because: >-
+      Remotion requires React knowledge to compose; Hyperframes uses plain HTML/CSS/JS which is more agent-friendly (no
+      JSX, no component model). Hyperframes is explicitly designed for agent invocation (ships with .claude-plugin/,
+      .cursor-plugin/, skills/ directories). Remotion is also more focused on developer-authoring; Hyperframes is
+      focused on agent-authoring.
+  - option: Wait for v1.0 to merge to main, then pivot
+    rejected_because: >-
+      Sunk cost of delay. The longer we maintain the v1.0 composition stack, the more entrenched it becomes. The v1.0
+      work can still merge to main as a milestone — but the v2.0 pivot starts now in parallel.
+symbols_affected:
+  - '#atelier-studio'
+  - '#canvas-panel'
+  - '#render-pipeline'
+  - '#video-exporter'
+  - '#browser-video-frame-provider'
+  - '#compose-video-project'
+  - '#caption-builder'
+  - '#timeline-ops'
+  - '#artifact-templates'
+  - '#workspace'
+  - '#mind-map'
+  - '#recipes'
+  - '#atelier-quill'
+  - '#atelier-lux'
+  - '#atelier-iris'
+status: active
+tags:
+  - v2.0
+  - pivot
+  - architecture
+  - hyperframes
+  - strategic
+  - deprecate-stack

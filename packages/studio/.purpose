@@ -7,16 +7,20 @@ context:
   - All CSS classes prefixed with atel- to avoid collisions
 components:
   atelier-studio:
-    description: Main widget class — mounts into any DOM element, manages view switching and panel coordination, and exposes applyMutation() as the Studio-side endpoint of the LLM↔human live-mutation bridge (task #10)
+    description: Main widget class — mounts into any DOM element, manages view switching and panel coordination, and exposes applyMutation() as the Studio-side endpoint of the LLM↔human live-mutation bridge (task
     components:
       - '#canvas-panel'
       - '#layer-panel'
       - '#property-panel'
       - '#delta-panel'
       - '#yaml-panel'
+      - '#canvas-size-presets'
     file: src/studio.ts
   canvas-panel:
-    description: Canvas rendering and playback panel with play/pause/scrub controls
+    description: Canvas rendering and playback panel with play/pause/scrub controls and letterbox-fit display sizing via ResizeObserver
+    file: src/panels/canvas-panel.ts
+  compute-letterbox-fit:
+    description: Pure helper that returns the largest aspect-preserving scale of a canvas inside a parent rect, with zero/negative inputs collapsing to zeros
     file: src/panels/canvas-panel.ts
   layer-panel:
     description: Layer list sidebar with selection, visibility toggle, add/remove, and drag-to-reorder
@@ -46,6 +50,9 @@ components:
   yaml-panel:
     description: Read-only YAML viewer with syntax highlighting and copy-to-clipboard
     file: src/panels/yaml-panel.ts
+  canvas-size-presets:
+    description: Closed list of 4 canvas-size presets (portrait/landscape/square/feed) and a findPresetMatch helper, consumed by the studio toolbar dropdown to mutate doc.canvas.width/height; non-preset dimensions surface as a disabled "Custom — W×H" entry. Captions baked at compose-time may need re-position after a resize — the toolbar shows a muted inline warning when any layer carries the "caption" tag.
+    file: src/panels/canvas-size-presets.ts
   number-input:
     description: Labeled number input control with optional step, min, max, suffix
     file: src/controls/number-input.ts
@@ -75,33 +82,35 @@ aspects:
       - bridge
       - gotcha
     anchors:
-      - packages/studio/src/studio.ts:247
-      - packages/studio/src/studio.ts:287-293
-      - packages/studio/src/studio.ts:434-437
-      - packages/studio/src/studio.ts:444
+      - src/studio.ts:250-251
+      - src/studio.ts:264
+      - src/studio.ts:305-311
+    applies-to:
+      - '#atelier-studio'
     enforcement: suppressNotify flag cleared on queueMicrotask
-    appliesTo: ["#atelier-studio"]
   apply-mutation-preserves-state-and-selection:
-    description: 'Unlike loadDocument (which resets to the first state and clears selection), applyMutation keeps the current stateName and selectedLayerId when they still exist in the replacement doc, only falling back to first-state / no-selection when the prior value was deleted. This prevents the editor from teleporting on every LLM op while the human is mid-edit.'
+    description: Unlike loadDocument (which resets to the first state and clears selection), applyMutation keeps the current stateName and selectedLayerId when they still exist in the replacement doc, only falling back to first-state / no-selection when the prior value was deleted. This prevents the editor from teleporting on every LLM op while the human is mid-edit.
     tags:
       - bridge
       - ux-invariant
       - edge-case
     anchors:
-      - packages/studio/src/studio.ts:254-256
-      - packages/studio/src/studio.ts:277-284
+      - src/studio.ts:269-273
+      - src/studio.ts:293-301
+    applies-to:
+      - '#atelier-studio'
     enforcement: existence-checked preserve else fallback
-    appliesTo: ["#atelier-studio"]
   llm-op-is-undoable:
-    description: 'applyMutation snapshots the pre-mutation lastSnapshot onto history BEFORE replacing the doc, so an LLM-driven change is a single Cmd-Z away for the human at the keyboard. It deliberately preserves history and originalDoc (loadDocument clears both), keeping the undo timeline continuous across remote ops.'
+    description: applyMutation snapshots the pre-mutation lastSnapshot onto history BEFORE replacing the doc, so an LLM-driven change is a single Cmd-Z away for the human at the keyboard. It deliberately preserves history and originalDoc (loadDocument clears both), keeping the undo timeline continuous across remote ops.
     tags:
       - bridge
       - history
     anchors:
-      - packages/studio/src/studio.ts:242-245
-      - packages/studio/src/studio.ts:228-231
+      - src/studio.ts:246-247
+      - src/studio.ts:259-262
+    applies-to:
+      - '#atelier-studio'
     enforcement: snapshot before doc replace
-    appliesTo: ["#atelier-studio"]
   keyboard-shortcut-input-passthrough:
     description: 'handleKeydown lets Cmd/Ctrl-Z and Cmd/Ctrl-Shift-Z through ALWAYS (even while typing in an input), but returns early for Space/arrows/Delete/Backspace when the event target is an input, textarea, or select — so typing a space or deleting text in a field never toggles playback or deletes the selected layer. Order matters: the undo/redo check precedes the input-guard.'
     tags:
@@ -109,32 +118,35 @@ aspects:
       - edge-case
       - ordering
     anchors:
-      - packages/studio/src/studio.ts:149-191
+      - src/studio.ts:165-207
+    applies-to:
+      - '#atelier-studio'
     enforcement: undo-first then input-target early return
-    appliesTo: ["#atelier-studio"]
   preview-vs-commit-render-split:
-    description: 'previewDocChange re-renders the canvas ONLY — it skips history.snapshot/lastSnapshot, the layer+yaml panel refresh, and the host onDocumentChange notification, and short-circuits entirely when suppressNotify is set. The committing onDocChange is the one path that records history and notifies the host exactly once, so a 60Hz slider drag collapses into a single undo entry and a single save.'
+    description: previewDocChange re-renders the canvas ONLY — it skips history.snapshot/lastSnapshot, the layer+yaml panel refresh, and the host onDocumentChange notification, and short-circuits entirely when suppressNotify is set. The committing onDocChange is the one path that records history and notifies the host exactly once, so a 60Hz slider drag collapses into a single undo entry and a single save.
     tags:
       - core-invariant
       - performance
       - history
     anchors:
-      - packages/studio/src/studio.ts:434-437
-      - packages/studio/src/studio.ts:439-469
+      - src/studio.ts:500-503
+      - src/studio.ts:505-536
+    applies-to:
+      - '#atelier-studio'
     enforcement: canvas-only preview, snapshot only on commit
-    appliesTo: ["#atelier-studio"]
   undo-redo-preserves-state:
-    description: 'reloadPanels (the shared undo/redo + state-switch path) keeps the currently-selected stateName across Cmd-Z/Cmd-Shift-Z when that state still exists in the restored doc, only falling back to the first state when the action being undone deleted it — otherwise editing "hover" and hitting undo would snap the editor back to "default". It also resyncs the toolbar state selector.'
+    description: reloadPanels (the shared undo/redo + state-switch path) keeps the currently-selected stateName across Cmd-Z/Cmd-Shift-Z when that state still exists in the restored doc, only falling back to the first state when the action being undone deleted it — otherwise editing "hover" and hitting undo would snap the editor back to "default". It also resyncs the toolbar state selector.
     tags:
       - history
       - ux-invariant
       - edge-case
     anchors:
-      - packages/studio/src/studio.ts:496-515
+      - src/studio.ts:619-639
+    applies-to:
+      - '#atelier-studio'
     enforcement: existence-checked stateName preserve
-    appliesTo: ["#atelier-studio"]
   player-loop-and-clamp:
-    description: 'The Player accumulator advances currentFrame by whole frames of 1000/fps elapsed time; on reaching totalFrames it wraps to 0 when loop, else clamps to totalFrames-1 and pauses. seek clamps to [0, totalFrames-1] and setTotalFrames resets currentFrame to 0 only if it now exceeds the new total. CanvasPanel drives all playback through this.'
+    description: The Player accumulator advances currentFrame by whole frames of 1000/fps elapsed time; on reaching totalFrames it wraps to 0 when loop, else clamps to totalFrames-1 and pauses. seek clamps to [0, totalFrames-1] and setTotalFrames resets currentFrame to 0 only if it now exceeds the new total. CanvasPanel drives all playback through this.
     tags:
       - playback
       - clamp
@@ -144,41 +156,56 @@ aspects:
       - packages/studio/src/player.ts:49-54
       - packages/studio/src/player.ts:68-83
     enforcement: clamp to total-1 + loop wrap
-    appliesTo: ["#canvas-panel"]
+  canvas-letterbox-fit-observes-panel:
+    description: CanvasPanel uses ResizeObserver on this.el (the outer panel) — NOT this.canvas.parentElement (which is .atel-canvas-wrap, flex-shrink:0 and shrink-fits the canvas, so observing it would either be a no-op or a feedback loop). applyLetterboxFit subtracts the .atel-canvas-panel padding (16*2), the playback row height, and the column gap (12) from the panel rect to derive the available area, then computeLetterboxFit picks min(availW/canvasW, availH/canvasH) so the canvas display size always fits with aspect preserved. Raster dimensions (canvas.width/.height) stay pinned to doc.canvas.width/.height — only CSS sizing scales. loadDocument calls applyLetterboxFit explicitly so the first frame paints correctly before the observer fires; destroy() disconnects the observer.
+    tags:
+      - core-invariant
+      - layout
+      - gotcha
+    anchors:
+      - src/panels/canvas-panel.ts:35-46
+      - src/panels/canvas-panel.ts:205-211
+      - src/panels/canvas-panel.ts:318-345
+    applies-to:
+      - '#canvas-panel'
+    enforcement: observe this.el + subtract padding/gap/playback height + min-of-ratios
   scrub-pause-resume:
-    description: 'Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.'
+    description: Scrubbing pauses playback on mousedown (remembering wasPlaying), seeks live on every input, then resumes play on mouseup only if it was playing before — so dragging the scrubber never leaves a paused timeline running or a playing one stuck. The bare input handler is what makes scrubbing feel live.
     tags:
       - playback
       - ux-invariant
     anchors:
-      - packages/studio/src/panels/canvas-panel.ts:125-139
+      - src/panels/canvas-panel.ts:179-194
+    applies-to:
+      - '#canvas-panel'
     enforcement: wasPlaying captured on mousedown, restored on mouseup
-    appliesTo: ["#canvas-panel"]
   image-drop-files-only:
-    description: 'Canvas drag handlers respond ONLY to file drags — hasFileTypes checks dataTransfer.types for "Files" (populated during dragover, unlike dataTransfer.files which fills only at drop), so in-app layer-reorder drags never trigger the image-drop highlight or pipeline. dragover must preventDefault for the drop event to fire, and dragleave clears the highlight only when the cursor truly leaves the wrap (target === dropTarget).'
+    description: Canvas drag handlers respond ONLY to file drags — hasFileTypes checks dataTransfer.types for "Files" (populated during dragover, unlike dataTransfer.files which fills only at drop), so in-app layer-reorder drags never trigger the image-drop highlight or pipeline. dragover must preventDefault for the drop event to fire, and dragleave clears the highlight only when the cursor truly leaves the wrap (target === dropTarget).
     tags:
       - edge-case
       - drag-drop
       - gotcha
     anchors:
-      - packages/studio/src/panels/canvas-panel.ts:70-94
-      - packages/studio/src/panels/canvas-panel.ts:273-279
+      - src/panels/canvas-panel.ts:123-148
+      - src/panels/canvas-panel.ts:383-390
+    applies-to:
+      - '#canvas-panel'
     enforcement: types-array Files check + preventDefault on dragover
-    appliesTo: ["#canvas-panel"]
   image-drop-first-replaces-background:
-    description: 'On a multi-file drop, only the FIRST image gets replaceBackground:true so it swaps the welcome scaffold placeholder (doc.layers[0].id === "background") in place; subsequent images stack. createImageLayerFromFile aspect-fits the image to the canvas (fit to width when wider than canvas, else fit to height, both capped at canvas extents) with a 0.5/0.5 anchor centered, and unshifts onto layers so new images sit BEHIND existing overlays. A file that fails to decode is skipped without aborting the batch.'
+    description: On a multi-file drop, only the FIRST image gets replaceBackground:true so it swaps the welcome scaffold placeholder (doc.layers[0].id === "background") in place; subsequent images stack. createImageLayerFromFile aspect-fits the image to the canvas (fit to width when wider than canvas, else fit to height, both capped at canvas extents) with a 0.5/0.5 anchor centered, and unshifts onto layers so new images sit BEHIND existing overlays. A file that fails to decode is skipped without aborting the batch.
+    anchors:
+      - src/panels/canvas-panel.ts:355-376
+      - src/utils/image-drop.ts:66-85
+      - src/utils/image-drop.ts:141-147
     tags:
       - drag-drop
       - core-invariant
       - z-order
-    anchors:
-      - packages/studio/src/panels/canvas-panel.ts:245-265
-      - packages/studio/src/utils/image-drop.ts:66-85
-      - packages/studio/src/utils/image-drop.ts:141-147
+    applies-to:
+      - '#canvas-panel'
     enforcement: firstDrop flag + aspect-fit + unshift/replace
-    appliesTo: ["#canvas-panel"]
   layer-id-collision-free:
-    description: 'nextLayerId/nextImageLayerId start the counter at layers.length+1 and increment past any existing `${prefix}-N` id, so re-adding a removed variant never produces a duplicate id even after deletions reshuffle the count. Image creation uses an "image" prefix and registers a matching `${id}-asset` entry in doc.assets.'
+    description: nextLayerId/nextImageLayerId start the counter at layers.length+1 and increment past any existing `${prefix}-N` id, so re-adding a removed variant never produces a duplicate id even after deletions reshuffle the count. Image creation uses an "image" prefix and registers a matching `${id}-asset` entry in doc.assets.
     tags:
       - edge-case
       - identity
@@ -187,9 +214,8 @@ aspects:
       - packages/studio/src/utils/image-drop.ts:91-96
       - packages/studio/src/utils/image-drop.ts:118-139
     enforcement: scan-existing-set increment
-    appliesTo: ["#layer-panel"]
   overlay-tagged-presets:
-    description: 'The + Add menu Handle and Page Number variants build text layers carrying tags:["overlay"] (anchored to canvas corners with fixed margins), so downstream overlay-isolation pipelines (caption regen, silence-trim) skip user-edited overlays. Plain Text/Shape variants are untagged. Image variant bails out of the sync switch into the async file-picker path.'
+    description: The + Add menu Handle and Page Number variants build text layers carrying tags:["overlay"] (anchored to canvas corners with fixed margins), so downstream overlay-isolation pipelines (caption regen, silence-trim) skip user-edited overlays. Plain Text/Shape variants are untagged. Image variant bails out of the sync switch into the async file-picker path.
     tags:
       - presets
       - tags
@@ -199,9 +225,8 @@ aspects:
       - packages/studio/src/panels/layer-panel.ts:331-378
       - packages/studio/src/panels/layer-panel.ts:322-330
     enforcement: overlay tag baked into handle/page-number variants
-    appliesTo: ["#layer-panel"]
   remove-layer-cascades-deltas:
-    description: 'removeLayer deletes the selected layer AND filters every state.deltas array to drop deltas referencing that layer id, then clears the selection — so deleting a layer never leaves orphaned deltas that would resolve against a missing layer. Visibility toggle flips layer.visible between true and an explicit false (undefined treated as visible).'
+    description: removeLayer deletes the selected layer AND filters every state.deltas array to drop deltas referencing that layer id, then clears the selection — so deleting a layer never leaves orphaned deltas that would resolve against a missing layer. Visibility toggle flips layer.visible between true and an explicit false (undefined treated as visible).
     tags:
       - core-invariant
       - cascade
@@ -209,9 +234,8 @@ aspects:
       - packages/studio/src/panels/layer-panel.ts:442-457
       - packages/studio/src/panels/layer-panel.ts:143-151
     enforcement: filter deltas across all states on remove
-    appliesTo: ["#layer-panel"]
   layer-reorder-scroll-preserved:
-    description: 'render() captures and restores list.scrollTop around the full innerHTML rebuild, so toggling visibility or reordering does not jump the layer list back to the top. reorderLayer splices the moved layer out and back into doc.layers (the array order IS z-order downstream).'
+    description: render() captures and restores list.scrollTop around the full innerHTML rebuild, so toggling visibility or reordering does not jump the layer list back to the top. reorderLayer splices the moved layer out and back into doc.layers (the array order IS z-order downstream).
     tags:
       - ux-invariant
       - z-order
@@ -219,9 +243,8 @@ aspects:
       - packages/studio/src/panels/layer-panel.ts:122-165
       - packages/studio/src/panels/layer-panel.ts:167-173
     enforcement: scrollTop save/restore + array splice reorder
-    appliesTo: ["#layer-panel"]
   property-input-vs-change-commit:
-    description: 'Continuous controls (Opacity, stroke Start/End sliders) wire onInput → preview() (cheap canvas re-render via onPropertyPreview) and onChange → onPropertyChange (the committing path that snapshots undo + notifies host), so one slider drag is one undo entry. preview() degrades to a full commit when onPropertyPreview is absent — never worse than before. Discrete controls (number, color, select) fire only onPropertyChange.'
+    description: Continuous controls (Opacity, stroke Start/End sliders) wire onInput → preview() (cheap canvas re-render via onPropertyPreview) and onChange → onPropertyChange (the committing path that snapshots undo + notifies host), so one slider drag is one undo entry. preview() degrades to a full commit when onPropertyPreview is absent — never worse than before. Discrete controls (number, color, select) fire only onPropertyChange.
     tags:
       - core-invariant
       - history
@@ -231,9 +254,8 @@ aspects:
       - packages/studio/src/panels/property-panel.ts:218-246
       - packages/studio/src/panels/property-panel.ts:489-498
     enforcement: onInput=preview, onChange=commit split
-    appliesTo: ["#property-panel"]
   layer-id-rename-rewrites-deltas:
-    description: 'Renaming a layer via the ID text input rewrites every delta whose `layer` matches the old id across ALL states before assigning the new id, and updates this.layerId so the still-selected layer stays selected. Skip the rewrite and renamed layers silently lose their animations.'
+    description: Renaming a layer via the ID text input rewrites every delta whose `layer` matches the old id across ALL states before assigning the new id, and updates this.layerId so the still-selected layer stays selected. Skip the rewrite and renamed layers silently lose their animations.
     tags:
       - core-invariant
       - cascade
@@ -241,9 +263,8 @@ aspects:
     anchors:
       - packages/studio/src/panels/property-panel.ts:77-90
     enforcement: rewrite delta.layer refs before id assign
-    appliesTo: ["#property-panel"]
   visual-section-discriminated-by-type:
-    description: 'addVisualSection branches on visual.type (shape | image | text) and within shape on visual.shape.type (rect cornerRadius, path point editing), narrowing the discriminated union before each control. Optional blocks (fill, stroke, shadow) render only when present, with "+ Add"/"Remove" buttons to toggle them, so the inspector only shows controls that apply to the selected layer.'
+    description: addVisualSection branches on visual.type (shape | image | text) and within shape on visual.shape.type (rect cornerRadius, path point editing), narrowing the discriminated union before each control. Optional blocks (fill, stroke, shadow) render only when present, with "+ Add"/"Remove" buttons to toggle them, so the inspector only shows controls that apply to the selected layer.
     tags:
       - dispatch
       - edge-case
@@ -251,9 +272,8 @@ aspects:
       - packages/studio/src/panels/property-panel.ts:171-420
       - packages/studio/src/panels/property-panel.ts:422-487
     enforcement: discriminated-union type narrowing
-    appliesTo: ["#property-panel"]
   delta-view-filtered-by-layer:
-    description: 'DeltaPanel works on a this.deltas VIEW filtered from the shared state.deltas by layerId, but every mutation (add/remove/reorder/sort) edits the flat state.deltas array directly and then re-derives the view. reorderDelta and sortByStartFrame translate view indices to absolute indices in the flat array so other layers'' deltas keep their positions — a known sharp edge of the doc-reference-duplicated-across-panels design.'
+    description: DeltaPanel works on a this.deltas VIEW filtered from the shared state.deltas by layerId, but every mutation (add/remove/reorder/sort) edits the flat state.deltas array directly and then re-derives the view. reorderDelta and sortByStartFrame translate view indices to absolute indices in the flat array so other layers' deltas keep their positions — a known sharp edge of the doc-reference-duplicated-across-panels design.
     tags:
       - core-invariant
       - smell
@@ -263,7 +283,6 @@ aspects:
       - packages/studio/src/panels/delta-panel.ts:346-378
       - packages/studio/src/panels/delta-panel.ts:380-407
     enforcement: view index → absolute index translation
-    appliesTo: ["#delta-panel"]
   delta-control-matched-to-property:
     description: 'buildControlForProperty dispatches the From/To editor by property: color properties get a ColorPicker, opacity / stroke.start / stroke.end get a 0..1 SliderInput, everything else a NumberInput with per-property step/min/max/suffix from getNumberConfig. Changing the property resets from/to to getDefaultValues for the new property so the values stay type-correct.'
     tags:
@@ -274,18 +293,16 @@ aspects:
       - packages/studio/src/panels/delta-panel.ts:215-226
       - packages/studio/src/panels/delta-panel.ts:443-481
     enforcement: property-keyed control + default reset
-    appliesTo: ["#delta-panel"]
   range-slider-input-mirror:
-    description: 'The dual-thumb RangeSlider and the Start/End NumberInputs are kept in lock-step — RangeSlider.onChangeLow/High write delta.range and call the matching NumberInput.setValue, while the NumberInputs round their value and call rangeSlider.setValue. Either control reflects the other instantly without a full re-render.'
+    description: The dual-thumb RangeSlider and the Start/End NumberInputs are kept in lock-step — RangeSlider.onChangeLow/High write delta.range and call the matching NumberInput.setValue, while the NumberInputs round their value and call rangeSlider.setValue. Either control reflects the other instantly without a full re-render.
     tags:
       - ux-invariant
       - sync
     anchors:
       - packages/studio/src/panels/delta-panel.ts:261-308
     enforcement: cross-setValue on both controls
-    appliesTo: ["#delta-panel"]
   delta-minibar-proportional:
-    description: 'The collapsed mini-timeline bar positions its fill via percentage left=(range[0]/duration)*100 and right=((duration-range[1])/duration)*100 with duration defaulting to 1 to avoid divide-by-zero, so the bar visually scales to the state duration. The collapsed detail row formats from→to and the easing label.'
+    description: The collapsed mini-timeline bar positions its fill via percentage left=(range[0]/duration)*100 and right=((duration-range[1])/duration)*100 with duration defaulting to 1 to avoid divide-by-zero, so the bar visually scales to the state duration. The collapsed detail row formats from→to and the easing label.
     tags:
       - ui
       - edge-case
@@ -293,9 +310,8 @@ aspects:
       - packages/studio/src/panels/delta-panel.ts:158-176
       - packages/studio/src/panels/delta-panel.ts:483-493
     enforcement: percent fill with duration||1 guard
-    appliesTo: ["#delta-panel"]
   yaml-clipboard-fallback-select:
-    description: 'Copy uses navigator.clipboard.writeText and flashes "Copied!" for 1500ms; if the clipboard API rejects (insecure context / permission) it falls back to selecting the pre element''s text via a Range so the user can copy manually. The viewer is read-only — it always re-serializes from the live doc on refresh, never edits it.'
+    description: Copy uses navigator.clipboard.writeText and flashes "Copied!" for 1500ms; if the clipboard API rejects (insecure context / permission) it falls back to selecting the pre element's text via a Range so the user can copy manually. The viewer is read-only — it always re-serializes from the live doc on refresh, never edits it.
     tags:
       - edge-case
       - fallback
@@ -303,7 +319,6 @@ aspects:
       - packages/studio/src/panels/yaml-panel.ts:54-70
       - packages/studio/src/panels/yaml-panel.ts:45-52
     enforcement: clipboard API with range-select fallback
-    appliesTo: ["#yaml-panel"]
   yaml-highlight-escapes-html:
     description: 'highlightYaml builds HTML by wrapping tokens in spans, so every raw segment is run through esc() (&/</> entity-escaped) before insertion to prevent document string content from injecting markup into the highlighted view. Lines are classified in order: comment, key:value, bare list-item, else plain.'
     tags:
@@ -313,16 +328,14 @@ aspects:
       - packages/studio/src/panels/yaml-panel.ts:81-107
       - packages/studio/src/panels/yaml-panel.ts:137-142
     enforcement: esc() every segment before span-wrap
-    appliesTo: ["#yaml-panel"]
   number-input-fires-on-input:
-    description: 'NumberInput emits onChange on every `input` event (not on commit/blur) and guards with !isNaN so a transient empty or partial value (e.g. "-" while typing) never pushes NaN into the doc. This means typing into a number field commits continuously — callers that want one undo per edit must rely on the doc-level history, not this control.'
+    description: NumberInput emits onChange on every `input` event (not on commit/blur) and guards with !isNaN so a transient empty or partial value (e.g. "-" while typing) never pushes NaN into the doc. This means typing into a number field commits continuously — callers that want one undo per edit must rely on the doc-level history, not this control.
     tags:
       - gotcha
       - edge-case
     anchors:
       - packages/studio/src/controls/number-input.ts:47-50
     enforcement: input-event onChange + NaN guard
-    appliesTo: ["#number-input"]
   color-picker-hex-normalize:
     description: 'normalizeHex coerces input to the 7-char #RRGGBB form the native color input requires — it expands a 3-digit #RGB shorthand to 6 digits and truncates an 8-digit #RRGGBBAA (alpha) to its opaque RGB, since <input type=color> cannot represent alpha. So round-tripping an #RRGGBBAA color through this picker silently drops the alpha channel.'
     tags:
@@ -332,17 +345,15 @@ aspects:
     anchors:
       - packages/studio/src/controls/color-picker.ts:50-56
       - packages/studio/src/controls/color-picker.ts:38-41
-    enforcement: shorthand expand + alpha truncate to #RRGGBB
-    appliesTo: ["#color-picker"]
+    enforcement: shorthand expand + alpha truncate to
   select-preselect-by-value:
-    description: 'SelectInput marks the option whose value equals opts.value as selected while building the list, so the control reflects the current model value on construction rather than defaulting to the first option. onChange fires on the native `change` event (commit), emitting the raw string value for the caller to cast.'
+    description: SelectInput marks the option whose value equals opts.value as selected while building the list, so the control reflects the current model value on construction rather than defaulting to the first option. onChange fires on the native `change` event (commit), emitting the raw string value for the caller to cast.
     tags:
       - convention
     anchors:
       - packages/studio/src/controls/select-input.ts:23-29
       - packages/studio/src/controls/select-input.ts:35-37
     enforcement: option.selected when value matches
-    appliesTo: ["#select-input"]
   slider-input-vs-change:
     description: 'SliderInput splits the two native range events: `input` (≈60Hz during drag) calls onInput for cheap live preview and updates the value display only, while `change` (pointerup / keyboard step / blur) calls onChange — the path that snapshots undo history and notifies the host. So one drag = one undo entry. onInput is optional; omitting it means a drag previews nothing until commit.'
     tags:
@@ -352,9 +363,8 @@ aspects:
     anchors:
       - packages/studio/src/controls/slider-input.ts:55-68
     enforcement: input=preview, change=commit
-    appliesTo: ["#slider-input"]
   easing-preset-vs-structured:
-    description: 'EasingPicker maps the dropdown to either a string preset (ease-in/out/in-out passed through raw) or a structured object — linear/spring/cubic-bezier/step become typed objects with default params on selection (emitChange), and selecting a parameterized type spawns extra NumberInput/SelectInput config rows. The live curve preview is rebuilt for every type, and the previous EasingCurveEditor is destroyed before a new one is created to avoid leaks.'
+    description: EasingPicker maps the dropdown to either a string preset (ease-in/out/in-out passed through raw) or a structured object — linear/spring/cubic-bezier/step become typed objects with default params on selection (emitChange), and selecting a parameterized type spawns extra NumberInput/SelectInput config rows. The live curve preview is rebuilt for every type, and the previous EasingCurveEditor is destroyed before a new one is created to avoid leaks.
     tags:
       - dispatch
       - lifecycle
@@ -362,9 +372,8 @@ aspects:
       - packages/studio/src/controls/easing-picker.ts:230-247
       - packages/studio/src/controls/easing-picker.ts:76-102
     enforcement: value-keyed preset/object build + editor teardown
-    appliesTo: ["#easing-picker"]
   range-slider-thumb-clamp:
-    description: 'The two overlaid range thumbs are prevented from crossing — the low thumb is clamped to ≤ high and the high thumb to ≥ low on every input, snapping the dragged thumb back rather than swapping the bounds. The filled track between thumbs is recomputed as left/right percentages of (max-min), with a ||1 guard against a zero-width range.'
+    description: The two overlaid range thumbs are prevented from crossing — the low thumb is clamped to ≤ high and the high thumb to ≥ low on every input, snapping the dragged thumb back rather than swapping the bounds. The filled track between thumbs is recomputed as left/right percentages of (max-min), with a ||1 guard against a zero-width range.
     tags:
       - core-invariant
       - clamp
@@ -373,9 +382,8 @@ aspects:
       - packages/studio/src/controls/range-slider.ts:62-82
       - packages/studio/src/controls/range-slider.ts:91-101
     enforcement: clamp each thumb to the other + percent fill
-    appliesTo: ["#range-slider"]
   drag-reorder-handle-only:
-    description: 'enableDragReorder makes an item draggable ONLY while a pointer is down on its .atel-drag-handle (pointerdown sets draggable=true, pointerup/cleanup clears it), so a plain click on the row selects rather than drags. A MutationObserver re-binds handles as the list re-renders, and handle.dataset.bound dedupes so re-render does not stack duplicate listeners.'
+    description: enableDragReorder makes an item draggable ONLY while a pointer is down on its .atel-drag-handle (pointerdown sets draggable=true, pointerup/cleanup clears it), so a plain click on the row selects rather than drags. A MutationObserver re-binds handles as the list re-renders, and handle.dataset.bound dedupes so re-render does not stack duplicate listeners.
     tags:
       - core-invariant
       - drag-drop
@@ -383,9 +391,8 @@ aspects:
     anchors:
       - packages/studio/src/utils/drag-reorder.ts:18-44
     enforcement: draggable gated on handle pointerdown + bound-dedupe
-    appliesTo: ["#drag-reorder"]
   drag-reorder-index-adjust:
-    description: 'On drop the target index is computed from the cursor position relative to the row midpoint (below the midpoint inserts after), then decremented when fromIndex < toIndex to account for the source being spliced out first — the off-by-one fix that makes downward drags land where the indicator showed. No reorder fires when from === to.'
+    description: On drop the target index is computed from the cursor position relative to the row midpoint (below the midpoint inserts after), then decremented when fromIndex < toIndex to account for the source being spliced out first — the off-by-one fix that makes downward drags land where the indicator showed. No reorder fires when from === to.
     tags:
       - edge-case
       - drag-drop
@@ -393,9 +400,17 @@ aspects:
     anchors:
       - packages/studio/src/utils/drag-reorder.ts:79-98
     enforcement: midpoint hit-test + source-removal index adjust
-    appliesTo: ["#drag-reorder"]
+  canvas-size-dropdown-routes-through-onDocChange:
+    description: 'The toolbar canvas-size dropdown writes width/height onto this.doc.canvas and then calls onDocChange — the same path every other mutation uses — so the change snapshots history (Cmd-Z reverts), refreshes every panel, and notifies the host (autosave + WS bridge). It deliberately does NOT call canvas-panel directly: canvas-panel''s ResizeObserver-driven letterbox fit picks up the new dimensions on the next refresh, keeping the resize a pure doc-mutation. refreshCanvasSizeUI re-syncs the select value + the caption-reposition warning on every panel-reload path (loadDocument, applyMutation, reloadPanels, onDocChange), and a stale-Custom option from a prior non-preset size is stripped each call so the list never accumulates orphans.'
+    tags:
+      - core-invariant
+      - history
+      - bridge
+    anchors:
+      - packages/studio/src/studio.ts
+    enforcement: doc mutation + onDocChange, no direct canvas-panel call; stale Custom option stripped
   drag-reorder-aborts-clean:
-    description: 'All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.'
+    description: All listeners are registered with a shared AbortController signal and the MutationObserver is disconnected on destroy(), so a single destroy() tears down every drag binding with no per-listener bookkeeping. dragover clears stale above/below indicator classes off all items before re-marking the hovered one.
     tags:
       - lifecycle
       - teardown
@@ -404,4 +419,3 @@ aspects:
       - packages/studio/src/utils/drag-reorder.ts:120-125
       - packages/studio/src/utils/drag-reorder.ts:58-77
     enforcement: AbortController signal + observer.disconnect on destroy
-    appliesTo: ["#drag-reorder"]

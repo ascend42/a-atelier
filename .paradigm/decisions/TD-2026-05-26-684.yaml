@@ -1,0 +1,37 @@
+id: TD-2026-05-26-684
+timestamp: '2026-05-26T06:12:34.729Z'
+title: Atelier is an open-source framework and tool — no marketplace fees, no subscriptions
+decision: >-
+  Atelier is and remains an open-source framework + tool. There is NO paid recipe marketplace, NO subscription tier, NO
+  premium agent gating. Recipes are shared freely. The hosted Studio tier (Decision C, TD-2026-05-26-720), if/when it
+  ships, runs under an open-source / self-hostable / community-funded model — not a subscription product. 'Profitable as
+  time goes on' refers to creators becoming more productive and profitable in their own content businesses through
+  Atelier, not to Atelier extracting revenue from creators.
+rationale: >-
+  Owner explicitly stated: 'no marketplace that costs money' and 'no subscriptions, atelier is a framework and a tool
+  people can utilize as it is open source.' This is a values commitment that aligns Atelier with Paradigm's own
+  open-source DNA and shapes downstream architecture (sharing model, hosted-tier funding). Supersedes the
+  monetization-path framing in TD-2026-05-26-275.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: architect
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Recipe marketplace with paid recipes / revenue share
+    rejected_because: Owner explicitly rejected; contradicts the open-source framework stance
+  - option: Subscription-funded hosted tier
+    rejected_because: Owner explicitly rejected; the hosted tier must be open / self-hostable / community-funded
+  - option: Premium agent tiers (free Quill vs Quill Pro)
+    rejected_because: Implicitly excluded by 'no subscriptions' — agents ship with the open-source tool
+symbols_affected:
+  - '#atelier-university'
+status: active
+tags:
+  - creator-flow
+  - open-source
+  - values
+  - monetization
+  - supersedes
