@@ -7,6 +7,22 @@ related: ["README.md", "docs/format-spec.md", "docs/builder-guide.md"]
 
 # Getting Started with Atelier
 
+> [!WARNING]
+> **This page documents Atelier v1 — the declarative animation engine (`.atelier`
+> YAML, `DocumentBuilder`, canvas/SVG/Lottie renderers). v1 is being retired in
+> the v2 pivot (see `docs/v2-hyperframes-migration.md`).**
+>
+> **If you are a creator making content with Atelier v2, do NOT follow this page.**
+> Instead:
+>
+> 1. Install the CLI: `npm i -g @a-company/atelier`
+> 2. Scaffold a workspace: `atelier workspace my-brand`
+> 3. `cd my-brand && claude`, then ask the agent team: **"get me set up"** —
+>    they'll walk the full prerequisite + verification checklist (`SETUP.md`).
+>
+> The v2 creator flow is documented in your scaffolded workspace's `README.md`,
+> `CLAUDE.md`, and `SETUP.md`. The v1 content below is kept for reference only.
+
 Atelier is a declarative animation engine where animations are structured data, not code.
 You describe _what_ moves, _when_, and _how_ -- the engine handles the rest.
 

@@ -255,6 +255,17 @@ components:
     gates:
       - ^valid-artifact-set
     file: src/commands/artifacts.ts
+  '#cli-workspace':
+    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, .gitignore, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
+    tags:
+      - workspace
+      - scaffold
+      - templates
+      - personas
+      - cascade
+      - cli
+      - v2
+    file: src/commands/workspace.ts
   '#artifact-templates':
     description: 'Canonical empty templates for DESIGN.md / SCRIPT.md / STORYBOARD.md, exported as DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE TS string constants plus the ARTIFACT_TEMPLATES registry. Used by `atelier artifacts scaffold` to write a creator-fillable starting point with TODO markers and Markdown comments inline. INVARIANT: every template is schema-valid (placeholders use defaults sufficient to satisfy the schema package mins — voice.descriptors >= 3, palette/typography/logos/hook/cta non-empty, storyboard window.end_s > start_s, techniques drawn from TECHNIQUE_LIBRARY_V1) so parseDesign/parseScript/parseStoryboard succeed on first save; the triple ALSO cross-validates clean via validateArtifactSet (matching hook-1/cta-1 ids between SCRIPT and STORYBOARD, valid slot refs). Templates are pure TS constants so they version-lock to the consuming code and tree-shake — no external .md files.'
     tags:
@@ -606,8 +617,8 @@ aspects:
       - pixel-format
       - core-invariant
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:56-63
-      - packages/cli/src/commands/render-pipeline.ts:242-248
+      - packages/cli/src/commands/render-pipeline.ts:136-143
+      - packages/cli/src/commands/render-pipeline.ts:353-359
     enforcement: bgra rawvideo over stdin + drain backpressure
   pipeline-mp4-even-dimensions:
     description: H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.
@@ -617,8 +628,8 @@ aspects:
       - edge-case
       - fail-fast
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:187-192
-      - packages/cli/src/commands/render-pipeline.ts:65-74
+      - packages/cli/src/commands/render-pipeline.ts:294-299
+      - packages/cli/src/commands/render-pipeline.ts:145-154
     enforcement: reject odd dimensions for mp4
   pipeline-gif-single-pass-palette:
     description: GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.
@@ -627,7 +638,7 @@ aspects:
       - gif
       - technique
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:77-83
+      - packages/cli/src/commands/render-pipeline.ts:157-163
     enforcement: single-pass split palettegen/paletteuse
   pipeline-image-load-failure-blank:
     description: preloadImages loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
@@ -636,8 +647,8 @@ aspects:
       - async
       - edge-case
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:115-123
-      - packages/cli/src/commands/render-pipeline.ts:128-145
+      - packages/cli/src/commands/render-pipeline.ts:222-230
+      - packages/cli/src/commands/render-pipeline.ts:235-252
     enforcement: swallow per-image load error, nextTick callbacks
   export-svg-validate-state-before-render:
     description: export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.

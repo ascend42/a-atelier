@@ -13,7 +13,17 @@ cd {{WORKSPACE_NAME}}
 claude          # launch a Claude Code session
 ```
 
-Then in chat:
+**First session?** Just ask the team to get you set up:
+
+```
+get me set up
+```
+
+They'll work through `SETUP.md` — checking every prerequisite (Node, Hyperframes,
+ffmpeg, optional transcription + learning loop), running each verification, and
+walking you through any fixes until you're render-ready.
+
+Once you're set up, in chat:
 
 ```
 @atelier-quill draft a 15s teaser script for my-first-project
@@ -35,10 +45,25 @@ See `CLAUDE.md` for the full session shape.
 
 ## Prerequisites
 
-- [Claude Code](https://claude.com/claude-code) (to talk to the agents)
-- [Node.js 22+](https://nodejs.org) (for `npx hyperframes`)
-- Optional: [whisper.cpp](https://github.com/ggerganov/whisper.cpp) for
-  transcription (Lux / Iris will surface install instructions if missing)
+You don't have to install these by hand — ask the team **"get me set up"** and
+they'll verify each one. For reference:
+
+- **[Claude Code](https://claude.com/claude-code)** — to talk to the agents (you're using it).
+- **[Node.js 22+](https://nodejs.org)** — runs everything.
+- **[Hyperframes](https://hyperframes.mintlify.app/quickstart)** — the render engine.
+  Iris drives it via `npx hyperframes preview` / `render`. **No separate install:**
+  `npx` auto-fetches the published `hyperframes` package on first run. You just need
+  Node + a network connection the first time.
+- **[ffmpeg](https://ffmpeg.org)** + **headless Chrome** — render dependencies
+  (ffmpeg for the `.mp4` mux + audio, Chrome to capture frames). Run
+  `npx hyperframes doctor` to check both at once; `brew install ffmpeg` and
+  `npx hyperframes browser install` are the usual fixes. The "get me set up" flow
+  does this for you.
+- *Optional* — **[whisper.cpp](https://github.com/ggerganov/whisper.cpp)** for
+  transcription (`brew install whisper-cpp`); the team surfaces install steps if missing.
+- *Optional* — the **Paradigm plugin** + Atelier personas in `~/.paradigm/`, which
+  enable the cross-session learning loop (agents remember across sessions). The
+  agents work without it; it just makes them get smarter over time.
 
 ## v2 architecture pointer
 

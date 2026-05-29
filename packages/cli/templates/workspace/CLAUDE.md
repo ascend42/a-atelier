@@ -42,6 +42,16 @@ All three READ the workspace `_brand/` + active project artifacts and **merge
 them in head** per the cascade rules at
 `.paradigm/personas/_shared/cascade-merge.md`.
 
+## First-time setup — "get me set up"
+
+When the creator asks to **get set up** (or "run the setup checklist", "check my
+environment", "am I ready to render"), work through **`SETUP.md`** in this
+workspace top to bottom: run each Check, judge it against Pass, walk the creator
+through any Fix, then re-run the Check. Finish with the ✓/✗/– Report at the
+bottom of `SETUP.md` and the single recommended next action. Do not skip steps
+silently; surface failing command output verbatim. This is the first thing a new
+creator should do.
+
 ## Typical session
 
 ```

@@ -65,12 +65,18 @@ const TEMPLATED_PATHS = new Set([
   ".claude/agents/atelier-lux.md",
   ".claude/agents/atelier-iris.md",
   "CLAUDE.md",
+  "README.md",
+  "SETUP.md",
   ".gitignore",
   "_packs/README.md",
   "projects/README.md",
+  // Shipped reference doc — canonical cascade protocol the personas link to.
+  // Generated (mirror of repo `.paradigm/personas/_shared/cascade-merge.md`),
+  // so refresh it on re-scaffold rather than treating it as creator content.
+  ".paradigm/personas/_shared/cascade-merge.md",
 ]);
 
-function scaffoldWorkspace(opts: ScaffoldOptions): ScaffoldResult {
+export function scaffoldWorkspace(opts: ScaffoldOptions): ScaffoldResult {
   const tmpl = templatesDir();
   const written: string[] = [];
   const skipped: string[] = [];

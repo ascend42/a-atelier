@@ -1,0 +1,137 @@
+// #workspace scaffold tests — lock the invariants the post-loss retro
+// surfaced (RETROSPECTIVE-2026-05-28-ascend-brand-establishment.md):
+//   1. cascade-merge.md MUST land in the scaffolded workspace — the persona
+//      shims + CLAUDE.md link to it as a workspace-relative path.
+//   2. No shim may reference an in-workspace `.paradigm/personas/<p>/skills/`
+//      path, because those skill files are NOT shipped (the design references
+//      the global ~/.paradigm/ notebooks as canonical). A bare workspace-local
+//      skills reference would be a dangling pointer for a fresh creator.
+//   3. Re-scaffold refreshes templated reference docs without clobbering
+//      creator-authored artifacts (DESIGN/SCRIPT/STORYBOARD).
+
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { mkdtempSync, rmSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { scaffoldWorkspace } from "./workspace.js";
+
+// src/commands/ → ../../ = packages/cli ; ../../../../ = repo root
+const testDir = dirname(fileURLToPath(import.meta.url));
+const cliDir = join(testDir, "..", "..");
+const repoRoot = join(cliDir, "..", "..");
+
+let wsDir: string;
+
+beforeEach(() => {
+  wsDir = mkdtempSync(join(tmpdir(), "atelier-workspace-scaffold-test-"));
+});
+
+afterEach(() => {
+  rmSync(wsDir, { recursive: true, force: true });
+});
+
+describe("scaffoldWorkspace", () => {
+  it("ships cascade-merge.md at the path the shims + CLAUDE.md reference", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    const cascade = join(wsDir, ".paradigm/personas/_shared/cascade-merge.md");
+    expect(existsSync(cascade)).toBe(true);
+    expect(readFileSync(cascade, "utf8")).toContain("Brand cascade");
+  });
+
+  it("the shipped cascade-merge is byte-identical to the repo canonical (drift guard)", () => {
+    // The template carries a static copy of the canonical protocol doc. There is
+    // no bundle-time regen, so this equality is the ONLY thing preventing the
+    // copy from silently going stale as the canonical is rewritten — the exact
+    // bug class (stale duplicate) the source retro was written about.
+    const canonical = readFileSync(
+      join(repoRoot, ".paradigm/personas/_shared/cascade-merge.md"),
+      "utf8",
+    );
+    const templateCopy = readFileSync(
+      join(cliDir, "templates/workspace/.paradigm/personas/_shared/cascade-merge.md"),
+      "utf8",
+    );
+    expect(templateCopy).toBe(canonical);
+  });
+
+  it("ships the SETUP runbook and routes 'get me set up' to it from CLAUDE.md", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    const setup = join(wsDir, "SETUP.md");
+    expect(existsSync(setup)).toBe(true);
+    const setupBody = readFileSync(setup, "utf8");
+    // The runbook must cover the render-critical prerequisites and lean on the
+    // verified Hyperframes-native checker (`hyperframes doctor` covers ffmpeg +
+    // ffprobe + Chrome). Chrome is render-critical and easy to forget.
+    for (const required of ["Node", "Hyperframes", "doctor", "ffmpeg", "Chrome"]) {
+      expect(setupBody).toContain(required);
+    }
+
+    // CLAUDE.md must wire the trigger phrase to the runbook, or the creator's
+    // "get me set up" request won't reliably reach SETUP.md.
+    const claudeMd = readFileSync(join(wsDir, "CLAUDE.md"), "utf8");
+    expect(claudeMd).toContain("SETUP.md");
+    expect(/get (me )?set ?up/i.test(claudeMd)).toBe(true);
+  });
+
+  it("scaffolds the three persona shims", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    for (const p of ["quill", "lux", "iris"]) {
+      expect(existsSync(join(wsDir, `.claude/agents/atelier-${p}.md`))).toBe(true);
+    }
+  });
+
+  it("no shim references an in-workspace skills path that isn't shipped", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    for (const p of ["quill", "lux", "iris"]) {
+      const shim = readFileSync(join(wsDir, `.claude/agents/atelier-${p}.md`), "utf8");
+
+      // Every reference the shim makes must resolve. We only ship cascade-merge
+      // under .paradigm/personas/; skills are referenced via the global notebook.
+      // So any `.paradigm/personas/<p>/skills/` mention MUST be explicitly framed
+      // as a dev-repo aside — never presented as the canonical workspace path.
+      // (We require the "dev repo" qualifier specifically; the `~/.paradigm/
+      // notebooks/` line is always present on line 19-20 so it can't discriminate.)
+      const skillsRefs = shim.match(/\.paradigm\/personas\/\w+\/skills\//g) ?? [];
+      if (skillsRefs.length > 0) {
+        expect(
+          /dev repo/i.test(shim),
+          `atelier-${p}.md references an in-workspace skills path without ` +
+            `framing it as a dev-repo aside`,
+        ).toBe(true);
+      }
+
+      // The cascade protocol it links to must actually exist in the workspace.
+      if (shim.includes(".paradigm/personas/_shared/cascade-merge.md")) {
+        expect(
+          existsSync(join(wsDir, ".paradigm/personas/_shared/cascade-merge.md")),
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("re-scaffold refreshes cascade-merge but preserves authored brand artifacts", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    // Creator edits a brand artifact + the shipped cascade doc.
+    const design = join(wsDir, "_brand/DESIGN.md");
+    writeFileSync(design, "# MY AUTHORED BRAND\n");
+    const cascade = join(wsDir, ".paradigm/personas/_shared/cascade-merge.md");
+    writeFileSync(cascade, "stale hand-edit\n");
+
+    const result = scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    // Authored content is preserved (skip-if-exists).
+    expect(readFileSync(design, "utf8")).toBe("# MY AUTHORED BRAND\n");
+    expect(result.skipped).toContain("_brand/DESIGN.md");
+
+    // Templated reference doc is refreshed back to canonical.
+    expect(readFileSync(cascade, "utf8")).toContain("Brand cascade");
+    expect(result.updated).toContain(".paradigm/personas/_shared/cascade-merge.md");
+  });
+});

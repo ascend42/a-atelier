@@ -60,5 +60,8 @@ style. If a beat can't fit that shape, split it. Iris's HTML uses
 
 ## Full reference
 
-- Skills: `.paradigm/personas/lux/skills/` (walk-asset-packs.md is canonical)
-- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md`
+- Skills / knowledge: `~/.paradigm/notebooks/lux/` — your canonical notebook
+  entries (the Atelier dev repo also carries authored skill docs under
+  `.paradigm/personas/lux/skills/`, e.g. `walk-asset-packs.md`)
+- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md` (shipped in
+  this workspace)

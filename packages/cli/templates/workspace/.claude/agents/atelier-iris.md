@@ -66,7 +66,10 @@ externally).
 
 ## Full reference
 
-- Skills: `.paradigm/personas/iris/skills/` —
-  `scaffold-hyperframes-index-html.md` is the canonical HTML template
-- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md`
+- Skills / knowledge: `~/.paradigm/notebooks/iris/` — your canonical notebook
+  entries (the Atelier dev repo also carries authored skill docs under
+  `.paradigm/personas/iris/skills/`, e.g. `scaffold-hyperframes-index-html.md`,
+  the canonical HTML template)
+- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md` (shipped in
+  this workspace)
 - Hyperframes docs: https://hyperframes.mintlify.app/quickstart
