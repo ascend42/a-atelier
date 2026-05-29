@@ -45,7 +45,7 @@ aspects:
       - core-invariant
       - ordering
     anchors:
-      - packages/canvas/src/render-frame.ts:56-66
+      - packages/canvas/src/render-frame.ts:75-85
     enforcement: iterate effList in resolution order
   save-restore-per-layer:
     description: Each layer is wrapped in a single ctx.save()/ctx.restore() pair, so all transform-stack, globalAlpha, blend-mode, shadow, and clip mutations are scoped to that layer and never leak into the next. Skip the restore and every subsequent layer inherits stale transforms.
@@ -53,8 +53,8 @@ aspects:
       - core-invariant
       - transform
     anchors:
-      - packages/canvas/src/render-frame.ts:91-92
-      - packages/canvas/src/render-frame.ts:213
+      - packages/canvas/src/render-frame.ts:110-111
+      - packages/canvas/src/render-frame.ts:232
     enforcement: balanced save/restore per layer
   transform-stack-anchor-order:
     description: Transform order is translate(x,y) → translate(+anchorPixel) → rotate → scale → translate(-anchorPixel), so rotation and scale pivot around the anchor point (anchorX*width, anchorY*height) rather than the layer origin. Rotation combines explicit rotation + motionPathAngle, and the rotate/scale block is skipped entirely when both are identity.
@@ -63,7 +63,7 @@ aspects:
       - transform
       - ordering
     anchors:
-      - packages/canvas/src/render-frame.ts:104-122
+      - packages/canvas/src/render-frame.ts:123-141
     enforcement: anchor translate around rotate/scale
   ancestor-transforms-root-first:
     description: applyAncestorTransforms walks the parentId chain collecting ancestors child→root, then applies them in REVERSE (root first, direct parent last) so child layers inherit the composed parent transform. A visited Set guards against circular parentId references looping forever.
@@ -72,7 +72,7 @@ aspects:
       - transform
       - edge-case
     anchors:
-      - packages/canvas/src/render-frame.ts:285-319
+      - packages/canvas/src/render-frame.ts:304-338
     enforcement: reverse-apply chain + visited-set guard
   tint-offscreen-multiply-mask:
     description: 'Tint is only applied when ctx.createOffscreen exists and tint.amount > 0. The technique: render content to an offscreen canvas, multiply-fill the tint color over it, then destination-in re-render of the content as an alpha mask so the tint only colors opaque pixels; finally the original is drawn and the tinted offscreen overlaid at globalAlpha = tint.amount. Content is re-rendered up to three times.'
@@ -81,7 +81,7 @@ aspects:
       - technique
       - gotcha
     anchors:
-      - packages/canvas/src/render-frame.ts:137-211
+      - packages/canvas/src/render-frame.ts:156-230
     enforcement: offscreen multiply + destination-in mask
   early-skip-invisible-layers:
     description: A layer is skipped before any save/transform when eff.visible is false OR eff.opacity <= 0, so fully hidden/transparent layers cost nothing and emit no canvas state. image layers only render when an imageCache is supplied and video layers only when a videoFrameProvider is supplied.
@@ -89,8 +89,8 @@ aspects:
       - edge-case
       - performance
     anchors:
-      - packages/canvas/src/render-frame.ts:69-73
-      - packages/canvas/src/render-frame.ts:158-165
+      - packages/canvas/src/render-frame.ts:88-92
+      - packages/canvas/src/render-frame.ts:177-184
     enforcement: guard clauses before save
   render-context-no-dom-dependency:
     description: Renderers type their context as the local RenderContext interface (canvas-types.ts), never DOM lib CanvasRenderingContext2D, so the canvas package compiles and runs without a DOM lib — the same code drives browser canvas, OffscreenCanvas, and node/export backends. drawImage sources are passed as unknown to bridge the typing gap.
@@ -117,7 +117,7 @@ aspects:
       - feature-detection
     anchors:
       - packages/canvas/src/renderers/shape-renderer.ts:77-94
-      - packages/canvas/src/render-frame.ts:222-231
+      - packages/canvas/src/render-frame.ts:241-250
     enforcement: feature-detect roundRect with fallback
   path-needs-two-points:
     description: renderPath returns immediately if fewer than 2 points, and a segment is drawn as a bezierCurveTo only when the previous point has an out handle AND the current point has an in handle — otherwise it degrades to a straight lineTo. Handle coordinates are relative offsets added to the anchor point.
