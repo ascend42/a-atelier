@@ -1,0 +1,48 @@
+id: TD-2026-09-11-136
+timestamp: '2026-09-11T10:27:41.318Z'
+title: Evaluate DaVinci Resolve MCP as an alternative renderer-slot backend
+decision: >-
+  Adopt davinci-resolve-mcp (samuelgursky/davinci-resolve-mcp, MIT) as an experimental alternative renderer/finishing
+  backend to evaluate alongside Hyperframes in the atelier v2 renderer slot, with Iris as the render-driver. Stand up an
+  experimental (unverified) Iris skill bundle + KB guide now; first live run on the creator's Resolve Studio machine,
+  then promote skills experimental→canonical and record the run as lore. We may fork it; if we do, priority hardening is
+  path-root confinement + default safe_mode on.
+rationale: >-
+  A source-level safety + fork-readiness audit (2026-09-11) found the project legitimate and security-aware (verdict
+  SAFE-WITH-CAVEATS): no shell/eval/telemetry, no npm install hooks, strong bridge HMAC auth + secret hygiene, careful
+  installer. Its main risk is a trust-model gap (unconfined agent-supplied filesystem paths; safe_mode off by default;
+  confirm_token is a self-serve echo, not a human gate) — manageable by Iris deriving all paths from the project and
+  turning safety rails on. Atelier v2 is explicitly not a renderer and delegates the renderer slot (currently
+  Hyperframes/HTML-CSS); a mature timeline NLE is worth comparing there for finishing-grade codecs, native subtitles,
+  color, and loudness/QC. Skills are authored now but marked unverified because the house convention grounds skills in
+  validated runs — we haven't installed or run it, and testing happens on another machine.
+participants:
+  - id: ascend
+    role: human
+    stance: proposed
+  - id: iris-composer
+    role: agent
+    stance: supported
+alternatives_considered:
+  - option: Write no skills until a validated live run
+    rejected_because: >-
+      Owner chose full speculative playbooks now; grounding them in the real audited tool surface + explicit ⚠ VERIFY
+      markers captures the plan while the test machine is elsewhere
+  - option: Adopt as-is without a fork
+    rejected_because: >-
+      Usable for evaluation, but the unconfined-path + safe_mode-off posture is worth hardening if it becomes a real
+      dependency
+  - option: Stay Hyperframes-only
+    rejected_because: >-
+      The point is to compare a mature NLE's finishing pipeline against the HTML/CSS renderer with real evidence, not
+      assume
+symbols_affected:
+  - '#iris-composer'
+status: active
+tags:
+  - resolve
+  - renderer-slot
+  - backend
+  - hyperframes
+  - audit
+  - experimental

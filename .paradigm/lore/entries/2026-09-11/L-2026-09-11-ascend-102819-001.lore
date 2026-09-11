@@ -1,0 +1,79 @@
+id: L-2026-09-11-ascend-102819-001
+type: insight
+timestamp: '2026-09-11T10:28:19.271Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: Audited davinci-resolve-mcp for safety + fork; stood up experimental Iris renderer-slot backend
+summary: 'Four-part source audit of samuelgursky/davinci-resolve-mcp (MIT, v2.224.2) ahead of testing/forking it as an alternative renderer backend to Hyperframes. Verdict SAFE-WITH-CAVEATS: security-aware project, no shell/eval/telemetry/install-hooks, strong bridge HMAC + secret hygiene; main risk is a trust-model gap — unconfined agent-supplied filesystem paths, safe_mode off by default, confirm_token is a self-serve echo not a human gate. Authored an experimental (unverified) Iris skill bundle + KB guide grounded in the real tool surface, and recorded decision TD-2026-09-11-136. First live run pending on the creator''s Resolve machine.'
+symbols_touched:
+  - '#iris-composer'
+files_created:
+  - .paradigm/personas/iris/skills/resolve-backend/README.md
+  - .paradigm/personas/iris/skills/resolve-backend/setup-and-safety-davinci-resolve-mcp.md
+  - .paradigm/personas/iris/skills/resolve-backend/map-storyboard-to-resolve-project.md
+  - .paradigm/personas/iris/skills/resolve-backend/compose-captions-and-overlays-in-resolve.md
+  - .paradigm/personas/iris/skills/resolve-backend/run-resolve-render-and-verify.md
+  - .paradigm/university/content/notes/N-davinci-resolve-mcp-renderer-slot-evalua.md
+files_modified:
+  - .paradigm/personas/iris/skills/README.md
+learnings:
+  - 'davinci-resolve-mcp is SAFE-WITH-CAVEATS: the real risk is a trust-model gap (unconfined agent-supplied FS paths + safe_mode off + self-serve confirm_token), not malware — so the operating rule is derive every path from the project and turn safety rails on.'
+  - Resolve reports a render Complete even on a near-empty file; render.verify_output (ffprobe vs timeline extent) is the mandatory check — direct analog of the Hyperframes file-too-small trap.
+  - 'Resolve is frame-native at a project fps: every atelier timing window becomes round(seconds*fps); pin the rate before any clip lands.'
+  - The clean architecture to mirror if we fork already exists in-repo as src/granular/ (11 modules); server.py is just an un-split god-file.
+verification:
+  status: partial
+  details:
+    source_audit: complete (4 parallel deep-dives + direct greps)
+    live_run: untested — no Resolve on this machine; pending creator's machine
+    skills: authored, unverified (⚠ VERIFY markers throughout)
+tags:
+  - resolve
+  - audit
+  - renderer-slot
+  - hyperframes
+  - backend
+  - experimental
+  - security
+body: |-
+  ## Context
+
+  Owner wants to test (on another machine) and likely fork davinci-resolve-mcp, evaluating DaVinci Resolve as an alternative backend in the atelier v2 renderer slot (Hyperframes is mainline). Atelier v2 is not a renderer — it feeds one — so Resolve competes with Hyperframes for that slot. Iris is the render-driver in both worlds, so she owns it.
+
+  ## Audit findings (verdict: SAFE-WITH-CAVEATS)
+
+  Clean: no outbound network beyond an opt-in GitHub version check (no machine data sent); no npm pre/postinstall hooks (npm i runs nothing); no shell=True anywhere (subprocess is argv-array); no eval/exec on dynamic input (compile() is syntax-check only); the ollama `curl|sh` string is a display-only install suggestion. Installer backs up + merges editor configs, no secret handling. Node bootstrapper locates server.py package-relative (not cwd), deps are all real/mainstream (no typosquat). Bridge auth is genuinely good: HMAC-SHA256 over canonical JSON, constant-time compare, secret never on the wire, timestamp-skew + one-use nonce replay defense, loopback-only. Secret hygiene textbook: token_urlsafe(32), 0o600, refuses loose-perm bridge.json.
+
+  Caveats (all about threat model, not backdoors):
+  1. Unconfined filesystem paths — neither main server nor bridge op_call confines agent-supplied import/export/render/delete paths; a tool call can write/delete anywhere the OS user can. Mitigation baked into skills: Iris derives every path from the project, never echoes untrusted content into a path arg.
+  2. safe_mode ships False; ~80/108 destructive actions have no risk rule; confirm_token is a self-serve mint→resubmit echo with no human-in-the-loop. Guards accidents, not a misdirected agent.
+  3. Installer `auto` update policy git-pulls then os.execv-restarts unattended — keep prompt/never, esp. on a fork.
+  4. Bare-name PATH resolution (python3/ffmpeg/unzip/pg_dump) — poisoned PATH is main unintended-exec route.
+
+  ## Fork-readiness
+
+  server.py is a 1.5MB/32.8k-line god-file (only 37 tools; 658 inlined helpers) — but src/granular/ already ships the clean 11-module decomposition to mirror. analysis_dashboard.py (717KB) embeds a whole HTML/JS frontend as Python heredocs. Hybrid Python+Node doubles the surface with duplicated dep lists; resolve-advanced/vendor/ (3.3MB) is mislabeled first-party code. 738KB CHANGELOG + 7 generated agent-rule trees shipped in npm files:. Strengths: 250 offline pytest files that stub Resolve + real CI drift guards; api_truth.py is intentional data-as-code. Fork priority: path confinement + safe_mode default-on, then retarget URLs, then refactor.
+
+  ## The atelier→Resolve mapping (grounded in the real tool surface)
+
+  STORYBOARD beat (timing window) → timeline item at a record-frame range via media_pool.create_timeline_from_clips(clip_infos); Resolve counts in frames at a project fps so every "at Xs for Ys" beat = round(s*fps). Captions → subtitle track or Fusion Text+. Brand look → color page/CDL. Render → render_presets → delivery_workflow (probe→validate→dry-run set→prepare job) → render.start → verify_output. verify_output (ffprobe vs timeline extent) is mandatory because Resolve reports Complete on near-empty renders — the direct analog of the Hyperframes "file suspiciously small" trap.
+
+  ## What was created
+
+  - KB guide: .paradigm/university/content/notes/N-davinci-resolve-mcp-renderer-slot-evalua.md
+  - Iris experimental skill bundle: .paradigm/personas/iris/skills/resolve-backend/ (README + setup-and-safety + map-storyboard-to-resolve-project [keystone] + compose-captions-and-overlays + run-resolve-render-and-verify)
+  - Pointer added to .paradigm/personas/iris/skills/README.md
+  - Decision TD-2026-09-11-136 (companion lore L-2026-09-11-ascend-102741-993)
+
+  ## Next
+
+  First live run on the creator's Resolve Studio machine. Confirm every ⚠ VERIFY line (clip_infos key names, subtitle/config action names, render param shapes), promote skills experimental→canonical, and record the run + real failure modes as lore. After a successful render, capture Resolve-vs-Hyperframes parity (codec quality, caption fidelity, effort, wall-clock) as evidence for the renderer-slot decision.
+linked_lore:
+  - L-2026-09-11-ascend-102741-993
+confidence: 0.85
+git_context:
+  ref: bfed7e10985810bbd93754eb58288326896122a2
+  branch: main
+  dirty: true

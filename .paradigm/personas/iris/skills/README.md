@@ -32,6 +32,17 @@ keystone runs again from the top — re-scaffold is the safe operation.
 Hand-edits to `index.html` are diffed and preserved or surfaced before
 overwrite.
 
+## Experimental — alternative renderer backends
+
+Atelier feeds a renderer; Hyperframes is the mainline one. Skills for
+evaluating **other** backends in the same slot live in subfolders and are
+`experimental` (unverified) until a live run promotes them:
+
+- [`resolve-backend/`](./resolve-backend/README.md) — driving **DaVinci
+  Resolve** (a timeline NLE) over `davinci-resolve-mcp` as an alternative
+  finishing/render backend. Grounded in a source audit, not yet a live run.
+  See KB guide `davinci-resolve-mcp — renderer-slot evaluation`.
+
 ## Future canonical skills (stubs for later sessions)
 
 - `compose-multi-clip-source-video.md` — sequencing two or more source

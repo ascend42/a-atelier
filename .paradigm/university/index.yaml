@@ -1,6 +1,6 @@
 version: '1.0'
-generatedAt: '2026-05-28T18:57:39.967Z'
-totalContent: 53
+generatedAt: '2026-09-11T10:27:21.777Z'
+totalContent: 54
 entries:
   - id: N-atel-001-first-render
     title: Render your first animation
@@ -508,6 +508,25 @@ entries:
     symbols: []
     difficulty: advanced
     file: content/notes/N-atel-801-symbiotic-loop.md
+  - id: N-davinci-resolve-mcp-renderer-slot-evalua
+    title: davinci-resolve-mcp — renderer-slot evaluation
+    type: guide
+    author: ascend
+    created: '2026-09-11'
+    updated: '2026-09-11'
+    tags:
+      - resolve
+      - backend
+      - renderer
+      - mcp
+      - audit
+      - hyperframes
+      - iris
+      - experimental
+    symbols:
+      - '#iris-composer'
+    difficulty: advanced
+    file: content/notes/N-davinci-resolve-mcp-renderer-slot-evalua.md
   - id: Q-atel-001-orientation
     title: 'ATEL-001: Hello Atelier — Orientation'
     type: quiz
