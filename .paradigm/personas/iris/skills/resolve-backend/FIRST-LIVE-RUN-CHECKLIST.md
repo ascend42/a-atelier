@@ -14,10 +14,17 @@
 
 ## Phase 0 — Preconditions (do once, before any tool call)
 
-- [ ] **DaVinci Resolve Studio** installed and **open** (free edition's
-      scripting API is restricted — must be Studio).
-- [ ] **Preferences → System → General → "External scripting using" = Local**
-      (scripting is OFF by default). → CONFIRMED exact path this version: `____`
+- [ ] **DaVinci Resolve installed + open.** Edition/version decides the path:
+      - **Studio** (any recent version) → external scripting works directly. Preferred.
+      - **Free ≤ 21.0.x** → works via the in-app bridge (below). Validated on 21.0.3.7.
+      - **Free 21.1+** → ❌ STOP: Python scripting removed from free; a fresh
+        download today is past this. Get Studio, or source an older ≤21.0.x free build.
+      → USING edition + version: `____`
+- [ ] **Studio path:** Preferences → System → General → "External scripting
+      using" = **Local** (OFF by default). → CONFIRMED exact path this version: `____`
+- [ ] **Free path:** `python scripts/install_resolve_bridge.py` → restart Resolve
+      → Workspace ▸ Scripts ▸ `resolve_bridge` lists + runs. (macOS: set
+      `PYTHON3HOME` via `launchctl setenv`, not `export`.) → CONFIRMED bridge up: `____`
 - [ ] Repo cloned **outside** the atelier repo; installed via
       `python install.py` (run `--dry-run` first to preview writes).
 - [ ] Update policy is **`prompt` or `never`**, NOT `auto`. → CONFIRMED: `____`
@@ -33,6 +40,10 @@
 Run these and confirm each returns sensibly before ANY mutation.
 
 - [ ] `resolve_is_running()` → true?  → CONFIRMED: `____`
+- [ ] `resolve_control(action="is_studio")` → Studio or free? **Sets
+      expectations for the whole run** — on free, Neural-Engine/AI/HDR/NR/
+      >4K tools will refuse (`success:false`/`capability_gaps`), core
+      pipeline still works.  → CONFIRMED edition: `____`
 - [ ] `resolve_control(action="get_version")` → version string?
       → CONFIRMED action name (or real one): `____`
 - [ ] `project_manager(action="list")` → your projects?  → CONFIRMED: `____`

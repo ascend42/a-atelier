@@ -2,8 +2,10 @@
 
 **Owner:** #iris-composer
 **Kind:** experimental (unverified — grounded in source audit, not a live run)
-**Inputs:** A machine with **DaVinci Resolve Studio** installed (the free
-edition's scripting API is restricted). Python 3.10+ and Node ≥20.9.
+**Inputs:** A machine running **DaVinci Resolve** — **Studio** (any recent
+version, direct external scripting) **or free ≤ 21.0.x** (via the in-app
+bridge; see below). **Free 21.1+ does NOT work** (Blackmagic moved Python
+scripting to Studio). Python 3.10–3.12 and Node ≥20.9.
 **Outputs:** A configured, running `davinci-resolve-mcp` stdio server that
 Iris can call, hardened per the audit, plus a confirmed live connection.
 
@@ -67,11 +69,46 @@ python install.py            # add --dry-run first to preview every write
 
 ```
 resolve_is_running()                         → is Resolve up + scriptable?
+resolve_control(action="is_studio")          → Studio or free? decides which half of the surface is live
 resolve_control(action="get_version")        → ⚠ VERIFY action name
 resolve_control(action="api_truth", ...)     → query documented API quirks
 project_manager(action="list")               → projects visible
 project_manager(action="get_current")        → what's open
 ```
+
+**Call `is_studio` FIRST-of-substance.** On free, Studio-gated tools
+(Neural-Engine AI: Magic Mask / Smart Reframe; Voice Isolation / Dialogue
+Leveler; Noise Reduction; HDR; >4K & 10-bit delivery) return
+`success:false` / `capability_gaps` rather than crashing — but knowing the
+edition up front means Iris plans the storyboard within the available
+surface instead of discovering gaps mid-render. The **core pipeline**
+(project → media pool → beats → captions/`Text+` → 1080p H.264 render +
+verify) works on **both** editions.
+
+## Free edition — the in-app bridge (only ≤ 21.0.x)
+
+Free blocks *external* scripting, so the server reaches it through a script
+that runs *inside* Resolve and re-exports the live object over an
+authenticated loopback listener:
+
+```sh
+python scripts/install_resolve_bridge.py
+# restart Resolve → open a project → Workspace ▸ Scripts ▸ resolve_bridge
+```
+
+- **⚠ Version:** validated on free **21.0.3.7**. **Free 21.1+ removed `.py`
+  from the Scripts menu → no bridge.** A fresh Blackmagic download today is
+  past 21.1, so for free you must deliberately source an older ≤ 21.0.x
+  installer — otherwise use Studio.
+- **macOS gotcha:** Resolve finds Python only at `$PYTHON3HOME` or
+  `/usr/local/bin/python3` (not Homebrew/pyenv/conda). Set it with
+  `launchctl setenv PYTHON3HOME "$(python3 -c 'import sys; print(sys.prefix)')"`
+  (not `export` — Resolve launches from the Dock), restart Resolve; note
+  `launchctl setenv` does not survive a reboot. The prefix needs both
+  `lib/libpython3.X.dylib` and an unversioned `bin/python3`.
+- Once the listener is up it's used automatically; `DAVINCI_RESOLVE_BRIDGE=1`
+  forces it as the only transport (so a stalled bridge reports its own fault
+  instead of silently falling back).
 
 If `resolve_is_running` is false: open DaVinci Resolve Studio, and ensure
 **Preferences → System → General → "External scripting using" = Local**

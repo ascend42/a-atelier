@@ -72,6 +72,38 @@ Priority hardening for a fork: (1) add path-root confinement + default `safe_mod
 
 Key insight: **Resolve counts in frames at a project fps**, so every "at Xs for Ys" beat becomes a frame range (`round(s*fps)`). And Resolve reports a render `Complete` even when the file is near-empty — so `render.verify_output` (ffprobe vs timeline extent) is mandatory, the direct analog of the Hyperframes "file suspiciously small" check.
 
+## Free vs Studio (from the MCP standpoint)
+
+Two layers of limitation. **The MCP detects the edition** — `resolve_control(action="is_studio")` (→ `IsStudio()`) — and **degrades gracefully**: Studio-only calls return `success:false` with Resolve's own reason, or surface as `capability_gaps`. Free never crashes; gated tools just refuse with an explanation. Have Iris call `is_studio` as the first probe so a run knows which half of the surface is live.
+
+**Layer 1 — access (can you connect at all):**
+
+| Setup | Works? | How |
+|---|---|---|
+| Studio (paid), any recent version | ✅ | External scripting directly (baseline 19.1.3; tested through 21.x) |
+| **Free ≤ 21.0.x** | ✅ | In-app bridge only (validated on free **21.0.3.7**) |
+| **Free 21.1+** | ❌ | Resolve 21.1 moved Python scripting to Studio — free Scripts menu no longer lists `.py`; bridge is dead |
+
+**⚠ Version requirement (the thing that bites):** a *fresh* Blackmagic download today is well past 21.1, which **will not work on free**. For the free path you must deliberately source an **older ≤ 21.0.x** installer (21.0.3 is the known-good build). Otherwise use Studio, where version is not the constraint.
+
+**Layer 2 — capability once connected.**
+
+Works on free (the core renderer-slot plumbing): `project_manager`/`project_settings`, `media_storage`/`media_pool`/import, `create_timeline_from_clips`, `timeline`/`edit_engine`/`timeline_item`, markers/takes, subtitles, `fusion_comp`/`Text+` titles, basic color (CDL, node graph, `safe_apply_drx`), and `render`/`delivery_workflow`/`verify_output` **within free's export ceiling**.
+
+Studio-gated → the MCP tool refuses on free:
+
+| Capability | Surface |
+|---|---|
+| Neural Engine AI: Magic Mask, Smart Reframe, Object Removal, Face Refinement, Detect Scene Cuts | `timeline_item_color`, `timeline_ai` |
+| AI Extras pack: IntelliSearch, Slate, `GenerateSpeech`, Motion Deblur (report `success:false` if pack absent, even on Studio) | `media_analysis`, `timeline_ai` |
+| Auto-transcription / speaker detection (Resolve 21 AI) — **not needed; atelier runs whisper upstream** | `media_analysis` |
+| Voice Isolation, Dialogue Leveler (Fairlight AI) | audio actions |
+| Noise Reduction (temporal/spatial), HDR / Dolby Vision, film grain, most Resolve FX | color tools, `AnalyzeDolbyVision` |
+| Delivery ceiling: free caps at **UHD/4K max**, no 10-bit HEVC, narrower codec set | `render` presets |
+| Multi-user collaboration, remote/network rendering, Super Scale, stereo 3D | `project_manager` collab, render nodes |
+
+**Punchline for the evaluation:** the core pipeline (project → media pool → beats → captions/`Text+` → 1080p H.264 render + verify) runs on **free ≤ 21.0.x** — enough to prove the integration. But the gated features (Smart Reframe for multi-aspect, Voice Isolation / Dialogue Leveler for clean VO, NR, HDR, >4K/10-bit) are **exactly the finishing reasons to pick Resolve over Hyperframes**. Free validates the plumbing; **Studio is where the argument for this backend actually lives.**
+
 ## Status + where to go next
 
 The Iris `resolve-backend/` skills are **`experimental` (unverified)** — authored from the audit, not a live run. Lines marked **⚠ VERIFY** are the assumptions to confirm on first contact (exact `clip_infos` keys, subtitle/config action names, render param shapes), after which the bundle promotes to `canonical` and the confirmed shapes replace the inferred ones. First live run happens on the creator's Resolve machine; record it as lore.

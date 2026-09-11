@@ -25,7 +25,7 @@ driven over MCP — as an **alternative backend in the same slot**.
 | Grade / brand look | CSS | color page / CDL / `color_grade_workflow` |
 | Output | MP4/MOV/WebM-alpha/PNG-seq | ProRes/DNxHR/H.264/H.265 via render presets + QC gate |
 | Strength | fast iteration, deterministic, web-native | finishing-grade codecs, real NLE ops, loudness/QC |
-| Cost | zero external app | requires **Resolve Studio** running + the MCP bridge |
+| Cost | zero external app | requires **Resolve** running (Studio, or free ≤ 21.0.x via in-app bridge — free 21.1+ won't connect) |
 
 The open question this bundle is built to answer: **does a real NLE's
 timeline model earn its weight over the HTML/CSS renderer for
