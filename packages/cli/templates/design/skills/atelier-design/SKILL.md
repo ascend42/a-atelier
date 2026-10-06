@@ -101,25 +101,43 @@ decides.
 
 ### Terminal mode
 
+In the terminal, **the "See reference" button is a real answer option.**
+A printed hint is not enough — creators answer the question widget and
+never see it.
+
 Per board, use AskUserQuestion (fall back to a numbered list):
 
-- question = the board's question; options = Luna's options, recommended
-  first and labeled "(Recommended)"; description = one line + key tokens.
-- Before asking, print the board compactly: option names, one-liners,
-  and a line: `Say "show me <option>" (or "show me all") for a reference.`
-- The creator can answer with a pick, a mix ("A's type, C's scale"), a
-  note, "skip", or "show me …".
+- question = the board's question.
+- options = Luna's options (max 3 in terminal mode), recommended first
+  and labeled "(Recommended)"; description = one line + key tokens.
+- **Last option, always: `See reference`** — description: "Render all
+  of these side by side before deciding." In Deep mode, label it
+  `See reference (Deep)` and say what will be built ("your deal desk in
+  each palette, live").
+- The free-text "Other" answer covers mixes ("A's type, C's scale"),
+  notes, and "skip".
 
-**References — only on request.** Never render before asked. When asked:
+When the creator picks **See reference**: render the board (below), open
+it, then ask the same board again **without** the See reference option.
 
-- Quick: write a self-contained HTML file to
-  `.atelier/sessions/<id>/refs/<board>-<option>.html` that reproduces the
-  relevant existing screen/component markup with the option's tokens
-  applied as CSS custom properties. Use real copy from the repo.
-- Deep: build the prototype component / specimen page / motion demo
-  (CSS animation) in the same folder; side-by-side for "show me all".
-- Open it (`open <file>` on macOS) and continue. Never modify repo
-  source to make a reference.
+**References — only on request.** Never render before asked. When asked,
+write ONE comparison page per board,
+`.atelier/sessions/<id>/refs/<board>.html`: every option side by side,
+labeled, recommended marked. Self-contained HTML/CSS (inline fonts via
+Google Fonts are fine), tokens as CSS custom properties.
+
+- **Quick:** the scope's real screen/component markup and copy, restyled
+  per option.
+- **Deep:** a built, interactive version per option — real layout, real
+  copy, hover/focus states, motion as CSS transitions you can trigger.
+  For motion boards, a replay button.
+- **No UI exists yet (pre-code repos):** synthesize the scope's key
+  screen from the spec/conversation — real entity names, realistic data,
+  the brand assets you found. Never fall back to abstract swatches.
+
+Open it (`open <file>` on macOS), record the board in
+`references_rendered`, and continue. Never modify repo source to make a
+reference.
 
 ### Decisions
 
@@ -139,13 +157,22 @@ the creator oriented with a one-line running tally, e.g.
 ## 5. Close
 
 1. Summarize: decided, decided-by-recommendation, still open.
-2. Write/refresh `.atelier/DESIGN.md` — Luna's narrative of the direction,
-   generated from `design-system.yaml` + decisions + notes.
-3. Taste learning: per learning mode, propose (or silently nominate)
+2. **Render the direction — always, both depths.** Every session ends
+   with a design, not just a record. Compose the decided system applied
+   to the scope's key screen(s) at
+   `.atelier/sessions/<id>/refs/direction.html` (Deep: 2–3 key screens,
+   interactive, plus mobile width if the scope has phone users) and open
+   it. Ask: "Does this look like what you decided?" Treat corrections
+   as notes on the relevant boards and re-render. This page is the
+   approved comp the build is held to.
+3. Write/refresh `.atelier/DESIGN.md` — Luna's narrative of the direction,
+   generated from `design-system.yaml` + decisions + notes, linking the
+   direction render.
+4. Taste learning: per learning mode, propose (or silently nominate)
    patterns for Luna's notebook — e.g. "you picked the denser option
    again". Never write to the home studio without confirmation in
    explicit mode.
-4. Then by verb:
+5. Then by verb:
    - `direct` → continue the original task under the new system. Mika
      implements; afterwards Luna runs a finish review against the
      session's decisions and reports any drift.
@@ -167,7 +194,9 @@ turn the top findings into a `direct` session.
 
 ## Rules
 
-- All options visible immediately; references only on demand.
+- All options visible immediately; references only on demand — and the
+  demand path is always a visible "See reference" option.
+- Every session ends with a rendered direction (`refs/direction.html`).
 - Notes are verbatim.
 - Luna doesn't write `design-system.yaml`; Mika doesn't silently
   overrule Luna. Disagreements go to the creator.
