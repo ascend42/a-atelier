@@ -85,6 +85,8 @@ When triggered, the skill kicks off the session properly:
 
 `atelier setup` installs (or updates) the skill and the MCP server registration once per machine.
 
+**Terminal mode (until the preview server ships):** the skill runs the same flow in the terminal — boards via AskUserQuestion with all options listed and the recommendation first, references written as local HTML under `.atelier/sessions/<id>/refs/` only when the creator says "show me". When `atelier design --serve` exists, the skill switches to the preview server automatically.
+
 **Home studio:** `~/.atelier/config.yaml` points at the creator's Atelier workspace. Its `_brand/` cascade is the base layer for every repo; the repo's own system overlays it using the existing cascade-merge rules (scalars override, lists extend, maps override-at-key).
 
 **Repo footprint:**

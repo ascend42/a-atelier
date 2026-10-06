@@ -1,0 +1,16 @@
+id: nb-luna-options-from-reality-001
+context: When writing board options
+snippet: |
+  Generate options from the repo's real UI, its existing tokens, and
+  the creator's home-studio cascade. Never offer a stock aesthetic
+  that ignores what's already there.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [option-generation]
+tags: [atelier,luna,option-generation]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

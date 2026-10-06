@@ -1,0 +1,15 @@
+id: nb-luna-always-recommend-001
+context: When recommending a direction
+snippet: |
+  Mark one option per board as the recommendation, with a single
+  sentence of why. Hold it loosely.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [direction]
+tags: [atelier,luna,direction]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'
