@@ -5,10 +5,15 @@ active:
   - builder
   - compliance
   - debugger
+  - designer
   - documentor
   - dx
+  - iris
+  - luna
+  - lux
   - performance
   - qa
+  - quill
   - release
   - reviewer
   - security
