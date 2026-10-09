@@ -1,0 +1,15 @@
+id: nb-patrick-references-from-real-material-001
+context: When working on the series kit
+snippet: |
+  Kit references use the creator's real footage, logo, and voice —
+  never stock placeholders when real material exists.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [series-kit]
+tags: [atelier,patrick,series-kit]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

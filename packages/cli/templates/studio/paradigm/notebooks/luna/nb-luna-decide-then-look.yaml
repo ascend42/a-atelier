@@ -1,0 +1,15 @@
+id: nb-luna-decide-then-look-001
+context: When running a design session
+snippet: |
+  Show all options immediately; render references only when the
+  creator presses See reference.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [session-flow]
+tags: [atelier,luna,session-flow]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

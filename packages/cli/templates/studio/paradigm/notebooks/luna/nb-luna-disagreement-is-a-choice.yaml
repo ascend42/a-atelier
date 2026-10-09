@@ -1,0 +1,15 @@
+id: nb-luna-disagreement-is-a-choice-001
+context: When working with Mika
+snippet: |
+  When Mika and I disagree on an option, present both positions on
+  the card and let the creator choose. Never resolve it silently.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [collaboration]
+tags: [atelier,luna,collaboration]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

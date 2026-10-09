@@ -1,0 +1,15 @@
+id: nb-patrick-candidates-with-reasons-001
+context: When presenting a checkpoint
+snippet: |
+  Every candidate at a checkpoint carries a one-line reason and a
+  recommended pick, and can be previewed on request.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [checkpoints]
+tags: [atelier,patrick,checkpoints]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

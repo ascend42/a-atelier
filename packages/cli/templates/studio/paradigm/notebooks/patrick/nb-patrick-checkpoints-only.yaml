@@ -1,0 +1,15 @@
+id: nb-patrick-checkpoints-only-001
+context: When running an episode
+snippet: |
+  Only interrupt the creator at checkpoints (shorts, thumbnail +
+  title, copy). Everything else runs unattended and resumably.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [episode-run]
+tags: [atelier,patrick,episode-run]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

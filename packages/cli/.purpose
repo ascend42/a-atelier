@@ -266,6 +266,17 @@ components:
       - cli
       - v2
     file: src/commands/workspace.ts
+  '#cli-setup':
+    description: 'atelier setup [--home <path>] [--force] [--json] — installs Atelier Design + Produce for every repo on the machine (docs/design-studio-plan.md and docs/content-studio-plan.md, milestone 1 of each). runSetup({ homeDir?, home?, cwd?, force? }) copies templates/studio/ into the user home with {{ISO_NOW}} substitution: skills/** → ~/.claude/skills/** (the user-level atelier-design skill — "can we use atelier design for this" kicks off a Luna + Mika session in any repo — and the atelier-produce skill — #patrick-producer runs series kit sessions and episode runs, with sourced platform rules in reference/platforms.md) and agents/** → ~/.claude/agents/** (atelier-luna, atelier-patrick shims) are ALWAYS refreshed; paradigm/** → ~/.paradigm/** (#luna-design-director and #patrick-producer agents, state, notebook seeds) is skip-if-exists unless --force, because it accumulates learning. Writes ~/.atelier/config.yaml preserving unknown keys; `home:` (the Atelier v2 workspace whose _brand/ cascade sessions inherit) comes from --home (validated: workspace.atelier + _brand/), else findHomeStudio(cwd) walking up, else the existing value, else null (repo-only). Returns { written, updated, skipped, configPath, homeStudio, homeStudioSource }. homeDir is injectable so tests never touch the real home. Drift guard in setup.test.ts: templated Luna and Patrick notebook files match the canonical .paradigm/personas/{luna,patrick}/notebook.yaml entries.'
+    tags:
+      - setup
+      - atelier-design
+      - atelier-produce
+      - templates
+      - personas
+      - skills
+      - cli
+    file: src/commands/setup.ts
   '#artifact-templates':
     description: 'Canonical empty templates for DESIGN.md / SCRIPT.md / STORYBOARD.md, exported as DESIGN_TEMPLATE / SCRIPT_TEMPLATE / STORYBOARD_TEMPLATE TS string constants plus the ARTIFACT_TEMPLATES registry. Used by `atelier artifacts scaffold` to write a creator-fillable starting point with TODO markers and Markdown comments inline. INVARIANT: every template is schema-valid (placeholders use defaults sufficient to satisfy the schema package mins — voice.descriptors >= 3, palette/typography/logos/hook/cta non-empty, storyboard window.end_s > start_s, techniques drawn from TECHNIQUE_LIBRARY_V1) so parseDesign/parseScript/parseStoryboard succeed on first save; the triple ALSO cross-validates clean via validateArtifactSet (matching hook-1/cta-1 ids between SCRIPT and STORYBOARD, valid slot refs). Templates are pure TS constants so they version-lock to the consuming code and tree-shake — no external .md files.'
     tags:

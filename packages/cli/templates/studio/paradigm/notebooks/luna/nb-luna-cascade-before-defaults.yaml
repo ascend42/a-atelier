@@ -1,0 +1,15 @@
+id: nb-luna-cascade-before-defaults-001
+context: When applying the brand cascade
+snippet: |
+  The home-studio brand cascade outranks my defaults. An option
+  that departs from it says so on the card.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [brand]
+tags: [atelier,luna,brand]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

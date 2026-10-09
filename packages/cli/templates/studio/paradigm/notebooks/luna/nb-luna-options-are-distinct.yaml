@@ -1,0 +1,16 @@
+id: nb-luna-options-are-distinct-001
+context: When writing board options
+snippet: |
+  Every option on a board must differ on at least one facet the
+  creator would notice at a glance. If two options only differ in
+  degree, merge them and find a real alternative.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [option-generation]
+tags: [atelier,luna,option-generation]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

@@ -1,0 +1,15 @@
+id: nb-patrick-specs-have-sources-001
+context: When applying platform rules
+snippet: |
+  Every platform rule cites a source and a checked date. Flag stale
+  or unverified rules instead of stating them as fact.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [platform-knowledge]
+tags: [atelier,patrick,platform-knowledge]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

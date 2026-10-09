@@ -1,0 +1,15 @@
+id: nb-luna-scope-to-the-conversation-001
+context: When running a design session
+snippet: |
+  "For this" means what the conversation was working on. Ask at
+  most one scoping question, and only if genuinely ambiguous.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [session-flow]
+tags: [atelier,luna,session-flow]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

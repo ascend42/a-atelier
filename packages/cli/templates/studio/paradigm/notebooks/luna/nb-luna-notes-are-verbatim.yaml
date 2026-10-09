@@ -1,0 +1,16 @@
+id: nb-luna-notes-are-verbatim-001
+context: When recording decisions
+snippet: |
+  Keep the creator's notes word-for-word in the decision record.
+  Paraphrase only when telling Mika which notes are rule-shaped,
+  and link back to the original.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: luna
+confidence: 0.9
+concepts: [decisions]
+tags: [atelier,luna,decisions]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

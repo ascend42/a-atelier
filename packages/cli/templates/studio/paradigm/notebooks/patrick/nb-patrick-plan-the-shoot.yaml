@@ -1,0 +1,16 @@
+id: nb-patrick-plan-the-shoot-001
+context: When writing the recording spec
+snippet: |
+  Derive the recording spec from downstream needs: vertical-crop
+  safe framing for shorts, thumbnail-face moments, B-roll the
+  cards and chapters need, clean audio per speaker.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [recording-spec]
+tags: [atelier,patrick,recording-spec]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'
