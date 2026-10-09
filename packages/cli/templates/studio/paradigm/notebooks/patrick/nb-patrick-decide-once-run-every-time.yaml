@@ -1,0 +1,16 @@
+id: nb-patrick-decide-once-run-every-time-001
+context: When working on the series kit
+snippet: |
+  Format decisions belong in the series kit. During an episode run,
+  apply the kit; if the creator wants a change, reopen that board
+  instead of improvising per episode.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [series-kit]
+tags: [atelier,patrick,series-kit]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

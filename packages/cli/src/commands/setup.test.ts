@@ -50,6 +50,17 @@ describe("runSetup", () => {
     expect(r.written).toContain(".claude/skills/atelier-design/SKILL.md");
   });
 
+  it("installs the atelier-produce skill and the Patrick agent shim + persona", () => {
+    runSetup({ homeDir: home });
+    const skill = readFileSync(join(home, ".claude/skills/atelier-produce/SKILL.md"), "utf8");
+    expect(skill).toMatch(/^---\nname: atelier-produce\n/);
+    expect(existsSync(join(home, ".claude/skills/atelier-produce/reference/platforms.md"))).toBe(true);
+    expect(existsSync(join(home, ".claude/agents/atelier-patrick.md"))).toBe(true);
+    const agent = readFileSync(join(home, ".paradigm/agents/patrick.agent"), "utf8");
+    expect(agent).toContain("nickname: Patrick");
+    expect(agent).not.toContain("{{ISO_NOW}}");
+  });
+
   it("installs Luna's paradigm agent with a real timestamp", () => {
     runSetup({ homeDir: home });
     const agent = readFileSync(join(home, ".paradigm/agents/luna.agent"), "utf8");
@@ -119,14 +130,14 @@ describe("findHomeStudio", () => {
   });
 });
 
-describe("Luna template drift guard", () => {
-  it("every canonical notebook entry has a templated notebook file", () => {
-    const seed = parseYaml(readFileSync(join(repoRoot, ".paradigm/personas/luna/notebook.yaml"), "utf8")) as {
+describe("persona template drift guard", () => {
+  it.each(["luna", "patrick"])("every canonical %s notebook entry has a templated notebook file", (persona) => {
+    const seed = parseYaml(readFileSync(join(repoRoot, `.paradigm/personas/${persona}/notebook.yaml`), "utf8")) as {
       entries: { id: string }[];
     };
-    const templated = readdirSync(join(cliDir, "templates/design/paradigm/notebooks/luna"));
+    const templated = readdirSync(join(cliDir, `templates/studio/paradigm/notebooks/${persona}`));
     for (const e of seed.entries) {
-      expect(templated).toContain(`nb-luna-${e.id}.yaml`);
+      expect(templated).toContain(`nb-${persona}-${e.id}.yaml`);
     }
     expect(templated.length).toBe(seed.entries.length);
   });

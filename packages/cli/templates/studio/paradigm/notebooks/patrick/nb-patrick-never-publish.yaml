@@ -1,0 +1,15 @@
+id: nb-patrick-never-publish-001
+context: When packaging for publish
+snippet: |
+  Produce the package and the publish checklist; the creator
+  publishes.
+provenance:
+  source: bundled-canonical
+  originProject: a-atelier
+  createdBy: patrick
+confidence: 0.9
+concepts: [publishing]
+tags: [atelier,patrick,publishing]
+appliedCount: 0
+created: '{{ISO_NOW}}'
+updated: '{{ISO_NOW}}'

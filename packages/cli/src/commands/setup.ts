@@ -1,13 +1,14 @@
 /**
- * `atelier setup` — install Atelier Design for every repo on this machine.
+ * `atelier setup` — install Atelier Design + Produce for every repo on this machine.
  *
- * Copies templates/design/ into the creator's home so "can we use atelier
- * design for this" works in any Claude Code session:
+ * Copies templates/studio/ into the creator's home so "can we use atelier
+ * design for this" and "atelier produce my podcast" work in any Claude Code
+ * session:
  *
- *   templates/design/skills/**    → ~/.claude/skills/**     (always refreshed)
- *   templates/design/agents/**    → ~/.claude/agents/**     (always refreshed)
- *   templates/design/paradigm/**  → ~/.paradigm/**          (skip-if-exists —
- *                                    Luna's agent state + notebook accumulate
+ *   templates/studio/skills/**    → ~/.claude/skills/**     (always refreshed)
+ *   templates/studio/agents/**    → ~/.claude/agents/**     (always refreshed)
+ *   templates/studio/paradigm/**  → ~/.paradigm/**          (skip-if-exists —
+ *                                    Luna/Patrick agent state + notebooks accumulate
  *                                    learning; --force overwrites)
  *
  * and records the home studio (an Atelier v2 workspace) in
@@ -29,17 +30,17 @@ import { fileURLToPath } from "node:url";
 import type { Command } from "commander";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
-/** Resolve `templates/design/` relative to this file (src + dist layouts). */
+/** Resolve `templates/studio/` relative to this file (src + dist layouts). */
 function templatesDir(): string {
   const here = dirname(fileURLToPath(import.meta.url));
   for (const candidate of [
-    join(here, "..", "..", "templates", "design"),
-    join(here, "..", "templates", "design"),
-    join(here, "templates", "design"),
+    join(here, "..", "..", "templates", "studio"),
+    join(here, "..", "templates", "studio"),
+    join(here, "templates", "studio"),
   ]) {
     if (existsSync(candidate)) return candidate;
   }
-  throw new Error(`templates/design not found relative to ${here}`);
+  throw new Error(`templates/studio not found relative to ${here}`);
 }
 
 /** Template top-level folder → install root (relative to the user's home)
@@ -178,11 +179,11 @@ export function setupCommand(program: Command): void {
   program
     .command("setup")
     .description(
-      "Install Atelier Design for every repo: the atelier-design skill, the Luna agent, " +
-        "and the home studio pointer (~/.atelier/config.yaml).",
+      "Install Atelier Design + Produce for every repo: the atelier-design and atelier-produce " +
+        "skills, the Luna and Patrick agents, and the home studio pointer (~/.atelier/config.yaml).",
     )
     .option("--home <path>", "Atelier workspace to use as the home studio (brand cascade)")
-    .option("--force", "Also overwrite Luna's agent state and notebook (learned data)")
+    .option("--force", "Also overwrite Luna/Patrick agent state and notebooks (learned data)")
     .option("--json", "Print a machine-readable result")
     .action((options: { home?: string; force?: boolean; json?: boolean }) => {
       try {
@@ -191,7 +192,7 @@ export function setupCommand(program: Command): void {
           console.log(JSON.stringify({ ok: true, ...result }, null, 2));
           return;
         }
-        console.log("  Atelier Design installed");
+        console.log("  Atelier Design + Produce installed");
         console.log("");
         if (result.written.length) {
           console.log(`  Created (${result.written.length}):`);
@@ -214,6 +215,7 @@ export function setupCommand(program: Command): void {
         }
         console.log("");
         console.log("  Next: in any repo, ask Claude Code \"can we use atelier design for this?\"");
+        console.log("        in your workspace, \"atelier produce my podcast\"");
         console.log("");
       } catch (err) {
         if (options.json) {

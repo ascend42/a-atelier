@@ -66,7 +66,7 @@ Workspace = brand, project = series — the existing v2 cascade:
 
 | Persona | Owns in `atelier produce` |
 |---|---|
-| **Producer** (new) | The plan: deliverable map, platform knowledge + specs, schedule/cadence, the recording spec, and running the episode pipeline end to end. Runs kit sessions (like Luna runs design sessions) and every episode run. |
+| **Patrick** — Producer (new) | The plan: deliverable map, platform knowledge + specs, schedule/cadence, the recording spec, and running the episode pipeline end to end. Runs kit sessions (like Luna runs design sessions) and every episode run. |
 | **Quill** — Showrunner | Story and words: hooks, titles, descriptions, chapters, show notes, newsletter, social copy; *why* a moment works as a short. |
 | **Lux** — Cinematographer | All content visuals, static and moving: intro/end cards, thumbnail system, lower-thirds, vertical framing, caption look, quote cards. |
 | **Iris** — Composer | Builds and renders: Hyperframes templates, the long-form master, shorts, thumbnails, audio master. |
@@ -142,7 +142,7 @@ Both verbs use the same session engine: boards, options, references on demand, d
 
 ## Milestones
 
-1. **Producer persona** + `atelier-produce` skill (terminal mode) + `atelier setup` installs it.
+1. **Patrick (Producer) persona** + `atelier-produce` skill (terminal mode) + `atelier setup` installs it.
 2. **Series kit session** — board bank for content, `series-kit.yaml` + `KIT.md`, references rendered via Hyperframes from the creator's footage/brand.
 3. **Platform knowledge** — `platforms/*.yaml` with sources, compiled into kit rules; `atelier produce check`.
 4. **Episode run v1** — ingest → transcribe → trim → words → shorts checkpoint → thumbnail checkpoint → render → package, resumable via `episode.yaml`.
@@ -152,7 +152,6 @@ Both verbs use the same session engine: boards, options, references on demand, d
 
 ## Open questions
 
-- Producer persona name.
 - Thumbnail generation: compose from real frames only, or allow generated imagery (and where's the line)?
 - Music beds / sound design: in the kit from v1, or later?
 - Multi-camera / remote-guest recordings (e.g. separate tracks per speaker) — v1 or later?
