@@ -1,0 +1,292 @@
+# Atelier tells catalog: patterns that make design read as machine-made
+# or templated. Luna writes options against it, Mika vets options and
+# finish reviews with it, critique cites it, and `atelier check` runs the
+# entries whose detect.kind is mechanical.
+#
+# A tell is a CHECK, never a ban. Any tell can be overridden for a brand
+# or a scope; the override is recorded in design-system.yaml under
+# `overrides:` with a reason and provenance, and is then respected
+# everywhere (options, checks, critique, finish review).
+#
+# Fields
+#   id        kebab-case, stable (referenced from design-system.yaml)
+#   name      short label
+#   scope     where it applies: landing | product | content
+#   detect    kind: count | literal | pattern | structure | review
+#               count     — a countable thing compared to a limit
+#               literal   — a forbidden literal value
+#               pattern   — a regex over source/copy
+#               structure — page/section structure (needs a render or DOM read)
+#               review    — judgement; agent-checked only
+#             plus kind-specific args
+#   why       why it reads as a tell (one line)
+#   severity  warn | fail (default when no override exists)
+#   override  when overriding is reasonable (guidance for Luna)
+#
+# Several entries adapt ideas from taste-skill (github.com/leonxlnx/taste-skill,
+# MIT). Detection, scope and override fields are Atelier's own.
+
+version: 1
+
+tells:
+  # ── Type ────────────────────────────────────────────────────────────
+  - id: default-display-serif
+    name: Default "editorial" serif
+    scope: [landing, product]
+    detect: { kind: literal, target: font.display, values: ["Fraunces", "Instrument Serif", "Playfair Display"] }
+    why: The serifs models reach for whenever a brief says premium, creative or editorial; they stop signalling the brand.
+    severity: warn
+    override: The brand already uses it, or the creator picks it on a type-voice board knowing it's flagged.
+
+  - id: default-neutral-sans
+    name: Unchosen neutral sans
+    scope: [landing]
+    detect: { kind: review }
+    why: Inter or system-ui used because nothing was decided, not because neutrality was the goal.
+    severity: warn
+    override: Neutral is the decision (utility, public sector, accessibility-first). Product UI is exempt by default.
+
+  - id: mixed-family-emphasis
+    name: Mixed-family emphasis
+    scope: [landing, content]
+    detect: { kind: review }
+    why: One word swapped to a different family (serif italic inside a sans headline) as decoration.
+    severity: warn
+    override: The type system defines the swap as a deliberate, repeated device.
+
+  - id: shouting-h1
+    name: Hierarchy by size alone
+    scope: [landing, product]
+    detect: { kind: review }
+    why: Huge headlines doing all the hierarchy work instead of weight, color and space.
+    severity: warn
+    override: Poster or manifesto pages where the headline is the design.
+
+  # ── Color ───────────────────────────────────────────────────────────
+  - id: pure-black
+    name: Pure black
+    scope: [landing, product, content]
+    detect: { kind: literal, values: ["#000", "#000000", "rgb(0,0,0)"] }
+    why: Flat, harsh against tinted neutrals; almost never what the palette intends.
+    severity: warn
+    override: High-contrast brutalist or OLED-dark systems that decide it explicitly.
+
+  - id: default-warm-paper
+    name: Default cream + brass palette
+    scope: [landing, content]
+    detect: { kind: review, hint: "warm cream/bone background with brass, clay, oxblood or ochre accent and espresso text" }
+    why: The palette models give every premium-consumer brief, so the brand disappears into it.
+    severity: warn
+    override: The brand's real assets are in this family, or the creator picks it knowing it's flagged.
+
+  - id: ai-glow-gradient
+    name: Purple-blue glow gradient
+    scope: [landing]
+    detect: { kind: review }
+    why: Neon purple/blue gradients and glows as decoration with no brand reason.
+    severity: warn
+    override: The brand color is purple/violet; then execute it with restraint.
+
+  - id: accent-drift
+    name: Accent drift
+    scope: [landing, product]
+    detect: { kind: count, what: "distinct accent hues outside tokens.color", max: 0 }
+    why: A second accent appears in one section (a teal badge on a rose site).
+    severity: fail
+    override: Semantic colors (success/warning/danger) declared as tokens are not drift.
+
+  - id: theme-flip
+    name: Mid-page theme flip
+    scope: [landing]
+    detect: { kind: structure, what: "a section switches light/dark against the page theme" }
+    why: Reads as two templates stitched together.
+    severity: warn
+    override: An intentional inverted band defined in the system (e.g. one dark proof section).
+
+  # ── Shape ───────────────────────────────────────────────────────────
+  - id: radius-drift
+    name: Mixed corner radii
+    scope: [landing, product]
+    detect: { kind: count, what: "radius values not in tokens.radius", max: 0 }
+    why: Pill buttons on square cards with 8px inputs, with no rule tying them together.
+    severity: fail
+    override: A documented per-component radius rule in the system.
+
+  - id: tinted-shadow-missing
+    name: Black drop shadows
+    scope: [landing, product]
+    detect: { kind: pattern, regex: "box-shadow:[^;]*rgba\\(0,\\s*0,\\s*0" }
+    why: Grey-black shadows on tinted backgrounds look pasted on.
+    severity: warn
+    override: Neutral-grey systems where black is the background hue.
+
+  # ── Layout ──────────────────────────────────────────────────────────
+  - id: eyebrow-everywhere
+    name: Eyebrow over every section
+    scope: [landing]
+    detect: { kind: count, what: "small uppercase tracked labels above section headlines", max: "ceil(sections / 3)" }
+    why: The single most templated rhythm in generated pages.
+    severity: fail
+    override: Documentation or editorial index pages where labels carry real navigation.
+
+  - id: three-equal-cards
+    name: Three identical feature cards
+    scope: [landing]
+    detect: { kind: structure, what: "a row of 3 same-size cards with icon + title + blurb" }
+    why: The default feature section; says nothing about which feature matters.
+    severity: warn
+    override: The three items are genuinely equal and the cards carry real content (not icon + blurb).
+
+  - id: layout-family-repeat
+    name: Repeated section layout
+    scope: [landing]
+    detect: { kind: structure, what: "the same section layout family used more than once" }
+    why: Different sections that look the same make the page read as a template.
+    severity: warn
+    override: A repeated pattern that is the content model (e.g. case-study entries).
+
+  - id: zigzag-run
+    name: Zigzag run
+    scope: [landing]
+    detect: { kind: count, what: "consecutive alternating image/text split sections", max: 2 }
+    why: Alternating left/right splits are the lowest-effort way to fill a page.
+    severity: warn
+    override: none
+
+  - id: centered-hero-default
+    name: Centered hero by default
+    scope: [landing]
+    detect: { kind: review }
+    why: Centered headline over a gradient is the default when nothing about the brand was used.
+    severity: warn
+    override: Manifesto or launch pages where the message is the design; low layout dial.
+
+  - id: hero-overloaded
+    name: Overloaded hero
+    scope: [landing]
+    detect: { kind: count, what: "text elements in the hero (eyebrow, headline, subtext, CTA group, taglines, trust strips)", max: 4 }
+    why: The hero becomes a feature list; nothing leads.
+    severity: warn
+    override: none
+
+  - id: split-header
+    name: Headline left, filler paragraph right
+    scope: [landing]
+    detect: { kind: review }
+    why: A section header split into a big headline and a small floating explainer with no compositional reason.
+    severity: warn
+    override: The right column holds a visual or interactive element.
+
+  - id: empty-bento-cell
+    name: Padded bento grid
+    scope: [landing, product]
+    detect: { kind: structure, what: "grid cells without content, or more cells than items" }
+    why: The grid was drawn before the content was counted.
+    severity: fail
+    override: none
+
+  - id: fake-ui-screenshot
+    name: Div-built fake product screenshot
+    scope: [landing]
+    detect: { kind: review }
+    why: A fake dashboard made of grey rectangles signals there is no real product to show.
+    severity: fail
+    override: none. Use a real screenshot, a real component render, or nothing.
+
+  # ── Copy & content ──────────────────────────────────────────────────
+  - id: em-dash
+    name: Em dash in UI copy
+    scope: [landing, product, content]
+    detect: { kind: pattern, regex: "—", where: "user-visible strings" }
+    why: Heavy em-dash use is a widely recognized marker of generated copy.
+    severity: warn
+    override: The brand's editorial voice uses them; record it once.
+
+  - id: duplicate-cta-intent
+    name: One intent, many labels
+    scope: [landing, product]
+    detect: { kind: review, hint: "group CTAs by intent (contact, signup, demo, view work); one label per intent" }
+    why: 'Get started, Try free and Sign up on one page read as three different things.'
+    severity: fail
+    override: none
+
+  - id: cta-wraps
+    name: Wrapping CTA label
+    scope: [landing, product]
+    detect: { kind: structure, what: "primary button label wraps at desktop width" }
+    why: A two-line button looks broken.
+    severity: fail
+    override: none
+
+  - id: placeholder-names
+    name: Placeholder people and companies
+    scope: [landing, product, content]
+    detect: { kind: pattern, regex: "\\b(John|Jane) Doe\\b|\\bAcme\\b|Lorem ipsum" }
+    why: Stock names and filler text in a reference or build make it read as a mockup.
+    severity: fail
+    override: none. Use the repo's real entities or realistic invented ones.
+
+  - id: too-round-numbers
+    name: Suspiciously round data
+    scope: [landing, product]
+    detect: { kind: review }
+    why: 99.9%, 10x, 50% everywhere read as invented.
+    severity: warn
+    override: The numbers are real.
+
+  - id: filler-verbs
+    name: Filler marketing verbs
+    scope: [landing, content]
+    detect: { kind: pattern, regex: "\\b(elevate|seamless(ly)?|unleash|revolutioni[sz]e|supercharge|next-gen)\\b", flags: i }
+    why: Verbs that could describe any product describe none.
+    severity: warn
+    override: none
+
+  - id: numbered-section-labels
+    name: Numbered section labels
+    scope: [landing]
+    detect: { kind: pattern, regex: "\\b0\\d\\s*[/·]\\s*[A-Z]" }
+    why: '"01 / Capabilities" style enumeration as decoration.'
+    severity: warn
+    override: The content is a real sequence (steps the user follows).
+
+  - id: decorative-meta
+    name: Decorative meta strips
+    scope: [landing]
+    detect: { kind: review, hint: "version stamps, city/time/weather strips, 'scroll' cues, photo-credit captions on stock, status dots with no state" }
+    why: Atmosphere props that carry no information.
+    severity: warn
+    override: The information is real and useful (a live status, a physical venue).
+
+  # ── States & accessibility (product-heavy) ──────────────────────────
+  - id: happy-path-only
+    name: Happy path only
+    scope: [product]
+    detect: { kind: review, hint: "loading, empty, error, disabled and focus states for every data-bearing view" }
+    why: Generated UI ships the success state and nothing else.
+    severity: fail
+    override: none
+
+  - id: placeholder-as-label
+    name: Placeholder as label
+    scope: [product, landing]
+    detect: { kind: structure, what: "inputs without a visible label" }
+    why: Labels vanish on typing; fails accessibility.
+    severity: fail
+    override: none
+
+  - id: contrast-fail
+    name: Contrast below target
+    scope: [landing, product, content]
+    detect: { kind: structure, what: "text/background pairs below the system's contrast target (WCAG AA by default)" }
+    why: Unreadable is not a style.
+    severity: fail
+    override: none
+
+  - id: motion-unmotivated
+    name: Unmotivated motion
+    scope: [landing, product]
+    detect: { kind: review, hint: "every animation explains a change or guides attention; prefers-reduced-motion honored" }
+    why: Infinite loops and scroll-everything effects read as filler and hurt performance.
+    severity: warn
+    override: The motion dial is high and the creator chose it.

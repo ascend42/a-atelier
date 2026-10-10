@@ -12,6 +12,7 @@ should feel like the session simply *started* — no setup chatter.
 
 Full plan: `docs/design-studio-plan.md` in the Atelier repo.
 Formats: `reference/formats.md`. Question bank: `reference/question-bank.md`.
+Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
 
 ## 0. Load the crew (silently)
 
@@ -60,6 +61,27 @@ once (AskUserQuestion when available):
    patterns, obvious accessibility debt. Summarize in ≤6 bullets to
    yourself; show the creator only what changes the conversation.
 4. **The in-flight plan or spec** if the conversation has one.
+5. **Tells** — load `reference/tells.yaml`, then apply the repo's
+   `tells.severity` and `overrides` from `design-system.yaml`. Keep only
+   the tells whose `scope` matches this work (landing, product, content).
+
+## 2b. Design Read and mode
+
+Before any board, state the **Design Read** to the creator in one line:
+
+```
+Reading this as: <what it is> for <who>, <how often/where they use it>; <the register in a few words>.
+```
+
+Build it from the request, Mika's brief, the home cascade and the plan.
+It's a claim the creator can correct in one reply. Correct it, then
+continue. Record it as `read:` in `session.yaml`, and in
+`design-system.yaml` on close.
+
+For `direct` and `critique`, if the scope already exists as working UI,
+settle the **redesign mode** (`greenfield` / `preserve` / `overhaul`) and
+run the audit in `reference/redesign.md` before options. The mode can be
+the one scoping question; don't ask a second.
 
 ## 3. Open the session
 
@@ -78,8 +100,10 @@ Create `.atelier/sessions/<YYYY-MM-DD>-<slug>/session.yaml` (see
 ## 4. Boards
 
 Pick boards from `reference/question-bank.md` that matter for this scope
-and verb. Order: intent → the big levers (type, color, density/layout) →
-detail (shape, motion, imagery, microcopy). Video-related boards go to
+and verb. Order: intent → `intent-dials` → the big levers (type, color,
+density/layout) → detail (shape, motion, imagery, microcopy). In
+`preserve` mode use the risk order in `reference/redesign.md` instead.
+Decided dials constrain every later board (see `intent-dials`). Video-related boards go to
 Lux (see `~/.paradigm/agents/lux.agent`) — present her options, credited.
 
 For each board, Luna writes **2–4 options**:
@@ -91,10 +115,18 @@ For each board, Luna writes **2–4 options**:
 - each with: name, one-line description, the tokens/rules it would write,
   and its mixable facets;
 - one marked **recommended**, with one sentence of why;
-- any departure from the home cascade stated on the option.
+- any departure from the home cascade stated on the option;
+- structurally distinct, not just recolored: options should differ on at
+  least one of layout structure, type character, color strategy, density,
+  or motion language;
+- never tripping a tell silently. Write around the tells; if an option
+  trips one on purpose (the brand really is cream and brass), name the
+  tell on the option ("trips default-warm-paper — it's your brand") so
+  picking it records an override.
 
 **Mika vets before publishing:** contrast (WCAG AA unless configured
-otherwise), touch targets, feasibility in this stack, token-first. An
+otherwise), touch targets, feasibility in this stack, token-first, the
+decided dials, the `preserve:` list, and the in-scope tells. An
 option that fails is dropped or shown with Mika's concern attached. If
 Luna and Mika disagree, show both positions on the option — the creator
 decides.
@@ -134,6 +166,11 @@ Google Fonts are fine), tokens as CSS custom properties.
 - **No UI exists yet (pre-code repos):** synthesize the scope's key
   screen from the spec/conversation — real entity names, realistic data,
   the brand assets you found. Never fall back to abstract swatches.
+- **Redesign modes:** include the current screen as a "Now" column so
+  each option is judged as a change.
+
+References obey the tells too: no placeholder names, no div-built fake
+screenshots, no filler copy.
 
 Open it (`open <file>` on macOS), record the board in
 `references_rendered`, and continue. Never modify repo source to make a
@@ -146,6 +183,9 @@ reference.
   option, confirm, then record.
 - **Note** → keep verbatim; flag to Mika if it's rule-shaped
   ("never pure black" → rule).
+- **Picked an option that trips a tell** → Mika records an `overrides:`
+  entry (tell, scope, the creator's reason or the option's, provenance).
+  Don't argue it again later in the session or in checks.
 - **Skip** → record Luna's recommendation as `decided_by: recommendation`
   (revisitable).
 
@@ -175,7 +215,8 @@ the creator oriented with a one-line running tally, e.g.
 5. Then by verb:
    - `direct` → continue the original task under the new system. Mika
      implements; afterwards Luna runs a finish review against the
-     session's decisions and reports any drift.
+     session's decisions, the direction render, the `preserve:` list and
+     the in-scope tells, and reports any drift with `file:line`.
    - `codify` → offer to install enforcement (`atelier check` + hook) once
      available; until then, list the rules an agent must follow and add
      a pointer to `.atelier/design-system.yaml` in the repo's agent
@@ -184,11 +225,13 @@ the creator oriented with a one-line running tally, e.g.
 
 ## Critique
 
-No boards up front. Mika runs the checks (contrast, spacing scale,
-token drift, ad-hoc values, a11y checklist) against the scope; Luna adds
-judgement (hierarchy, rhythm, voice, on-brand-ness). Report findings
-ranked by impact, each with: what, where (`file:line`), why it matters,
-and the rule or decision it violates (if a system exists). Offer
+No boards up front. State the Design Read, then Mika runs the checks
+(contrast, spacing scale, token drift, ad-hoc values, a11y checklist,
+and every in-scope tell) against the scope; Luna adds judgement
+(hierarchy, rhythm, voice, on-brand-ness), and reads the scope's current
+dials. Report findings ranked by impact, each with: what, where
+(`file:line`), why it matters, and the rule, decision or tell id it
+violates. Tells overridden in `design-system.yaml` are not findings. Offer
 "show me" references (now vs. proposed) on request. Close by offering to
 turn the top findings into a `direct` session.
 
@@ -198,6 +241,9 @@ turn the top findings into a `direct` session.
   demand path is always a visible "See reference" option.
 - Every session ends with a rendered direction (`refs/direction.html`).
 - Notes are verbatim.
+- Tells are checks, not bans: an informed pick overrides one, and the
+  override is recorded.
+- Nothing on the `preserve:` list changes without an explicit decision.
 - Luna doesn't write `design-system.yaml`; Mika doesn't silently
   overrule Luna. Disagreements go to the creator.
 - References never touch repo source.

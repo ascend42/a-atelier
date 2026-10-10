@@ -105,6 +105,14 @@ When triggered, the skill kicks off the session properly:
 
 ## Session model
 
+### 0. Design Read, dials and redesign mode
+
+Every session opens with a one-line **Design Read** ("Reading this as: <what> for <who>, <usage>; <register>") that the creator can correct in one reply. It's stored as `read:` in the session and the system.
+
+The first board after intent is **`intent-dials`**: three 1–10 dials (layout, motion, density) offered as named sets. Decided dials constrain every later board and are checked in the finish review.
+
+When the scope already exists, Luna settles a **redesign mode** (`greenfield` / `preserve` / `overhaul`) and Mika audits before any option: tokens in use, current dials, what to keep, what to retire, load-bearing names (routes, nav labels, form fields, analytics hooks) and the SEO surface. Load-bearing items become `preserve:` entries that never change without an explicit decision. In `preserve` mode boards run in risk order: type, spacing, color, motion, recomposition, replacement. Details: `templates/studio/skills/atelier-design/reference/redesign.md`.
+
 ### 1. Depth — chosen per session
 
 - **Quick** — references are light: static restyles of existing screens/components.
@@ -196,8 +204,8 @@ extends: home            # inherit the home studio brand cascade
 tokens:
   color:
     ink: "#141414"
-    paper: "#f6f3ee"
-    accent: "#d6451b"
+    paper: "#f5f6f7"
+    accent: "#2457d6"
   font:
     display: "..."
     body: "..."
@@ -216,7 +224,7 @@ rules:
     args: { patterns: ["bounce", "elastic"] }
 decisions:              # provenance — every token/rule traces back here
   - board: type-pairing
-    choice: { mix: { display-face: editorial-serif, scale-ratio: single-family } }
+    choice: { mix: { display-face: grotesk-pair, scale-ratio: single-family } }
     notes: ["headlines can go tighter than this"]
 ```
 
@@ -228,6 +236,15 @@ The system only matters if agents follow it.
 - **Hook** — installed by `codify`: a Claude Code Stop / post-write hook runs `atelier check` on touched files (advisory first; blocking opt-in).
 - **Agent context** — the plugin skill loads the effective system (home cascade + repo overlay) into the agent's context before any UI work.
 - **critique** uses the same checks plus agent judgment for things checks can't catch (hierarchy, rhythm, clarity).
+
+### Tells
+
+A shipped catalog, `reference/tells.yaml`, lists patterns that make design read as generated or templated (eyebrow on every section, three identical feature cards, default editorial serif, cream + brass palette, accent and radius drift, duplicate CTA intents, placeholder names, happy-path-only UI…). Each tell has an id, a scope (landing / product / content), a detection kind (`count`, `literal`, `pattern`, `structure`, `review`), a default severity and override guidance.
+
+- Tells are **checks, not bans**. Picking an option that trips one records an `overrides:` entry in `design-system.yaml` with reason and provenance; per-repo severity changes go in `tells.severity`.
+- Luna writes options around them; Mika vets with them; critique cites their ids; the finish review reports them.
+- `atelier check` runs the mechanical kinds (`count`, `literal`, `pattern`) alongside the system's rules.
+- Several entries adapt ideas from taste-skill (github.com/leonxlnx/taste-skill, MIT), audited 2026-10-10; detection, scope and overrides are Atelier's.
 
 ## Preview server
 
@@ -243,7 +260,7 @@ The agent publishes boards; the browser renders cards; reference requests round-
 
 1. **Session engine + Quick mode** — Luna persona (`luna.agent` + `atelier-luna`) wired to Mika, `atelier-design` skill + `atelier setup` install, question bank format, board UI with options visible, pick / mix & match / notes, `session.yaml`, live system panel. References: `restyle` only.
 2. **Design system + codify** — `design-system.yaml` schema, DESIGN.md generation, cascade from home studio.
-3. **Enforcement** — `atelier check` with the first checks (color literals, spacing scale, fonts, easing) + hook installer.
+3. **Enforcement** — `atelier check` with the first checks (color literals, spacing scale, fonts, easing) + the mechanical tells + hook installer.
 4. **Deep mode references** — `component`, `specimen-page`, `motion`; reference cache.
 5. **critique** — findings with on-demand references.
 6. **direct → build** — revision execution + finish review against the system.
