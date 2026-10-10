@@ -142,3 +142,34 @@ describe("persona template drift guard", () => {
     expect(templated.length).toBe(seed.entries.length);
   });
 });
+
+describe("design skill tells catalog", () => {
+  // Luna, Mika and (later) `atelier check` all read this file — keep it well-formed.
+  const KINDS = ["count", "literal", "pattern", "structure", "review"];
+  const SCOPES = ["landing", "product", "content"];
+  const catalog = parseYaml(
+    readFileSync(join(cliDir, "templates/studio/skills/atelier-design/reference/tells.yaml"), "utf8"),
+  ) as { version: number; tells: Record<string, any>[] };
+
+  it("has unique kebab-case ids and every required field", () => {
+    expect(catalog.version).toBe(1);
+    const ids = catalog.tells.map((t) => t.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const t of catalog.tells) {
+      expect(t.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      for (const f of ["name", "why", "override"]) expect(typeof t[f], `${t.id}.${f}`).toBe("string");
+      expect(["warn", "fail"], t.id).toContain(t.severity);
+      expect(t.scope.length, t.id).toBeGreaterThan(0);
+      for (const s of t.scope) expect(SCOPES, t.id).toContain(s);
+      expect(KINDS, t.id).toContain(t.detect.kind);
+    }
+  });
+
+  it("gives every mechanical tell what a checker needs", () => {
+    for (const t of catalog.tells) {
+      if (t.detect.kind === "pattern") expect(() => new RegExp(t.detect.regex, t.detect.flags), t.id).not.toThrow();
+      if (t.detect.kind === "literal") expect(t.detect.values?.length, t.id).toBeGreaterThan(0);
+      if (t.detect.kind === "count") expect(t.detect.max, t.id).toBeDefined();
+    }
+  });
+});

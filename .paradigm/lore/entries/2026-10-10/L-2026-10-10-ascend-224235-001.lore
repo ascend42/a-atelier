@@ -1,0 +1,51 @@
+id: L-2026-10-10-ascend-224235-001
+type: agent-session
+timestamp: '2026-10-10T22:42:35.208Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Atelier Design: tells catalog, Design Read + dials, redesign mode'
+summary: 'Audited leonxlnx/taste-skill (MIT, commit 717446e) and folded its strongest ideas into atelier-design as Atelier-shaped features: a tells catalog (checks with recorded overrides, not bans), a one-line Design Read plus an intent-dials board that constrains later boards, and a redesign mode (greenfield/preserve/overhaul) with an audit, a preserve: list of load-bearing names, and risk-ordered boards. Also replaced our own sample system, which used Fraunces + cream — the exact cliché taste-skill flags.'
+symbols_touched:
+  - '#cli-setup'
+  - '#atelier-design'
+  - '#luna-design-director'
+files_created:
+  - packages/cli/templates/studio/skills/atelier-design/reference/tells.yaml
+  - packages/cli/templates/studio/skills/atelier-design/reference/redesign.md
+files_modified:
+  - packages/cli/templates/studio/skills/atelier-design/SKILL.md
+  - packages/cli/templates/studio/skills/atelier-design/reference/question-bank.md
+  - packages/cli/templates/studio/skills/atelier-design/reference/formats.md
+  - docs/design-studio-plan.md
+  - packages/cli/src/commands/setup.test.ts
+  - packages/cli/.purpose
+decisions:
+  - id: tells-are-checks
+    decision: Tells are checks with severity and per-repo overrides recorded in design-system.yaml, never global bans
+    rationale: taste-skill hard-bans its author's taste (Inter, serifs, em dashes) for every brand; Atelier's premise is the creator's taste via boards and the brand cascade, so an informed pick must be able to override a tell with provenance.
+  - id: tells-as-data
+    decision: Catalog is YAML with detect.kind (count/literal/pattern/structure/review) and scope (landing/product/content)
+    rationale: Lets Luna/Mika use it now and `atelier check` run the mechanical kinds later; scope keeps landing-page tells from firing on product UI, which taste-skill excludes entirely.
+  - id: preserve-list
+    decision: 'Redesign mode writes load-bearing names (routes, nav labels, form fields, analytics hooks, SEO surface) to a persistent preserve: list'
+    rationale: taste-skill's 'never change silently' list only lives in one prompt; persisting it makes every later build and finish review respect it.
+learnings:
+  - 'Our own example design system taught the cliché (Fraunces + #f6f3ee cream + clay accent); example values in skill references get copied, so they must be non-default and labeled illustrative.'
+  - taste-skill's research figures (skill discovery %, tip effects) are unsourced; not imported.
+verification:
+  status: pass
+  details:
+    setup.test.ts: 14/14 pass incl. new tells catalog tests
+    tsc: clean
+tags:
+  - atelier-design
+  - tells
+  - redesign
+  - taste-skill-audit
+confidence: 0.85
+git_context:
+  ref: f31787f1f7841bb3f4141dd45a78fe57df8591df
+  branch: feat/design-tells-read-redesign
+  dirty: true

@@ -23,6 +23,15 @@ units), **writes** (what lands in `design-system.yaml`), **reference**
 - **Writes:** `intent.register`
 - **Reference:** quick restyle of the scope's main screen · deep three-up comparison
 
+### intent-dials
+- **Asks:** Where should this sit on layout, motion and density?
+- **Applies:** always (right after intent; in Quick mode it can replace `intent-register`)
+- **Facets:** layout (1 strict grid → 10 expressive/asymmetric) · motion (1 static → 10 cinematic) · density (1 airy gallery → 10 cockpit)
+- **Options:** 2–3 named dial sets, not raw numbers, e.g. "Calm utility 3·2·6", "Confident editorial 6·4·3". Start from the Design Read; in redesign mode start from the audited current dials and say which way each option moves them.
+- **Writes:** `dials: { layout, motion, density }`
+- **Constrains later boards:** layout ≤ 3 → no asymmetric or broken-grid options; motion ≤ 2 → motion boards offer only state transitions; density ≥ 7 → no decorative card containers around data. Options that break a decided dial are dropped or say so on the option.
+- **Reference:** quick the scope's main screen at each dial set · deep interactive, motion live
+
 ## Typography
 
 ### type-voice
