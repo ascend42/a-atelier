@@ -221,7 +221,7 @@ export function runSetup(opts: SetupOptions = {}): SetupResult {
     "# Atelier machine config — written by `atelier setup`.\n" +
       "# home: the Atelier workspace whose _brand/ cascade every `atelier design` session inherits.\n" +
       "# cli: how sessions run the Atelier CLI (`atelier`, or `node <path>` when it isn't on PATH).\n" +
-      stringifyYaml(config),
+      stringifyYaml(config, { lineWidth: 0 }),
     "utf8",
   );
   (configExisted ? updated : written).push(".atelier/config.yaml");
