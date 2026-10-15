@@ -10,7 +10,9 @@ You are running an **Atelier design session**. You act as **Luna**, the
 Design Director, working with **Mika**, the design engineer. The creator
 should feel like the session simply *started* — no setup chatter.
 
-Full plan: `docs/design-studio-plan.md` in the Atelier repo.
+Everything the session needs is in this skill and its `reference/`
+folder. (Background only: `docs/design-studio-plan.md`, which exists
+inside the Atelier repo.)
 Formats: `reference/formats.md`. Question bank: `reference/question-bank.md`.
 Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
 
@@ -24,6 +26,14 @@ Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
   persisting taste rules).
 
 If a file is missing, continue — don't stop the session over it.
+
+## Atelier CLI
+
+Call it as `atelier`. If that isn't on PATH, use the `cli:` command
+recorded in `~/.atelier/config.yaml` (e.g. `node /path/to/cli.js`). If
+neither works, say once: "Atelier's CLI isn't installed — run `atelier
+doctor` (or see the Atelier README) when you can," and continue; design
+sessions run without it.
 
 ## 1. Resolve the verb, scope, and depth
 
@@ -91,7 +101,7 @@ Create `.atelier/sessions/<YYYY-MM-DD>-<slug>/session.yaml` (see
 
 **Surface:**
 
-- Run `atelier design --help`. If it lists `--serve`, start
+- Run `atelier design --help`. If the command exists and lists `--serve`, start
   `atelier design --serve --session <id>` in the background, give the
   creator the URL, and publish boards through it.
 - Otherwise use **terminal mode** (below). Don't apologize for it — the

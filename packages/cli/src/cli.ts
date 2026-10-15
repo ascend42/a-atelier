@@ -27,6 +27,7 @@ import { initCommand } from "./commands/init.js";
 import { mediaCommand } from "./commands/media.js";
 import { workspaceCommand } from "./commands/workspace.js";
 import { setupCommand } from "./commands/setup.js";
+import { doctorCommand } from "./commands/doctor.js";
 
 const program = new Command();
 
@@ -60,5 +61,6 @@ initCommand(program);
 mediaCommand(program);
 workspaceCommand(program);
 setupCommand(program);
+doctorCommand(program);
 
 program.parse();

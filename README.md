@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 0.37.0** | 11 packages | 2 apps
+**Version 0.38.0** | 11 packages | 2 apps
 
 ---
 
@@ -56,6 +56,29 @@ This gives you two commands:
 
 - `atelier` -- CLI for validating, inspecting, and rendering `.atelier` files
 - `atelier-mcp` -- MCP server for AI-assisted animation authoring
+
+### Atelier Design + Produce (Claude Code)
+
+`atelier design` (design direction, critique and design systems in any repo, run by Luna with Mika) and `atelier produce` (content series kits and episode runs, run by Patrick) are Claude Code skills. Installing the package doesn't activate them; `atelier setup` does:
+
+```bash
+npm i -g @a-company/atelier     # needs a release that includes `setup`
+atelier setup                   # installs the skills + crew into ~/.claude and ~/.paradigm
+atelier doctor                  # checks everything is ready
+```
+
+From a clone of this repo (pnpm workspace; `npm install` won't work here):
+
+```bash
+corepack enable                 # provides the pinned pnpm
+pnpm install && pnpm build
+node packages/cli/dist/cli.js setup
+node packages/cli/dist/cli.js doctor
+```
+
+Then start a **new** Claude Code session (skills load at session start) and ask, in any repo: "can we use atelier design for this?" Inside a clone, Claude can also do the install for you: ask it to "install atelier".
+
+`atelier setup --home <workspace>` points sessions at your brand workspace so they inherit its cascade. Re-run `atelier setup` after upgrading; it refreshes the skills and keeps the crew's learned notebooks.
 
 ---
 

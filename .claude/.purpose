@@ -14,6 +14,9 @@ components:
   claude-agents-bundle:
     description: The three Atelier content-generation persona wrappers (#quill-showrunner, #lux-cinematographer, #iris-composer) exposed as Claude Code invokable agents under .claude/agents/. Each wrapper references the canonical persona.yaml and system-prompt.md to prevent drift.
     file: .claude/agents/
+  atelier-install-skill:
+    description: Project-level skill (.claude/skills/atelier-install/SKILL.md) so Claude in a fresh clone of this repo knows how to install Atelier Design + Produce (pnpm install → pnpm build → atelier setup → atelier doctor) when the user-level atelier-design / atelier-produce skills aren't installed yet. Defers to atelier-design when that skill is available.
+    file: .claude/skills/atelier-install/SKILL.md
 aspects:
   agent-files-thin-wrappers:
     description: Every .claude/agents/<name>.md links back to its canonical .paradigm/personas/<id>/persona.yaml and system-prompt.md as the source of truth. The wrapper holds only the YAML frontmatter (tool allowlist, model preference, description) plus a body that mirrors the system prompt verbatim. Drift between the wrapper and the canonical definition is the antipattern this aspect guards against.

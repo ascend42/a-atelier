@@ -8,6 +8,18 @@ Format: [major.minor.fix] — based on milestone progression.
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
+### Added — Atelier Design + Produce install hardening
+
+Triage of a fresh clone where Claude didn't know what `atelier design` was: the skills only exist after `atelier setup`, which a clone never ran, and `npm install` silently left the pnpm workspace unbuilt.
+
+- **`atelier doctor`** — read-only readiness check (Node, skills current vs. this CLI, agent shims, crew personas, config + home studio, CLI on PATH, ffmpeg/whisper-cli for episode runs), each problem with the one command that fixes it.
+- **`atelier setup` installs the whole crew** — Mika (designer), Lux, Quill and Iris join Luna and Patrick (skip-if-exists, so a user's own copies are never clobbered), plus `~/.atelier/cascade-merge.md` for repos outside a workspace.
+- **CLI from a source build** — setup records `cli:` in `~/.atelier/config.yaml` (`atelier`, or `node <path>` when it isn't on PATH) and the skills use it; setup warns with the fix when `atelier` isn't on PATH.
+- **Self-contained skills** — plan docs are background only; nothing a session needs lives only in the Atelier repo.
+- **Quieter setup output** — one-line summary (`--verbose` lists files) and a reminder that skills load in a new Claude Code session.
+- **pnpm guard** — `devEngines` + a preinstall check stop `npm install` with instructions instead of a broken build.
+- **`.claude/skills/atelier-install`** — Claude in a fresh clone can install Atelier when asked; README gains an Atelier Design + Produce install section.
+
 ### Added — v2 workspace onboarding (TD-2026-05-28-097)
 
 Hardening for the v2 pure-knowledge pivot, validated by the Ascend brand-establishment retro. Makes a scaffolded workspace correct and self-explanatory for a fresh creator.
