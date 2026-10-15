@@ -3,6 +3,7 @@
   "private": true,
   "description": "AI-native animation engine — declarative YAML format authored through MCP tools",
   "scripts": {
+    "preinstall": "node scripts/require-pnpm.cjs",
     "build": "turbo run build",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
@@ -29,5 +30,11 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "error"
+    }
   }
 }

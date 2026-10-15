@@ -1,0 +1,77 @@
+id: L-2026-10-15-ascend-042047-001
+type: agent-session
+timestamp: '2026-10-15T04:20:47.273Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-4-6
+title: 'Install audit: atelier doctor, full crew, CLI path, pnpm guard'
+summary: 'Triage of a friend''s fresh clone where Sonnet didn''t know what `atelier design` was. Root causes: the skills only exist after `atelier setup` (never run in a clone), npm 0.38.0 predates setup, `npm install` breaks the pnpm workspace, setup didn''t install Mika/Lux/Quill/Iris, skills referenced repo-only files, and `atelier` isn''t on PATH from a source build. Fixed all of it and verified end to end on a fresh clone with an empty HOME and PATH.'
+symbols_touched:
+  - '#cli-setup'
+  - '#cli-doctor'
+  - '#atelier-design'
+  - '#patrick-producer'
+symbols_created:
+  - '#cli-doctor'
+files_created:
+  - packages/cli/src/commands/doctor.ts
+  - packages/cli/src/commands/doctor.test.ts
+  - .claude/skills/atelier-install/SKILL.md
+  - scripts/require-pnpm.cjs
+  - packages/cli/templates/studio/atelier/cascade-merge.md
+  - packages/cli/templates/studio/paradigm/agents/designer.agent
+  - packages/cli/templates/studio/paradigm/agents/lux.agent
+  - packages/cli/templates/studio/paradigm/agents/quill.agent
+  - packages/cli/templates/studio/paradigm/agents/iris.agent
+files_modified:
+  - packages/cli/src/commands/setup.ts
+  - packages/cli/src/commands/setup.test.ts
+  - packages/cli/src/cli.ts
+  - packages/cli/templates/studio/skills/atelier-design/SKILL.md
+  - packages/cli/templates/studio/skills/atelier-produce/SKILL.md
+  - packages/cli/templates/studio/agents/atelier-luna.md
+  - packages/cli/templates/studio/agents/atelier-patrick.md
+  - package.json
+  - README.md
+  - CHANGELOG.md
+  - packages/cli/.purpose
+  - .claude/.purpose
+decisions:
+  - id: ship-crew-skip-if-exists
+    decision: Ship Mika (designer), Lux, Quill, Iris .agent files in the studio templates, skip-if-exists
+    rationale: They lived only in the owner's ~/.paradigm, so other machines got Luna without Mika's vetting rules; skip-if-exists never clobbers a user's own or learned copy.
+  - id: record-cli-path
+    decision: setup records `cli:` (atelier or node <path>) in ~/.atelier/config.yaml and skills use it
+    rationale: A source build doesn't put atelier on PATH; recording the path makes episode runs work without forcing a global npm link.
+  - id: devengines-guard
+    decision: devEngines packageManager=pnpm onFail=error plus a preinstall check
+    rationale: npm resolves deps before preinstall, so preinstall alone never fires on npm 11; devEngines fails fast with a clear message.
+  - id: in-repo-install-skill
+    decision: Project-level .claude/skills/atelier-install in the repo
+    rationale: Claude in a fresh clone otherwise has no idea how to get atelier design working; the skill defers to atelier-design once installed.
+errors_encountered:
+  - description: '`git commit -qam` committed .paradigm session/event files and .claude/settings.local.json'
+    resolution: Soft reset before pushing; recommitted only setup.ts
+    time_to_fix: 1 min
+learnings:
+  - Earlier advice to a user (`npm install` in the clone) was wrong — always smoke-test install instructions on a fresh clone with an empty HOME/PATH before giving them.
+  - '`git commit -a` in this repo sweeps in Paradigm session/event files and settings.local.json; stage paths explicitly.'
+verification:
+  status: pass
+  details:
+    setup+doctor tests: 24/24
+    cli suite: 584 pass, 2 pre-existing media-ingest timeouts (also fail on main)
+    tsc: clean
+    fresh clone smoke: npm blocked with message; pnpm install+build ok; doctor fail -> setup -> doctor ready
+tags:
+  - install
+  - onboarding
+  - atelier-design
+  - atelier-produce
+  - doctor
+confidence: 0.9
+git_context:
+  ref: 0d89086302a2b520ee552a2755b9cb44fe05c679
+  branch: chore/install-audit
+  dirty: true

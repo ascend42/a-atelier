@@ -124,6 +124,51 @@ describe("runSetup", () => {
   });
 });
 
+describe("runSetup — crew, cascade and CLI", () => {
+  it("installs the whole crew so sessions work on a machine without Paradigm personas", () => {
+    runSetup({ homeDir: home });
+    for (const [id, nickname] of [
+      ["luna", "Luna"], ["designer", "Mika"], ["patrick", "Patrick"],
+      ["lux", "Lux"], ["quill", "Quill"], ["iris", "Iris"],
+    ]) {
+      const agent = readFileSync(join(home, `.paradigm/agents/${id}.agent`), "utf8");
+      expect(agent, id).toContain(`id: ${id}`);
+      expect(agent, id).toContain(`nickname: ${nickname}`);
+      expect(agent, id).not.toContain("{{ISO_NOW}}");
+    }
+  });
+
+  it("never overwrites an existing persona (e.g. a user's own Mika)", () => {
+    mkdirSync(join(home, ".paradigm/agents"), { recursive: true });
+    writeFileSync(join(home, ".paradigm/agents/designer.agent"), "id: designer\nnickname: Mika\nmine: true\n");
+    runSetup({ homeDir: home });
+    expect(readFileSync(join(home, ".paradigm/agents/designer.agent"), "utf8")).toContain("mine: true");
+  });
+
+  it("installs cascade-merge.md for repos outside a workspace, identical to the canonical", () => {
+    runSetup({ homeDir: home });
+    expect(readFileSync(join(home, ".atelier/cascade-merge.md"), "utf8")).toBe(
+      readFileSync(join(repoRoot, ".paradigm/personas/_shared/cascade-merge.md"), "utf8"),
+    );
+  });
+
+  it("records `node <cli>` when atelier isn't on PATH", () => {
+    const r = runSetup({ homeDir: home, cliPath: "/opt/atelier/dist/cli.js", pathEnv: "" });
+    expect(r.cliOnPath).toBe(false);
+    expect(r.cli).toBe('node "/opt/atelier/dist/cli.js"');
+    expect(parseYaml(readFileSync(r.configPath, "utf8")).cli).toBe(r.cli);
+  });
+
+  it("records plain `atelier` when it is on PATH", () => {
+    const bin = join(ws, "bin");
+    mkdirSync(bin);
+    writeFileSync(join(bin, "atelier"), "#!/bin/sh\n", { mode: 0o755 });
+    const r = runSetup({ homeDir: home, cliPath: "/opt/atelier/dist/cli.js", pathEnv: bin });
+    expect(r.cliOnPath).toBe(true);
+    expect(r.cli).toBe("atelier");
+  });
+});
+
 describe("findHomeStudio", () => {
   it("returns null outside any workspace", () => {
     expect(findHomeStudio(home)).toBeNull();

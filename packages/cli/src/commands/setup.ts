@@ -7,12 +7,16 @@
  *
  *   templates/studio/skills/**    → ~/.claude/skills/**     (always refreshed)
  *   templates/studio/agents/**    → ~/.claude/agents/**     (always refreshed)
- *   templates/studio/paradigm/**  → ~/.paradigm/**          (skip-if-exists —
- *                                    Luna/Patrick agent state + notebooks accumulate
- *                                    learning; --force overwrites)
+ *   templates/studio/atelier/**   → ~/.atelier/**           (always refreshed —
+ *                                    cascade-merge.md for repos outside a workspace)
+ *   templates/studio/paradigm/**  → ~/.paradigm/**          (skip-if-exists — the crew:
+ *                                    Luna, Patrick, Mika (designer), Lux, Quill, Iris;
+ *                                    agent state + notebooks accumulate learning;
+ *                                    --force overwrites)
  *
- * and records the home studio (an Atelier v2 workspace) in
- * ~/.atelier/config.yaml so sessions inherit the brand cascade.
+ * and records the home studio (an Atelier v2 workspace) and the CLI command
+ * in ~/.atelier/config.yaml so sessions inherit the brand cascade and can
+ * call the CLI even when `atelier` isn't on PATH.
  *
  * Usage:
  *   atelier setup                    → install; detect home studio from cwd
@@ -23,15 +27,15 @@
  * persona state, and only changes `home:` when a new one is given/detected.
  */
 
-import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
-import { resolve, join, dirname } from "node:path";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync, statSync, accessSync, constants } from "node:fs";
+import { resolve, join, dirname, delimiter } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 import type { Command } from "commander";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
 /** Resolve `templates/studio/` relative to this file (src + dist layouts). */
-function templatesDir(): string {
+export function templatesDir(): string {
   const here = dirname(fileURLToPath(import.meta.url));
   for (const candidate of [
     join(here, "..", "..", "templates", "studio"),
@@ -45,11 +49,48 @@ function templatesDir(): string {
 
 /** Template top-level folder → install root (relative to the user's home)
  *  and whether files there are refreshed on every run. */
-const INSTALL_TARGETS: Record<string, { root: string; refresh: boolean }> = {
+export const INSTALL_TARGETS: Record<string, { root: string; refresh: boolean }> = {
   skills: { root: ".claude/skills", refresh: true },
   agents: { root: ".claude/agents", refresh: true },
+  atelier: { root: ".atelier", refresh: true },
   paradigm: { root: ".paradigm", refresh: false },
 };
+
+/** Every template file as [template folder, path relative to it]. */
+export function templateFiles(): { folder: string; rel: string; abs: string }[] {
+  const tmpl = templatesDir();
+  const out: { folder: string; rel: string; abs: string }[] = [];
+  const walk = (folder: string, dir: string, rel: string): void => {
+    for (const entry of readdirSync(dir)) {
+      const abs = join(dir, entry);
+      if (statSync(abs).isDirectory()) walk(folder, abs, join(rel, entry));
+      else out.push({ folder, rel: join(rel, entry), abs });
+    }
+  };
+  for (const folder of Object.keys(INSTALL_TARGETS)) {
+    const dir = join(tmpl, folder);
+    if (existsSync(dir)) walk(folder, dir, "");
+  }
+  return out;
+}
+
+/** Absolute path of `bin` on PATH, or null. */
+export function findOnPath(bin: string, pathEnv: string = process.env.PATH ?? ""): string | null {
+  const exts = process.platform === "win32" ? (process.env.PATHEXT ?? ".EXE;.CMD").split(";") : [""];
+  for (const dir of pathEnv.split(delimiter)) {
+    if (!dir) continue;
+    for (const ext of exts) {
+      const candidate = join(dir, bin + ext);
+      try {
+        accessSync(candidate, constants.X_OK);
+        if (statSync(candidate).isFile()) return candidate;
+      } catch {
+        // not here
+      }
+    }
+  }
+  return null;
+}
 
 export interface SetupOptions {
   /** User home to install into. Defaults to os.homedir(); tests pass a tmp dir. */
@@ -60,6 +101,10 @@ export interface SetupOptions {
   cwd?: string;
   /** Overwrite skip-if-exists files (Luna's agent state + notebook). */
   force?: boolean;
+  /** Absolute path of the running CLI entry (process.argv[1]); recorded as `cli:`. */
+  cliPath?: string;
+  /** PATH to search for `atelier`. Defaults to process.env.PATH. */
+  pathEnv?: string;
 }
 
 export interface SetupResult {
@@ -69,6 +114,10 @@ export interface SetupResult {
   configPath: string;
   homeStudio: string | null;
   homeStudioSource: "flag" | "detected" | "existing" | "none";
+  /** Command sessions use to run the CLI (`atelier`, or `node <path>`). */
+  cli: string | null;
+  /** True when `atelier` resolves on PATH. */
+  cliOnPath: boolean;
 }
 
 /** True when `dir` looks like an Atelier v2 workspace (the brand container). */
@@ -159,19 +208,25 @@ export function runSetup(opts: SetupOptions = {}): SetupResult {
     }
   }
 
+  const cliOnPath = findOnPath("atelier", opts.pathEnv) !== null;
+  let cli: string | null = typeof config.cli === "string" ? config.cli : null;
+  if (cliOnPath) cli = "atelier";
+  else if (opts.cliPath) cli = `node ${JSON.stringify(resolve(opts.cliPath))}`;
+
   const configExisted = existsSync(configPath);
-  config = { version: 1, ...config, home: homeStudio };
+  config = { version: 1, ...config, home: homeStudio, cli };
   mkdirSync(dirname(configPath), { recursive: true });
   writeFileSync(
     configPath,
     "# Atelier machine config — written by `atelier setup`.\n" +
       "# home: the Atelier workspace whose _brand/ cascade every `atelier design` session inherits.\n" +
-      stringifyYaml(config),
+      "# cli: how sessions run the Atelier CLI (`atelier`, or `node <path>` when it isn't on PATH).\n" +
+      stringifyYaml(config, { lineWidth: 0 }),
     "utf8",
   );
   (configExisted ? updated : written).push(".atelier/config.yaml");
 
-  return { written, updated, skipped, configPath, homeStudio, homeStudioSource };
+  return { written, updated, skipped, configPath, homeStudio, homeStudioSource, cli, cliOnPath };
 }
 
 /** Register the `setup` subcommand on the Commander program. */
@@ -180,32 +235,37 @@ export function setupCommand(program: Command): void {
     .command("setup")
     .description(
       "Install Atelier Design + Produce for every repo: the atelier-design and atelier-produce " +
-        "skills, the Luna and Patrick agents, and the home studio pointer (~/.atelier/config.yaml).",
+        "skills, the crew (Luna, Mika, Patrick, Lux, Quill, Iris), and ~/.atelier/config.yaml.",
     )
     .option("--home <path>", "Atelier workspace to use as the home studio (brand cascade)")
-    .option("--force", "Also overwrite Luna/Patrick agent state and notebooks (learned data)")
+    .option("--force", "Also overwrite the crew's agent state and notebooks (learned data)")
+    .option("--verbose", "List every file written, updated or kept")
     .option("--json", "Print a machine-readable result")
-    .action((options: { home?: string; force?: boolean; json?: boolean }) => {
+    .action((options: { home?: string; force?: boolean; json?: boolean; verbose?: boolean }) => {
       try {
-        const result = runSetup({ home: options.home, cwd: process.cwd(), force: !!options.force });
+        const result = runSetup({
+          home: options.home,
+          cwd: process.cwd(),
+          force: !!options.force,
+          cliPath: process.argv[1],
+        });
         if (options.json) {
           console.log(JSON.stringify({ ok: true, ...result }, null, 2));
           return;
         }
         console.log("  Atelier Design + Produce installed");
         console.log("");
-        if (result.written.length) {
-          console.log(`  Created (${result.written.length}):`);
+        console.log(
+          `  ${result.written.length} created · ${result.updated.length} updated · ` +
+            `${result.skipped.length} kept (learned crew state; --force resets)`,
+        );
+        if (options.verbose) {
           for (const f of result.written) console.log(`    + ~/${f}`);
-        }
-        if (result.updated.length) {
-          console.log(`  Updated (${result.updated.length}):`);
           for (const f of result.updated) console.log(`    ~ ~/${f}`);
-        }
-        if (result.skipped.length) {
-          console.log(`  Kept (${result.skipped.length}) — learned state, use --force to reset:`);
           for (const f of result.skipped) console.log(`    . ~/${f}`);
         }
+        console.log("    skills  ~/.claude/skills/atelier-design, atelier-produce");
+        console.log("    crew    Luna, Mika, Patrick, Lux, Quill, Iris (~/.paradigm/agents)");
         console.log("");
         if (result.homeStudio) {
           console.log(`  Home studio (${result.homeStudioSource}): ${result.homeStudio}`);
@@ -213,9 +273,18 @@ export function setupCommand(program: Command): void {
           console.log("  Home studio: none — sessions will run repo-only.");
           console.log("    Set one with: atelier setup --home <atelier-workspace>");
         }
+        if (!result.cliOnPath) {
+          console.log("");
+          console.log("  ! `atelier` isn't on your PATH. Sessions will use:");
+          console.log(`      ${result.cli ?? "(unknown — re-run setup via the CLI)"}`);
+          console.log("    To put it on PATH: npm i -g @a-company/atelier");
+          console.log("    or, from an Atelier clone: cd packages/cli && npm link");
+        }
         console.log("");
-        console.log("  Next: in any repo, ask Claude Code \"can we use atelier design for this?\"");
-        console.log("        in your workspace, \"atelier produce my podcast\"");
+        console.log("  Next: start a NEW Claude Code session (skills load at session start), then");
+        console.log("        in any repo: \"can we use atelier design for this?\"");
+        console.log("        in your workspace: \"atelier produce my podcast\"");
+        console.log("  Check anytime: atelier doctor");
         console.log("");
       } catch (err) {
         if (options.json) {

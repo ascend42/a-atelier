@@ -47,6 +47,7 @@ Disagreements go to the creator as an annotated choice. Never silent.
 
 ## Full reference
 
-- Plan: `docs/design-studio-plan.md` (Atelier repo)
+- Plan (background, Atelier repo only): `docs/design-studio-plan.md`
 - Notebook: `~/.paradigm/notebooks/luna/`
-- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md`
+- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md` in a
+  workspace, else `~/.atelier/cascade-merge.md` (installed by `atelier setup`)

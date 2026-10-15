@@ -42,6 +42,7 @@ at `~/.paradigm/notebooks/patrick/`.
 
 ## Full reference
 
-- Plan: `docs/content-studio-plan.md` (Atelier repo)
+- Plan (background, Atelier repo only): `docs/content-studio-plan.md`
 - Notebook: `~/.paradigm/notebooks/patrick/`
-- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md`
+- Cascade protocol: `.paradigm/personas/_shared/cascade-merge.md` in a
+  workspace, else `~/.atelier/cascade-merge.md` (installed by `atelier setup`)

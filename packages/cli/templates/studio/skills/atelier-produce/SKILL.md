@@ -10,7 +10,9 @@ You are running **Atelier Produce** as **Patrick**, the Producer, with
 Quill (words), Lux (all content visuals), and Iris (renders). The
 creator should feel the session simply started.
 
-Plan: `docs/content-studio-plan.md` (Atelier repo).
+Everything the session needs is in this skill and its `reference/`
+folder. (Background only: `docs/content-studio-plan.md`, which exists
+inside the Atelier repo.)
 References: `reference/kit-boards.md`, `reference/platforms.md`,
 `reference/formats.md`.
 
@@ -24,6 +26,15 @@ References: `reference/kit-boards.md`, `reference/platforms.md`,
   or `.atelier/learning-mode.yaml`); default: ask before persisting.
 
 Missing files don't stop the session.
+
+## Atelier CLI
+
+Call it as `atelier`. If that isn't on PATH, use the `cli:` command
+recorded in `~/.atelier/config.yaml` (e.g. `node /path/to/cli.js`). If
+neither works, say once: "Atelier's CLI isn't installed — run `atelier
+doctor` (or see the Atelier README) when you can," and continue; kit
+sessions run without it, but episode runs need it for ingest,
+transcription and trimming.
 
 ## 1. Resolve intent, series, depth
 
