@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier playbook v0: review and approval</title>
+<style>
+  :root {
+    --paper: #f7f3ea;
+    --sheet: #fffdf8;
+    --ink: #1d1b16;
+    --muted: #5b5448;
+    --rule: #ddd4c2;
+    --accent: #23456b;
+    --accent-soft: #e6edf5;
+    --ok: #2f6b3a;
+    --ok-soft: #e5f0e3;
+    --warn: #7a4b0c;
+    --warn-soft: #f6ead3;
+    --bad: #8a2a1f;
+    --bad-soft: #f5e1dc;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); }
+  main { max-width: 880px; margin: 0 auto; padding: 24px 18px 96px; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.2; font-weight: 600; text-wrap: balance; }
+  h1 { font-size: 2rem; margin: 8px 0 4px; }
+  h2 { font-size: 1.5rem; margin: 56px 0 8px; padding-top: 12px; border-top: 2px solid var(--ink); }
+  h3 { font-size: 1.1rem; margin: 0; }
+  h4 { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 24px 0 6px; }
+  p { margin: 8px 0; }
+  a { color: var(--accent); }
+  code, pre { font-family: var(--mono); font-size: .85em; }
+  code { background: #efe8d9; padding: 1px 4px; border-radius: 3px; overflow-wrap: anywhere; }
+  pre { background: #f1ebde; border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 4px 0; }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-top: 0; }
+  .meta { font-size: .85rem; color: var(--muted); }
+  .toc { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 18px; margin: 20px 0; }
+  .toc ol { margin: 6px 0; padding-left: 22px; }
+  .toc li { margin: 2px 0; }
+  .callout { background: var(--sheet); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 14px 0; }
+  .callout.warn { border-left-color: var(--warn); background: #fffaf0; }
+  .callout.bad { border-left-color: var(--bad); }
+  .push { background: var(--warn-soft); border: 1px solid #e4cf9f; border-radius: 6px; padding: 8px 12px; margin: 10px 0 0; font-size: .92rem; }
+  .push b { color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .92rem; background: var(--sheet); }
+  th, td { border: 1px solid var(--rule); padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #efe8d9; font-weight: 600; }
+  .tablewrap { overflow-x: auto; }
+  .p { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px 12px; margin: 16px 0; }
+  .p > header { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
+  .pid { font-family: var(--mono); font-size: .85rem; font-weight: 700; color: #fff; background: var(--accent); padding: 1px 7px; border-radius: 4px; }
+  .eff { margin-left: auto; font-size: .78rem; font-weight: 700; border: 1px solid var(--ink); border-radius: 999px; padding: 0 8px; }
+  .rec { font-size: .78rem; font-weight: 700; border-radius: 999px; padding: 0 8px; }
+  .rec.approve { background: var(--ok-soft); color: var(--ok); }
+  .rec.change { background: var(--warn-soft); color: var(--warn); }
+  .rec.reject { background: var(--bad-soft); color: var(--bad); }
+  dl { display: grid; grid-template-columns: 9.5em 1fr; gap: 4px 14px; margin: 6px 0 0; }
+  dt { font-weight: 600; font-size: .85rem; color: var(--muted); padding-top: 2px; }
+  dd { margin: 0; min-width: 0; }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ba > div > span { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .vote { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; border-top: 1px dashed var(--rule); margin-top: 12px; padding-top: 10px; font-size: .92rem; }
+  .vote label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; min-height: 32px; }
+  .vote input[type=radio] { width: 18px; height: 18px; accent-color: var(--accent); }
+  .vote input[type=text] { flex: 1 1 220px; min-width: 0; font: inherit; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 4px; background: #fff; }
+  .vote input[type=text]:focus, .vote input[type=radio]:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tells { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .t { border-top: 1px solid var(--rule); padding: 10px 0; }
+  .t:first-child { border-top: 0; }
+  .t h3 { font-family: var(--mono); font-size: .95rem; }
+  .small { font-size: .88rem; }
+  .bar { position: sticky; bottom: 0; background: var(--ink); color: var(--paper); padding: 8px 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; z-index: 5; }
+  .bar button { font: inherit; font-size: .9rem; background: var(--paper); color: var(--ink); border: 0; border-radius: 4px; padding: 6px 12px; cursor: pointer; min-height: 34px; }
+  .bar span { font-size: .9rem; }
+  #export { display: none; width: 100%; min-height: 160px; margin-top: 8px; font-family: var(--mono); font-size: .8rem; }
+  .seq { counter-reset: s; list-style: none; padding: 0; }
+  .seq > li { counter-increment: s; position: relative; padding: 10px 12px 10px 48px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; margin: 8px 0; }
+  .seq > li::before { content: counter(s); position: absolute; left: 12px; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; text-align: center; line-height: 26px; font-size: .9rem; }
+  @media (max-width: 640px) {
+    main { padding: 16px 12px 96px; }
+    h1 { font-size: 1.6rem; }
+    dl { grid-template-columns: 1fr; }
+    dt { padding-top: 8px; }
+    .ba { grid-template-columns: 1fr; }
+    .eff { margin-left: 0; }
+  }
+  @media print {
+    .bar { display: none; }
+    body { background: #fff; }
+    .p { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<p class="meta">Atelier · docs/playbook · prepared by Luna (Design Director) with Mika's vetting rules · 2026-10-16</p>
+<h1>Playbook v0: every proposal, explained, for your approval</h1>
+<p class="lede">This page covers every change proposed in <code>proposals.md</code>, plus the conflicts I found while writing it up, the fixes to the research, and the options for what comes next. Nothing here has been applied. Mark each item <b>approve</b>, <b>change</b> or <b>reject</b>. Your marks save in this browser, and the button at the bottom copies them out as text.</p>
+
+<div class="callout">
+  <p><b>The one thing to know before marking anything.</b> Loid's benchmark (<code>calibration.md</code> §2.5) needs a <b>baseline run (B0) on today's prompts</b> before any proposal that changes how Luna or Mika behave is applied. Otherwise there is no way to tell whether the playbook improved the eye or just changed it. Approving an item here means "apply it after B0", not "apply it now". The sequence is at the end (§9).</p>
+</div>
+
+<nav class="toc" aria-label="Contents">
+  <b>Contents</b>
+  <ol>
+    <li><a href="#glance">At a glance</a></li>
+    <li><a href="#conflicts">Conflicts that need a ruling first (G1–G5)</a></li>
+    <li><a href="#rulebook">The rulebook and playbook (R1–R4)</a></li>
+    <li><a href="#process">Design Read and process (A1–A8)</a></li>
+    <li><a href="#critique">Critique and finish review (B1–B3)</a></li>
+    <li><a href="#tells">Tells: schema and 16 new tells (C1–C18)</a></li>
+    <li><a href="#notebooks">Notebook entries for Luna and Mika (D0–D19)</a></li>
+    <li><a href="#boards">Question-bank boards (E1–E13)</a></li>
+    <li><a href="#fixes">Fixes to the research (F1–F8)</a></li>
+    <li><a href="#next">Next-step approaches (N1–N4)</a></li>
+    <li><a href="#sequence">Recommended sequence</a></li>
+    <li><a href="#summary">One-screen summary</a></li>
+  </ol>
+</nav>
+
+<section id="glance">
+<h2>1. At a glance</h2>
+<div class="tablewrap"><table>
+<tr><th>What exists now</th><th>What is proposed</th></tr>
+<tr><td><code>tells.yaml</code> has 32 tells. 28 ask "does it look machine-made?" Only 4 ask "does it cost the user?"</td><td>A separate usability rulebook, <code>rules.yaml</code> (70 rules, each with a source and an evidence strength), plus 16 usability tells that act as its mechanical detectors.</td></tr>
+<tr><td>Critique reports findings by impact, with no evidence class. "Accessible" can be claimed from an automated pass.</td><td>Every claim is tagged observed, heuristic or opinion. Accessibility is reported as "technically conformant". Every session ends with the cheapest real-user study that could prove it wrong.</td></tr>
+<tr><td>Boards go intent → dials → type and color.</td><td>Problem → principles → structure (IA, status, recovery, autonomy) → dials → look. This matches what you asked for on Elvanti.</td></tr>
+<tr><td>Luna has 10 notebook entries and Mika 59. Mika's are deep on tokens and WCAG numbers and thin on interaction and agent UX.</td><td>7 new Luna entries and 8 new Mika entries. 3 corrections: one confidence lowered, two checklist fixes. One wrong target-size floor fixed.</td></tr>
+</table></div>
+<p>Effort key: <b>S</b> under an hour, <b>M</b> half a day, <b>L</b> several days. "Rec." is my recommendation. "Measured by" points at <a href="calibration.md">calibration.md</a>: §2.3 lists the metrics, §4 the first-month falsifiers F1–F10, and §3 the verdict loop.</p>
+<p class="small">Benchmark hygiene: the examples on this page use only Loid's <b>dev</b> items (DE-01 to DE-07), real Gnomon and Atelier artifacts, or clearly labelled illustrations. Held-out labels (DE-08 onward) are never quoted here, per calibration.md §1.4.</p>
+</section>
+
+<section id="conflicts">
+<h2>2. Conflicts that need a ruling first</h2>
+<p>I found these while writing this review. They are not in <code>proposals.md</code>. Each one blocks or changes an item further down.</p>
+
+<article class="p" id="G1"><header><span class="pid">G1</span><h3>Voice approvals: my rule contradicts the Gnomon spec</h3><span class="rec change">Rec. change rule</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>rules.yaml</code> → <code>voice-confirm-and-echo-irreversible</code>, and board E12.</dd>
+<dt>Why</dt><dd>The rule lets an irreversible action be approved by voice after a spoken confirm. <code>docs/specs/gnomon.md</code> (S22-M1 / A23-2) says the voice principal is "never <code>approve</code> … never a decision by speech". The spec is a ruling and it wins. NN/g's voice research (users don't retry failed capabilities; voice suits single-step commands) supports the spec. <a href="https://www.nngroup.com/articles/intelligent-assistants-poor-usability-high-adoption/">NN/g</a></dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before (rule)</span><pre>"Deploy to prod, say confirm." → approved by voice, echoed on screen</pre></div><div><span>After (rule renamed voice-opens-never-decides)</span><pre>"Two cards pending; the deploy one is gate-class. Opening it."
+→ card focused on screen; decision needs presence (Touch ID)</pre></div></div></dd>
+<dt>Benefit</dt><dd>Founder: one source of truth for voice authority. Eye: Mika stops passing designs the kernel would refuse.</dd>
+<dt>Cost / risk</dt><dd>None. Narrower voice scope at launch, which the research favours anyway.</dd>
+<dt>Depends on</dt><dd>Nothing.</dd>
+<dt>Measured by</dt><dd>Not benchmarkable yet (no voice items). Tracked as an outcome under §3.2 once voice ships.</dd>
+</dl>
+<div class="vote" data-id="G1"></div>
+</article>
+
+<article class="p" id="G2"><header><span class="pid">G2</span><h3>"Thinking…": my tell excludes it, and Loid's benchmark marks it as a defect</h3><span class="rec change">Rec. relabel DE-02b</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>Either <code>calibration.md</code> DE-02's second seed or tell C17 <code>anthropomorphic-status</code>.</dd>
+<dt>Why</dt><dd>NN/g advises against anthropomorphic verbs (<a href="https://www.nngroup.com/articles/explainable-ai/">explainable-ai</a>). That is house opinion. The durable finding (Turpin et al. 2023) is narrower: don't present a reasoning trace as a faithful explanation. Claude Code itself shows "Thinking", and Gnomon has a persona. Loid's DE-02 seeds "Status line says Thinking…" as a minor defect under <code>topics.R7</code>. If the tell skips it, the benchmark scores a correct critic as missing it.</dd>
+<dt>Options</dt><dd>(a) <b>Recommended:</b> relabel DE-02b as <code>waits-show-honest-progress</code>. The defect is "Thinking…" with <i>no factual action</i> for over a second, not the word itself. (b) Keep the label and add "Thinking" to the tell's regex. (c) Drop the seed.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Fails under (a)</span><pre>⠋ Thinking…            (8 s, nothing else)</pre></div><div><span>Passes under (a)</span><pre>⠋ Thinking · read 4 files · editing BillingForm.tsx</pre></div></div></dd>
+<dt>Benefit</dt><dd>Keeps persona voice in Gnomon and keeps the benchmark honest.</dd>
+<dt>Cost / risk</dt><dd>Loid edits one label before the bench is certified. That is free now and costly after B0.</dd>
+<dt>Depends on</dt><dd>Must be settled before the founder certifies the bench (N3).</dd>
+<dt>Measured by</dt><dd>S6 recall and precision (calibration.md §2.3). Contested-rule check §3.4 if overrules split.</dd>
+</dl>
+<div class="vote" data-id="G2"></div>
+</article>
+
+<article class="p" id="G3"><header><span class="pid">G3</span><h3>Two space taxonomies: rules.yaml (10 spaces) vs calibration (S1–S7 + T)</h3><span class="rec approve">Rec. approve mapping</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>Loid's <code>bench/design-eye/map.yaml</code> gets a space map. Neither file is renamed.</dd>
+<dt>Why</dt><dd>The rulebook's spaces suit authoring and calibration's suit scoring. Both are fine; they need a join table, otherwise per-space metrics can't be traced to rules.</dd>
+<dt>Example</dt><dd><pre>interaction → S1 (status) | S2 (control/recovery)   ai-agent, voice → S6
+visual → S3   accessibility → S4   content, ia → S5   tui → S7
+process, research → not benchmarked; covered by evidence honesty (F9)</pre></dd>
+<dt>Benefit</dt><dd>Every benchmark number points back to a rule you can approve, scope or retire.</dd>
+<dt>Cost / risk</dt><dd>Interaction splits across S1 and S2, so the map is per rule, not per space. It can be generated from <code>merged_from</code> (PLAYBOOK §9).</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>Every §2.3 metric depends on it.</dd>
+</dl>
+<div class="vote" data-id="G3"></div>
+</article>
+
+<article class="p" id="G4"><header><span class="pid">G4</span><h3>Keep held-out labels out of every agent-readable doc, neurons included</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>A rule in PLAYBOOK §10 ("docs cite only dev items"), and calibration.md §1.4's weekly canary grep gains <code>/Users/ascend/neurons</code>.</dd>
+<dt>Why</dt><dd>calibration.md §1.4 greps notebooks, journals, University, lore and <code>.atelier/</code>, but not the neurons vault. If N2 (a design neuron region) goes ahead, that vault becomes the likeliest leak.</dd>
+<dt>Benefit</dt><dd>The benchmark keeps measuring the eye, not memory.</dd>
+<dt>Cost / risk</dt><dd>One path added to a grep.</dd>
+<dt>Depends on</dt><dd>N2, N3.</dd>
+<dt>Measured by</dt><dd>F8 (zero canary hits).</dd>
+</dl>
+<div class="vote" data-id="G4"></div>
+</article>
+
+<article class="p" id="G5"><header><span class="pid">G5</span><h3>Approval means "after B0", not "now"</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>The order of work: the skill, notebooks and tells stay frozen until the baseline run B0 is stored.</dd>
+<dt>Why</dt><dd>calibration.md §2.5 and F3 need a before and an after on the same items and model. Applying A–E first destroys the "before".</dd>
+<dt>Benefit</dt><dd>You get a real answer to "did the playbook make the eye better?"</dd>
+<dt>Cost / risk</dt><dd>Delays the visible changes by the time it takes to build and certify the bench (N3: about a week, with roughly 2 hours of your time).</dd>
+<dt>Depends on</dt><dd>N3.</dd>
+<dt>Measured by</dt><dd>F3, F4, F5 become computable at all.</dd>
+</dl>
+<div class="vote" data-id="G5"></div>
+</article>
+</section>
+
+<section id="rulebook">
+<h2>3. The rulebook and playbook</h2>
+
+<article class="p" id="R1"><header><span class="pid">R1</span><h3>Adopt rules.yaml v0: 70 usability rules</h3><span class="rec approve">Rec. approve</span><span class="eff">M</span></header>
+<dl>
+<dt>What changes</dt><dd><code>docs/playbook/rules.yaml</code> becomes canonical and is copied to <code>~/.claude/skills/atelier-design/reference/rules.yaml</code>.</dd>
+<dt>Why</dt><dd>The four reports contained about 100 overlapping rules. They are merged into 70 with 176 <code>merged_from</code> links. Spaces: interaction 15, ai-agent 15, accessibility 8, process 7, visual 7, research 4, content 4, tui 4, ia 3, voice 3. Strength: 14 durable, 46 expert-heuristic, 10 nng-opinion. Runnable by: 48 screen-only, 20 walkthrough, 2 real-users.</dd>
+<dt>Example</dt><dd>Six source rules (01#3, 02#3, 03:H3, 03:H5, 03:H1, 04:R4) became one: <code>reversible-or-gated-proportionally</code>. Every irreversible action needs undo or a gate that names the consequence, and only high-stakes actions get gates. On Gnomon's <code>card:v1</code>, that is the split between fresh-presence and cached-unlock decisions.</dd>
+<dt>Benefit</dt><dd>Founder: one file of reasons behind every finding, each with a source. Eye: Luna and Mika see cost, status and recovery, not only looks.</dd>
+<dt>Cost / risk</dt><dd>Seventy rules is a lot of prompt. Load by surface (A6/C1) to keep each session at 25–40. About 15 sources lack deep URLs (R4).</dd>
+<dt>Depends on</dt><dd>G1 (one rule revised), R4.</dd>
+<dt>Measured by</dt><dd>F3 pooled recall +0.15 over B0, without breaching F4 false alarms.</dd>
+</dl>
+<div class="vote" data-id="R1"></div>
+</article>
+
+<article class="p" id="R2"><header><span class="pid">R2</span><h3>Severity comes from strength</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>PLAYBOOK §4 and SKILL critique: <b>durable</b> = fail and not overridable by taste; <b>expert-heuristic</b> = fail if it blocks the primary task, otherwise warn; <b>nng-opinion</b> = warn, overridable like a tell.</dd>
+<dt>Why</dt><dd>03 §4 separates perception and cognition findings from NN/g house style. Treating them the same would either block expressive work (Gnomon papercraft) or wave real access failures through.</dd>
+<dt>Example</dt><dd>Gnomon style board: "Sage project hue 3.96:1 on paper" is a <b>durable</b> fail for text, so it is restricted to fills. The papercraft serif using 4 type sizes trips <code>limited-type-scale</code>, an opinion warn, and you can override it.</dd>
+<dt>Benefit</dt><dd>Taste stays yours; physiology isn't up for a vote.</dd>
+<dt>Cost / risk</dt><dd>Strength tags are my judgement. Loid's §3.5 lets local evidence raise <i>standing</i>, never <i>provenance</i>.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>F10 severity κ ≥ 0.5; mean signed severity error within ±0.5.</dd>
+</dl>
+<div class="vote" data-id="R2"></div>
+</article>
+
+<article class="p" id="R3"><header><span class="pid">R3</span><h3>Adopt PLAYBOOK.md v0 as the house playbook</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>docs/playbook/PLAYBOOK.md</code>: purpose, the eye (5 habits, 6 things looked at), process loop, rules vs tells, the agent/real-user boundary, six surface sections with TODO gaps, source trust tiers T1–T4, an improvement stub that points to Loid.</dd>
+<dt>Why</dt><dd>The research's main lesson is that agents are inspectors, not users (NN/g <a href="https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/">heuristic evaluation</a> "cannot replace user research"; <a href="https://www.nngroup.com/articles/synthetic-users-vs-human-respondents/">synthetic users</a> collapse the long tail). The playbook makes that boundary explicit.</dd>
+<dt>Benefit</dt><dd>Founder: a document to argue with and improve. Eye: the same order of looking every time (hierarchy, cost, convention, status, recovery, truth).</dd>
+<dt>Cost / risk</dt><dd>The TUI section is the weakest: every <code>tui</code> rule is extrapolated from NN/g until N1's clig.dev read.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>F9 (no fake user-testing claims) and §2.3 evidence honesty.</dd>
+</dl>
+<div class="vote" data-id="R3"></div>
+</article>
+
+<article class="p" id="R4"><header><span class="pid">R4</span><h3>Verify the ~15 sources with no deep URL before adoption</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>Sources marked "deep URL not captured" in <code>rules.yaml</code>: Tognazzini, NN/g Sketch Test, Design Critiques, Microinteractions, Writing Tasks, Beyond the NPS, Personas vs JTBD, Carbon AI label, LukeW, Wattenberger, Yocco, MeasuringU, digital.gov, Hamel Husain.</dd>
+<dt>Why</dt><dd>The reports named these pages without recording their URLs. Guessed URLs are how citations rot. Pirated mirrors from report 01 are excluded permanently.</dd>
+<dt>Benefit</dt><dd>Every citation resolves.</dd>
+<dt>Cost / risk</dt><dd>One agent pass with WebFetch.</dd>
+<dt>Depends on</dt><dd>Nothing. Can run with N1.</dd>
+<dt>Measured by</dt><dd>Zero unresolved sources in <code>rules.yaml</code> (a lint, not a calibration metric).</dd>
+</dl>
+<div class="vote" data-id="R4"></div>
+</article>
+</section>
+
+<section id="process">
+<h2>4. Design Read and process</h2>
+
+<article class="p" id="A1"><header><span class="pid">A1</span><h3>Add a Problem line (and Platform) to the Design Read</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §2b (proposal c3). A second line: <code>Problem: … — observed | heuristic | assumed. Platform: web | app | tui | agent | voice | dashboard.</code></dd>
+<dt>Why</dt><dd>NN/g "<a href="https://www.nngroup.com/videos/stop-solutioneering/">Stop solutioneering</a>": confirm the problem before proposing fixes. Norman on HCD: <a href="https://www.nngroup.com/videos/principles-human-centered-design-don-norman/">solve the right problem</a>. Rule <code>problem-before-solution</code>.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before (Gnomon aesthetic session)</span><pre>Reading this as: An instrument for one operator running an armada … exact, calm, quietly beautiful.</pre></div><div><span>After</span><pre>Reading this as: (same)
+Problem: the operator can't tell at a glance which session needs them,
+or why — assumed (no observation yet). Platform: tui + agent.</pre></div></div></dd>
+<dt>Benefit</dt><dd>Founder: one more line to correct, and it catches "we're styling the wrong problem" in the first reply. Eye: every later board is judged against a stated cost to the user.</dd>
+<dt>Cost / risk</dt><dd>"Assumed" will be common. That is fine and honest; A4 then names the check.</dd>
+<dt>Depends on</dt><dd>A6 (record fields).</dd>
+<dt>Measured by</dt><dd>Evidence honesty (§2.3). Proxy: share of sessions with a problem line.</dd>
+</dl>
+<div class="vote" data-id="A1"></div>
+</article>
+
+<article class="p" id="A2"><header><span class="pid">A2</span><h3>Evidence tags on every decision and finding</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §4 Decisions (c6) and the Rules section (c9). <code>evidence: observed | heuristic | opinion</code> on decisions. Skipping to the recommendation is <code>opinion</code>.</dd>
+<dt>Why</dt><dd>NN/g <a href="https://www.nngroup.com/videos/you-are-not-user-slogan/">You ≠ User</a>, <a href="https://www.nngroup.com/videos/show-me-the-data/">Show me the data</a>. 03 P1: a heuristic pass is never "usable". Rule <code>evidence-tagged-claims</code>.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before (Gnomon iconography decision)</span><pre>decision: { kind: mix, choice: "cap-gnomon, alive …", decided_by: creator }</pre></div><div><span>After</span><pre>decision: { kind: mix, …, decided_by: creator, evidence: opinion }
+findings: [{ "key edges under 3:1", rule: text-contrast-both-themes, evidence: heuristic }]</pre></div></div></dd>
+<dt>Benefit</dt><dd>Founder: you can see which decisions are taste and which are tested. Eye: Luna stops presenting her preferences as facts.</dd>
+<dt>Cost / risk</dt><dd>Minimal. Risk of tag inflation ("heuristic" on everything); Loid's evidence-honesty metric catches it.</dd>
+<dt>Depends on</dt><dd>A6.</dd>
+<dt>Measured by</dt><dd>Evidence honesty (§2.3), F9.</dd>
+</dl>
+<div class="vote" data-id="A2"></div>
+</article>
+
+<article class="p" id="A3"><header><span class="pid">A3</span><h3>Options name the trade-off they take; principles decide</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §4 option bullets (c4). Paired with board E3.</dd>
+<dt>Why</dt><dd>NN/g <a href="https://www.nngroup.com/videos/dualities-user-experience/">Dualities of UX</a>, <a href="https://www.nngroup.com/videos/design-principles-101/">Design Principles 101</a>, <a href="https://www.nngroup.com/articles/design-guidance/">design guidance</a>: principles settle real arguments. Rule <code>principles-arbitrate-tradeoffs</code>.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before (Gnomon world board)</span><pre>shadow-instrument (recommended): "the only world that is Gnomon's own"</pre></div><div><span>After</span><pre>shadow-instrument: leans calm + own-convention
+gnome-guild: leans alive + novel
+Recommended by principle "glanceable over decorative"</pre></div></div></dd>
+<dt>Benefit</dt><dd>Founder: your recurring choice of "alive" over "calm" (Luna's Elvanti notebook, 6 of 11 boards) becomes a written principle instead of a surprise each time. Eye: Luna recommends from stated values.</dd>
+<dt>Cost / risk</dt><dd>Principles that are too vague decide nothing. The rule's fail evidence names this.</dd>
+<dt>Depends on</dt><dd>E3.</dd>
+<dt>Measured by</dt><dd>Indirect: recommendation take-rate in verdicts (§3.1). Not benchmarked.</dd>
+</dl>
+<div class="vote" data-id="A3"></div>
+</article>
+
+<article class="p" id="A4"><header><span class="pid">A4</span><h3>Every session closes with a "next study" line; Atelier never says "usable"</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §5 Close, new step 6 (c7).</dd>
+<dt>Why</dt><dd>NN/g <a href="https://www.nngroup.com/articles/ux-research-cheat-sheet/">research cheat sheet</a> (if you do one thing, run a think-aloud) and <a href="https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/">5 users</a> (as "small iterative rounds", not a guarantee). Rules <code>close-with-falsifying-study</code>, <code>method-fits-question</code>.</dd>
+<dt>Example</dt><dd><pre>Next study (Gnomon decision stack): 5 developers, think-aloud on refs/walkthrough.html,
+task "something needs you; deal with the most urgent thing".
+Behavioural · qualitative · formative. Until then: heuristic only.</pre></dd>
+<dt>Benefit</dt><dd>Founder: a ready-to-run test plan with every direction. Eye: the boundary of agent knowledge is said aloud.</dd>
+<dt>Cost / risk</dt><dd>Studies only help if someone runs them. See N4c.</dd>
+<dt>Depends on</dt><dd>A6.</dd>
+<dt>Measured by</dt><dd>F9; outcomes in §3.2 when a study runs.</dd>
+</dl>
+<div class="vote" data-id="A4"></div>
+</article>
+
+<article class="p" id="A5"><header><span class="pid">A5</span><h3>Mika vets usability rules at board time, not only at finish</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §4 "Mika vets before publishing" (c5). Adds in-scope rules and corrects the target-size wording (F1).</dd>
+<dt>Why</dt><dd>Usability defects are cheapest to drop at option stage (NN/g <a href="https://www.nngroup.com/articles/ux-prototype-hi-lo-fidelity/">prototype fidelity</a>: throwing away a prototype is far cheaper than reworking code).</dd>
+<dt>Example</dt><dd>Gnomon's decision-stack board (still open): your "flying paper decisions that pile up" option gets Mika's concern on the card. "Fly-in must not move focus onto Approve (<code>decision-card-anatomy</code>); a stack needs a visible count and a most-urgent-first order (<code>options-visible-not-remembered</code>)."</dd>
+<dt>Benefit</dt><dd>Founder: concerns arrive while you're still choosing. Eye: Mika's vetting covers behaviour, not only contrast and tokens.</dd>
+<dt>Cost / risk</dt><dd>More concerns on cards. Keep only the rules a static option can actually fail.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>§3.2 misses (defects shipped that vetting should have caught).</dd>
+</dl>
+<div class="vote" data-id="A5"></div>
+</article>
+
+<article class="p" id="A6"><header><span class="pid">A6</span><h3>New session.yaml fields, and load rules by surface</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>reference/formats.md</code> (c10) and <code>SKILL.md</code> header plus §2 item 6 (c1, c2). New fields: <code>platform</code>, <code>problem</code>, <code>problem_evidence</code>, <code>decision.evidence</code>, <code>findings[]</code> with <code>rule</code>, <code>open_questions</code>, <code>next_study</code>.</dd>
+<dt>Why</dt><dd>The record must hold what A1–A4 and B1 produce. There is a naming collision: <code>surface:</code> already means "terminal or preview", so the product surface needs its own key, <code>platform:</code>.</dd>
+<dt>Example</dt><dd><pre>platform: tui
+problem: "Operator can't tell which session needs them"
+problem_evidence: assumed
+findings: [{ rule: text-contrast-both-themes, where: "refs/papercraft.html key edge", severity: fail, evidence: heuristic }]
+next_study: "5-dev think-aloud on walkthrough; behavioural · qualitative · formative"</pre></dd>
+<dt>Benefit</dt><dd>Loid's verdict loop (§3.1) needs stable finding ids with rule ids. This supplies them.</dd>
+<dt>Cost / risk</dt><dd>Old sessions lack the fields. Readers must treat them as optional.</dd>
+<dt>Depends on</dt><dd>Nothing.</dd>
+<dt>Measured by</dt><dd>Enables §3.1 credit/debit; localisation metric (§2.3).</dd>
+</dl>
+<div class="vote" data-id="A6"></div>
+</article>
+
+<article class="p" id="A7"><header><span class="pid">A7</span><h3>Redesign audit lists usability debt next to tells</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>reference/redesign.md</code> §2 Audit, a new bullet (c11).</dd>
+<dt>Why</dt><dd>Today the audit's Retire list holds only tells (looks). A redesign that keeps a broken error flow is still broken.</dd>
+<dt>Example</dt><dd>Dev item DE-03 (a-constellation <code>ui/src/panels/Setup.tsx</code>). Before: "Retire: radius-drift". After: "Retire: radius-drift; usability debt: <code>errors-say-what-why-fix</code> ('Something went wrong'), <code>persistent-visible-labels</code> (placeholder-only field)."</dd>
+<dt>Benefit</dt><dd>Preserve-mode redesigns stop polishing over usability failures.</dd>
+<dt>Cost / risk</dt><dd>Longer audits. Show you only what changes the conversation, as today.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>S2 and S5 recall.</dd>
+</dl>
+<div class="vote" data-id="A7"></div>
+</article>
+
+<article class="p" id="A8"><header><span class="pid">A8</span><h3>Three new lines in the skill's Rules section</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> bottom Rules section (c9).</dd>
+<dt>Why</dt><dd>These are the three sentences most likely to be broken under pressure. (1) Rules are usability checks and tells are slop detectors. (2) Never claim usable, accessible or validated without real users. (3) Synthetic users are hypotheses (<a href="https://www.nngroup.com/articles/synthetic-users-vs-human-respondents/">NN/g</a>, MeasuringU).</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before</span><pre>"The new card layout is more usable."</pre></div><div><span>After</span><pre>"The new card layout passes decision-card-anatomy (heuristic). Untested with users."</pre></div></div></dd>
+<dt>Benefit</dt><dd>Honest claims in every report you read.</dd>
+<dt>Cost / risk</dt><dd>None.</dd>
+<dt>Depends on</dt><dd>Nothing.</dd>
+<dt>Measured by</dt><dd>F9.</dd>
+</dl>
+<div class="vote" data-id="A8"></div>
+</article>
+</section>
+
+<section id="critique">
+<h2>5. Critique and finish review</h2>
+
+<article class="p" id="B1"><header><span class="pid">B1</span><h3>Rewrite the critique verb: two independent passes, ranked by cost, fixes kept separate</h3><span class="rec approve">Rec. approve</span><span class="eff">M</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> "Critique" section, rewritten in full (c8).</dd>
+<dt>Why</dt><dd>NN/g <a href="https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/">heuristic evaluation</a>: independent evaluators, then consolidation. Design Critiques and <i>Discussing Design</i>: goal-anchored feedback, no solutioning in the critique pass, note strengths. 03 H5: fix the costliest errors first.</dd>
+<dt>Example</dt><dd>Dev item DE-01 (a-constellation <code>ui/src/panels/PermissionCards.tsx</code>).
+<div class="ba"><div><span>Before</span><pre>1. Prompt copy is vague.
+2. Consider brand gold for Allow.
+3. Spacing feels tight.</pre></div><div><span>After</span><pre>Mika pass · Luna pass (independent) → consolidated
+1 BLOCKER decision-card-anatomy — PermissionCards.tsx:42
+  "Allow access?" names no path or scope. Goal: approve
+  only what you meant. heuristic
+2 MAJOR approve-default-focus — :57 Enter = Allow. heuristic
+Strengths: deny is reachable by Esc.
+Fixes (separate): scope line + focus on Edit.
+Open: no user evidence. Next study: …</pre></div></div></dd>
+<dt>Benefit</dt><dd>Founder: findings you can act on in order, each one traceable. Eye: Luna's judgement is checked against Mika's mechanics instead of echoing them.</dd>
+<dt>Cost / risk</dt><dd>Two passes cost more tokens. Same-model passes share blind spots (F5); calibration measures the overlap with α.</dd>
+<dt>Depends on</dt><dd>R1, A6.</dd>
+<dt>Measured by</dt><dd>F3 recall, F4 false alarms, F5 α ≥ 0.6, F10 severity κ, localisation (§2.3).</dd>
+</dl>
+<div class="push"><b>Luna's pushback (F5):</b> isolated subagents from one model are not NN/g's 3–5 independent evaluators. Prefer different models or personas, and never count agent passes as that number.</div>
+<div class="vote" data-id="B1"></div>
+</article>
+
+<article class="p" id="B2"><header><span class="pid">B2</span><h3>Finish review cites rule ids and runs walkthrough rules when the build can be driven</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>SKILL.md</code> §5 Close, the <code>direct</code> bullet (c7).</dd>
+<dt>Why</dt><dd>Today the finish review checks drift against decisions, preserve and tells only, so behaviour is never checked. Twenty rules need a walkthrough, for example <code>acknowledge-every-action</code>, <code>never-lose-user-work</code> and <code>waits-show-honest-progress</code> (<a href="https://www.nngroup.com/articles/response-times-3-important-limits/">response-time limits</a>).</dd>
+<dt>Example</dt><dd><pre>Finish review · 3 drift, 2 usability
+  never-lose-user-work — LoginPage.tsx:61 password cleared on failure (walkthrough)
+  real-users open: screen-reader task test</pre></dd>
+<dt>Benefit</dt><dd>Builds are held to how they behave, not only how they look.</dd>
+<dt>Cost / risk</dt><dd>Needs a runnable target (dev server, TUI, script). When there is none, the rule is listed as "not run", never as passed.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>S1/S2 recall on trace items (calibration §1.3 step 2); §3.2 misses.</dd>
+</dl>
+<div class="vote" data-id="B2"></div>
+</article>
+
+<article class="p" id="B3"><header><span class="pid">B3</span><h3>"Technically conformant", never "accessible"</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>Critique step 5 (c8), Mika notebook D10, rule <code>conformance-is-not-accessibility</code>.</dd>
+<dt>Why</dt><dd>NN/g <a href="https://www.nngroup.com/articles/accessibility-is-not-enough/">Accessibility is not enough</a>: passing checklists doesn't mean disabled users can complete tasks.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before (Gnomon papercraft)</span><pre>a11y: pass</pre></div><div><span>After</span><pre>Technically conformant: tokens ≥4.5:1, key edges ≥3:1, sage = fills only.
+Open: keyboard-only + VoiceOver task test on the TUI.</pre></div></div></dd>
+<dt>Benefit</dt><dd>Accurate claims in anything you might show a customer or regulator.</dd>
+<dt>Cost / risk</dt><dd>None.</dd>
+<dt>Depends on</dt><dd>Nothing.</dd>
+<dt>Measured by</dt><dd>F9; evidence honesty.</dd>
+</dl>
+<div class="vote" data-id="B3"></div>
+</article>
+</section>
+
+<section id="tells">
+<h2>6. Tells: schema and 16 new tells</h2>
+
+<article class="p" id="C1"><header><span class="pid">C1</span><h3>Two new scopes (<code>agent</code>, <code>terminal</code>) and a <code>rule</code> back-link field</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd><code>reference/tells.yaml</code> header schema and the <code>SKILL.md</code> §2 item 5 scope filter.</dd>
+<dt>Why</dt><dd>Today's scopes (landing, product, content) don't describe Gnomon's TUI or agent cards, which are the founder's main surfaces. The <code>rule</code> field ties each detector to the reason it matters.</dd>
+<dt>Example</dt><dd><pre>- id: approve-default-focus
+  scope: [agent, terminal, product]
+  rule: decision-card-anatomy</pre></dd>
+<dt>Benefit</dt><dd>Tells finally load for terminal and agent work.</dd>
+<dt>Cost / risk</dt><dd><code>atelier check</code>'s scope filter needs to accept the new values.</dd>
+<dt>Depends on</dt><dd>R1.</dd>
+<dt>Measured by</dt><dd>S6, S7 recall.</dd>
+</dl>
+<div class="vote" data-id="C1"></div>
+</article>
+
+<article class="p" id="C2"><header><span class="pid">C2</span><h3>Back-link five existing tells to their rules</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl>
+<dt>What changes</dt><dd>Adds <code>rule:</code> to <code>happy-path-only</code> → <code>components-cover-all-states</code>, <code>placeholder-as-label</code> → <code>persistent-visible-labels</code>, <code>contrast-fail</code> → <code>text-contrast-both-themes</code>, <code>motion-unmotivated</code> → <code>reduced-motion-honored</code>, and <code>duplicate-cta-intent</code> → <code>consistent-and-changes-look-changed</code>.</dd>
+<dt>Why</dt><dd>So a finding reports the tell and, when the issue is cost to the user, the rule (PLAYBOOK §4.5).</dd>
+<dt>Benefit</dt><dd>No double-counting between the two files.</dd>
+<dt>Cost / risk</dt><dd>None.</dd>
+<dt>Depends on</dt><dd>C1.</dd>
+<dt>Measured by</dt><dd>Duplicates are reported, not scored (§2.2), so double reports become visible.</dd>
+</dl>
+<div class="vote" data-id="C2"></div>
+</article>
+
+<article class="p" id="C3-18"><header><span class="pid">C3–C18</span><h3>Sixteen new usability tells</h3><span class="eff">S each</span></header>
+<p class="small">Each tell is a mechanical or near-mechanical detector for one rule. The full YAML is in <code>proposals.md</code> §a. They are marked one by one below. The default cost and risk is false positives on clean screens, caught by F4 and the clean controls CC-01 to CC-08. Each is measured by recall and precision in its space (§2.3). Examples are dev bench items, Gnomon artifacts, or labelled illustrations.</p>
+<div class="tells">
+
+<div class="t" id="C3"><h3>C3 generic-error-copy · fail · rule errors-say-what-why-fix</h3>
+<p class="small"><b>Detects:</b> "Something went wrong", "An error occurred", "contact your administrator". <b>Why:</b> <a href="https://www.nngroup.com/articles/error-messages-scoring-rubric/">NN/g error rubric</a>; "contact admin" is a dead end (<a href="https://www.nngroup.com/articles/usability-heuristics-complex-applications/">complex apps</a>). <b>Example:</b> DE-03 Setup.tsx "Something went wrong" → "Couldn't reach the local model on :11434. Start it with <code>gnomon local up</code>, or pick Claude." Gnomon's <code>refusal:v1</code> already has <code>next:[{verb…}]</code> and is the house pattern to follow.</p>
+<div class="vote" data-id="C3"></div></div>
+
+<div class="t" id="C4"><h3>C4 are-you-sure · warn · rule reversible-or-gated-proportionally</h3>
+<p class="small"><b>Detects:</b> a generic "Are you sure?". <b>Why:</b> a gate should name the consequence (03 H5; <a href="https://www.nngroup.com/articles/user-control-and-freedom/">user control and freedom</a>). <b>Example (illustrative):</b> "Are you sure?" → "Uninstall mod <i>workshop</i>? Its 3 grants are revoked; rollback keeps 7 days."</p>
+<div class="vote" data-id="C4"></div></div>
+
+<div class="t" id="C5"><h3>C5 toast-for-error · fail · rule notification-matches-urgency</h3>
+<p class="small"><b>Detects:</b> errors in auto-dismissing toasts. <b>Why:</b> <a href="https://www.nngroup.com/articles/indicators-validations-notifications/">indicators, validations, notifications</a>: toasts are poor for errors. <b>Example (illustrative):</b> a Gnomon "session crashed" toast becomes an inbox card with re-attach.</p>
+<div class="vote" data-id="C5"></div></div>
+
+<div class="t" id="C6"><h3>C6 disabled-without-reason · warn · rule prevent-errors-with-constraints</h3>
+<p class="small"><b>Detects:</b> disabled controls with no explanation. <b>Why:</b> 03 H5. <b>Example (illustrative):</b> a greyed "Approve" on a fresh-presence card → "Approve (needs Touch ID)".</p>
+<div class="vote" data-id="C6"></div></div>
+
+<div class="t" id="C7"><h3>C7 opaque-long-wait · warn · rule waits-show-honest-progress</h3>
+<p class="small"><b>Detects:</b> a bare spinner or "Processing…" past 10 s. <b>Why:</b> <a href="https://www.nngroup.com/articles/response-times-3-important-limits/">0.1 / 1 / 10 s limits</a>. <b>Example (illustrative):</b> "⠋ Working…" → "3/7 steps · writing tests · Esc to stop".</p>
+<div class="vote" data-id="C7"></div></div>
+
+<div class="t" id="C8"><h3>C8 no-exit · fail · rule every-state-has-an-exit</h3>
+<p class="small"><b>Detects:</b> modals, wizards or TUI modes with no visible exit. <b>Why:</b> 03 H3. <b>Example:</b> the Gnomon Workshop mod view must show its close or toggle key in the hint line.</p>
+<div class="vote" data-id="C8"></div></div>
+
+<div class="t" id="C9"><h3>C9 synonym-actions · warn · rule consistent-and-changes-look-changed</h3>
+<p class="small"><b>Detects:</b> one action with several verbs. <b>Why:</b> 03 H4. <b>Example:</b> DE-05 AutomationsSheet has "Remove" and "Delete" for the same act → "Delete" in both places.</p>
+<div class="vote" data-id="C9"></div></div>
+
+<div class="t" id="C10"><h3>C10 icon-only-control · fail · rule semantic-structure-for-machines</h3>
+<p class="small"><b>Detects:</b> an icon with no text, tooltip or accessible name. <b>Why:</b> <a href="https://www.nngroup.com/articles/ai-agents-as-users/">agents as users</a>, <a href="https://www.nngroup.com/articles/prompt-controls-genai/">prompt controls</a>. <b>Example:</b> DE-07 CommandPalette, where two commands share one glyph → unique glyphs, each labelled.</p>
+<div class="vote" data-id="C10"></div></div>
+
+<div class="t" id="C11"><h3>C11 internal-jargon · warn · rule speak-the-users-language</h3>
+<p class="small"><b>Detects:</b> null, enum, snake_case keys, <code>#symbol-ids</code> in user copy. <b>Why:</b> 03 H2. <b>Example:</b> DE-06 NodeCard <code>state: PENDING_MERGE</code> → "Waiting to merge". <b>Override:</b> developer CLIs where the id <i>is</i> the input.</p>
+<div class="vote" data-id="C11"></div></div>
+
+<div class="t" id="C12"><h3>C12 color-only-state · fail · rule color-never-sole-signal</h3>
+<p class="small"><b>Detects:</b> a state that disappears in grayscale or NO_COLOR. <b>Why:</b> WCAG 1.4.1; <a href="https://www.nngroup.com/articles/dashboards-preattentive/">dashboards</a>. <b>Example:</b> DE-04 VoiceSettings mic shown as a red or green dot → "● Listening" / "○ Muted". Gnomon caps: "filled = Claude, outlined = local" already passes because it uses shape.</p>
+<div class="vote" data-id="C12"></div></div>
+
+<div class="t" id="C13"><h3>C13 area-or-angle-chart · warn · rule quantities-by-length-or-position</h3>
+<p class="small"><b>Detects:</b> Pie, Donut, Gauge, Radar, Treemap components. <b>Why:</b> length and position are read accurately; area and angle are not (<a href="https://www.nngroup.com/articles/dashboards-preattentive/">NN/g</a>, Cleveland &amp; McGill). <b>Example (illustrative):</b> the Gnomon <code>budget.meter</code> block as a bar with a number, not a gauge.</p>
+<div class="vote" data-id="C13"></div></div>
+
+<div class="t" id="C14"><h3>C14 blank-prompt-box · warn · rule capabilities-and-limits-up-front</h3>
+<p class="small"><b>Detects:</b> an AI input with no suggestions or capabilities. <b>Why:</b> <a href="https://www.nngroup.com/articles/ai-articulation-barrier/">articulation barrier</a>, Wattenberger, Apple HIG GenAI. <b>Example (illustrative):</b> the Gnomon new-session prompt gets three chips from recent work ("resume Warpline console", "run tests", "what's pending?").</p>
+<div class="vote" data-id="C14"></div></div>
+
+<div class="t" id="C15"><h3>C15 generic-source-label · warn · rule citations-beside-claims</h3>
+<p class="small"><b>Detects:</b> citations labelled "Source 1". <b>Why:</b> <a href="https://www.nngroup.com/articles/explainable-ai/">explainable AI</a>: people rarely click, so the label must say what backs the claim. <b>Example (illustrative):</b> "[Source 2]" → "[gnomon.md §3.4 decision classes]".</p>
+<div class="vote" data-id="C15"></div></div>
+
+<div class="t" id="C16"><h3>C16 approve-default-focus · fail · rule decision-card-anatomy</h3>
+<p class="small"><b>Detects:</b> Enter or initial focus mapped to Approve, Allow or Delete. <b>Why:</b> <a href="https://www.nngroup.com/articles/designing-ai-agents/">designing AI agents</a>: permission needs an active choice. <b>Example:</b> DE-01 PermissionCards → focus on "Edit scope". This matters most for Gnomon's cached-unlock <code>allow|always</code> decisions, where one keystroke really commits.</p>
+<div class="vote" data-id="C16"></div></div>
+
+<div class="t" id="C17"><h3>C17 anthropomorphic-status · warn · rule explain-by-sources-not-narration</h3>
+<p class="small"><b>Detects:</b> "I thought about", "I understand", "Pondering". It deliberately <b>excludes "Thinking…"</b>. <b>Why:</b> NN/g explainable AI (opinion) and Turpin et al. 2023 (traces are not faithful). <b>Example:</b> DE-02 TranscriptRail. See <a href="#G2">G2</a> for the conflict with the benchmark label.</p>
+<div class="push"><b>Luna's pushback:</b> the verb ban is NN/g opinion and conflicts with persona voice. Keep personality in tone; keep capability claims factual.</div>
+<div class="vote" data-id="C17"></div></div>
+
+<div class="t" id="C18"><h3>C18 stream-autoscroll · warn · rule streaming-holds-reading-position</h3>
+<p class="small"><b>Detects:</b> the view jumping to the end while a response streams. <b>Why:</b> <a href="https://www.nngroup.com/articles/ai-chatbots-design-guidelines/">NN/g chatbot guidelines</a>. <b>Example:</b> DE-02 TranscriptRail autoscrolls past the reply start → anchor at the message top unless pinned to the bottom. This applies directly to Gnomon's <code>session.live</code> pane.</p>
+<div class="vote" data-id="C18"></div></div>
+</div>
+</article>
+</section>
+
+<section id="notebooks">
+<h2>7. Notebook entries for Luna and Mika</h2>
+<p class="small">The exact YAML is in <code>proposals.md</code> §b. Each entry cites its rule. All are measured the same way: F6 (weights move with verdicts) and §3.3 decay. An entry earns confidence only when it was in context for a finding you ruled on, never from use counts.</p>
+
+<article class="p" id="D0"><header><span class="pid">D0</span><h3>New provenance value <code>source: research</code> with a <code>ref</code></h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl><dt>What changes</dt><dd>Notebook schema: <code>provenance: { source: research, ref: docs/playbook/rules.yaml#&lt;id&gt; }</code>.</dd>
+<dt>Why</dt><dd>Distinguishes curated research from <code>bundled-canonical</code> and <code>creator-confirmed</code>. Loid's §3.3 decays bundled entries like any other; research entries need the same honesty.</dd>
+<dt>Benefit</dt><dd>You can see where every belief came from.</dd><dt>Cost / risk</dt><dd>Paradigm notebook tools must accept the value. Check before writing.</dd><dt>Depends on</dt><dd>R1.</dd><dt>Measured by</dt><dd>§3.3.</dd></dl>
+<div class="vote" data-id="D0"></div></article>
+
+<div class="tablewrap"><table>
+<tr><th>Id</th><th>Entry</th><th>What it makes Luna do</th><th>Source</th><th>Conf.</th><th>Mark</th></tr>
+<tr id="D1"><td><b>D1</b></td><td>nb-luna-problem-before-options</td><td>Opens with a Problem line; if there isn't one, the first board is intent-problem.</td><td><a href="https://www.nngroup.com/videos/stop-solutioneering/">NN/g</a></td><td>0.85</td><td><div class="vote" data-id="D1"></div></td></tr>
+<tr id="D2"><td><b>D2</b></td><td>nb-luna-evidence-tags</td><td>Tags every claim; her recommendation is opinion unless backed.</td><td><a href="https://www.nngroup.com/videos/show-me-the-data/">NN/g</a></td><td>0.9</td><td><div class="vote" data-id="D2"></div></td></tr>
+<tr id="D3"><td><b>D3</b></td><td>nb-luna-name-the-pole</td><td>Options name their trade-off; she proposes principles first.</td><td><a href="https://www.nngroup.com/videos/dualities-user-experience/">NN/g</a></td><td>0.8</td><td><div class="vote" data-id="D3"></div></td></tr>
+<tr id="D4"><td><b>D4</b></td><td>nb-luna-close-with-next-study</td><td>Ends with the cheapest falsifying study; never "works".</td><td><a href="https://www.nngroup.com/articles/ux-research-cheat-sheet/">NN/g</a></td><td>0.85</td><td><div class="vote" data-id="D4"></div></td></tr>
+<tr id="D5"><td><b>D5</b></td><td>nb-luna-convention-is-default</td><td>Breaking a convention needs "why it's better" and the risk on the card.</td><td><a href="https://www.nngroup.com/articles/mental-models/">NN/g</a></td><td>0.85</td><td><div class="vote" data-id="D5"></div></td></tr>
+<tr id="D6"><td><b>D6</b></td><td>nb-luna-structure-before-look</td><td>Content priority and IA before visual boards, for every creator.</td><td><a href="https://www.nngroup.com/articles/ia-vs-navigation/">NN/g</a> + your Elvanti note</td><td>0.8</td><td><div class="vote" data-id="D6"></div></td></tr>
+<tr id="D7"><td><b>D7</b></td><td>nb-luna-character-is-not-decoration</td><td>Expressive elements pass when they carry meaning and sit below the task. Reconciles NN/g with your taste.</td><td><a href="https://www.nngroup.com/videos/communication-not-decoration-ux-slogan-4/">NN/g</a> (opinion)</td><td>0.75</td><td><div class="vote" data-id="D7"></div></td></tr>
+<tr id="D8"><td><b>D8</b></td><td>Change: link the Elvanti structure entry to D6</td><td>Keeps your creator-specific note and points to the general rule.</td><td>internal</td><td>n/a</td><td><div class="vote" data-id="D8"></div></td></tr>
+</table></div>
+<p class="small"><b>Luna example (D7 on Gnomon):</b> the Workshop caps "bob only while their session streams". Under D7 this passes: the motion carries state ("working") and sits below the inbox in the hierarchy. Under NN/g's strict reading it would be decoration. <b>Benefit:</b> Luna stops flattening the alive elements you keep choosing. <b>Risk:</b> it could become a loophole. The squint test (<code>one-dominant-focal-point</code>) is the guard, and CC-06 in the benchmark tests for "minimalism = flat" bias.</p>
+
+<div class="tablewrap"><table>
+<tr><th>Id</th><th>Entry</th><th>What it makes Mika do</th><th>Source</th><th>Conf.</th><th>Mark</th></tr>
+<tr id="D9"><td><b>D9</b></td><td>nb-usability-rules-lint</td><td>Runs rules after tells, by <code>runnable_by</code>, with the severity mapping and rule id + file:line.</td><td>PLAYBOOK §4</td><td>0.85</td><td><div class="vote" data-id="D9"></div></td></tr>
+<tr id="D10"><td><b>D10</b></td><td>nb-a11y-technically-conformant</td><td>Reports conformance, not accessibility, and adds the assistive-tech open item.</td><td><a href="https://www.nngroup.com/articles/accessibility-is-not-enough/">NN/g</a></td><td>0.95</td><td><div class="vote" data-id="D10"></div></td></tr>
+<tr id="D11"><td><b>D11</b></td><td>nb-state-matrix</td><td>Every component ships 8 states, including disabled-with-reason.</td><td><a href="https://www.nngroup.com/articles/design-systems-101/">NN/g</a></td><td>0.9</td><td><div class="vote" data-id="D11"></div></td></tr>
+<tr id="D12"><td><b>D12</b></td><td>nb-error-component-slots</td><td>The error component requires what / why / fix slots, so a bare "Error" can't render.</td><td><a href="https://www.nngroup.com/articles/error-messages-scoring-rubric/">NN/g rubric</a></td><td>0.85</td><td><div class="vote" data-id="D12"></div></td></tr>
+<tr id="D13"><td><b>D13</b></td><td>nb-response-time-limits</td><td>0.1 / 1 / 10 s patterns; honest progress; a return summary.</td><td><a href="https://www.nngroup.com/articles/response-times-3-important-limits/">NN/g</a></td><td>0.9</td><td><div class="vote" data-id="D13"></div></td></tr>
+<tr id="D14"><td><b>D14</b></td><td>nb-decision-card-anatomy</td><td>Builds cards: scope, facts, sources, substitution, Edit / Take over / Approve, focus not on Approve.</td><td><a href="https://www.nngroup.com/articles/designing-ai-agents/">NN/g</a></td><td>0.8</td><td><div class="vote" data-id="D14"></div></td></tr>
+<tr id="D15"><td><b>D15</b></td><td>nb-tui-heuristic-translation</td><td>Status line, Esc / q / Ctrl-C, hint footer, NO_COLOR / 80-column / piped checks.</td><td>03 §5 (extrapolated)</td><td>0.7</td><td><div class="vote" data-id="D15"></div></td></tr>
+<tr id="D16"><td><b>D16</b></td><td>nb-stress-real-content</td><td>Renders the longest, empty, error and many-item content and states the fidelity.</td><td><a href="https://www.nngroup.com/articles/visual-hierarchy-ux-definition/">NN/g</a></td><td>0.85</td><td><div class="vote" data-id="D16"></div></td></tr>
+<tr id="D17"><td><b>D17</b></td><td>Change: <code>nb-color-psychology-001</code> 0.85 → 0.5</td><td>Never the sole rationale; tagged opinion.</td><td>01 §2 (weak, culture-bound evidence)</td><td>0.5</td><td><div class="vote" data-id="D17"></div></td></tr>
+<tr id="D18"><td><b>D18</b></td><td>Change: review-checklist item 11 (new)</td><td>"Usability rules for the surface pass; a11y reported as technically conformant."</td><td>R1, B3</td><td>n/a</td><td><div class="vote" data-id="D18"></div></td></tr>
+<tr id="D19"><td><b>D19</b></td><td>Change: tag two anti-patterns as opinion</td><td>"Dev tools: no light-only themes" and "Healthcare: no red as primary" become warnings, not vetting failures.</td><td>none found in research</td><td>n/a</td><td><div class="vote" data-id="D19"></div></td></tr>
+</table></div>
+<p class="small"><b>Mika example (D14 on Gnomon <code>card:v1</code>):</b> a <code>plan</code> card shows "Write 3 files in packages/gnomon-tui/src (list) · no network · reversible via Warpline". It offers [Edit plan] [Take over] [Approve plan] with focus on Edit. A <code>gate-class</code> card adds "needs Touch ID". <b>Benefit:</b> one card anatomy across every decision kind. <b>Risk:</b> D15's confidence stays at 0.7 until clig.dev is read (N1).</p>
+</section>
+
+<section id="boards">
+<h2>8. Question-bank boards</h2>
+<p class="small">These go into <code>reference/question-bank.md</code>, in its existing format (Asks, Applies, Facets, Writes, Reference). The full text is in <code>proposals.md</code> §d. Boards mostly affect <code>direct</code> sessions, which the critique benchmark doesn't measure. Their evidence will come from verdicts (§3.1) and outcomes (§3.2): fewer shipped misses on status, recovery and approval.</p>
+
+<article class="p" id="E1"><header><span class="pid">E1</span><h3>New board order: problem → principles → structure → dials → look</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl><dt>What changes</dt><dd><code>SKILL.md</code> §4 order line and the question-bank intro.</dd>
+<dt>Why</dt><dd>NN/g: <a href="https://www.nngroup.com/articles/ia-vs-navigation/">IA before navigation</a>, <a href="https://www.nngroup.com/articles/visual-hierarchy-ux-definition/">content hierarchy before design</a>. Your own Elvanti note asked for "sections and grouping … then the design and motion".</dd>
+<dt>Example</dt><dd>Gnomon's paused session still has open boards: colour, type, motion, cli-voice, decision-stack. On resume under E1, decision-stack (structure) and status-feedback run <b>before</b> colour and type.</dd>
+<dt>Benefit</dt><dd>Looks are decided on a structure that already works.</dd><dt>Cost / risk</dt><dd>Longer sessions. Quick mode can merge the structure boards into one.</dd><dt>Depends on</dt><dd>E2–E7.</dd><dt>Measured by</dt><dd>§3.2 outcomes (structural misses).</dd></dl>
+<div class="vote" data-id="E1"></div></article>
+
+<div class="tablewrap"><table>
+<tr><th>Id</th><th>Board</th><th>Asks</th><th>Applies to</th><th>Example (Gnomon or Atelier)</th><th>Eff.</th><th>Mark</th></tr>
+<tr id="E2"><td><b>E2</b></td><td>intent-problem</td><td>What's costing the user, and how do we know?</td><td>always, unless already evidenced</td><td>Gnomon: "which session needs me?", assumed</td><td>S</td><td><div class="vote" data-id="E2"></div></td></tr>
+<tr id="E3"><td><b>E3</b></td><td>principles</td><td>When goals conflict, which wins?</td><td>product-level scopes</td><td>"glanceable over decorative", "status over silence", "alive where it carries state"</td><td>S</td><td><div class="vote" data-id="E3"></div></td></tr>
+<tr id="E4"><td><b>E4</b></td><td>ia-structure</td><td>Sections, grouping of info and actions, who sees what</td><td>multi-view or multi-role</td><td>Gnomon left session sidebar vs decision stack vs Workshop mod zones</td><td>M</td><td><div class="vote" data-id="E4"></div></td></tr>
+<tr id="E5"><td><b>E5</b></td><td>status-feedback</td><td>How does the system say what it's doing?</td><td>>1 s ops, agent runs</td><td>status line content; "while you were away" summary on attach</td><td>M</td><td><div class="vote" data-id="E5"></div></td></tr>
+<tr id="E6"><td><b>E6</b></td><td>recovery</td><td>Undo vs confirm, error placement and voice</td><td>destructive actions, forms</td><td><code>refusal:v1</code> rendering in the TUI; mod rollback undo window</td><td>M</td><td><div class="vote" data-id="E6"></div></td></tr>
+<tr id="E7"><td><b>E7</b></td><td>autonomy-approval</td><td>What may the agent do alone; where does it ask?</td><td>acting agents</td><td>fresh-presence vs cached-unlock classes shown on cards</td><td>M</td><td><div class="vote" data-id="E7"></div></td></tr>
+<tr id="E8"><td><b>E8</b></td><td>ai-transparency</td><td>How visible are AI involvement, sources and work?</td><td>generated content</td><td>show-the-work collapsed in <code>session.live</code>; titled source chips</td><td>S</td><td><div class="vote" data-id="E8"></div></td></tr>
+<tr id="E9"><td><b>E9</b></td><td>terminal-chrome</td><td>What's always on screen in the terminal?</td><td>CLI / TUI</td><td>papercraft vs phosphor under NO_COLOR at 80 columns; <code>API CREDITS ACTIVE</code> placement</td><td>M</td><td><div class="vote" data-id="E9"></div></td></tr>
+<tr id="E10"><td><b>E10</b></td><td>accelerators</td><td>How do experts go fast without stranding newcomers?</td><td>daily tools</td><td>palette parity for every Gnomon key</td><td>S</td><td><div class="vote" data-id="E10"></div></td></tr>
+<tr id="E11"><td><b>E11</b></td><td>data-encoding</td><td>Glance or study? How are numbers drawn?</td><td>dashboards</td><td>Elvanti ops/KPI dashboards; Gnomon budget meter</td><td>S</td><td><div class="vote" data-id="E11"></div></td></tr>
+<tr id="E12"><td><b>E12</b></td><td>voice-commands</td><td>Which few things must voice do perfectly?</td><td>voice</td><td>status, stop, "what's pending", open card. <b>Never approve</b> (see G1)</td><td>S</td><td><div class="vote" data-id="E12"></div></td></tr>
+<tr id="E13"><td><b>E13</b></td><td>microcopy (change)</td><td>adds an "error and empty-state anatomy" facet</td><td>UI copy</td><td>Gnomon cli-voice board (open)</td><td>S</td><td><div class="vote" data-id="E13"></div></td></tr>
+</table></div>
+<p class="small"><b>Why these boards:</b> E5 rests on <a href="https://www.nngroup.com/articles/response-times-3-important-limits/">response times</a> and <a href="https://www.nngroup.com/articles/indicators-validations-notifications/">notifications</a>; E6 on <a href="https://www.nngroup.com/articles/user-control-and-freedom/">user control</a> and the <a href="https://www.nngroup.com/articles/error-messages-scoring-rubric/">error rubric</a>; E7 and E8 on <a href="https://www.nngroup.com/articles/designing-ai-agents/">designing AI agents</a>, <a href="https://www.nngroup.com/articles/explainable-ai/">explainable AI</a> and <a href="https://developer.apple.com/design/human-interface-guidelines/generative-ai">Apple HIG GenAI</a>; E10 on <a href="https://www.nngroup.com/articles/ui-accelerators/">accelerators</a>; E11 on <a href="https://www.nngroup.com/articles/dashboards-preattentive/">dashboards</a>; E12 on <a href="https://www.nngroup.com/articles/intelligent-assistants-poor-usability-high-adoption/">voice assistants</a>. <b>Benefit:</b> the questions you actually decide for Gnomon (where decisions live, what agents do alone) get boards instead of free-form notes. <b>Risk:</b> board sprawl. Each board's "Applies" line keeps it out of scopes where it doesn't belong.</p>
+</section>
+
+<section id="fixes">
+<h2>9. Fixes to the research</h2>
+<p class="small">Each fix corrects something the research or our current files get wrong. They are cheap, and most should be approved as they stand.</p>
+
+<article class="p" id="F1"><header><span class="pid">F1</span><h3>Target size: 24 px is the AA floor; 44 is AAA and the touch-platform norm</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<dl><dt>What changes</dt><dd><code>~/.paradigm/agents/designer.agent</code> review-checklist item 2, and SKILL §4 vetting wording. <code>rules.yaml</code> <code>targets-sized-and-placed</code> already has it right.</dd>
+<dt>Why</dt><dd>Report 01 #6 cites "44 px WCAG 2.5.5", and 2.5.5 is <b>AAA</b>. The WCAG 2.2 AA criterion is <b>2.5.8: 24×24 CSS px</b> or equivalent spacing (<a href="https://www.w3.org/WAI/WCAG22/quickref/">WCAG 2.2 quick reference</a>). Mika's own notebook <code>nb-wcag-target-size-u7v8</code> is correct, and her checklist contradicts it.</dd>
+<dt>Example</dt><dd><div class="ba"><div><span>Before</span><pre>2. Touch targets >= 44x44px with >= 8px gaps</pre></div><div><span>After</span><pre>2. Targets ≥ 24×24 CSS px or equivalent spacing (WCAG 2.2 AA 2.5.8);
+   44×44 on touch platforms (Apple HIG; WCAG 2.5.5 AAA)</pre></div></div></dd>
+<dt>Benefit</dt><dd>Dense desktop and TUI-in-web layouts aren't failed wrongly, and phone layouts still get 44.</dd><dt>Cost / risk</dt><dd>None.</dd><dt>Depends on</dt><dd>Nothing.</dd><dt>Measured by</dt><dd>S4 precision (no false fails on dense controls, e.g. CC-04).</dd></dl>
+<div class="vote" data-id="F1"></div></article>
+
+<article class="p" id="F2"><header><span class="pid">F2</span><h3>Drop Miller's 7±2 and the "~7 options" threshold</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">Miller's finding is about working memory, not menu length. Report 01 flags the misuse and then uses "~7" itself. The rule <code>minimize-interaction-cost</code> keeps the check (group, default, disclose) without the number. Source: 01 §2 SKIM on Laws of UX. Measured by S5/S3 precision.</p>
+<div class="vote" data-id="F2"></div></article>
+
+<article class="p" id="F3"><header><span class="pid">F3</span><h3>Use 0.1 s, not Tog's 50 ms, for acknowledgement</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">The two sources conflict, and agents can't time 50 ms from a recording. NN/g's <a href="https://www.nngroup.com/articles/response-times-3-important-limits/">0.1 s limit</a> is the durable figure. Measured by S1 recall on trace items.</p>
+<div class="vote" data-id="F3"></div></article>
+
+<article class="p" id="F4"><header><span class="pid">F4</span><h3>Treat Yocco's agentic thresholds as hypotheses, not rules</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">"85% accept" and "5% revert → disable" are unsourced "industry benchmarks" (01 §2 SKIM). They stay in <code>autonomy-scoped-by-risk</code> notes only. If they become useful, they enter through Loid's outcome data (§3.2), not as defaults.</p>
+<div class="vote" data-id="F4"></div></article>
+
+<article class="p" id="F5"><header><span class="pid">F5</span><h3>Same-model agent passes don't count as 3–5 evaluators</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">This narrows 04 §5. Recorded in <code>critique-goal-anchored-and-independent</code> notes and in B1. Measured by F5 (α) and consensus recall: if α is high and recall is low, the passes share blind spots.</p>
+<div class="vote" data-id="F5"></div></article>
+
+<article class="p" id="F6"><header><span class="pid">F6</span><h3>The clarifier cap of 4 is circular evidence</h3><span class="rec change">Rec. keep, tag opinion</span><span class="eff">S</span></header>
+<p class="small">NN/g <a href="https://www.nngroup.com/articles/genui-buttons-and-checkboxes/">endorsed</a> the cap because Claude's AskUserQuestion has it. That makes it a fine default but not independent support for our own design. Tagged <code>nng-opinion</code>: warn only.</p>
+<div class="vote" data-id="F6"></div></article>
+
+<article class="p" id="F7"><header><span class="pid">F7</span><h3>Numeric visual budgets are warn-only and overridable</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">"3 type sizes" and "2+2 colours" are teaching heuristics (03 §4). Your papercraft serif plus mono, and the soft project hues, may legitimately exceed them. CC-06 in the benchmark checks that critics don't flag expressive work that still communicates.</p>
+<div class="vote" data-id="F7"></div></article>
+
+<article class="p" id="F8"><header><span class="pid">F8</span><h3>The context line budget belongs in the Gnomon Workshop spec, not the global rulebook</h3><span class="rec approve">Rec. approve</span><span class="eff">S</span></header>
+<p class="small">04 R16/R17 are partly Workshop product requirements. <code>context-and-memory-legible</code> keeps the IA principle (which layer controls this, and is memory listable with provenance). The line budget moves to <code>docs/specs/gnomon.md</code> Workshop requirements when you next touch it.</p>
+<div class="vote" data-id="F8"></div></article>
+</section>
+
+<section id="next">
+<h2>10. Next-step approaches</h2>
+
+<article class="p" id="N1"><header><span class="pid">N1</span><h3>Second reading round: close the gaps the four reports left</h3><span class="rec approve">Rec. approve, in this order</span><span class="eff">M–L</span></header>
+<p>Ranked by gap size × how much of your real work it touches ÷ effort. Each read ends the same way as round one: a curated report in <code>research/</code>, new or changed rules with <code>merged_from</code>, and strength raised where a primary source confirms a rule.</p>
+<div class="tablewrap"><table>
+<tr><th>#</th><th>Source</th><th>Gap it closes</th><th>Rules it would firm up or add</th><th>Effort</th><th>Mark</th></tr>
+<tr id="N1-1"><td>1</td><td>clig.dev + no-color.org + Charm (Bubble Tea, Lip Gloss) conventions</td><td>Terminal and TUI. Your main surface, and today only extrapolated from NN/g.</td><td>all 4 <code>tui</code> rules; likely adds spinner etiquette, exit codes, <code>--json</code> parity, width</td><td>S</td><td><div class="vote" data-id="N1-1"></div></td></tr>
+<tr id="N1-2"><td>2</td><td>WCAG 2.2 quick reference + WAI-ARIA APG</td><td>Primary a11y source; keyboard patterns for menus, tabs, grids, comboboxes (palette, inbox)</td><td>all 8 accessibility rules; turns <code>keyboard-focus-and-names</code> into per-widget checks</td><td>M</td><td><div class="vote" data-id="N1-2"></div></td></tr>
+<tr id="N1-3"><td>3</td><td>Microsoft HAX: 18 guidelines + playbook (Amershi et al., CHI 2019)</td><td>An evidence-based spine for agent UX; only the landing page was read</td><td>3–5 new <code>ai-agent</code> rules (state how well it can do it, notify about changes, remember recent context)</td><td>S</td><td><div class="vote" data-id="N1-3"></div></td></tr>
+<tr id="N1-4"><td>4</td><td>Google PAIR Guidebook, all chapters</td><td>Mental models, trust, feedback and control; only Errors was read</td><td><code>capabilities-and-limits-up-front</code>, <code>generated-output-is-correctable</code>, confidence display</td><td>M</td><td><div class="vote" data-id="N1-4"></div></td></tr>
+<tr id="N1-5"><td>5</td><td>Content design: GOV.UK content manual + Design System patterns; NN/g UX-writing guide; Podmajersky</td><td>The thinnest space (4 rules), and GOV.UK's patterns are research-backed</td><td>error, empty-state and button-label rules; feeds the cli-voice board</td><td>M</td><td><div class="vote" data-id="N1-5"></div></td></tr>
+<tr id="N1-6"><td>6</td><td>IBM Carbon: Carbon for AI, data viz, content</td><td>Primary source for AI labels; a production data-viz system</td><td><code>disclose-ai-involvement</code>, <code>quantities-by-length-or-position</code></td><td>S–M</td><td><div class="vote" data-id="N1-6"></div></td></tr>
+<tr id="N1-7"><td>7</td><td><i>Refactoring UI</i> (book)</td><td>Practical visual craft where NN/g is generic</td><td><code>group-by-space-before-boxes</code>, <code>limited-type-scale</code>, hierarchy without size</td><td>S</td><td><div class="vote" data-id="N1-7"></div></td></tr>
+<tr id="N1-8"><td>8</td><td>Apple HIG, interaction sections</td><td>Flows, modality, onboarding. Mika's HIG notebooks are visual only.</td><td><code>every-state-has-an-exit</code>, <code>follow-platform-conventions</code> (app)</td><td>M</td><td><div class="vote" data-id="N1-8"></div></td></tr>
+<tr id="N1-9"><td>9</td><td>Material 3, interaction and states</td><td>State layers, dialogs, snackbars. The same gap as HIG.</td><td><code>components-cover-all-states</code>, <code>notification-matches-urgency</code></td><td>M</td><td><div class="vote" data-id="N1-9"></div></td></tr>
+</table></div>
+<dl><dt>Benefit</dt><dd>Founder: terminal and agent surfaces get primary-source rules, not borrowed web heuristics. Eye: the 46 expert-heuristic rules can move toward durable where a standard confirms them.</dd>
+<dt>Cost / risk</dt><dd>About 1–2 days of agent reading in total; items 1 and 3 are small. Risk of rule bloat: every new rule must cite a source and replace or merge before it adds.</dd>
+<dt>Depends on</dt><dd>R1. Run items 1–3 before B0 if you want the baseline to include them. Otherwise run them after P1 and add them as a new bench version.</dd>
+<dt>Measured by</dt><dd>S7 and S6 recall in the next scored run after the rules land; per-space intervals (§2.4).</dd></dl>
+</article>
+
+<article class="p" id="N2"><header><span class="pid">N2</span><h3>A neurons region for design and UX</h3><span class="rec approve">Rec. approve, after R1</span><span class="eff">M</span></header>
+<dl><dt>The idea</dt><dd>A region <code>r:design-ux</code> in your neurons vault that holds the <i>evidence and argument</i> behind the rules, so it is shared across every project and session, not only Atelier's. <code>rules.yaml</code> stays the executable checklist. Neurons hold why.</dd>
+<dt>What neurons</dt><dd>
+<ul>
+<li><b>One neuron per durable principle:</b> <code>n:recognition-over-recall</code>, <code>n:response-time-limits</code>, <code>n:color-not-sole-signal</code>, <code>n:gestalt-proximity</code>, <code>n:fitts-law</code>, <code>n:reasoning-traces-not-faithful</code>, about 15 in all.</li>
+<li><b>One per contested or house position:</b> <code>n:communication-not-decoration</code>, <code>n:five-users-heuristic</code>, <code>n:anthropomorphic-status</code>.</li>
+<li><b>Method neurons:</b> <code>n:heuristic-evaluation</code>, <code>n:cognitive-walkthrough</code>, <code>n:synthetic-users-limits</code>.</li>
+<li><b>Sources:</b> every URL in <code>rules.yaml</code> captured with <code>source_ingest</code> as <code>s:&lt;id&gt;</code>. Each neuron must cite one. Books by title only, and never the mirrors.</li>
+</ul></dd>
+<dt>Link types</dt><dd>Only the allowed five:
+<ul>
+<li><code>supports</code>: a source supports a neuron.</li>
+<li><code>contradicts</code>: <code>n:communication-not-decoration</code> contradicts <code>n:aesthetic-usability-effect</code>. The pushbacks stay visible in the graph.</li>
+<li><code>extends</code>: <code>n:tui-status-line</code> extends <code>n:visibility-of-system-status</code>.</li>
+<li><code>example-of</code>: a Gnomon card is an example of <code>n:decision-card-anatomy</code>.</li>
+<li><code>part-of</code>: each neuron is part of <code>r:design-ux</code>, with sub-regions per space.</li>
+</ul></dd>
+<dt>How sessions find and cite them</dt><dd>
+<ul>
+<li>At the Design Read, Luna runs <code>neuron_search</code> on the platform and problem.</li>
+<li>Each rule in <code>rules.yaml</code> gets an optional <code>neuron: n:&lt;slug&gt;</code>.</li>
+<li>Findings cite <code>rule-id (n:slug)</code>, and DESIGN.md cites the neurons behind each principle.</li>
+<li>Audits on new neurons stay pending until you keep or discard them, per your vault rules.</li>
+</ul></dd>
+<dt>Benefit</dt><dd>Founder: design knowledge that compounds outside Atelier (Paradigm, Gnomon, client work) and that you can read as a graph, disagreements included. Eye: agents cite the argument, not only the rule.</dd>
+<dt>Cost / risk</dt><dd>
+<ul>
+<li>Two places to keep in sync. Mitigation: neurons never restate the check; rules point to neurons, never the reverse.</li>
+<li>Leak risk for the benchmark (G4): the vault joins the canary grep, and no benchmark item or label ever becomes a neuron.</li>
+</ul></dd>
+<dt>Depends on</dt><dd>R1, R4 (verified URLs to ingest), G4.</dd>
+<dt>Measured by</dt><dd>Not directly by the bench. Proxy: share of findings citing a neuron, and whether neuron-backed rules hold <i>trusted</i> standing (§3.5) more often than rules without one.</dd></dl>
+<div class="vote" data-id="N2"></div>
+</article>
+
+<article class="p" id="N3"><header><span class="pid">N3</span><h3>Loid's design-eye benchmark: draft labels, founder certifies, baseline before changes</h3><span class="rec approve">Rec. approve, first</span><span class="eff">L</span></header>
+<dl><dt>The idea</dt><dd>From <code>calibration.md</code>: 28 items (20 seeded screens with 43 labelled defects, plus 8 clean controls including 2 override decoys) from your own tools, pinned to commits, stored under <code>~/.atelier/bench/</code>, outside every agent-readable path.</dd>
+<dt>Steps</dt><dd>
+<ol>
+<li>Pin and capture (light/dark, desktop/phone, TUI at 120×40 and 80×24 with and without NO_COLOR).</li>
+<li>Seed each defect as a one-hunk diff.</li>
+<li>Agents draft the labels.</li>
+<li><b>You certify</b> each item once. Only your certification makes a label ground truth.</li>
+<li>Run <b>B0</b> on today's prompts, then <b>P1</b> with the approved proposals, then one run a month.</li>
+</ol></dd>
+<dt>Benefit</dt><dd>Founder: a yes or no on "did the eye get better?", with confidence intervals, and a ledger that can demote rules (F7). Eye: the loop learns from your verdicts, not from use counts or agents agreeing with each other.</dd>
+<dt>Cost / risk</dt><dd>
+<ul>
+<li>The largest item: about 3–5 agent days to build.</li>
+<li><b>About 2 hours of your time</b> to certify, plus about 15 verdicts a week (F1).</li>
+<li>Risks: leakage (canaries handle it), a benchmark too small for per-space claims (pooled numbers gate; grow to 10+ defects per space), and G2 to settle before you certify.</li>
+</ul></dd>
+<dt>Depends on</dt><dd>G2, G3; R1 for the P1 run.</dd>
+<dt>Measured by</dt><dd>It is the measurement. Its own liveness checks are F1, F2, F6, F7 and F8.</dd></dl>
+<div class="vote" data-id="N3"></div>
+</article>
+
+<article class="p" id="N4"><header><span class="pid">N4</span><h3>Other approaches I'd suggest</h3><span class="eff">varies</span></header>
+<div class="tablewrap"><table>
+<tr><th>Id</th><th>Idea</th><th>Benefit</th><th>Cost / risk</th><th>Eff.</th><th>Mark</th></tr>
+<tr id="N4a"><td><b>N4a</b></td><td><b>Gnomon TUI and agent-UX house guide.</b> A short guide in <code>docs/specs/</code> applying the <code>tui</code>, <code>ai-agent</code> and <code>voice</code> rules to Gnomon's real objects: <code>card:v1</code> kinds, the status line, refusal rendering, the Workshop mod, voice scope. Written after N1 items 1 and 3.</td><td>Builders of <code>gnomon-tui</code> get decisions, not principles. It also resumes your paused aesthetic session with structure settled.</td><td>Must track spec v3.1 changes. Owner: Luna, with Mika on code.</td><td>M</td><td><div class="vote" data-id="N4a"></div></td></tr>
+<tr id="N4b"><td><b>N4b</b></td><td><b>Critique gallery from our own sessions.</b> Before and after pairs from Elvanti, Warpline and Gnomon sessions, each finding with your verdict and the rule id. It becomes the training corpus for "what good looks like here".</td><td>The eye learns your house taste and usability bar from real cases.</td><td>Must contain dev items only. Never held-out, or the bench is contaminated (G4).</td><td>M</td><td><div class="vote" data-id="N4b"></div></td></tr>
+<tr id="N4c"><td><b>N4c</b></td><td><b>First real-user micro-study.</b> 5 developers, think-aloud on the Gnomon walkthrough reference ("something needs you; deal with the most urgent"), run in a day.</td><td>The first <i>observed</i> evidence Atelier has ever had. It outranks every heuristic in the loop (§3.2).</td><td>Recruiting time; needs a human facilitator (agents can script and transcribe). Internal engineers are acceptable first if the limit is stated.</td><td>M</td><td><div class="vote" data-id="N4c"></div></td></tr>
+<tr id="N4d"><td><b>N4d</b></td><td><b>Mechanical checks in <code>atelier check</code>.</b> The regex and structure tells, a contrast script over tokens, NO_COLOR/80-column renders, and keymap collision lists.</td><td>Cheap, deterministic findings; agents spend judgement only where judgement is needed.</td><td>Engineering time; deterministic checks must also respect overrides.</td><td>M–L</td><td><div class="vote" data-id="N4d"></div></td></tr>
+<tr id="N4e"><td><b>N4e</b></td><td><b>Cold-reader check on Atelier's own boards</b> (<code>deliverables-pass-sketch-test</code>). A fresh agent explains each board back before it is shown to you.</td><td>Catches confusing boards before they cost you a reply.</td><td>One extra short agent call per board.</td><td>S</td><td><div class="vote" data-id="N4e"></div></td></tr>
+</table></div>
+</article>
+</section>
+
+<section id="sequence">
+<h2>11. Recommended sequence</h2>
+<ol class="seq">
+<li><b>Rule on the conflicts</b> G1–G5 and the fixes F1–F8. About 15 minutes; mostly approvals.</li>
+<li><b>Mark this page</b> (R, A, B, C, D, E). Approval means "apply after B0".</li>
+<li><b>R4 URL verification and N1 items 1 and 3</b> (clig.dev, HAX). Both small, and they strengthen the weakest spaces before the baseline.</li>
+<li><b>Build and certify the benchmark (N3).</b> G2 is settled first. About 2 hours of your time.</li>
+<li><b>Run B0</b> on today's prompts and freeze it.</li>
+<li><b>Apply the approved proposals</b> in one batch: skill, formats, tells, notebooks, question bank. Freeze their hashes.</li>
+<li><b>Run P1</b>, then start the verdict loop (~15 verdicts a week).</li>
+<li><b>In parallel, after P1:</b> N2 neurons region, N4a Gnomon house guide, and resume the paused Gnomon aesthetic session under the new board order.</li>
+<li><b>N4c real-user micro-study</b> on the Gnomon walkthrough as soon as a facilitator is available. It can run at any point.</li>
+<li><b>Day 30:</b> Loid's falsifier review. Rules are scoped, promoted or retired from evidence, then N1 items 4–9 follow.</li>
+</ol>
+</section>
+
+<section id="summary">
+<h2>12. One-screen summary</h2>
+<div class="tablewrap"><table>
+<tr><th>Group</th><th>Items</th><th>Touches</th><th>Effort</th><th>My rec.</th><th>Measured by</th></tr>
+<tr><td>Conflicts</td><td>G1–G5</td><td>rules.yaml, calibration.md, sequencing</td><td>S</td><td>approve (G1, G2 as changes)</td><td>F3–F8</td></tr>
+<tr><td>Rulebook and playbook</td><td>R1–R4</td><td>rules.yaml, PLAYBOOK.md, skill reference/</td><td>M</td><td>approve</td><td>F3, F4, F9, F10</td></tr>
+<tr><td>Design Read and process</td><td>A1–A8</td><td>SKILL.md §2–5, formats.md, redesign.md</td><td>S each</td><td>approve</td><td>evidence honesty, F9</td></tr>
+<tr><td>Critique and finish</td><td>B1–B3</td><td>SKILL.md Critique, §5</td><td>M</td><td>approve</td><td>F3, F4, F5, F10</td></tr>
+<tr><td>Tells</td><td>C1–C18 (16 new)</td><td>tells.yaml</td><td>S each</td><td>approve; C17 per G2</td><td>per-space recall and precision; decoys</td></tr>
+<tr><td>Notebooks</td><td>D0–D19 (7 Luna, 8 Mika, 4 changes)</td><td>~/.paradigm/notebooks, designer.agent</td><td>S</td><td>approve</td><td>F6, F7, §3.3</td></tr>
+<tr><td>Boards</td><td>E1–E13 (11 new)</td><td>question-bank.md, SKILL.md order</td><td>S–M</td><td>approve; E12 per G1</td><td>§3.1 verdicts, §3.2 outcomes</td></tr>
+<tr><td>Fixes</td><td>F1–F8</td><td>designer.agent, rules.yaml notes</td><td>S</td><td>approve</td><td>S4 precision, α</td></tr>
+<tr><td>Next steps</td><td>N1–N4</td><td>research/, neurons, ~/.atelier/bench, gnomon docs</td><td>M–L</td><td>N3 first, then N1 (1, 3), N2, N4a, N4c</td><td>the benchmark itself</td></tr>
+</table></div>
+<p class="small">Files: <code>docs/playbook/rules.yaml</code> · <code>PLAYBOOK.md</code> · <code>proposals.md</code> · <code>calibration.md</code> (Loid) · <code>research/01–04</code>.</p>
+</section>
+
+</main>
+
+<div class="bar" role="region" aria-label="Your marks">
+  <span id="count">0 marked</span>
+  <button type="button" id="copy">Copy my marks</button>
+  <button type="button" id="clear">Clear</button>
+  <textarea id="export" aria-label="Exported marks" readonly></textarea>
+</div>
+
+<script>
+(function () {
+  var KEY = 'atelier-playbook-review-v0';
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} count(); }
+  var votes = document.querySelectorAll('.vote[data-id]');
+  votes.forEach(function (v) {
+    var id = v.getAttribute('data-id');
+    var s = store[id] || {};
+    ['approve', 'change', 'reject'].forEach(function (k) {
+      var l = document.createElement('label');
+      var r = document.createElement('input');
+      r.type = 'radio'; r.name = 'v-' + id; r.value = k; r.checked = s.v === k;
+      r.addEventListener('change', function () { store[id] = store[id] || {}; store[id].v = k; save(); });
+      l.appendChild(r); l.appendChild(document.createTextNode(k));
+      v.appendChild(l);
+    });
+    var t = document.createElement('input');
+    t.type = 'text'; t.placeholder = 'note (what to change, or why)'; t.value = s.n || '';
+    t.setAttribute('aria-label', 'Note for ' + id);
+    t.addEventListener('input', function () { store[id] = store[id] || {}; store[id].n = t.value; save(); });
+    v.appendChild(t);
+  });
+  function count() {
+    var n = Object.keys(store).filter(function (k) { return store[k] && store[k].v; }).length;
+    document.getElementById('count').textContent = n + ' of ' + votes.length + ' marked';
+  }
+  count();
+  document.getElementById('copy').addEventListener('click', function () {
+    var lines = ['Atelier playbook v0 review marks'];
+    votes.forEach(function (v) {
+      var id = v.getAttribute('data-id'), s = store[id];
+      if (s && (s.v || s.n)) lines.push('- ' + id + ': ' + (s.v || 'unmarked') + (s.n ? ' (' + s.n + ')' : ''));
+    });
+    var out = lines.join('\n');
+    var ta = document.getElementById('export');
+    ta.style.display = 'block'; ta.value = out; ta.select();
+    if (navigator.clipboard) { navigator.clipboard.writeText(out).catch(function () {}); }
+  });
+  document.getElementById('clear').addEventListener('click', function () {
+    if (!confirm('Clear all marks on this page? This cannot be undone.')) return;
+    store = {}; save(); location.reload();
+  });
+})();
+</script>
+</body>
+</html>
