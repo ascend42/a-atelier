@@ -49,3 +49,9 @@ Founder ruling, 2026-10-18: this is how Atelier's design eye is measured and imp
    - Keep F3 only where there is headroom (S2, S6), or on bench v2 with harder, subtler seeds.
    - Adjudicate unmatched findings with a blind three-judge panel first; the founder confirms the "real" pile, reviews "unsure" and audits a random sample.
 7. **Then P1.** Apply the approved playbook items (with the E5, E12 and G1 changes), run P1 on the same bench and model, and compare.
+
+## Config changes since B0
+
+| Date | Change | Effect on design-eye runs |
+|---|---|---|
+| 2026-10-18 | `tells.yaml` 4cb52df1 → f025a9ce: ten motion tells added (scope `content`); `motion-unmotivated` widened to `content` | None for product-UI critiques: every new or widened entry applies only to content scope. Record the new hash in P1's config and note this row. |

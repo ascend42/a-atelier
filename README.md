@@ -169,6 +169,9 @@ atelier still animation.atelier --state intro --frame 30 --format png -o frame.p
 atelier render animation.atelier -o output.mp4
 atelier render animation.atelier -o output.gif -f gif
 
+# Check a rendered video against the motion gates (dead frames, end hold, length, audio)
+atelier render-check output.mp4 --expect 20 --expect-audio --allow-hold 8.2-9.4
+
 # Export to SVG or Lottie
 atelier export-svg animation.atelier --state intro --frame 0 -o frame.svg
 atelier export-lottie animation.atelier -o animation.json

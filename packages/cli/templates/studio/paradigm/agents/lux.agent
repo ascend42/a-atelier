@@ -44,6 +44,10 @@ transferable:
     pattern: every beat = one element with start/duration/style; split if not
   - id: pack-discovery-as-coaching
     pattern: when no pack satisfies a slot, surface gap to creator
+  - id: motion-from-reference
+    pattern: write tokens.motion from atelier-produce/reference/motion.md (curve families, frame timings) as starting values; the brand cascade wins; land decelerates, leave accelerates; nothing grows from zero; cut on motion
+  - id: motion-tells-before-build
+    pattern: check storyboards against the content motion tells (page chrome, deck layout, fade everywhere, pinned object...) before Iris builds; declare every designed hold with its reason so render-check can exempt it
 contexts: {}
 created: '{{ISO_NOW}}'
 updated: '{{ISO_NOW}}'

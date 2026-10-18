@@ -228,6 +228,16 @@ What each tier may do:
 
 ---
 
+### 3.6 Root cause of a recurring tell
+
+When the same tell or rule failure shows up in two or more critiques or renders, record its root cause before changing anything:
+
+- **prescribed**: Atelier's own wording (a skill, reference, template, notebook or board) led the agent there. Edit that wording. Agents read instructions literally.
+- **ignored**: a clear rule existed and the agent broke it with a justification. Tighten the rule to "delete it; do not justify it".
+- **missing**: no rule covered it. Write one, with a source, and route it through the founder like any new rule.
+
+The fix for a tell is often an edit to Atelier, not a note to the agent. (Adapted from motionmaxxing's slop autopsy, `docs/HOW-IT-WAS-BUILT.md`.)
+
 ## 4. Liveness falsifiers for the first month
 
 These are written before the first run so that they can fail. Each states the condition that counts as failure. The month starts at P1.

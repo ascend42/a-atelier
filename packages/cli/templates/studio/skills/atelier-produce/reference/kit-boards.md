@@ -26,13 +26,13 @@ Each board: **owner**, **asks**, **facets** (mix & match units),
 
 ## intro-card — Lux
 - **Asks:** How does every episode open?
-- **Facets:** length (2–8 s) · motion style · logo treatment · episode-number/title treatment · music sting
+- **Facets:** length (2–8 s) · motion style (curve family and timing from `reference/motion.md`) · logo treatment · episode-number/title treatment · music sting
 - **Writes:** `templates.intro`, `tokens.motion`
 - **Reference:** quick key frames · deep rendered clips with the real logo/name
 
 ## end-card — Lux
 - **Asks:** How does every episode close and hand off?
-- **Facets:** length · CTA · YouTube end-screen layout (element zones) · next-episode tease
+- **Facets:** length · CTA · YouTube end-screen layout (element zones) · next-episode tease · end hold (0.6–1.4 s unless the platform's end screen needs longer)
 - **Writes:** `templates.end_card`
 - **Reference:** quick frame with end-screen zones overlaid · deep rendered clip
 
