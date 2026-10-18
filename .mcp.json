@@ -6,6 +6,13 @@
         "."
       ],
       "cwd": "/Users/ascend/Documents/GitHub/a-atelier"
+    },
+    "atelier": {
+      "command": "atelier-mcp",
+      "args": [
+        "."
+      ],
+      "cwd": "/Users/ascend/Documents/GitHub/a-atelier"
     }
   },
   "permissions": {

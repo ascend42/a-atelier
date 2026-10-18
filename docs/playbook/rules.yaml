@@ -1,0 +1,1042 @@
+# Atelier usability rulebook (v0, proposal)
+#
+# One deduplicated rulebook built from the four research reports in
+# docs/playbook/research/ (01 hendurhance, 02 awesome-ux, 03 NN/g basics,
+# 04 NN/g topics). About 100 rules in those reports came down to 70 here.
+# `merged_from` lists the source rules each entry absorbed, using each
+# report's own numbering:
+#   01#n   = 01-hendurhance §4 rule n
+#   02#n   = 02-awesome-ux §4 rule n
+#   03:Hn / 03:Vn / 03:Cn / 03:Pn = 03-nng-basics §3 ids; 03:Luna-n / 03:Mika-n = §6
+#   04:Rn  = 04-nng-topics §4 rule n; 04:Gnomon = §6 implications
+#
+# Rules vs tells
+#   tells.yaml (skill reference) = slop detectors: "this reads machine-made".
+#   rules.yaml (this file)       = usability checks: "this will cost the user".
+#   Where a rule and a tell overlap, the rule lists the tell in `related_tells`.
+#   The tell stays the mechanical detector; the rule is the reason it matters.
+#
+# Fields
+#   id           kebab-case, stable; cited in critique and finish-review findings
+#   space        research | ia | interaction | visual | content | accessibility
+#                | ai-agent | voice | tui | process
+#   statement    the rule, one or two sentences
+#   check        what an agent inspects
+#   pass_evidence / fail_evidence
+#   runnable_by  screen-only  = a screenshot, DOM, source or transcript is enough
+#                walkthrough  = an agent must step through the task (scripted or cognitive walkthrough)
+#                real-users   = an agent can only flag it; passing needs people
+#   strength     durable          = perception or cognition research, a standard (WCAG), or decades-stable
+#                expert-heuristic = validated rule of thumb or a major design system's published guidance
+#                nng-opinion      = NN/g house position, a numeric budget, or a single recent study
+#   sources      URLs as given in the research. Where the research named a page
+#                but did not record its deep URL, the entry gives title + domain
+#                and says "deep URL not captured". Books are cited by title only.
+#                Pirated mirrors from 01 are never linked.
+#   related_tells   (optional) tells.yaml ids
+#   notes           (optional) caveats, tensions, pending sources
+#
+# Thresholds marked nng-opinion are defaults for `warn`, not `fail`, and can be
+# overridden per repo like a tell (record the override with provenance).
+
+version: 0
+status: proposal
+
+rules:
+
+  # ── Process ─────────────────────────────────────────────────────────────
+
+  - id: problem-before-solution
+    space: process
+    statement: Every board, option set or critique opens with the user problem it addresses and the evidence for that problem, before any solution.
+    check: The session's `problem:` line and each critique finding. Each must name a user problem and its evidence class before naming a fix.
+    pass_evidence: '"Finance admins re-enter the tax ID on every invoice (observed: support tickets)" comes before the type board.'
+    fail_evidence: Options or fixes with no stated problem, or a problem that only restates the solution ("needs a modern look").
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:P2, 03:Luna-1]
+    sources:
+      - https://www.nngroup.com/videos/stop-solutioneering/
+      - https://www.nngroup.com/videos/principles-human-centered-design-don-norman/
+
+  - id: evidence-tagged-claims
+    space: process
+    statement: Every design claim and every decision rationale carries an evidence tag (observed, heuristic or opinion). A heuristic pass is never reported as "usable", and Luna's or Mika's preference is logged as opinion.
+    check: Findings in critique, rationales on recommended options, and decisions in session.yaml.
+    pass_evidence: '"Hierarchy fails the squint test (heuristic: one-dominant-focal-point)"; "Recommended because the creator picked density twice before (opinion: taste history)".'
+    fail_evidence: '"This is more usable", "users will prefer", or "validated" with no user data behind it.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:P1, 03:Luna-2, "02 §5 evidence-quality note"]
+    sources:
+      - https://www.nngroup.com/videos/you-are-not-user-slogan/
+      - https://www.nngroup.com/videos/checking-guessing-ux-slogan/
+      - https://www.nngroup.com/videos/show-me-the-data/
+      - https://www.nngroup.com/videos/design-for-them/
+
+  - id: critique-goal-anchored-and-independent
+    space: process
+    statement: A critique ties every finding to a stated goal or user need, ranks findings by the cost of the error, notes strengths, and keeps critique and solutioning as separate passes. Heuristic review uses independent passes that are consolidated afterwards.
+    check: The critique report. Each finding cites a goal and a rule or tell id, and the list is ranked by severity. If several evaluators ran, check they had no shared notes before consolidation.
+    pass_evidence: Ranked findings, each with goal + rule id + where; a strengths section; fixes in a separate section; evaluator passes logged separately before merge.
+    fail_evidence: Taste findings with no goal ("feels off"), fixes mixed into the problem list, unranked lists, or evaluators who saw each other's notes.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#30, 03:H5-prioritize, "04 heuristic-evaluation procedure"]
+    sources:
+      - https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/
+      - NN/g, Design Critiques (nngroup.com; deep URL not captured)
+      - Connor & Irizarry, Discussing Design (book)
+    notes: Agent evaluators drawn from the same model share blind spots. Independence means different models or isolated contexts at least, and the result never counts as the 3–5 human evaluators NN/g describes.
+
+  - id: principles-arbitrate-tradeoffs
+    space: process
+    statement: When options trade off (density vs clarity, convention vs novelty, calm vs alive), each option names the pole it takes. The product keeps 3–7 written design principles that settle those trade-offs.
+    check: Board options and `.atelier/DESIGN.md`. Look for a stated pole on each trade-off option and a principles list that real decisions cite.
+    pass_evidence: '"Option B leans to density (principle: status over silence)"; DESIGN.md lists principles that decisions reference by name.'
+    fail_evidence: A single "best" option on a genuine trade-off, or principles so generic that they never decide anything ("be intuitive").
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:Luna-3, 03:Luna-4, "04 design-guidance taxonomy"]
+    sources:
+      - https://www.nngroup.com/videos/dualities-user-experience/
+      - https://www.nngroup.com/videos/it-depends-ux-slogan-14/
+      - https://www.nngroup.com/videos/design-principles-101/
+      - https://www.nngroup.com/articles/design-guidance/
+
+  - id: close-with-falsifying-study
+    space: process
+    statement: Every session closes by naming the cheapest study that could falsify the chosen direction, sized honestly. Atelier never claims a direction is usable.
+    check: The session close summary and DESIGN.md.
+    pass_evidence: '"Next study: 5-user think-aloud on invoice entry (qualitative, formative). Until then this direction is heuristic only."'
+    fail_evidence: No next step, or a close that states the direction "works" or is "validated".
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:Luna-7, 03:P4]
+    sources:
+      - https://www.nngroup.com/articles/ux-research-cheat-sheet/
+      - https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/
+
+  - id: deliverables-pass-sketch-test
+    space: process
+    statement: Atelier's own boards, references and decision records can be explained back correctly by a cold reader (a fresh agent with no session context, or a human).
+    check: Give a cold agent the board or DESIGN.md and ask it to explain the options and the decision. Compare its account with the record.
+    pass_evidence: The cold reader names the options, the pick and the reason without re-reading or misstating them.
+    fail_evidence: The cold reader confuses options, misstates the decision, or asks what a term means.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [02#19]
+    sources:
+      - NN/g, The Sketch Test (nngroup.com, 2017; deep URL not captured)
+
+  - id: prototype-fidelity-stated
+    space: process
+    statement: Every reference or prototype states its fidelity on three axes (interactivity, visuals, content) and which questions it can and cannot answer.
+    check: The reference page header and the session record.
+    pass_evidence: '"Quick reference: real copy, restyled visuals, no interactivity. Answers type voice; cannot answer flow."'
+    fail_evidence: A static restyle treated as evidence about a flow, or a reference with placeholder content judged on content.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:Mika-7]
+    sources:
+      - https://www.nngroup.com/articles/ux-prototype-hi-lo-fidelity/
+
+  # ── Research ────────────────────────────────────────────────────────────
+
+  - id: method-fits-question
+    space: research
+    statement: Any recommended study names its type (attitudinal or behavioural, qualitative or quantitative, generative, formative or summative) and a sample size that fits. Small qualitative rounds find problems. Quantitative claims need about 20 or more users.
+    check: Research recommendations and any metric Atelier reports.
+    pass_evidence: '"Behavioural, qualitative, formative: 5 users per segment, two rounds with fixes between." SUS quoted only with n ≥ 20.'
+    fail_evidence: A survey used to answer a "why" question, a SUS score from 6 users, or "5 users find 85% of problems" stated as a guarantee.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#21, 02#22, 03:P4]
+    sources:
+      - https://www.nngroup.com/articles/which-ux-research-methods/
+      - https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/
+      - https://www.nngroup.com/articles/quantitative-user-research-methods/
+      - NN/g, Beyond the NPS — SUS, NASA-TLX, SEQ (nngroup.com; deep URL not captured)
+    notes: The 85% formula assumes a uniform discovery rate. Faulkner (2003) and Spool & Schroeder (2001) found wide variance. Read it as "small iterative rounds".
+
+  - id: synthetic-users-are-hypotheses
+    space: research
+    statement: Findings from LLM-simulated users, synthetic personas or synthetic card sorts are labelled directional and never count as validation.
+    check: Any finding that names "users" as its source. Trace whether real people produced it.
+    pass_evidence: '"Synthetic card sort (hypothesis only): 4 clusters; validate with a tree test."'
+    fail_evidence: Synthetic output cited as "users said", or used to close an open question.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#29, "04 §5 synthetic users"]
+    sources:
+      - https://www.nngroup.com/articles/synthetic-users-vs-human-respondents/
+      - https://www.nngroup.com/articles/human-led-research-still-matters/
+      - MeasuringU, Review of Experiments with Synthetic Users (measuringu.com; deep URL not captured)
+
+  - id: usability-tasks-well-formed
+    space: research
+    statement: Agent-written usability tasks don't leak UI labels, have one success criterion each, stand alone, and are piloted before use.
+    check: The task script.
+    pass_evidence: '"You need last month''s invoice for your accountant" (no button names), with one stated success condition.'
+    fail_evidence: '"Click Export in the Billing tab", compound tasks, or tasks that depend on the previous one.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#20]
+    sources:
+      - NN/g, Writing Tasks for Quantitative and Qualitative Usability Studies (nngroup.com, 2018; deep URL not captured)
+      - https://www.nngroup.com/articles/usability-testing-101/
+
+  - id: users-framed-as-grounded-jobs
+    space: research
+    statement: Briefs frame the user as a job to be done with success criteria. Any persona detail must change a design decision and must cite research, never invention.
+    check: The Design Read, intent boards and any persona in the session.
+    pass_evidence: '"Job: close the month''s billing in under an hour without a second tool (source: 3 admin interviews)."'
+    fail_evidence: Demographic personas with no source, or details (age, hobbies) that no decision uses.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#23, 03:P5]
+    sources:
+      - https://www.nngroup.com/articles/persona/
+      - NN/g, Personas vs. Jobs-to-Be-Done (nngroup.com, 2017; deep URL not captured)
+
+  # ── Information architecture ────────────────────────────────────────────
+
+  - id: content-and-ia-before-layout
+    space: ia
+    statement: Before visual options, the scope's content is listed in priority order and its IA (inventory plus relationships) is drafted. The navigation pattern is chosen to fit the hierarchy's depth, not its looks.
+    check: The session record before the first visual board. Is there a content priority list or IA sketch, and does the nav pattern match the hierarchy?
+    pass_evidence: A ranked content list and a sections/grouping decision precede type and color boards.
+    fail_evidence: Layout options drawn before anyone has counted the content; a nav pattern picked for style.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:C9, 03:Luna-6, "luna nb elvanti-structure-before-look"]
+    sources:
+      - https://www.nngroup.com/articles/ia-vs-navigation/
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+      - Rosenfeld & Morville, Information Architecture (book)
+    related_tells: [empty-bento-cell]
+
+  - id: show-where-user-is
+    space: ia
+    statement: Every view shows where the user is (title, active nav item, breadcrumb, pane header or TUI path), and every sub-area, modal or microsite has a visible route back to its parent. In multi-pane or multi-session views each pane keeps its own header.
+    check: Each screen or pane, without interacting.
+    pass_evidence: An active nav state or breadcrumb is visible; each parallel pane is labelled; a way back is visible from every sub-area.
+    fail_evidence: No active state, a generic title ("Dashboard"), or a sub-area with no route back.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#8, 03:H1-location, 03:C7, "04 serial-task-switching"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/top-10-enduring/
+      - https://www.nngroup.com/articles/serial-task-switching/
+      - Tognazzini, First Principles of Interaction Design — Visible Navigation (asktog.com; deep URL not captured)
+
+  - id: sibling-labels-distinct
+    space: ia
+    statement: No two sibling nav, menu or tab labels could plausibly lead to the same place, and content is grouped by the user's model, not the org chart.
+    check: Each set of sibling labels. Ask of each pair whether a user could confuse them.
+    pass_evidence: Labels are mutually exclusive in meaning ("Invoices" / "Payouts").
+    fail_evidence: Overlapping labels ("Resources" / "Library" / "Docs"), or sections named after internal teams.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:C5, "03 top-10 org-chart logic"]
+    sources:
+      - https://www.nngroup.com/articles/top-10-enduring/
+      - https://www.nngroup.com/articles/card-sorting-definition/
+    notes: Whether the labels match users' models needs a card sort or tree test (real-users). The overlap check is screen-only.
+
+  # ── Interaction ─────────────────────────────────────────────────────────
+
+  - id: acknowledge-every-action
+    space: interaction
+    statement: Every user action gets visible feedback near its trigger within about 0.1 s. While an action is in flight, its control shows that and repeated submits are blocked.
+    check: Click, tap or key each primary control and watch for a state change at the trigger. Try a double submit.
+    pass_evidence: The button enters a pressed or loading state at once and ignores a second click.
+    fail_evidence: No visible change on click, or a double submit that fires twice.
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: [01#1, 02#1, 02#2, 03:H1-feedback]
+    sources:
+      - https://www.nngroup.com/articles/response-times-3-important-limits/
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - NN/g, Microinteractions (nngroup.com; deep URL not captured)
+      - Saffer, Microinteractions (book)
+    notes: Tog's 50 ms figure is stricter than NN/g's 0.1 s. Use 0.1 s; agents can rarely time below that from a recording anyway.
+
+  - id: waits-show-honest-progress
+    space: interaction
+    statement: Over about 1 s, show a busy state. From 2 to 10 s, a changing indicator is enough. Over 10 s, show determinate progress (steps done and remaining, or items completed as they finish) plus a labelled way to stop. Progress is accurate, and after a long wait the user gets a summary that re-orients them.
+    check: Time a recording or transcript of the slowest operation in scope, and note what is on screen at 1 s, 10 s and completion.
+    pass_evidence: A specific progress line by 1 s ("Summarizing 14 files…"); a step checklist and "Esc to stop" by 10 s; a "while you were away" summary on return.
+    fail_evidence: A silent wait, a bare spinner past 10 s, a progress bar that stalls at 99%, or generic "Processing…" text.
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: [01#2, 02#1, 02#17, 04:R1, "04 response-times re-orientation", 04:Gnomon]
+    sources:
+      - https://www.nngroup.com/articles/response-times-3-important-limits/
+      - https://www.nngroup.com/articles/usability-heuristics-complex-applications/
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+    related_tells: [happy-path-only]
+
+  - id: every-state-has-an-exit
+    space: interaction
+    statement: Every modal, wizard, overlay, mode or TUI view has a visible way out. Cancel (discard) is distinct from Close, Back moves exactly one step, and Reset is never confused with Undo.
+    check: Enter every non-trivial state and look for the exit without prior knowledge.
+    pass_evidence: A labelled close, Cancel or Back; in a TUI, Esc or q shown in the hint line.
+    fail_evidence: A modal with no close, a wizard with no back, a TUI mode with no documented quit, or Back that jumps several steps.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [02#3, 03:H3, "04 user-control-and-freedom"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/user-control-and-freedom/
+
+  - id: reversible-or-gated-proportionally
+    space: interaction
+    statement: Every destructive or irreversible action is undoable or gated by a confirmation that names the consequence and its scope. Prefer undo, keep the undo window visible long enough to use, and gate only high-stakes actions so confirmations keep their meaning.
+    check: Inventory every action in scope and tag it reversible, gated or both. Read the text of each gate.
+    pass_evidence: '"Delete 14 files from prod?" with the files listed; "Archived. Undo" toast for low-stakes deletes; no gate on reversible actions.'
+    fail_evidence: A one-click irreversible action, a generic "Are you sure?", or confirmations on trivial reversible actions (gate fatigue).
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [01#3, 02#3, 03:H3, 03:H5-commitments, 03:H1-consequential-state, 04:R4]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/user-control-and-freedom/
+      - https://www.nngroup.com/articles/impressions-chatgpt-agent/
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+
+  - id: never-lose-user-work
+    space: interaction
+    statement: User input survives errors, navigation, refresh and network failure, through autosave, drafts or preserved fields.
+    check: Fill a form, prompt or card, then trigger an error, navigate away and back, and reload.
+    pass_evidence: The input is still there after each event.
+    fail_evidence: A cleared field after a validation error, or a lost prompt after a failed request.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [02#4, 04:R3]
+    sources:
+      - https://www.nngroup.com/articles/error-messages-scoring-rubric/
+      - Tognazzini, First Principles of Interaction Design — Protect Users' Work (asktog.com; deep URL not captured)
+
+  - id: consistent-and-changes-look-changed
+    space: interaction
+    statement: The same action has the same label, icon, position and style everywhere; one word means one thing; no glyph serves two actions. Anything that behaves differently, or has changed from its default (favourited, overridden, edited), looks different.
+    check: Build an action-to-label/icon/position map across views and look for synonyms, reused glyphs and invisible state changes.
+    pass_evidence: One verb per action across the app; an overridden value is visibly marked as such.
+    fail_evidence: '"Remove", "Delete" and "Trash" for one action; the same icon for two actions; a changed setting that looks like the default.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#4, 02#10, 03:H4-internal, "04:R10 glyph reuse"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/usability-heuristics-complex-applications/
+      - Tognazzini, First Principles of Interaction Design — Consistency (asktog.com; deep URL not captured)
+    related_tells: [duplicate-cta-intent]
+
+  - id: prevent-errors-with-constraints
+    space: interaction
+    statement: Inputs constrain format (pickers, masks, enums) and validate during entry for known constraints. Defaults are pre-filled only when one option clearly wins. Invalid actions are disabled with the reason shown, and reset or clear controls say exactly what they reset.
+    check: Every input and every disabled control in scope.
+    pass_evidence: A date picker instead of free text; a disabled Save with "Add a tax ID to save"; inline validation as the user types.
+    fail_evidence: Free text where a picker fits; a disabled button with no reason; validation only on submit; a pre-filled default nobody would choose.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#5, 02#11, 03:H5-constraints]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - NN/g, Microinteractions (nngroup.com; deep URL not captured)
+      - Tognazzini, First Principles of Interaction Design — Defaults (asktog.com; deep URL not captured)
+
+  - id: options-visible-not-remembered
+    space: interaction
+    statement: Options, current values and recent context are visible or one step away; the user never carries a value from one screen to another in their head. Controls the primary task needs stay visible; progressive disclosure hides only secondary controls.
+    check: Walk the primary task. Note every point where the user must remember something or hunt for a primary control.
+    pass_evidence: Menus, a command palette or a key-hint footer list commands; recent items are offered; primary controls are in view.
+    fail_evidence: '"Copy this code, then go to Settings…"; a core action behind a hidden gesture or an unlabelled overflow menu.'
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: [02#7, 02#12, 03:H6, 03:H8-partial]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/ai-articulation-barrier/
+      - Tognazzini, First Principles of Interaction Design — Discoverability (asktog.com; deep URL not captured)
+
+  - id: accelerators-duplicate-a-visible-path
+    space: interaction
+    statement: Every accelerator (shortcut, flag, slash command, alias) duplicates a discoverable standard path; none is required to finish a task. Shortcuts are shown inline, revealed gradually, give feedback when they fire, and never override well-known keys.
+    check: Keymap audit. Map each binding to a menu or palette entry and list collisions with OS or terminal keys.
+    pass_evidence: Every binding appears in the palette with its shortcut right-aligned; the collision list is empty.
+    fail_evidence: A shortcut-only action, or a binding that overrides Cmd/Ctrl-C, Ctrl-Z or similar.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#14, 03:H7, 04:R11]
+    sources:
+      - https://www.nngroup.com/articles/ui-accelerators/
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+
+  - id: targets-sized-and-placed
+    space: interaction
+    statement: Frequent and primary targets are large and close to where the pointer, thumb or focus already is. Minimum 24×24 CSS px or equivalent spacing (WCAG 2.2 AA, 2.5.8); 44×44 pt/px on touch platforms (Apple HIG, WCAG 2.5.5 AAA).
+    check: Measure targets in the render and note their distance from the preceding action.
+    pass_evidence: Primary buttons at platform size, placed where the previous step ended.
+    fail_evidence: A tiny or far-away primary action; touch targets under 24 px with no spacing.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#6, 02#13, 03:C4]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - https://www.nngroup.com/articles/interaction-cost-definition/
+      - Tognazzini, First Principles of Interaction Design — Fitts's Law (asktog.com; deep URL not captured)
+    notes: 01#6 attributes 44 px to WCAG 2.5.5. That is the AAA criterion. AA in WCAG 2.2 is 2.5.8 (24 px). Mika's nb-wcag-target-size notebook already has this right.
+
+  - id: minimize-interaction-cost
+    space: interaction
+    statement: Count the steps, keystrokes, fields and decisions for the primary task. Every step advances the goal. A decision point with many peer options gets grouping, a default or progressive disclosure, and screens drop options that serve no key task.
+    check: Step count and choice count for the primary task, compared across options.
+    pass_evidence: A short, direct path; large option sets grouped with a sensible default.
+    fail_evidence: Repeated choices, detours, or a flat list of 15 peer options at one decision.
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: [01#7, 03:C1, 03:C2]
+    sources:
+      - https://www.nngroup.com/articles/interaction-cost-definition/
+      - https://www.nngroup.com/articles/top-10-enduring/
+      - https://www.nngroup.com/videos/more-choices-more-trouble-ux-slogan/
+    notes: Do not cite Miller's 7±2 as the reason; it is about working memory, not menus. Treat 01#7's "~7 options" as a prompt to look, not a limit.
+
+  - id: decision-critical-facts-first
+    space: interaction
+    statement: Price, fees, time, scope and irreversibility are shown before the user commits to a flow, not revealed at the end.
+    check: Walk any committing flow and note where each cost first appears.
+    pass_evidence: Total cost and what can't be undone are visible on the first step.
+    fail_evidence: Fees on the last screen; an agent that states the constraint only after acting.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [03:C6, "04 designing-ai-agents decision-critical facts"]
+    sources:
+      - https://www.nngroup.com/articles/top-10-enduring/
+      - https://www.nngroup.com/articles/designing-ai-agents/
+
+  - id: follow-platform-conventions
+    space: interaction
+    statement: Platform and web conventions are the default (links look like links, the logo goes home, standard shortcuts, `--help`, `q`/Esc in TUIs). A non-standard pattern for a standard job carries a written justification and a note on mental-model risk.
+    check: Each standard job in scope (navigation, search, settings, scroll, links, quit). Is it done the conventional way, or is the departure justified on the option?
+    pass_evidence: 'Conventional patterns, or a departure labelled "breaks convention because …; risk …".'
+    fail_evidence: Custom scroll, hidden links styled as plain text or as ads, or an unconventional nav with no reason given.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#8, 03:H4-external, 03:C8, 03:Luna-5]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/mental-models/
+      - https://www.nngroup.com/articles/top-10-enduring/
+
+  - id: components-cover-all-states
+    space: interaction
+    statement: Components come from the system's library and cover every state (default, hover, focus, active, disabled-with-reason, loading, empty, error). One-off components that duplicate a system component are findings.
+    check: For each component in scope, list the states that are designed and implemented, and check for duplicates of library components.
+    pass_evidence: A state matrix with every state present; library components reused.
+    fail_evidence: Success state only; a hand-rolled button beside the system button.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:H4-design-system, 03:Mika-3]
+    sources:
+      - https://www.nngroup.com/articles/design-systems-101/
+      - https://www.nngroup.com/articles/design-systems-vs-style-guides/
+    related_tells: [happy-path-only]
+
+  - id: notification-matches-urgency
+    space: interaction
+    statement: Passive status uses indicators, input problems use validations at the field, and only action-required events interrupt. Toasts carry passive information, never errors.
+    check: Classify every message in scope as indicator, validation, passive notification or action-required, and compare with how it renders.
+    pass_evidence: A status-line glyph plus text for agent status; an inline error at the field; a modal only for a pending decision.
+    fail_evidence: An error in a toast that fades; a modal for a passive update.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["04 indicators-validations-notifications", 04:Gnomon]
+    sources:
+      - https://www.nngroup.com/articles/indicators-validations-notifications/
+
+  # ── Visual ──────────────────────────────────────────────────────────────
+
+  - id: one-dominant-focal-point
+    space: visual
+    statement: Each view has exactly one visually dominant element, and it is the primary task. Emphasis is spent on one thing, not five.
+    check: Squint test. Blur the screenshot (about an 8 px Gaussian) and name the first focal point.
+    pass_evidence: The blurred focal point is the primary task element.
+    fail_evidence: No clear focal point, or focus lands on decoration or secondary content.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#10, 02#15, 03:V1]
+    sources:
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+      - https://www.nngroup.com/articles/principles-visual-design/
+      - Lupton, Thinking with Type (book)
+    related_tells: [shouting-h1, hero-overloaded]
+
+  - id: limited-type-scale
+    space: visual
+    statement: Type uses a defined scale with a small number of sizes and weights per view (about 3 tiers; no more than 2 large elements), and no ad-hoc values.
+    check: Count distinct font sizes and weights in one view and compare with the type tokens.
+    pass_evidence: 3–4 sizes, all on the scale.
+    fail_evidence: Five or more competing sizes, or off-scale values.
+    runnable_by: screen-only
+    strength: nng-opinion
+    merged_from: [01#11, 03:V2]
+    sources:
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+      - https://www.nngroup.com/articles/good-visual-design/
+      - Wathan & Schoger, Refactoring UI (book)
+    notes: The "on the scale, from tokens" half is durable system hygiene. The "about 3 sizes" half is a teaching budget; editorial and expressive work can break it. Severity warn.
+
+  - id: restrained-color-budget
+    space: visual
+    statement: Saturated or accent color is reserved for what must stand out (about 2 primary + 2 secondary hues, 3 or fewer contrast treatments). Warm red is reserved for errors, warnings and destructive actions. Color comes from tokens.
+    check: Count accent hues and emphasis treatments per view; list every use of red.
+    pass_evidence: One accent for actions, semantic colors declared as tokens, red only for danger.
+    fail_evidence: Everything emphasized; red used for a brand highlight next to an error.
+    runnable_by: screen-only
+    strength: nng-opinion
+    merged_from: [03:V3, 03:V8]
+    sources:
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+      - https://www.nngroup.com/articles/good-visual-design/
+    related_tells: [accent-drift]
+    notes: Counts are a budget, not a law. The red reservation conflicts with brands that are red; record an override.
+
+  - id: group-by-space-before-boxes
+    space: visual
+    statement: Items that belong together share proximity, region or similarity; space between groups is larger than space within them; each label sits closer to its own control than to any other. Borders, cards and backgrounds are used only where spacing can't do the grouping. In dark mode, surfaces separate by background steps, not thin rules or shadows alone.
+    check: Measure within-group and between-group gaps, label-to-field distances, and container nesting.
+    pass_evidence: Clear group gaps; headings closer to their own section; one level of containers at most.
+    fail_evidence: Equal spacing everywhere; boxes inside boxes; a label equidistant between two fields; dark surfaces separated only by a hairline.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#9, 03:V6, 03:V7, "04 dark-mode surfaces"]
+    sources:
+      - https://www.nngroup.com/articles/principles-visual-design/
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+      - https://www.nngroup.com/articles/dark-mode-users-issues/
+      - Wathan & Schoger, Refactoring UI (book)
+
+  - id: decoration-must-communicate
+    space: visual
+    statement: Every element either communicates or affords action. Decoration is allowed when it carries brand or character without competing with the task; rarely needed information does not get equal prominence with primary content.
+    check: For each non-content element, ask what it communicates and whether it competes with the primary task in the squint test.
+    pass_evidence: Expressive elements that carry meaning (status, identity) and sit below the task in the hierarchy.
+    fail_evidence: Atmosphere props competing with the primary action; secondary info at primary prominence.
+    runnable_by: screen-only
+    strength: nng-opinion
+    merged_from: [03:H8, 03:Luna-8]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/videos/communication-not-decoration-ux-slogan-4/
+      - https://www.nngroup.com/videos/you-cant-impose-joy-ux-slogan-3/
+    related_tells: [decorative-meta, motion-unmotivated, ai-glow-gradient]
+    notes: NN/g's position is strongly functionalist and undervalues the aesthetic-usability effect and emotional design (Norman wrote on both). Atelier reads it as "decoration must not block the task", not as a ban on character. See Luna's calm-ground-living-elements notebook.
+
+  - id: stress-with-real-content
+    space: visual
+    statement: Every vetted option is rendered with realistic, longest, empty, error and many-item content, and its hierarchy still holds.
+    check: Render each state with real entity names and extreme lengths.
+    pass_evidence: Long names truncate or wrap cleanly; empty and error states are designed; a strong image doesn't take over the hierarchy.
+    fail_evidence: Only ideal-length sample data; overflow, broken layout or hijacked hierarchy at the extremes.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:V9, 03:Mika-6]
+    sources:
+      - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
+    related_tells: [placeholder-names, happy-path-only, cta-wraps]
+
+  - id: quantities-by-length-or-position
+    space: visual
+    statement: Dashboards and charts encode quantity with length or 2D position (bars, lines, sparklines, scatter), not area, angle or 3D. Dashboards declare whether they are operational (glanceable live status) or analytical (reflective review).
+    check: Inventory chart types in scope and the dashboard's stated purpose.
+    pass_evidence: Bars and sparklines; the purpose is named.
+    fail_evidence: Pies, donuts, gauges, radar or 3D charts carrying quantities.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [04:R14]
+    sources:
+      - https://www.nngroup.com/articles/dashboards-preattentive/
+    notes: Durable in the perception research (Cleveland & McGill). Tufte, Few and Datawrapper's guidance are still unread; see the reading list.
+
+  # ── Accessibility ───────────────────────────────────────────────────────
+
+  - id: color-never-sole-signal
+    space: accessibility
+    statement: Anything conveyed by color (status, error, category, quantity) is also conveyed by text, icon, shape, weight or position. The view still works in grayscale, under color-vision-deficiency simulation, and with NO_COLOR in terminals.
+    check: Render grayscale, CVD-simulated and NO_COLOR versions and try to read every state.
+    pass_evidence: Every state is still identifiable.
+    fail_evidence: A status shown only by hue; red/green as the only pass/fail signal.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#12, 02#5, 03:V4, 04:R12]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - https://www.nngroup.com/articles/dashboards-preattentive/
+      - https://www.nngroup.com/articles/dark-mode-users-issues/
+      - Tognazzini, First Principles of Interaction Design — Color (asktog.com; deep URL not captured)
+
+  - id: text-contrast-both-themes
+    space: accessibility
+    statement: Text meets 4.5:1 (3:1 for large or bold) against its actual background in every theme; non-text UI meets 3:1. De-emphasis uses size, weight or position, never low contrast.
+    check: Run a contrast script over theme tokens and over the rendered worst-case pairs (text on images or gradients included).
+    pass_evidence: Every pair passes in light and dark.
+    fail_evidence: Grey-on-grey "secondary" text below threshold; dark-mode tokens that were never checked.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [02#16, 03:V5, 04:R13]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - https://www.nngroup.com/articles/principles-visual-design/
+      - https://www.nngroup.com/articles/dark-mode-users-issues/
+    related_tells: [contrast-fail]
+
+  - id: keyboard-focus-and-names
+    space: accessibility
+    statement: Every interactive element can be reached by keyboard in a logical order (WCAG 2.4.3), shows a visible focus state (2.4.7), and has an accessible name (4.1.2). Modals take focus on open and return it on close; a skip link exists where navigation repeats.
+    check: Tab through the scope; inspect the accessibility tree for names.
+    pass_evidence: Logical order, visible focus ring, every control named, focus returns from modals.
+    fail_evidence: Focus traps, invisible focus, unnamed icon buttons, focus lost after closing a modal.
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: [01#13]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - digital.gov, Accessibility for UX designers (digital.gov; deep URL not captured)
+
+  - id: persistent-visible-labels
+    space: accessibility
+    statement: Form inputs have persistent visible labels (WCAG 3.3.2). A placeholder is not a label.
+    check: Inspect every input for a visible label that stays while typing.
+    pass_evidence: A label above or beside each field, programmatically associated.
+    fail_evidence: Placeholder-only fields.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#14]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - digital.gov, Accessibility for UX designers (digital.gov; deep URL not captured)
+    related_tells: [placeholder-as-label]
+
+  - id: meaningful-alt-text
+    space: accessibility
+    statement: Images are marked decorative (empty alt) or meaningful, and meaningful alt text says what the image contributes to the task, not just what it depicts (WCAG 1.1.1).
+    check: Every image's alt attribute, read against the task it supports.
+    pass_evidence: alt="" on decoration; task-relevant alt on content images.
+    fail_evidence: Missing alt, filenames as alt, or "image of chart" on a chart that carries data.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: [01#15, "03 accessibility-is-not-enough alt-text point"]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+      - https://www.nngroup.com/articles/accessibility-is-not-enough/
+
+  - id: semantic-structure-for-machines
+    space: accessibility
+    statement: Interactive surfaces expose semantic structure (roles, labels, state) rather than visual-only layout, so assistive tech and other agents can drive them. Icons and glyphs carry a text label or tooltip; there are no icon-only controls without names.
+    check: Read the accessibility tree or the machine-readable state output; list icon-only controls.
+    pass_evidence: The tree matches the visual structure; every glyph has a label; an API/MCP or structured state exists for agent-facing surfaces.
+    fail_evidence: Screen-scraping is the only way to drive it; unlabelled icon buttons; grouping expressed only visually.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [04:R10, 04:R21]
+    sources:
+      - https://www.nngroup.com/articles/ai-agents-as-users/
+      - https://www.nngroup.com/articles/prompt-controls-genai/
+
+  - id: reduced-motion-honored
+    space: accessibility
+    statement: Motion respects `prefers-reduced-motion` (WCAG 2.3.3), nothing flashes more than 3 times a second (2.3.1), and auto-playing motion can be paused.
+    check: Toggle reduced motion and inspect animations; look for auto-play controls.
+    pass_evidence: Animations become instant changes or short fades; auto-play has pause.
+    fail_evidence: Parallax or looping motion that ignores the setting.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: ["01 §5 gap 6 (motion specs)", "Mika review-checklist #5"]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/quickref/
+    related_tells: [motion-unmotivated]
+
+  - id: conformance-is-not-accessibility
+    space: accessibility
+    statement: An automated or checklist accessibility pass is reported as "technically conformant", never as "accessible". Whether disabled users can complete the task stays an open item until it is tested with them on their own assistive tech.
+    check: The wording of every accessibility claim in critique, finish review and DESIGN.md.
+    pass_evidence: '"Technically conformant (axe: 0 violations, contrast pass). Open: screen-reader task test."'
+    fail_evidence: '"Accessible", "fully accessible" or "a11y done" backed only by automated checks.'
+    runnable_by: real-users
+    strength: expert-heuristic
+    merged_from: [03:P3, 03:Mika-5]
+    sources:
+      - https://www.nngroup.com/articles/accessibility-is-not-enough/
+    notes: The wording check is screen-only. The claim it protects can only be closed by real users.
+
+  # ── Content ─────────────────────────────────────────────────────────────
+
+  - id: speak-the-users-language
+    space: content
+    statement: Labels, status and agent narration use the user's vocabulary and the user's task order, not internal IDs, schema keys, enum names, symbol IDs or tool names.
+    check: Scan user-visible strings against a glossary of internal terms; compare field order with the task or real-world order.
+    pass_evidence: Every label is understandable to the target user without a glossary; fields in task order.
+    fail_evidence: '"payload", "entity", "null", raw error codes, `#symbol-id` in user copy; fields in database order.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#9, 03:H2, "03 §5 agent narration"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/usability-heuristics-complex-applications/
+      - https://www.nngroup.com/articles/context-architecture/
+
+  - id: errors-say-what-why-fix
+    space: content
+    statement: Every error says, in plain language and without blame, what happened, why or where (the exact field or cause), and how to fix it, with an action. It appears near its source, at a severity proportional to impact, not prematurely, and with a non-color indicator. It keeps the user's input. Aim for grade A (≥3.3) on NN/g's 12-criterion rubric.
+    check: Every error string and state in scope, scored on the rubric (visibility, communication, efficiency).
+    pass_evidence: '"Tax ID must be 9 digits — you entered 8." shown at the field, input kept, rubric ≥3.3.'
+    fail_evidence: '"Something went wrong", raw codes or stack traces, "contact your administrator", errors in a distant popup or toast.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#6, 03:H9, 04:R2, "04 prompt-controls (error at the control)"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/error-messages-scoring-rubric/
+      - https://www.nngroup.com/articles/usability-heuristics-complex-applications/
+
+  - id: write-for-scanning
+    space: content
+    statement: Text is written for scanning (headings, short paragraphs, bullets, front-loaded keywords), and shorter wins. Agent replies and reports are terse by default with detail on demand.
+    check: Text blocks in scope and agent reply lengths.
+    pass_evidence: Front-loaded headings and short chunks; detail behind disclosure.
+    fail_evidence: Walls of text; agent replies that bury the answer.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [03:C3, "03 §5 H8 agent terse reports"]
+    sources:
+      - https://www.nngroup.com/articles/top-10-enduring/
+      - https://www.nngroup.com/videos/brevity-brilliance-ux-slogan-5/
+
+  - id: help-at-point-of-need
+    space: content
+    statement: Help is contextual (inline hints, tooltips with the shortcut, per-command `--help`, "what can you do?"), searchable, task-oriented and given as numbered steps.
+    check: Find help for the primary task from where the task happens.
+    pass_evidence: An inline hint or tooltip at the control; steps, not prose.
+    fail_evidence: Help only in a separate long manual; prose paragraphs instead of steps.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [02#18, 03:H10]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/usability-heuristics-complex-applications/
+
+  # ── AI / agent UX ───────────────────────────────────────────────────────
+
+  - id: disclose-ai-involvement
+    space: ai-agent
+    statement: AI involvement is disclosed where it occurs, labelled per instance or per region. The AI label is never disabled and never doubles as an action button.
+    check: Every AI-generated region or value in scope.
+    pass_evidence: A consistent AI label on each generated item.
+    fail_evidence: Generated content indistinguishable from human or system content; the label used as a "regenerate" button.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#16]
+    sources:
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+      - IBM Carbon, AI label guidelines (carbondesignsystem.com; deep URL not captured)
+      - https://artificialintelligenceact.eu/article/50/
+    notes: EU AI Act Art. 50 transparency duties apply from 2 Aug 2026; that part is legal, not heuristic.
+
+  - id: generated-output-is-correctable
+    space: ai-agent
+    statement: Generated output sits next to Edit, Retry and Undo or Revert controls. The UI confirms when a correction took effect, an overridden AI value stays restorable, and feedback (thumbs plus optional detail) is voluntary and never interrupts.
+    check: Each generated output and what the user can do with it.
+    pass_evidence: Edit / Retry / Revert beside the output; a revert to the AI value after override; an optional feedback control.
+    fail_evidence: Output that can only be accepted or regenerated from scratch; a modal feedback survey.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#17, 01#27]
+    sources:
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+      - IBM Carbon, AI label guidelines (carbondesignsystem.com; deep URL not captured)
+      - Microsoft, Guidelines for Human-AI Interaction (Amershi et al., CHI 2019) — https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/
+
+  - id: capabilities-and-limits-up-front
+    space: ai-agent
+    statement: An AI surface states what it can and can't do in this view, with example inputs, suggested actions or a visible task menu next to free text. Disclaimers are specific, placed near the input and paired with an action. A blank prompt box with no affordances fails, and chat is used only when it beats a direct control.
+    check: The empty state and input area of every AI surface; ask whether a non-chat control would serve the job better.
+    pass_evidence: Suggested-action buttons, a short capability list, and a disclaimer by the input saying what to double-check.
+    fail_evidence: An empty chat box; a footer disclaimer; chat bolted on where a button or automation would do.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#18, 01#24, 04:R20, "04 ai-chat-not-the-answer", "04 designing-ai-agents redundant entry points"]
+    sources:
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+      - https://www.nngroup.com/articles/ai-chatbots-design-guidelines/
+      - https://www.nngroup.com/articles/explainable-ai/
+      - https://www.nngroup.com/articles/ai-chat-not-the-answer/
+      - https://www.nngroup.com/articles/designing-ai-agents/
+      - Amelia Wattenberger, Why Chatbots Are Not the Future (wattenberger.com; deep URL not captured)
+      - The Shape of AI — Wayfinders (https://www.shapeof.ai/)
+
+  - id: decision-card-anatomy
+    space: ai-agent
+    statement: Before a multi-step, external or irreversible agent action, a reviewable card shows what will happen, its exact scope (files, counts, resources), the decision-critical facts, the source beside each claim, any substitution stated explicitly, and proceed / edit / take-over choices. Default focus is never on Approve, and permission prompts name the exact resource and need an active choice.
+    check: Render each approval or permission card and read it against this anatomy.
+    pass_evidence: '"Write 3 files in src/billing/ (list); run migrations on staging (not prod). [Edit plan] [Take over] [Approve]" with focus on Edit.'
+    fail_evidence: '"Allow access?" without scope; Approve focused by default; a plan that hides which environment it targets.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#19, 04:R19, "04 §6 decision cards", 03:H1-consequential-state]
+    sources:
+      - https://www.nngroup.com/articles/designing-ai-agents/
+      - https://www.nngroup.com/articles/impressions-chatgpt-agent/
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+      - Luke Wroblewski, Durable Patterns in AI Product Design (lukew.com; deep URL not captured)
+      - Victor Yocco, Designing for Agentic AI — Intent Preview (smashingmagazine.com, Feb 2026; deep URL not captured)
+
+  - id: autonomy-scoped-by-risk
+    space: ai-agent
+    statement: Agent autonomy is set per task class. Destructive, financial and external actions are never fully automated by default, and gates sit only at high-stakes moments so friction stays meaningful.
+    check: The autonomy settings or policy, mapped against the action inventory from reversible-or-gated-proportionally.
+    pass_evidence: 'A per-class policy (read: auto; write local: auto with undo; deploy or pay: gated).'
+    fail_evidence: One global "auto-approve" switch; or gates on every read, which trains rubber-stamping.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [01#20, "04 impressions-chatgpt-agent gate placement"]
+    sources:
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+      - https://www.nngroup.com/articles/impressions-chatgpt-agent/
+      - Noessel, Designing Agentive Technology (book)
+      - Victor Yocco, Designing for Agentic AI — Autonomy Dial (smashingmagazine.com; deep URL not captured)
+    notes: Yocco's numeric thresholds (85% accept, 5% revert → disable) are unsourced. Treat them as hypotheses for calibration, not rules.
+
+  - id: no-silent-substitution
+    space: ai-agent
+    statement: The agent never silently swaps a user constraint (time, scope, file, model, environment). A substitution needs an approval before it happens, not a notice after.
+    check: The agent's action log. Find substitutions and check for an approval event before each.
+    pass_evidence: '"Noon is full; 12:15 is open. Book 12:15?" before booking.'
+    fail_evidence: Booked 12:15, then reported it.
+    runnable_by: walkthrough
+    strength: nng-opinion
+    merged_from: [04:R5]
+    sources:
+      - https://www.nngroup.com/articles/impressions-chatgpt-agent/
+      - https://www.nngroup.com/articles/designing-ai-agents/
+
+  - id: agent-work-auditable
+    space: ai-agent
+    statement: Agent work is logged and inspectable. Steps are collapsed by default and expandable, process is shown separately from results, and every action can be traced and, where possible, undone.
+    check: After an agent run, look for the step log, its default state, and its separation from the output.
+    pass_evidence: A collapsed "12 steps" disclosure above the result; each step names the tool and what changed.
+    fail_evidence: Steps interleaved with the answer; no record of what was touched.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#21]
+    sources:
+      - Luke Wroblewski, Durable Patterns in AI Product Design (lukew.com; deep URL not captured)
+      - The Shape of AI — Stream of Thought (https://www.shapeof.ai/)
+      - Victor Yocco, Designing for Agentic AI — Action Audit & Undo (smashingmagazine.com; deep URL not captured)
+
+  - id: citations-beside-claims
+    space: ai-agent
+    statement: Each sourced claim has a citation next to it, labelled with the real title (not "Source"), deep-linked to the passage, styled distinctly from the answer, and users are told sources need checking.
+    check: Every citation in a generated answer, for position, label and link target.
+    pass_evidence: An inline titled chip that opens the passage.
+    fail_evidence: '"Source 1, 2, 3" collected at the end; dead links.'
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [01#22, 04:R6]
+    sources:
+      - https://www.nngroup.com/articles/explainable-ai/
+    notes: People rarely click citations, but seeing them raises confidence, so a citation can inflate trust. The aim is calibrated trust, not maximum trust.
+
+  - id: explain-by-sources-not-narration
+    space: ai-agent
+    statement: Step-by-step reasoning displays are not presented as faithful explanations; proof is sources, the diff and stated limits. Status copy states what was done factually ("read 4 files"), not inflated capability verbs ("I thought about…"). Explanations fit the reader's role (governance, builder, domain expert).
+    check: Status strings and any reasoning panel. Is the trace labelled as narrative, and does status describe actions?
+    pass_evidence: '"Read 4 files: a.ts, b.ts…"; a trace labelled "model narrative, not a guarantee"; the diff offered as proof.'
+    fail_evidence: A trace presented as "why"; status that claims thought or understanding.
+    runnable_by: screen-only
+    strength: nng-opinion
+    merged_from: [01#23, 04:R7, 04:R8, "04 crafting-ai-explanations"]
+    sources:
+      - https://www.nngroup.com/articles/explainable-ai/
+      - https://www.nngroup.com/articles/crafting-ai-explanations/
+    notes: Turpin et al. (2023) back the reasoning-trace half (durable-leaning). The banned-verb half is NN/g opinion and conflicts with persona voice in agent products (Claude Code itself shows "Thinking"). Keep personality in tone; keep capability claims factual. Severity warn.
+
+  - id: ai-failure-explains-limit
+    space: ai-agent
+    statement: AI failure states say what happened, which system limit caused it, and the next step. Low-confidence results say so instead of bluffing, and a blocked request coaches a better one.
+    check: Force failures (out of scope, no data, low confidence, refused) and read each state.
+    pass_evidence: '"I can only see this repo''s files, not Jira. Paste the ticket or connect Jira."'
+    fail_evidence: A confident wrong answer, a bare "I can't help with that", or a generic error.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [01#25]
+    sources:
+      - https://pair.withgoogle.com/chapter/errors-failing/
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+
+  - id: streaming-holds-reading-position
+    space: ai-agent
+    statement: Streaming output anchors at the start of the new message and does not autoscroll the reader past it, unless the user is pinned at the bottom.
+    check: Start a long streamed response and record the scroll position.
+    pass_evidence: The view stays at the message top while text streams below.
+    fail_evidence: The view jumps to the end as tokens arrive.
+    runnable_by: walkthrough
+    strength: nng-opinion
+    merged_from: [01#26, 04:R15]
+    sources:
+      - https://www.nngroup.com/articles/ai-chatbots-design-guidelines/
+
+  - id: core-task-survives-ai-absence
+    space: ai-agent
+    statement: The core task still works when the AI feature is unavailable, slow or declined, through a non-AI path where reasonable.
+    check: Disable or fail the AI dependency and attempt the core task.
+    pass_evidence: A manual path completes the task.
+    fail_evidence: The whole surface is blocked behind the model.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [01#28]
+    sources:
+      - https://developer.apple.com/design/human-interface-guidelines/generative-ai
+
+  - id: clarifiers-capped-with-escape
+    space: ai-agent
+    statement: Instead of auto-running a broad prompt, the agent asks clarifying questions one at a time, with closed options for closed questions, always a skip or "something else", and a small cap (about 4). Answers come back as reusable chips.
+    check: The clarifier payload schema and its render.
+    pass_evidence: ≤4 questions, one per step, each with "Other/skip".
+    fail_evidence: A wall of typed follow-up questions; no escape option; an agent that never asks and guesses.
+    runnable_by: screen-only
+    strength: nng-opinion
+    merged_from: [04:R9, "04 designing-ai-agents (don't auto-send broad prompts)"]
+    sources:
+      - https://www.nngroup.com/articles/genui-buttons-and-checkboxes/
+      - https://www.nngroup.com/articles/designing-ai-agents/
+    notes: The cap of 4 comes from NN/g endorsing Claude's AskUserQuestion limit, so the evidence is partly circular for us. Calibrate it.
+
+  - id: context-and-memory-legible
+    space: ai-agent
+    statement: The user can tell which layer of context controls a behaviour (global standing rules, local task context, ambient sources), global context is short enough to audit in one sitting, edits name their layer, and memory is listable with provenance.
+    check: The context files or Workshop view; ask "which file would I change to alter behaviour X?"; look for a "what do you remember" command.
+    pass_evidence: Separate global and local files with a line budget; a memory list with where each item came from.
+    fail_evidence: One catch-all rules file; edits made "wherever relevant"; opaque memory.
+    runnable_by: walkthrough
+    strength: nng-opinion
+    merged_from: [04:R16, 04:R17]
+    sources:
+      - https://www.nngroup.com/articles/3-agent-context-roles/
+      - https://www.nngroup.com/articles/big-ball-of-mud-ai/
+      - https://www.nngroup.com/articles/context-architecture/
+
+  - id: ai-quality-measured-not-demoed
+    space: ai-agent
+    statement: Claims about AI or agent output quality cite N representative inputs × K runs with a pass rate and confidence interval, and record model, version, prompt, tools and date. One output is an example, not an evaluation.
+    check: Any quality claim in a session, spec or decision record.
+    pass_evidence: '"40 inputs × 3 runs, 87% pass (CI 80–92%), claude-opus-x, prompt v3, 2026-10-16."'
+    fail_evidence: A single good demo cited as proof.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [04:R18, "01 Hamel Husain evals FAQ"]
+    sources:
+      - https://www.nngroup.com/articles/eval-ai-output/
+      - Hamel Husain, Evals FAQ (hamel.dev; deep URL not captured)
+
+  # ── Voice ───────────────────────────────────────────────────────────────
+
+  - id: voice-small-reliable-command-set
+    space: voice
+    statement: Voice launches with a small, bulletproof command set tolerant of rewording, discloses its capabilities proactively, and ships only when common commands reliably succeed. Users rarely retry a capability once it fails.
+    check: The command inventory and its success rate under rephrasing.
+    pass_evidence: '5–8 commands (approve, deny, status, stop, "what''s pending") passing rephrasing tests.'
+    fail_evidence: Open-ended dictation of complex tasks at launch; unknown success rate.
+    runnable_by: real-users
+    strength: nng-opinion
+    merged_from: ["04 §3 voice", "04 §6 voice"]
+    sources:
+      - https://www.nngroup.com/articles/intelligent-assistants-poor-usability-high-adoption/
+      - https://www.nngroup.com/articles/mental-model-ai-assistants/
+    notes: Rephrasing tolerance can be pre-screened by an agent; real retention needs a diary study.
+
+  - id: voice-short-answer-detail-on-screen
+    space: voice
+    statement: Voice answers aloud in about one sentence with one idea per utterance, gives a reasoned recommendation rather than a list, supports follow-ups and pronoun references ("approve that one"), and pushes detail to the screen.
+    check: Transcript of voice exchanges for length, list-reading and follow-up handling.
+    pass_evidence: '"Two decisions pending; the deploy one is urgent. Approve it?" with the detail on screen.'
+    fail_evidence: Read-aloud lists; "here are some links"; no pronoun resolution.
+    runnable_by: walkthrough
+    strength: nng-opinion
+    merged_from: ["04 §3 voice", "03 §5 H6/H8 voice column"]
+    sources:
+      - https://www.nngroup.com/articles/intelligent-assistants-poor-usability-high-adoption/
+
+  - id: voice-confirm-and-echo-irreversible
+    space: voice
+    statement: A voice approval of an irreversible action needs a spoken confirm step and an on-screen echo of what was approved. Voice also gives audible acknowledgement, since silence reads as failure.
+    check: Approve an irreversible card by voice and record the audio and screen.
+    pass_evidence: '"Deploy to prod — say confirm." Then a screen echo: "Approved by voice: deploy prod, 14:02".'
+    fail_evidence: One utterance triggers an irreversible action with no echo.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: ["04 §6 voice", "03 §5 H1 voice column"]
+    sources:
+      - https://www.nngroup.com/articles/intelligent-assistants-poor-usability-high-adoption/
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+
+  # ── TUI / terminal ──────────────────────────────────────────────────────
+
+  - id: tui-chrome-shows-state-and-keys
+    space: tui
+    statement: A TUI keeps a status line with the current mode, path or session and what is running, plus a key-hint footer listing the keys that work here. Passive agent status is a glyph plus text, not color alone.
+    check: Screenshot each TUI view and read the status line and hint footer.
+    pass_evidence: '"gnomon · main · 2 agents running · 1 decision pending" and "↑↓ move · enter open · esc back · ? help".'
+    fail_evidence: No mode indicator; keys only in a separate help screen.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["03 §5 TUI column (H1, H6)", 03:Mika-8, 04:Gnomon]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - https://www.nngroup.com/articles/indicators-validations-notifications/
+    notes: An extrapolation of NN/g to terminals (03 §5 says so). TUI-native sources (clig.dev, Charm conventions) are in the reading list.
+
+  - id: terminal-standard-keys-preserved
+    space: tui
+    statement: Ctrl-C interrupts, Ctrl-Z, Esc and q keep their conventional meanings, and long runs bind a labelled stop key. App bindings never override terminal-standard keys.
+    check: Keymap audit against the terminal-standard list; press each standard key in each mode.
+    pass_evidence: Ctrl-C stops the current run cleanly; Esc backs out; the stop key is shown during runs.
+    fail_evidence: Ctrl-C swallowed or rebound; no way to stop a long run.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: [04:R11, "03 §5 H3 TUI", 04:Gnomon]
+    sources:
+      - https://www.nngroup.com/articles/ui-accelerators/
+      - https://www.nngroup.com/articles/response-times-3-important-limits/
+    notes: Pending primary source (clig.dev).
+
+  - id: cli-degrades-without-color-or-tty
+    space: tui
+    statement: Output stays fully readable with NO_COLOR, in 16-color terminals, at 80 columns, and when piped (non-TTY), with machine-readable output (for example `--json`) available for scripted use.
+    check: Run the command with NO_COLOR=1, TERM=xterm-16color, COLUMNS=80, and piped to a file.
+    pass_evidence: All states readable through glyphs and text; no ANSI codes in piped output; JSON mode available.
+    fail_evidence: Status only in color; broken layout at 80 columns; escape codes in logs.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: [04:R12, "01 §5 gap 1", "02 §5 terminal gap"]
+    sources:
+      - https://www.nngroup.com/articles/dashboards-preattentive/
+      - no-color.org (named as a gap in 01/02; not yet read)
+      - clig.dev (named as a gap in 01/02; not yet read)
+    notes: The research only named these sources; the rule needs the second-round read before it can be `durable`.
+
+  - id: cli-help-and-errors-per-command
+    space: tui
+    statement: Every command and subcommand supports `-h`/`--help` with examples; errors go to stderr with what, why and fix, and exit codes are non-zero on failure; destructive commands offer `--dry-run`.
+    check: Run `--help` on each command; trigger each failure and read stderr and the exit code.
+    pass_evidence: 'Per-command help with examples; "error: no config at ./.atelier — run `atelier init`" with exit 1.'
+    fail_evidence: A stack trace on stdout with exit 0; help only at the top level.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["03 §5 TUI column (H4, H5, H9, H10)", "01 §5 gap 1"]
+    sources:
+      - https://www.nngroup.com/articles/ten-usability-heuristics/
+      - clig.dev (named as a gap in 01/02; not yet read)
