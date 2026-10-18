@@ -44,10 +44,11 @@ Founder ruling, 2026-10-18: this is how Atelier's design eye is measured and imp
 3. **Founder certifies, agents draft.** Certification uses the local page with a stated premise and question per decision. Seeds on surfaces with recorded decisions are pre-checked against those records.
 4. **Freeze, then run.** A bench is hashed and made read-only before any scored run. Any change after that is a new version.
 5. **Every scored run is isolated and audited.** Opaque input folders, no learning writes, a transcript audit before scoring, a blind judge for matching.
-6. **Revise the gates before the next comparison** (proposed, needs founder approval):
+6. **Revise the gates before the next comparison** (approved by the founder 2026-10-18; now in `calibration.md` §2.2 and §4):
    - Make F4 (false alarms do not rise, precision improves) the primary gate.
    - Keep F3 only where there is headroom (S2, S6), or on bench v2 with harder, subtler seeds.
    - Adjudicate unmatched findings with a blind three-judge panel first; the founder confirms the "real" pile, reviews "unsure" and audits a random sample.
+   - Before P1: adjudicate B0's unmatched findings with that protocol, so B0 precision exists to compare against.
 7. **Then P1.** Apply the approved playbook items (with the E5, E12 and G1 changes), run P1 on the same bench and model, and compare.
 
 ## Config changes since B0

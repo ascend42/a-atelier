@@ -110,7 +110,13 @@ One evaluator = one isolated agent context (no shared notes, no access to other 
 
 A finding **matches** a label when the item is the same, the space is the same (or the mapped rule id is the same), and the location overlaps: the selector matches or contains the labelled node, or the bbox IoU is ≥ 0.3. For trace items, the event window must overlap. Each label matches at most one finding. Extra findings on the same defect count as duplicates: they are reported but are neither true nor false positives.
 
-An unmatched finding on a seeded item is **adjudicated** by the founder, blind to which evaluator produced it. If it is a real defect, it becomes a `found` label in the next bench version and is scored as a true positive from then on, but not retroactively. If not, it is a false positive.
+An unmatched finding (on a seeded item or a control) is **adjudicated**, blind to which evaluator and which run produced it:
+
+1. **Judge panel.** Three independent judge agents each see only the finding, the item's captures and context, and its recorded design decisions. Each votes `real`, `invented` or `unsure`. A finding with 2 or more matching votes takes that verdict; anything else is `unsure`.
+2. **Founder pass.** The founder confirms the `real` pile in bulk, rules on every `unsure`, and audits a random 20% sample of the `invented` pile (at least 10 findings). If the founder overturns more than 20% of the sampled `invented` verdicts, the founder adjudicates the whole `invented` pile.
+3. **What a verdict does.** A `real` finding is not a false positive for precision in that run. For recall it only counts from the next bench version, where it becomes a `found` label (never retroactively). An `invented` finding is a false positive. A `real` finding on a control means the control was not clean: it is excluded from that run's false-alarm rate, and the control is fixed or retired in the next version.
+
+Judges never see labels, other findings' verdicts or evaluator identity, and judge runs are bench mode (no learning writes).
 
 ### 2.3 Metrics
 
@@ -242,12 +248,14 @@ The fix for a tell is often an edit to Atelier, not a note to the agent. (Adapte
 
 These are written before the first run so that they can fail. Each states the condition that counts as failure. The month starts at P1.
 
+**Revision, 2026-10-18 (before P1, so not after the fact).** B0 pass 1 put held-out recall at 0.88, so the original F3 (+0.15 pooled) could not pass however good the playbook is, and B0 showed the open problem is precision (6.4 warn-or-above findings per clean control). F4 is now the primary gate and asks for an improvement, not just no regression. F3 now guards against regression overall and asks for the +0.15 gain only in the spaces with headroom. Precision needs B0 to be adjudicated first (section 2.2). Bench v2, with harder and subtler seeds, can restore a pooled recall target. Founder ruling; recorded in `b0-baseline.md`.
+
 | # | Falsifier | Pass | Fail means |
 |---|---|---|---|
 | F1 | Verdict throughput | ≥ 15 findings with a founder verdict (not `defer`) per week, from ≥ 3 distinct critiques | Fewer than 8 for two consecutive weeks: the loop has no input, so nothing compounds. Fix the verdict surface before tuning anything else |
 | F2 | Verdicts carry information | Over ≥ 30 verdicts, the overrule share is 10%–60%; if probes are on, ≥ 75% of probes are overruled | Keep share ≥ 95% is rubber-stamping (the 5/5-certification failure). Overrule share > 60% means the critic is noise |
-| F3 | Recall improves | Pooled held-out recall P1 (or P2) minus B0 ≥ +0.15 absolute, with the 90% CI of the paired difference above 0; severity-weighted recall also up; no space drops by more than 0.05 | The playbook is decoration. Report it as such, and do not re-weight the benchmark until it passes |
-| F4 | False alarms do not rise | Control false-alarm rate ≤ B0 + 0.1 findings per item; pooled precision not below B0; override-respect on decoys ≥ 0.8 | Recall was bought by flagging everything. Treat it as a fail for F3 as well |
+| F3 | Recall holds, and improves where there is headroom | Pooled held-out recall P1 (or P2) minus B0 ≥ −0.03, with the lower bound of the 90% CI of the paired difference ≥ −0.08; severity-weighted recall not down; in the spaces where B0 recall was below 0.80 (bench v1: S2, S6), pooled recall up ≥ +0.15 with the CI of the paired difference above 0 | Below the floor: the playbook made the eye miss things. Headroom target missed: the playbook is decoration where the eye is weakest. Report it as such |
+| F4 | **Primary.** Precision improves and false alarms fall | Pooled held-out precision (section 2.2 adjudication) P1 minus B0 ≥ +0.10, with the CI of the paired difference above 0; control false-alarm rate ≤ 0.75 × B0; override-respect on decoys ≥ 0.8 | The playbook does not sharpen the eye. If recall rose while F4 failed, recall was bought by flagging more: treat F3 as failed too |
 | F5 | The eye is reliable | Krippendorff's α (found / not found) ≥ 0.6 at P1 and not below B0; consensus recall ≥ 0.5 | Gains are run-to-run luck; no single critique can be trusted |
 | F6 | Weights actually move | By day 30, ≥ 5 notebook entries have changed confidence from verdicts, and ≥ 1 rule has changed standing (any direction) or been scoped | With ≥ 60 verdicts and nothing moved, the credit path is not wired. This is the 200/200 failure: the loop agrees with itself |
 | F7 | Something loses | Over the month, ≥ 1 rule or notebook entry is debited to a lower standing or to dormant | A month of verdicts in which nothing loses means the gates have no teeth. Audit the ledger code before trusting any promotion |
