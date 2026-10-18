@@ -17,8 +17,13 @@ components:
       - '#canvas-size-presets'
     file: src/studio.ts
   canvas-panel:
-    description: Canvas rendering and playback panel with play/pause/scrub controls and letterbox-fit display sizing via ResizeObserver
+    description: Canvas rendering and playback panel with play/pause/scrub controls and letterbox-fit display sizing via ResizeObserver; template docs are drawn with their variables bound to defaults (#template-defaults)
+    components:
+      - '#template-defaults'
     file: src/panels/canvas-panel.ts
+  template-defaults:
+    description: withTemplateDefaults — returns a template doc with every {{variable}} placeholder bound to its declared default for drawing (canvas preview and video export); the source doc, YAML view and saves keep the placeholders. Docs without variables, or with a variable lacking a default, pass through unchanged
+    file: src/utils/template-defaults.ts
   compute-letterbox-fit:
     description: Pure helper that returns the largest aspect-preserving scale of a canvas inside a parent rect, with zero/negative inputs collapsing to zeros
     file: src/panels/canvas-panel.ts

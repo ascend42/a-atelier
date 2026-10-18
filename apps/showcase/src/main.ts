@@ -89,6 +89,8 @@ function buildApp(): void {
     sidebar.appendChild(cat);
   }
   app.appendChild(sidebar);
+  // Keep the selected example visible (the sidebar is a horizontal strip on phones)
+  sidebar.querySelector(".sidebar__item--active")?.scrollIntoView({ block: "nearest", inline: "nearest" });
 
   // Main — always studio
   const main = document.createElement("div");

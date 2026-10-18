@@ -10,7 +10,9 @@ export const templatesExamples: Example[] = [
       "A polished title card animation with template variables for title text and brand color — swap values to rebrand instantly",
     category: "Templates",
     create: (): AtelierDocument => {
-      // Template variables define the customizable slots
+      // Defaults for the template variables. Layers reference the variables
+      // as {{name}} (never these constants), so rebinding a variable re-themes
+      // every layer that uses it.
       const titleText = "Atelier Studio";
       const brandColor = "#C75B39";
       const accentColor = "#4A7C91";
@@ -30,7 +32,7 @@ export const templatesExamples: Example[] = [
         .variable("brandColor", {
           type: "color",
           default: brandColor,
-          description: "Primary brand color for the accent bar and title",
+          description: "Primary brand color for the accent line and corner marks",
         })
         .variable("accentColor", {
           type: "color",
@@ -43,7 +45,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect", cornerRadius: 2 },
-            fill: { type: "solid", color: brandColor },
+            fill: { type: "solid", color: "{{brandColor}}" },
           },
           frame: { x: 200, y: 130 },
           bounds: { width: 0, height: 4 },
@@ -53,7 +55,7 @@ export const templatesExamples: Example[] = [
           id: "title",
           visual: {
             type: "text",
-            content: titleText,
+            content: "{{title}}",
             style: {
               fontFamily: "sans-serif",
               fontSize: 36,
@@ -75,7 +77,7 @@ export const templatesExamples: Example[] = [
             style: {
               fontFamily: "sans-serif",
               fontSize: 16,
-              color: accentColor,
+              color: "{{accentColor}}",
               textAlign: "center",
             },
           },
@@ -89,7 +91,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: brandColor },
+            fill: { type: "solid", color: "{{brandColor}}" },
           },
           frame: { x: 120, y: 110 },
           bounds: { width: 24, height: 2 },
@@ -100,7 +102,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: brandColor },
+            fill: { type: "solid", color: "{{brandColor}}" },
           },
           frame: { x: 120, y: 110 },
           bounds: { width: 2, height: 24 },
@@ -111,7 +113,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: brandColor },
+            fill: { type: "solid", color: "{{brandColor}}" },
           },
           frame: { x: 456, y: 248 },
           bounds: { width: 24, height: 2 },
@@ -122,7 +124,7 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "rect" },
-            fill: { type: "solid", color: brandColor },
+            fill: { type: "solid", color: "{{brandColor}}" },
           },
           frame: { x: 478, y: 226 },
           bounds: { width: 2, height: 24 },
@@ -220,9 +222,10 @@ export const templatesExamples: Example[] = [
     id: "templates-notification",
     name: "Notification Banner",
     description:
-      "A reusable notification animation template with variables for message text, icon color, and type",
+      "A reusable success notification template with a check-mark glyph and variables for message text and status color",
     category: "Templates",
     create: (): AtelierDocument => {
+      // Defaults for the template variables; layers reference them as {{name}}.
       const message = "Changes saved successfully";
       const iconColor = "#7A8B6F";
 
@@ -240,7 +243,7 @@ export const templatesExamples: Example[] = [
         .variable("iconColor", {
           type: "color",
           default: iconColor,
-          description: "Status icon color (green=success, red=error, amber=warning)",
+          description: "Fill of the status circle behind the white check mark (default: success green)",
         })
         // Banner background
         .addLayer({
@@ -260,29 +263,36 @@ export const templatesExamples: Example[] = [
           visual: {
             type: "shape",
             shape: { type: "ellipse" },
-            fill: { type: "solid", color: iconColor },
+            fill: { type: "solid", color: "{{iconColor}}" },
           },
           frame: { x: 120, y: -45 },
           bounds: { width: 26, height: 26 },
         })
-        // Checkmark indicator (small rect as visual shorthand)
+        // Check mark: an open stroked path, centred in the 26px status circle
         .addLayer({
           id: "check",
           visual: {
             type: "shape",
-            shape: { type: "rect", cornerRadius: 2 },
-            fill: { type: "solid", color: "#F5F0EB" },
+            shape: {
+              type: "path",
+              points: [
+                { x: 2, y: 7 },
+                { x: 5.5, y: 10.5 },
+                { x: 12, y: 3.5 },
+              ],
+              closed: false,
+            },
+            stroke: { color: "#F5F0EB", width: 2.5, lineCap: "round", lineJoin: "round" },
           },
-          frame: { x: 127, y: -37 },
-          bounds: { width: 12, height: 12 },
-          opacity: 0.9,
+          frame: { x: 126, y: -39 },
+          bounds: { width: 14, height: 14 },
         })
         // Message text
         .addLayer({
           id: "message",
           visual: {
             type: "text",
-            content: message,
+            content: "{{message}}",
             style: {
               fontFamily: "sans-serif",
               fontSize: 14,
@@ -315,8 +325,8 @@ export const templatesExamples: Example[] = [
           layer: "check",
           property: "frame.y",
           range: [10, 50],
-          from: -37,
-          to: 53,
+          from: -39,
+          to: 51,
           easing: { type: "spring", mass: 1, stiffness: 200, damping: 15 },
         })
         .addDelta("show", {
@@ -348,8 +358,8 @@ export const templatesExamples: Example[] = [
           layer: "check",
           property: "frame.y",
           range: [130, 170],
-          from: 53,
-          to: -37,
+          from: 51,
+          to: -39,
           easing: "ease-in",
         })
         .addDelta("show", {
