@@ -35,47 +35,16 @@ Floor: at least 4 defects per space, with S2 and S6 heavier (see the tally below
 
 ### 1.2 Item list
 
-Seeds are injected into a copy of the screen. They are never shipped. "Base" is the source file or ref at the pinned commit. Each item seeds 1 to 3 defects, mixing obvious seeds with subtle ones so that recall is not saturated on the first run.
+The item list, the seeded defects and the labels live only in the bench (`~/.atelier/bench/design-eye/<version>/`), never in a repo. An earlier draft of this section listed the planted defects here. That leaked the answer key into an agent-readable path, so it was removed before the baseline run (see `b0-baseline.md`).
 
-| Id | Base | Seeded defects (space: key) | Sev |
-|---|---|---|---|
-| DE-01 | a-constellation `ui/src/panels/PermissionCards.tsx` | Prompt reads "Allow access?" with no path or scope (S6: `topics.R19`). Default focus on Allow (S2: `topics.R19`) | blocker, major |
-| DE-02 | a-constellation `ui/src/panels/TranscriptRail.tsx` | Streaming reply autoscrolls past its start (S6: `topics.R15`). Status line says "Thinking…" (S6: `topics.R7`) | major, minor |
-| DE-03 | a-constellation `ui/src/panels/Setup.tsx` | Placeholder used as the only field label (S4: `hend.14`). Error reads "Something went wrong" (S2: `nng.H9`) | major, major |
-| DE-04 | a-constellation `ui/src/panels/VoiceSettings.tsx` | Mic state shown by hue only, red vs green dot (S4: `topics.R12`) | major |
-| DE-05 | a-constellation `ui/src/panels/AutomationsSheet.tsx` | Delete automation on one click with no undo or confirm (S2: `topics.R4`). Two sibling actions labelled "Remove" and "Delete" for the same act (S5: `nng.C5`) | blocker, minor |
-| DE-06 | a-constellation `ui/src/panels/NodeCard.tsx` | Internal ids and enum names in user copy, e.g. `state: PENDING_MERGE` (S5: `nng.H2`). Off-token radius (T: `radius-drift`) | minor, minor |
-| DE-07 | a-paradigm `platform-ui/src/components/CommandPalette.tsx` | Overrides Ctrl-C (S7: `topics.R11`). Two commands share one glyph (S7: `topics.R10`). Selected row has no visible focus state (S4: `hend.13`) | blocker, minor, major |
-| DE-08 | a-paradigm `platform-ui/src/sections/tasks/components/BoardView.tsx` | Five competing large type sizes (S3: `nng.V2`). Off-token accent hue (T: `accent-drift`) | minor, major |
-| DE-09 | a-paradigm `platform-ui/src/sections/tasks/components/TaskCard.tsx` | Secondary text at 2.9:1 contrast (S4: `nng.V5`). Boxes nested three deep (S3: `nng.V7`) | major, minor |
-| DE-10 | a-paradigm `platform-ui/src/sections/tasks/components/CalibrationStrip.tsx` | Quantity shown as a gauge (S3: `topics.R14`). Number with no unit or denominator (S5: `nng.H2`) | minor, minor |
-| DE-11 | a-paradigm `platform-ui/src/sections/warpline/components/OracleDivergenceViewer.tsx` | Verdict claims cite "Source" labels collected at the end (S6: `topics.R6`). Reasoning trace presented as the "why" (S6: `topics.R8`). Progress bar reads 100% while the ledger is still loading (S1: `aux.17`) | major, major, minor |
-| DE-12 | a-paradigm `platform-ui/src/components/AgentToast.tsx` | Error delivered as a toast that auto-dismisses (S2: `nng.H9`; NN/g notification taxonomy). Success toast fires before the write completes (S1: `aux.17`) | major, major |
-| DE-13 | a-flow `ui/src/components/ConsequenceDialog.tsx` | Consequence replaced with "Are you sure?" (S2: `nng.H5`). No visible cancel (S2: `nng.H3`) | blocker, major |
-| DE-14 | a-flow `ui/src/features/review/ReviewPage.tsx` | Agent swapped the target branch and gave notice only afterwards (S6: `topics.R5`). Approve has no plan preview (S6: `hend.19`) | blocker, major |
-| DE-15 | a-flow `ui/src/features/sessions/SessionDetailPage.tsx` | 14 s silent wait with a bare spinner and no stop key (S1: `topics.R1`). No location or title for the session (S1: `nng.H1`) | major, minor |
-| DE-16 | a-flow `ui/src/features/auth/LoginPage.tsx` | Password cleared after a failed attempt (S2: `topics.R3`). Hero copy uses "seamless" (T: `filler-verbs`) | major, cosmetic |
-| DE-17 | a-flow `ui/src/components/EmptyState.tsx` | Blank prompt box, no capabilities or examples (S6: `hend.18`). Placeholder names, "Jane Doe" (T: `placeholder-names`) | major, minor |
-| DE-18 | Gnomon ref `refs/walkthrough.html` | Decision card gates a reversible action and leaves an irreversible one ungated (S2: `topics.R4`). Clarifier carries 6 questions with no skip (S6: `topics.R9`) | blocker, major |
-| DE-19 | Gnomon ref `refs/workshop.html` | Memory list with no provenance (S6: `topics.R17`). Key-hint footer omits the quit key (S7: `nng.H6`). Context layers named by internal ids, not user words (S5: `nng.H2`) | major, minor, minor |
-| DE-20 | Gnomon ref `refs/dials.html` | Dial state unreadable under NO_COLOR (S7: `topics.R12`). Red used for a non-error accent (S3: `nng.V8`). Focal point lands on decoration under the squint test (S3: `nng.V1`) | major, minor, minor |
+What the list must satisfy:
 
-Tally: 43 seeded defects. S1 4, S2 8, S3 5, S4 4, S5 4, S6 10, S7 4, T 4. S2 and S6 are heavier because the founder's tools are mostly agent and permission surfaces.
+- Every item is a real screen from a surface the founder is actively designing, captured at a pinned commit (or pinned by sha256 for untracked refs). Stale surfaces are retired, not certified.
+- Each seeded item carries 1 to 3 defects, mixing obvious seeds with subtle ones. Pre-existing defects the drafters notice become `found` labels only when the founder adds them.
+- Clean controls are cleaned copies the founder certifies as having nothing at warn or above. At least one is an override decoy built from a real recorded override, quoted verbatim.
+- Coverage: at least 3 held-out labels per space (S1-S7, T), growing toward 10 (section 1.5).
 
-**Clean controls (8).** Correct output on these is no finding at warn or above. Controls also need curation: each base is first audited and its real defects are fixed in the copy, then the founder certifies the copy as clean (section 1.3, step 4).
-
-| Id | Base | Purpose |
-|---|---|---|
-| CC-01 | a-paradigm `platform-ui/src/components/SidebarNav.tsx` (cleaned) | Plain nav; checks for invented hierarchy findings |
-| CC-02 | a-flow `ui/src/components/StatusRegion.tsx` (cleaned) | Correct status semantics; checks for over-flagging S1 |
-| CC-03 | a-flow `ui/src/components/StepUpDialog.tsx` (cleaned) | Well-formed gate; checks for "add another confirm" reflexes |
-| CC-04 | a-constellation `ui/src/panels/TasksDrawer.tsx` (cleaned) | Dense list done right; checks for density = defect bias |
-| CC-05 | a-paradigm `platform-ui/src/sections/sentinel/` incident list (cleaned) | Red used correctly for errors; checks for `nng.V8` false alarms |
-| CC-06 | a-atelier `apps/showcase` page (cleaned) | Expressive styling that still communicates; checks for "minimalism = flat" bias (NN/g opinion, `03` §4) |
-| CC-07 | Gnomon ref `refs/papercraft.html` | **Override decoy.** Trips a tell under a recorded `design-system.yaml` override, e.g. warm-paper material. Correct output: no finding, override acknowledged |
-| CC-08 | Gnomon ref `refs/iconography.html` | **Override decoy.** Labelled glyph set with a documented convention break and its justification (`hend.8`). Correct output: no finding |
-
-The decoys test the critique rule "tells overridden in `design-system.yaml` are not findings". A critic that flags them is ignoring recorded decisions.
+Bench v1, as frozen on 2026-10-18: 28 items (21 seeded, 7 controls including 1 decoy), 57 certified labels, 42 of them held-out.
 
 ### 1.3 How to build it
 
@@ -93,7 +62,7 @@ Layout (outside every agent-readable context path; see 1.4):
 ```
 
 1. **Pin.** Record repo, commit and file per item in `MANIFEST.yaml`. Benchmarks drift silently if the base moves.
-2. **Capture.** Render each item at 1440×900 and 390×844 in light and dark (HTML/TSX), or at 120×40 and 80×24 cells with and without `NO_COLOR` (TUI refs). Save `screen.png` plus a self-contained `markup.html` (DOM with computed styles inlined), so static checks (contrast, token drift) and visual judgement both have an input. Flow items (DE-02, DE-14, DE-15) also get `trace.jsonl`, a timed event log or terminal transcript, because `[trace]` rules cannot be judged from a still.
+2. **Capture.** Render each item at 1440×900 and 390×844 in light and dark (HTML/TSX), or at 120×40 and 80×24 cells with and without `NO_COLOR` (TUI refs). Save `screen.png` plus a self-contained `markup.html` (DOM with computed styles inlined), so static checks (contrast, token drift) and visual judgement both have an input. Flow items also get `trace.jsonl`, a timed event log or terminal transcript, because `[trace]` rules cannot be judged from a still.
 3. **Seed.** Apply each defect as a minimal, reviewable diff to the copy (`seed.patch`, kept in `labels/`, not `items/`). One defect per diff hunk, so localisation can be scored.
 4. **Certify.** The founder reviews each item once. For seeded items, he confirms each seed is a real defect at the stated severity. For controls, he confirms no defect at warn or above. Pre-existing defects found in a base during this step are either fixed in the copy or added as labels marked `origin: found`. Labels he declines are removed. Agents may draft labels; only the founder's certification makes them ground truth.
 5. **Label** (`labels/DE-01.yaml`):
@@ -121,7 +90,7 @@ A benchmark the agents have seen measures memory, not the eye. Rules:
 - **Physical separation.** The bench lives under `~/.atelier/bench/`, never inside a repo, notebook directory, University content pack or lore path. `labels/` is never passed to an evaluator. A run harness copies only `items/<id>/` into a fresh scratch dir per evaluator.
 - **No learning from bench runs.** Bench runs are tagged `mode: bench`. Notebook writes, journal entries, `paradigm_teach`, Classroom submissions, study-hall staging and lore are disabled for that session. A bench run that tries to write any of them fails, and the attempt is logged.
 - **Canaries.** Each label file carries a unique canary token. A weekly check greps every notebook, journal, University note, lore entry and `.atelier/` session under the founder's repos for canaries, item ids (`DE-\d\d`, `CC-\d\d`) and near-duplicates of label text (5-gram overlap ≥ 0.5). Any hit marks the bench `contaminated`. Affected items are retired and replaced.
-- **Dev / held-out split.** 10 items (DE-01–DE-07, CC-01–CC-03) are **dev**. They may be discussed, used in examples and fed to rule authors. The other 18 are **held-out**. They are seen only during scored runs, and their labels are never quoted anywhere. Only held-out numbers count toward the falsifiers in section 4.
+- **Dev / held-out split.** A minority of items are **dev** (v1: 6 seeded items and 3 controls). They may be discussed, used in examples and fed to rule authors. The rest are **held-out**. They are seen only during scored runs, and their labels are never quoted anywhere. Only held-out numbers count toward the falsifiers in section 4.
 - **No tuning to the test.** Rules, prompts and notebooks are frozen (content hash recorded) before a scored run. Changes made after looking at held-out results require a new bench version with fresh held-out items before the next scored claim.
 - **Rotation.** Each quarter, replace 6 held-out items with new captures from the then-current UI. Retired held-out items move to dev.
 
@@ -148,7 +117,7 @@ An unmatched finding on a seeded item is **adjudicated** by the founder, blind t
 The three primary metrics:
 
 1. **Recall per space, on held-out items.** Matched labels / labels, per space and pooled. Also report severity-weighted recall (blocker 4, major 3, minor 2, cosmetic 1), because missing a blocker is worse than missing a cosmetic issue.
-2. **False-alarm rate on clean controls.** Findings at warn or above per control item, averaged over evaluators. Report the decoys (CC-07, CC-08) separately as an **override-respect rate**: share of evaluators that raised no finding on them.
+2. **False-alarm rate on clean controls.** Findings at warn or above per control item, averaged over evaluators. Report the override decoys separately as an **override-respect rate**: share of evaluators that raised no finding on them.
 3. **Inter-evaluator agreement.** Krippendorff's α over the item × label × evaluator matrix (found / not found), plus α over severity (ordinal). Also report **consensus recall**: labels found by ≥ 3 of 5 evaluators. α measures reliability only. High agreement on a wrong answer is still wrong, so α never credits a rule.
 
 Secondary metrics:
