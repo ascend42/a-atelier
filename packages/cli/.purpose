@@ -1,5 +1,5 @@
 version: 1.0.0
-description: CLI tool — lint, validate, info, still, render, export-svg, export-lottie, export-image, assets, and variables commands for .atelier animation files
+description: CLI tool — lint, validate, info, still, render, render-check, export-svg, export-lottie, export-image, assets, and variables commands for .atelier animation files
 context:
   - Command-line interface for working with .atelier YAML animation files
   - Lint command runs all named gates (^valid-document, ^valid-delta, ^valid-video-layer) with grouped output and --json flag
@@ -9,6 +9,21 @@ context:
   - export-image + carousel PNG export rasterize via @napi-rs/canvas (prebuilt platform binaries; works on a plain install with no node-gyp / cairo / pango)
   - Render command produces MP4/GIF via FFmpeg (requires the optional node-canvas peer dep for raw-frame piping + FFmpeg)
 components:
+  cli-render-check:
+    description: 'atelier render-check <video> [--expect S] [--expect-audio] [--allow-hold a-b] [--max-flat-frames N] [--max-end-hold S] [--max-final-shot share] [--json] — reads a rendered video with ffmpeg (freezedetect, blackdetect, signalstats YDIF, scene cuts, volumedetect) and prints the motion gates: G0 render exists, G2 no dead frames (declared holds exempt), G3 short ending (end hold, last-shot share). Motion density is reported as a question, never a gate; by-eye checks are listed as such. Exit 1 on a failed gate. Iris runs it on every render (atelier-produce step 7); defaults from atelier-produce reference/motion.md, overridable by the brand cascade.'
+    tags:
+      - motion
+      - render
+      - qc
+      - video
+    file: src/commands/render-check.ts
+  render-check-lib:
+    description: Pure parsers (ffprobe json, ffmpeg filter stderr, hold specs) and gate evaluation for render-check, plus the ffmpeg runner. Unit-tested, with one end-to-end test on a synthetic render (skipped without ffmpeg).
+    tags:
+      - motion
+      - ffmpeg
+      - qc
+    file: src/lib/render-check.ts
   cli-lint:
     description: Lint command — runs ^valid-document, ^valid-delta, ^valid-video-layer gates across one or more files; supports --json for CI
     tags:

@@ -48,6 +48,8 @@ transferable:
     pattern: ln -s asset packs into assets/; never cp; swap pack updates everywhere
   - id: hyperframes-conventions
     pattern: data-start in seconds; video element carries native audio; transparent background means source video shows through
+  - id: render-check-every-render
+    pattern: run atelier render-check on every render (--expect, --expect-audio, --allow-hold from the storyboard); quote its numbers in the checklist; a failed gate is fixed, not argued; never call a render good; name the checks judged by eye
 contexts: {}
 created: '{{ISO_NOW}}'
 updated: '{{ISO_NOW}}'

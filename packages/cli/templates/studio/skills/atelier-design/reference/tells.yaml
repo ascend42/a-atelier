@@ -24,7 +24,11 @@
 #   override  when overriding is reasonable (guidance for Luna)
 #
 # Several entries adapt ideas from taste-skill (github.com/leonxlnx/taste-skill,
-# MIT). Detection, scope and override fields are Atelier's own.
+# MIT). The Motion (content) entries adapt findings from motionmaxxing
+# (github.com/Tejashmakwana/motionmaxxing, Apache-2.0): its slop autopsy of
+# rejected AI films and its measured launch-film motion. Detection, scope and
+# override fields are Atelier's own; numbers are starting values from
+# launch films (atelier-produce/reference/motion.md) and the brand cascade wins.
 
 version: 1
 
@@ -285,8 +289,91 @@ tells:
 
   - id: motion-unmotivated
     name: Unmotivated motion
-    scope: [landing, product]
+    scope: [landing, product, content]
     detect: { kind: review, hint: "every animation explains a change or guides attention; prefers-reduced-motion honored" }
     why: Infinite loops and scroll-everything effects read as filler and hurt performance.
     severity: warn
     override: The motion dial is high and the creator chose it.
+
+  # ── Motion (content) ────────────────────────────────────────────────
+  # Video and motion graphics. `atelier render-check` computes the entries
+  # marked render-check; the rest are judged on the render and its frames.
+  - id: motion-page-chrome
+    name: Page chrome on video
+    scope: [content]
+    detect: { kind: structure, what: "persistent corner/edge labels, tracked-caps tags, counters (\"02 / 05\"), timecodes, FPS/BPM text, corner brackets, progress bars or scene labels over a shot" }
+    why: The strongest sign that nobody decided anything; the film reads as a slide deck that moves.
+    severity: warn
+    override: The overlay is real product UI being shown, or a series format the creator chose (an episode number on an intro card).
+
+  - id: motion-deck-layout
+    name: Deck layout in motion
+    scope: [content]
+    detect: { kind: review, hint: "held left-aligned headline block with media on the right, kicker above headline, title-then-content beats" }
+    why: A web or slide layout animated is still a slide; nothing on screen performs the claim.
+    severity: warn
+    override: A deliberate typographic beat paced to speech.
+
+  - id: motion-fade-everywhere
+    name: Fade between every beat
+    scope: [content]
+    detect: { kind: review, hint: "opacity-only entries, or dissolves between most beats instead of moves, cuts or unmasks" }
+    why: The default transition; real films mostly arrive by moving and cut on motion.
+    severity: warn
+    override: A calm brand or caption system that fades on purpose and records it (tokens.motion).
+
+  - id: motion-grow-from-zero
+    name: Grows from zero
+    scope: [content]
+    detect: { kind: review, hint: "logos, words, cards or cursors scaling up from 0 instead of decelerating in from oversize or from the edge" }
+    why: Reads as a template transition, not an object arriving.
+    severity: warn
+    override: The growing thing becomes the next scene, or items in a fast cascade.
+
+  - id: motion-bounce-everywhere
+    name: Overshoot on everything
+    scope: [content]
+    detect: { kind: review, hint: "springs or back-eases on most moves; more than one visible spring in a film" }
+    why: Under a tenth of real moves overshoot, and late; a bounce on everything is the AI default.
+    severity: warn
+    override: A playful brand that records a springy motion token.
+
+  - id: motion-dead-frames
+    name: Dead frames
+    scope: [content]
+    detect: { kind: count, what: "runs of more than 3 consecutive frozen frames not declared as a designed breath (atelier render-check)", max: 0 }
+    why: A locked frame reads as a slide; a held frame should keep one living thing on it.
+    severity: warn
+    override: A designed breath (0.6-1.5 s) before a payoff, stated in the storyboard and passed to the check with --allow-hold.
+
+  - id: motion-long-end-hold
+    name: Long end hold or web-footer ending
+    scope: [content]
+    detect: { kind: count, what: "seconds the final picture holds unchanged (atelier render-check); or logo + tagline + button + URL as the ending", max: 1.4 }
+    why: The film ends like a website footer and outstays its idea.
+    severity: warn
+    override: A platform end-screen zone the platform requires (YouTube end screen), recorded in the kit.
+
+  - id: motion-flat-swatch-grounds
+    name: Flat swatch grounds
+    scope: [content]
+    detect: { kind: review, hint: "a flat colour per scene, or a small card on an empty void, instead of a ground with light, depth or texture" }
+    why: Swatches change per scene to fake variety; nothing is built.
+    severity: warn
+    override: A flat brand, or a colour flood under about a second.
+
+  - id: motion-pinned-object
+    name: Pinned object across shots
+    scope: [content]
+    detect: { kind: review, hint: "the same pill, dock or label at the same coordinates through three or more shots" }
+    why: A carrier that never travels reads as a HUD, not a story.
+    severity: warn
+    override: A persistent element the format requires (a live caption band, a watermark the platform needs).
+
+  - id: motion-uniform-stagger
+    name: Uniform timer stagger
+    scope: [content]
+    detect: { kind: review, hint: "siblings start at an identical fixed interval, each finishing before the next starts" }
+    why: Reads as a loading list; real staggers are uneven and overlap.
+    severity: warn
+    override: A deliberately mechanical register the brand records.

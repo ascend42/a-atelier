@@ -14,7 +14,8 @@ Everything the session needs is in this skill and its `reference/`
 folder. (Background only: `docs/content-studio-plan.md`, which exists
 inside the Atelier repo.)
 References: `reference/kit-boards.md`, `reference/platforms.md`,
-`reference/formats.md`.
+`reference/formats.md`, `reference/motion.md` (curves, timing and the
+motion tells; Lux and Iris read it before any motion work).
 
 ## 0. Load the crew (silently)
 
@@ -34,7 +35,7 @@ recorded in `~/.atelier/config.yaml` (e.g. `node /path/to/cli.js`). If
 neither works, say once: "Atelier's CLI isn't installed — run `atelier
 doctor` (or see the Atelier README) when you can," and continue; kit
 sessions run without it, but episode runs need it for ingest,
-transcription and trimming.
+transcription, trimming and `atelier render-check`.
 
 ## 1. Resolve intent, series, depth
 
@@ -157,13 +158,20 @@ on re-invoke, resume from the first incomplete step.
    Ask for the pair.
 7. **Render** — Iris: long-form master with intro/end cards and
    lower-thirds; shorts with captions; thumbnail(s); podcast audio master
-   (loudness per platform rules); quote cards.
+   (loudness per platform rules); quote cards. Run `atelier render-check
+   <file> --expect <s> [--expect-audio] [--allow-hold a-b]` on every video
+   (holds declared in the storyboard; thresholds from `tokens.motion` when
+   the brand sets them). A failed gate is fixed and re-rendered, never
+   argued.
 8. **Copy ▶ CHECKPOINT** — Quill: per-platform copy for everything in the
    platform mix (YouTube description, shorts captions per platform,
    LinkedIn/X posts, newsletter, guest kit copy). Show it as one
    document (`package/COPY.md`), open it, ask for approval or edits.
-9. **Check** — run every asset against the kit's rules; write results
-   to `package/CHECKLIST.md` (pass / fail / verify).
+9. **Check** — run every asset against the kit's rules and the motion
+   tells (`atelier-design/reference/tells.yaml`, scope `content`); write
+   results to `package/CHECKLIST.md` (pass / fail / verify). Quote the
+   render-check numbers, mark the checks judged by eye as such, and never
+   describe a render as good.
 10. **Package** — assemble `package/` per `reference/formats.md`; finish
     with the publish checklist. **Never publish.**
 
