@@ -8,6 +8,7 @@
 
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
+import { withTemplateDefaults } from "../utils/template-defaults.js";
 import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
 import { createGifEncoder } from "./gif-encoder.js";
 
@@ -99,6 +100,8 @@ export async function exportDocument(
   imageCache: ImageCache,
   opts: ExportOptions,
 ): Promise<ExportResult> {
+  // Templates export with every variable bound to its default.
+  doc = withTemplateDefaults(doc);
   if (opts.format === "mp4") {
     return exportMP4(doc, canvas, imageCache, opts);
   }

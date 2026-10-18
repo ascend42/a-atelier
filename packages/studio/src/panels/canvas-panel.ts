@@ -4,6 +4,7 @@ import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
 import { Player } from "../player.js";
 import { createImageLayerFromFile } from "../utils/image-drop.js";
 import { BrowserVideoFrameProvider } from "../utils/browser-video-frame-provider.js";
+import { withTemplateDefaults } from "../utils/template-defaults.js";
 
 export interface CanvasPanelOptions {
   onFrameChange?: (frame: number) => void;
@@ -268,13 +269,16 @@ export class CanvasPanel {
 
   renderAt(frame: number): void {
     if (!this.doc) return;
-    const resolved = resolveFrame(this.doc, this.stateName, frame);
+    // Templates keep `{{var}}` placeholders in the source doc; draw them
+    // bound to their declared defaults.
+    const drawDoc = withTemplateDefaults(this.doc);
+    const resolved = resolveFrame(drawDoc, this.stateName, frame);
     // RenderOptions object form (the old `imageCache` positional sentinel is
     // also supported, but only the options form carries videoFrameProvider —
     // without that, every VideoVisual layer silently no-ops via the
     // `if (videoFrameProvider)` guard in render-frame.ts, which is exactly
     // the bug that left the editor's canvas black on video docs.
-    renderFrame(this.ctx as any, resolved, this.doc, {
+    renderFrame(this.ctx as any, resolved, drawDoc, {
       imageCache: this.imageCache,
       videoFrameProvider: this.videoProvider.get,
     });

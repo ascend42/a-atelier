@@ -239,3 +239,70 @@ body {
   width: 100%;
   height: 100%;
 }
+
+/* Narrow viewports (phones): stack the shell so the studio gets the full
+   width. The sidebar becomes a horizontally scrolling strip of examples,
+   and inside the embedded studio the YAML/editor panel moves below the
+   canvas instead of claiming a fixed 320px column beside it. */
+@media (max-width: 720px) {
+  #app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 56px auto minmax(0, 1fr);
+  }
+
+  .header {
+    padding: 0 16px;
+  }
+
+  .header__subtitle {
+    display: none;
+  }
+
+  .sidebar {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 12px;
+    gap: 4px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar__category {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .sidebar__category-label {
+    padding: 0 4px 0 8px;
+    white-space: nowrap;
+  }
+
+  .sidebar__item {
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .studio-container .atel-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .studio-container .atel-body {
+    flex-direction: column;
+  }
+
+  .studio-container .atel-canvas-panel {
+    min-height: 240px;
+  }
+
+  .studio-container .atel-right-panel {
+    width: auto;
+    height: 40%;
+    min-height: 0;
+    border-left: none;
+    border-top: 1px solid var(--atel-border, var(--border));
+  }
+}
