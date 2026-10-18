@@ -24,12 +24,30 @@ One isolated evaluator per item ran `atelier design critique quick` with the cur
 | Override decoy | respected |
 | Severity error on matched findings | +0.09 (slight over-rating) |
 | Findings with `file:line` | 100% |
-| Findings at warn+ per clean control | **6.4** (provisional: not yet adjudicated) |
-| Unmatched findings on seeded items | 119 (not yet adjudicated) |
+| Findings at warn+ per clean control | 6.4 raw; **0.57 invented** after adjudication (see below) |
+| Unmatched findings | 171 incl. controls; adjudicated below |
 
 Contamination audit: no evaluator read outside its own input folder.
 
-## What it means
+
+## Adjudication (2026-10-18)
+
+The 171 unmatched findings went through the section 2.2 protocol: three blind judges each, then the founder. The founder agreed with 20 of 20 sampled "real" verdicts, ruled all 5 "unsure" real, and overturned 1 of 10 sampled "invented" (within the 20% limit). Result: **141 real, 30 invented.**
+
+| Metric (B0, bench v1) | Result |
+|---|---|
+| Held-out precision, warn+ | **0.94** (90% CI 0.89-0.98) |
+| Held-out precision, all severities | 0.88 (0.83-0.92) |
+| Invented warn+ findings per clean control | **0.57** (held-out controls 0.75) |
+| Real warn+ problems on the "clean" controls | 41 (every control had some) |
+
+What it means:
+
+1. **The eye outran the bench.** It caught most planted defects, and most apparent false alarms were real problems nobody had labelled. Its invented findings were mostly cosmetic.
+2. **Bench v1 cannot show improvement.** Recall 0.88 and precision 0.94 leave too little headroom for either gate. P1 on v1 would say almost nothing about the playbook.
+3. **Next: fix and rebuild.** The confirmed real problems are being fixed in the product repos. The outdated Gnomon refs are excluded, and the platform UI is fixed now. Bench v2 is then built from the updated, current surfaces: genuinely clean controls, subtler multi-step seeds where B0 was weak (control and recovery, agent UX, irreversible actions), critic-found labels scored separately from planted ones, and gates measured as a share of the remaining error removed.
+
+## What it meant before adjudication
 
 1. **Recall is near its ceiling.** F3 (held-out recall +0.15) cannot pass from 0.88, however good the playbook is. The seeds were too obvious on average.
 2. **The open question is precision.** The eye raises many findings on clean screens. Some are real defects the controls still contain, some are invented. Only adjudication tells which, and that is where the playbook is most likely to help.
