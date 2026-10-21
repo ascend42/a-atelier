@@ -116,6 +116,26 @@ density/layout) → detail (shape, motion, imagery, microcopy). In
 Decided dials constrain every later board (see `intent-dials`). Video-related boards go to
 Lux (see `~/.paradigm/agents/lux.agent`) — present her options, credited.
 
+**Luna is a separate agent, not a voice.** When the host can spawn
+agents (Claude Code's Agent tool, `subagent_type: atelier-luna`), the
+session thread spawns Luna to write each board's audit, options and
+reference, with her notebooks loaded. The session thread runs the
+questions and records decisions; it does not write options itself. Fall
+back to playing Luna inline only when no agent can be spawned, and say so
+once.
+
+**Audit gate (before any options).** In `overhaul` and `preserve` modes,
+and for any board that touches existing UI, Luna first shows a short
+audit of the zone in scope: what is there now (each element and its
+job), what is wrong with it (with the evidence: the creator's words, a
+screenshot, file:line), and what must stay. The creator can correct the
+audit in one reply. Options are written against the corrected audit,
+never before it.
+
+**Scope gate.** A board that wasn't in the session's scope (the creator
+raises a new surface mid-session) starts with a one-line rescope, then
+the audit gate. Record the scope change in `session.yaml`.
+
 For each board, Luna writes **2–4 options**:
 
 - grounded in this repo's real UI and the home cascade — never a stock
@@ -134,10 +154,22 @@ For each board, Luna writes **2–4 options**:
   tell on the option ("trips default-warm-paper — it's your brand") so
   picking it records an override.
 
+**Distinctness gate (before publishing).** Each option names the
+structural axis it changes, for example what the zone is *for*, what
+information it shows, where controls live, or how the user interacts.
+Two options may not share the same axis and value. An option whose only
+difference is styling (sizes, borders, order, colour) is cut, or merged
+into another option as a facet. Check it the way the creator will: would
+they see a different idea at a glance, or the same row rearranged? If the
+latter, write a new option.
+
 **Mika vets before publishing:** contrast (WCAG AA unless configured
 otherwise), touch targets, feasibility in this stack, token-first, the
-decided dials, the `preserve:` list, and the in-scope tells. An
-option that fails is dropped or shown with Mika's concern attached. If
+decided dials, the `preserve:` list, and the in-scope tells. She also
+runs her `ui-build-protocol` (`~/.paradigm/agents/designer.agent`) against
+each option as if it were built: inventory, consistency with siblings,
+zone placement and duplicate entry points, states, copy, narrow widths.
+An option that fails is dropped or shown with Mika's concern attached. If
 Luna and Mika disagree, show both positions on the option — the creator
 decides.
 
@@ -176,8 +208,10 @@ Google Fonts are fine), tokens as CSS custom properties.
 - **No UI exists yet (pre-code repos):** synthesize the scope's key
   screen from the spec/conversation — real entity names, realistic data,
   the brand assets you found. Never fall back to abstract swatches.
-- **Redesign modes:** include the current screen as a "Now" column so
-  each option is judged as a change.
+- **Redesign modes, and any board on existing UI:** include the current
+  screen as a "Now" column so each option is judged as a change. Use the
+  real thing: the creator's screenshot, a capture of the running app, or
+  the real markup restyled to match. Never just a sentence describing it.
 
 References obey the tells too: no placeholder names, no div-built fake
 screenshots, no filler copy.
