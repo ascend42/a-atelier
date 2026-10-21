@@ -4,19 +4,51 @@ Repo footprint:
 
 ```
 .atelier/
-├── design-system.yaml     ← Mika writes (tokens + rules, enforced)
+├── design-system.yaml     ← Mika writes (the system; enforced by `atelier check`)
 ├── DESIGN.md              ← Luna writes (narrative, generated from the yaml + decisions)
+├── inventory.html|json    ← `atelier system extract` (what the code uses; regenerate freely)
+├── specimen.html          ← `atelier system specimen` (+ specimen-frame.html)
 └── sessions/<YYYY-MM-DD>-<slug>/
     ├── session.yaml       ← Luna writes (the decision record)
     └── refs/              ← reference renders (gitignored)
 ```
 
+A repo with several products declares them, and each gets the same set
+of files in its own folder:
+
+```
+.atelier/
+├── systems.yaml           ← the product index (`atelier system init`)
+├── design-system.yaml     ← optional repo-wide base every product inherits
+├── DESIGN.md
+├── systems/<product>/
+│   ├── design-system.yaml ← the product's layer (merged over the base / `extends`)
+│   ├── DESIGN.md
+│   └── inventory.html, specimen.html
+└── sessions/…             ← session.yaml records `product:`
+```
+
+```yaml
+# systems.yaml
+version: 1
+products:
+  console: { name: Gnomon console, paths: [packages/gnomon-gui] }
+  mods:    { name: Mods, paths: [packages/gnomon-mods], extends: console }
+  site:    { name: Site, paths: [packages/site], extends: none }   # skips the base
+```
+
+A file belongs to the product whose `paths` hold it (longest prefix
+wins). Outside every product, the repo-wide base applies. A package can
+also carry its own `.atelier/`; the nearest one up from a file wins.
+`atelier system which <file>` answers it.
+
 ## session.yaml
 
 ```yaml
 id: 2026-10-06-settings-page
-verb: direct              # direct | critique | codify
+verb: direct              # direct | critique | system (codify = system)
 scope: "Settings page (src/app/settings/)"
+product: billing          # multi-product repos: the product from .atelier/systems.yaml
 depth: quick              # quick | deep
 surface: terminal         # terminal | preview
 mode: preserve            # greenfield | preserve | overhaul (redesign.md); direct/critique only
@@ -58,6 +90,51 @@ summary: null
 
 ## design-system.yaml
 
+Version 2 adds layers to version 1. Both are read: `foundations` is v2's
+name for `tokens`.
+
+```yaml
+version: 2
+read: "Control room for an agent armada's source control; calm, exact."
+foundations:                 # = v1 tokens
+  color: { ink: "#16150f", paper: "#ede8dc", accent: "#44577c" }
+  font: { chrome: "Inter", bytes: "JetBrains Mono" }
+  type: { sizes: [10.5, 12, 14, 18] }      # or { base, scale }
+  space: { scale: [2, 4, 6, 8, 12, 16, 24] }
+  radius: { sm: 2, pill: 999 }
+components:
+  chip:
+    role: "Compact status or fact in the header and tool rows; never a button."
+    anatomy: [dot, label]
+    variants: { status: "connected / not connected", fact: "one live fact" }
+    sizes: { compact: { height: 18, font: 10.5 } }
+    states: [default, warning, disabled]
+    tokens: { border: "--rule", text: "--sec" }
+    source: packages/gnomon-gui/static/styles.css
+    examples:                # state → real markup; rendered on the specimen
+      default: '<span class="chip">connected</span>'
+    from: { session: 2026-10-21-system, board: component-canon }
+zones:
+  header:
+    surface: main window
+    holds: ["⌘K palette", "voice indicator"]
+    never: [notices, settings, layout controls]
+    overflow: "Everything else lives in the palette; nothing wraps."
+content:
+  vocabulary:
+    use: { run: "one agent working on one task" }
+    retired: { job: run }    # `atelier check` fails retired words in UI copy
+  voice: ["Name the state plus one live fact.", "No emoji in labels."]
+specimen:
+  stylesheets: [packages/gnomon-gui/static/styles.css]
+  themes: { day: { html_attrs: 'data-theme="day"' }, night: { html_attrs: 'data-theme="night"' } }
+migration:                   # drift the system decided to remove
+  - { from: "font-size 11px", to: "10.5", uses: 42, files: [packages/gnomon-gui/static/styles.css] }
+# rules, preserve, tells, overrides, decisions: as in v1 below
+```
+
+Version 1 (still valid):
+
 ```yaml
 version: 1
 extends: home                # inherit the home studio cascade; omit for repo-only
@@ -96,11 +173,15 @@ decisions:
     notes: ["headlines can go tighter than this"]
 ```
 
-Every token, rule, preserve entry and override must trace to a decision
-(`from`) or to `extends: home`. Known `check` ids (enforced by `atelier
-check` once it ships): `color-literal-forbidden`, `spacing-off-scale`,
-`font-forbidden`, `easing-forbidden`, `type-off-scale`. Rules with no
-check id are agent-enforced guidance.
+Every token, component, zone, rule, preserve entry and override must
+trace to a decision (`from`), to the extract (`from: { extract: <date> }`,
+confirmed by the creator), or to `extends: home`. `check` ids enforced by
+`atelier check`: `color-literal-forbidden`, `color-off-palette`,
+`font-forbidden`, `font-off-system`, `type-off-scale`,
+`spacing-off-scale`, `radius-off-scale`, `easing-forbidden` (retired
+words are always checked). Off-system checks default to `warn`, forbidden
+ones to `fail`; set `severity:` to change it. Rules with no check id are
+agent-enforced guidance.
 
 Tells (`tells.yaml`) apply to every repo without being listed here; this
 file only records changes to them: `tells.severity` raises or lowers one,

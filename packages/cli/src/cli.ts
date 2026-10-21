@@ -29,6 +29,7 @@ import { workspaceCommand } from "./commands/workspace.js";
 import { setupCommand } from "./commands/setup.js";
 import { doctorCommand } from "./commands/doctor.js";
 import { renderCheckCommand } from "./commands/render-check.js";
+import { systemCommand, checkCommand } from "./commands/system.js";
 
 const program = new Command();
 
@@ -64,5 +65,7 @@ workspaceCommand(program);
 setupCommand(program);
 doctorCommand(program);
 renderCheckCommand(program);
+systemCommand(program);
+checkCommand(program);
 
 program.parse();
