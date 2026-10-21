@@ -1,39 +1,7 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-28T18:57:39.910Z",
+  "generatedAt": "2026-10-21T17:32:48.294Z",
   "flows": {
-    "$frame-resolution": {
-      "id": "$frame-resolution",
-      "description": "Document + frame number → computed layer states",
-      "steps": [
-        {
-          "id": "step-1",
-          "action": "group deltas by layer+property",
-          "symbol": "#frame-resolver"
-        },
-        {
-          "id": "step-2",
-          "action": "compute progress and apply easing",
-          "symbol": "#delta-resolver"
-        },
-        {
-          "id": "step-3",
-          "action": "resolve easing type to math function",
-          "symbol": "#easing-resolver"
-        },
-        {
-          "id": "step-4",
-          "action": "interpolate value",
-          "symbol": "#delta-resolver"
-        },
-        {
-          "id": "step-5",
-          "action": "merge into ResolvedFrame",
-          "symbol": "#frame-resolver"
-        }
-      ],
-      "definedIn": "packages/core/.purpose"
-    },
     "$media-ingest-flow": {
       "id": "$media-ingest-flow",
       "description": "TARGET-SET ingest path (post-pivot): the browser drags a file onto a SPECIFIC doc on canvas → POST /api/media/ingest with targetDocPath → #ingest-dispatch routeIngestWithTarget(filename, targetDocPath, targetDocKind) → IngestRoute dispatch to compose-video / add-audio-clip / reject. The no-target path that historically scaffolded a doc-per-drop is gone — see $media-bin-flow + $canvas-compose-flow for the post-pivot creator loop. Spans the studio HTTP handler, #ingest-dispatch (routeIngestWithTarget only), and #compose-video-project or #timeline-ops depending on the route.",
@@ -240,18 +208,41 @@
         }
       ],
       "definedIn": "packages/cli/.purpose"
+    },
+    "$frame-resolution": {
+      "id": "$frame-resolution",
+      "description": "Document + frame number → computed layer states",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "group deltas by layer+property",
+          "symbol": "#frame-resolver"
+        },
+        {
+          "id": "step-2",
+          "action": "compute progress and apply easing",
+          "symbol": "#delta-resolver"
+        },
+        {
+          "id": "step-3",
+          "action": "resolve easing type to math function",
+          "symbol": "#easing-resolver"
+        },
+        {
+          "id": "step-4",
+          "action": "interpolate value",
+          "symbol": "#delta-resolver"
+        },
+        {
+          "id": "step-5",
+          "action": "merge into ResolvedFrame",
+          "symbol": "#frame-resolver"
+        }
+      ],
+      "definedIn": "packages/core/.purpose"
     }
   },
   "symbolToFlows": {
-    "#frame-resolver": [
-      "$frame-resolution"
-    ],
-    "#delta-resolver": [
-      "$frame-resolution"
-    ],
-    "#easing-resolver": [
-      "$frame-resolution"
-    ],
     "#cli-studio": [
       "$media-ingest-flow",
       "$media-bin-flow",
@@ -304,6 +295,15 @@
     "#doc-management": [
       "$doc-create-flow",
       "$doc-delete-cascade-flow"
+    ],
+    "#frame-resolver": [
+      "$frame-resolution"
+    ],
+    "#delta-resolver": [
+      "$frame-resolution"
+    ],
+    "#easing-resolver": [
+      "$frame-resolution"
     ]
   }
 }
