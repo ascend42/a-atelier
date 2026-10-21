@@ -308,8 +308,16 @@ components:
       - design-system
       - cli
     file: src/commands/system.ts
+  '#design-lint':
+    description: 'Playbook v1 checks on a design system itself (src/lib/design-lint.ts), run by `atelier system lint [--product] [--json]` (exit 1 on a fail). Token tiers: foundations are primitives; `roles` name each job and resolve to a primitive, per theme (`themes:` or specimen.themes) — chains allowed (W3C DTCG 2025.10), role-circular and role-unresolved fail, role-chain-deep (>3 hops) warns, role-literal and role-named-by-look warn, role-missing-theme fails. role-contrast: WCAG contrast of every text.* role on every surface.* role (or contrast_pairs) per theme, fail under 4.5:1. space-off-base: scale steps not multiples of foundations.space.base. Components: kind (input/informational/navigational/container), component-binds-primitive / -literal / token-unknown, component-states (input needs default, hover, focus, active, disabled, loading, error; navigational the first five), component-when-to-use for look-alikes of one kind, deprecated needs replaced_by. Also exports contrastRatio/luminance/resolveRole used by the specimen''s roles and text-on-surface tables.'
+    tags:
+      - design-system
+      - lint
+      - tokens
+      - accessibility
+    file: src/lib/design-lint.ts
   '#cli-check':
-    description: 'atelier check [files...] [--product id] [--no-tells] [--json] — each file against the system that governs it: rules naming a check id (color-literal-forbidden, color-off-palette, font-forbidden, font-off-system, type-off-scale, spacing-off-scale, radius-off-scale, easing-forbidden; off-system default warn, forbidden default fail, severity overridable), retired words from content.vocabulary.retired in user-visible copy (fail), and the mechanical tells from the installed tells.yaml (literal, pattern, accent-drift/radius-drift counts) minus the system''s overrides. Exit 1 on any fail. No args: every UI file of every system from cwd.'
+    description: 'atelier check [files...] [--product id] [--no-tells] [--json] — each file against the system that governs it: rules naming a check id (color-literal-forbidden, color-off-palette, font-forbidden, font-off-system, type-off-scale, spacing-off-scale, radius-off-scale, easing-forbidden; off-system default warn, forbidden default fail, severity overridable), retired words from content.vocabulary.retired in user-visible copy (fail), literal-has-token (a raw colour equal to a foundation value; always on, warn), and the mechanical tells from the installed tells.yaml (literal, pattern, accent-drift/radius-drift counts) minus the system''s overrides. Exit 1 on any fail. No args: every UI file of every system from cwd.'
     tags:
       - design-system
       - cli

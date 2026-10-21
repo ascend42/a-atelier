@@ -53,6 +53,12 @@ depth: quick              # quick | deep
 surface: terminal         # terminal | preview
 mode: preserve            # greenfield | preserve | overhaul (redesign.md); direct/critique only
 read: "Settings for a B2B billing tool, used by finance admins weekly; calm, exact, a little warmer than the rest of the app."
+change: refresh           # refresh (surface only) | redesign (structure; record baseline: first)
+baseline: ["settings save rate 92% (analytics, Sept)"]   # redesign only: what you'll compare against
+known:                    # what we know about the users, each with its evidence tag
+  - { what: "finance admins update tax IDs at quarter end", evidence: observed, from: "support tickets" }
+assumed:                  # what options rest on without evidence, and how to check it
+  - { what: "admins rarely use this on phones", check: "analytics: device split on /settings" }
 audit:                    # redesign modes only (redesign.md §2)
   dials: { layout: 3, motion: 2, density: 6 }
   keep: ["inline validation on the tax-ID field"]
@@ -62,12 +68,16 @@ started: 2026-10-06T14:02:00Z
 boards:
   - id: type-voice
     question: "What should the type voice be?"
+    testing: "type voice only; layout and copy are placeholders"   # the one question; what's deliberately unfinished
+    fidelity: styled                       # structure (grayscale) | styled | interactive — matched to the question
     options:
       - id: grotesk-pair
         label: Grotesk display + humanist body
         description: Tight grotesk display, open humanist body for long forms.
         recommended: true
         why: "Matches the home studio's grotesk; the humanist body reads well in dense forms."
+        tradeoff: "gains warmth in long forms; gives up the single-family economy"
+        assumes: ["admins rarely use this on phones"]   # ids/text from assumed:
         writes: { tokens: { font.display: "Instrument Sans", font.body: "Public Sans" } }
         facets: [display-face, body-face, weight-contrast]
         concerns: []                       # Mika's flags, if any
@@ -82,6 +92,8 @@ boards:
       kind: mix                            # pick | mix | skip
       choice: { display-face: grotesk-pair, body-face: single-family }
       decided_by: creator                  # creator | recommendation
+      problem: "forms feel cold next to the rest of the app"   # the problem, not the requested fix
+      tradeoff: "warmer body face; one more font to load"
       notes:
         - "headlines can go tighter than this"
 closed: null
@@ -96,20 +108,30 @@ name for `tokens`.
 ```yaml
 version: 2
 read: "Control room for an agent armada's source control; calm, exact."
-foundations:                 # = v1 tokens
-  color: { ink: "#16150f", paper: "#ede8dc", accent: "#44577c" }
+foundations:                 # = v1 tokens. The primitives: raw values, private to the system.
+  color: { ink: "#16150f", paper: "#ede8dc", accent: "#44577c", rule: "#c9c2b2", night: "#121317" }
   font: { chrome: "Inter", bytes: "JetBrains Mono" }
-  type: { sizes: [10.5, 12, 14, 18] }      # or { base, scale }
-  space: { scale: [2, 4, 6, 8, 12, 16, 24] }
+  type: { sizes: [10.5, 12, 14, 18] }      # or { base, scale }; built from the body size, in rem
+  space: { base: 2, scale: [2, 4, 6, 8, 12, 16, 24] }   # every step a multiple of base
   radius: { sm: 2, pill: 999 }
+themes: [day, night]         # themes are modes: one value per role per theme
+roles:                       # the role tier: named for the job, pointing at a primitive
+  text.primary: { day: color.ink, night: color.paper }
+  surface.base: { day: color.paper, night: color.night }
+  border.subtle: { day: color.rule, night: color.ink }
+  accent: color.accent       # one value for every theme
+# contrast_pairs: [[text.primary, surface.base]]   # default: every text.* on every surface.*
 components:
   chip:
+    kind: informational      # input | informational | navigational | container (decides the states it needs)
     role: "Compact status or fact in the header and tool rows; never a button."
+    when_to_use: "A live fact the user reads; if it can be clicked it's a button, not a chip."
+    status: active           # active | deprecated (+ replaced_by: <component>)
     anatomy: [dot, label]
     variants: { status: "connected / not connected", fact: "one live fact" }
     sizes: { compact: { height: 18, font: 10.5 } }
     states: [default, warning, disabled]
-    tokens: { border: "--rule", text: "--sec" }
+    tokens: { border: border.subtle, text: text.primary }   # bind roles, never primitives or raw values
     source: packages/gnomon-gui/static/styles.css
     examples:                # state → real markup; rendered on the specimen
       default: '<span class="chip">connected</span>'
@@ -178,10 +200,21 @@ trace to a decision (`from`), to the extract (`from: { extract: <date> }`,
 confirmed by the creator), or to `extends: home`. `check` ids enforced by
 `atelier check`: `color-literal-forbidden`, `color-off-palette`,
 `font-forbidden`, `font-off-system`, `type-off-scale`,
-`spacing-off-scale`, `radius-off-scale`, `easing-forbidden` (retired
-words are always checked). Off-system checks default to `warn`, forbidden
+`spacing-off-scale`, `spacing-off-base`, `radius-off-scale`,
+`easing-forbidden` (retired words and `literal-has-token`, a raw value
+that equals a token, are always checked). Off-system checks default to `warn`, forbidden
 ones to `fail`; set `severity:` to change it. Rules with no check id are
 agent-enforced guidance.
+
+`atelier system lint` holds the system itself to the playbook: roles
+named for their job and defined in every theme, text on surface at 4.5:1
+in every theme, role references that never loop or dangle (chains are
+fine; more than 3 hops warns), the scale on the base unit, components
+bound to roles, and the states each kind needs (input: default, hover,
+focus, active, disabled, loading, error; navigational: the first five).
+Look-alike components of the same kind need a `when_to_use`. Rules live
+in `reference/rules.yaml` (shipped with this skill; findings cite its
+ids).
 
 Tells (`tells.yaml`) apply to every repo without being listed here; this
 file only records changes to them: `tells.severity` raises or lowers one,

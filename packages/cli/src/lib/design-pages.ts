@@ -12,6 +12,7 @@
 import { dirname, relative } from "node:path";
 import { foundationsOf, type ResolvedSystem, type Dict, type ComponentSpec } from "./design-system.js";
 import type { Inventory, ValueEntry } from "./design-extract.js";
+import { contrastPairs, contrastRatio, resolveRole, themesOf } from "./design-lint.js";
 
 const esc = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -252,11 +253,43 @@ ${s.read ? `<p>${esc(s.read)}</p>` : ""}
     parts.push(`</table></div>`);
   }
 
+  const roles = Object.keys(s.roles ?? {});
+  if (roles.length) {
+    const themeIds = themesOf(s);
+    parts.push(`<h3>Roles</h3><p class="meta">Each job and the primitive it uses in each theme. Components bind roles, never primitives.</p><div class="scroll"><table><tr><th>Role</th>${themeIds.map((t) => `<th>${esc(t)}</th>`).join("")}</tr>`);
+    for (const r of roles) {
+      parts.push(`<tr><td class="mono">${esc(r)}</td>${themeIds
+        .map((t) => {
+          const v = resolveRole(s, r, t);
+          const ref = typeof s.roles![r] === "string" ? s.roles![r] : (s.roles![r] as Record<string, string>)[t];
+          return `<td><div class="row">${v && /^#|^rgb/i.test(v) ? `<span style="width:18px;height:18px;border-radius:4px;border:1px solid var(--line);background:${esc(v)}"></span>` : ""}<span class="mono">${esc(ref ?? "—")}</span></div></td>`;
+        })
+        .join("")}</tr>`);
+    }
+    parts.push(`</table></div>`);
+    const pairs = contrastPairs(s);
+    if (pairs.length) {
+      parts.push(`<h3>Text on surface</h3><div class="scroll"><table><tr><th>Pair</th>${themeIds.map((t) => `<th>${esc(t)}</th>`).join("")}</tr>`);
+      for (const [fg, bg] of pairs) {
+        parts.push(`<tr><td class="mono">${esc(fg)} on ${esc(bg)}</td>${themeIds
+          .map((t) => {
+            const a = resolveRole(s, fg, t);
+            const b = resolveRole(s, bg, t);
+            const ratio = a && b ? contrastRatio(a, b) : null;
+            if (ratio === null) return `<td class="meta">n/a</td>`;
+            return `<td><div class="row"><span style="padding:2px 8px;border-radius:4px;background:${esc(b)};color:${esc(a)}">Aa</span><span class="badge ${ratio >= 4.5 ? "on" : "off"}">${ratio.toFixed(2)}:1</span></div></td>`;
+          })
+          .join("")}</tr>`);
+      }
+      parts.push(`</table></div>`);
+    }
+  }
+
   parts.push(`<h2 id="components">Components</h2>`);
   const comps = entries(s.components) as [string, ComponentSpec][];
   if (!comps.length) parts.push(`<p class="meta">No components recorded yet. Run <code>atelier design system</code> to define them from the inventory.</p>`);
   for (const [id, c] of comps) {
-    parts.push(`<div class="card" style="margin-bottom:16px"><h3 style="margin-top:0">${esc(id)}</h3>${c.role ? `<p>${esc(c.role)}</p>` : ""}
+    parts.push(`<div class="card" style="margin-bottom:16px"><h3 style="margin-top:0">${esc(id)}${c.kind ? ` <span class="badge">${esc(c.kind)}</span>` : ""}${c.status === "deprecated" ? ` <span class="badge off">deprecated${c.replaced_by ? ` → ${esc(c.replaced_by)}` : ""}</span>` : ""}</h3>${c.role ? `<p>${esc(c.role)}</p>` : ""}${c.when_to_use ? `<p class="meta"><b>When to use:</b> ${esc(c.when_to_use)}</p>` : ""}
 <div class="scroll"><table>
 <tr><th style="width:110px">Anatomy</th><td>${list(c.anatomy)}</td></tr>
 <tr><th>Variants</th><td>${entries(c.variants).length ? entries(c.variants).map(([k, v]) => `<div><b>${esc(k)}</b>: ${esc(typeof v === "object" ? JSON.stringify(v) : v)}</div>`).join("") : `<span class="meta">none recorded</span>`}</td></tr>

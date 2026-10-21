@@ -218,3 +218,29 @@ describe("design skill tells catalog", () => {
     }
   });
 });
+
+describe("design skill usability rules", () => {
+  // Agents in every repo read the installed copy; docs/playbook/rules.yaml is the canonical one.
+  const shipped = readFileSync(join(cliDir, "templates/studio/skills/atelier-design/reference/rules.yaml"), "utf8");
+
+  it("ships an identical copy of docs/playbook/rules.yaml", () => {
+    expect(shipped).toBe(readFileSync(join(repoRoot, "docs/playbook/rules.yaml"), "utf8"));
+  });
+
+  it("has unique ids, known fields, and related tells that exist", () => {
+    const rules = (parseYaml(shipped) as { rules: Record<string, any>[] }).rules;
+    const tells = new Set(
+      (parseYaml(readFileSync(join(cliDir, "templates/studio/skills/atelier-design/reference/tells.yaml"), "utf8")) as { tells: { id: string }[] }).tells.map((t) => t.id),
+    );
+    const ids = rules.map((r) => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const r of rules) {
+      expect(r.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      for (const f of ["space", "statement", "check", "runnable_by", "strength"]) expect(r[f], `${r.id}.${f}`).toBeDefined();
+      expect(["screen-only", "walkthrough", "real-users"], r.id).toContain(r.runnable_by);
+      expect(["durable", "expert-heuristic", "nng-opinion"], r.id).toContain(r.strength);
+      for (const t of r.related_tells ?? []) expect(tells, `${r.id} → ${t}`).toContain(t);
+    }
+  });
+});
+
