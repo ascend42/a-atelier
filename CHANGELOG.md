@@ -8,6 +8,18 @@ Format: [major.minor.fix] — based on milestone progression.
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
+### Added — design systems per product, `atelier check`, and the UI review gate
+
+Generated UI kept shipping without UI/UX principles applied (the Gnomon header: seven controls, six styles), and Atelier had no way to define a whole design system, only to record session decisions.
+
+- **`atelier design system`** — a new skill verb (`reference/system.md`, `codify` is an alias): products → extract → draft → reconcile → codify → enforce. Mika drafts the system from what the code actually uses; the creator sees one summary and only the contested decisions (zones and placement, component canon, scales, colour roles, vocabulary).
+- **One system per product** — `.atelier/systems.yaml` declares products and their paths. Each has its own system on an optional repo-wide base (`extends` chains, `extends: none` opts out); nested package `.atelier/` folders also work.
+- **`design-system.yaml` v2 layers** — `foundations` (= v1 `tokens`), `components` (role, anatomy, variants, sizes, states, token bindings, per-state example markup), `zones` (holds, never, overflow), `content` (vocabulary, retired words, voice), `specimen`, `migration`. v1 files still load.
+- **`atelier system list | which | init | extract | specimen`** — `extract` writes an inventory page (values with counts and `file:line`, near-duplicate groups first, on/off-system marks, tokens unused or undefined, class families, copy). `specimen` renders the system with the product's own CSS, each component state in each theme.
+- **`atelier check`** — enforces the mechanical rules (`*-off-scale`, `color-off-palette`, `font-off-system`, forbidden lists), retired words and the mechanical tells, respecting overrides. Exit 1 on a fail.
+- **UI review gate** — a Claude Code hook script installed to `~/.atelier/hooks/ui-gate.mjs`. After a UI edit it briefs the agent once. At Stop it blocks until an independent review by Mika (rendered, all protocol sections, approved) or a one-line waiver is recorded. It caps out at 3 blocks and logs the bypass. Registering it in `~/.claude/settings.json` is a separate step the user approves.
+- **`atelier-mika` agent** — Mika can be spawned as her own reviewer. Her `designer.agent` template gains `review-checklist`, `design-options-protocol` and `ui-build-protocol`, identical to Paradigm's bundled template.
+
 ### Added — Atelier Design + Produce install hardening
 
 Triage of a fresh clone where Claude didn't know what `atelier design` was: the skills only exist after `atelier setup`, which a clone never ran, and `npm install` silently left the pnpm workspace unbuilt.

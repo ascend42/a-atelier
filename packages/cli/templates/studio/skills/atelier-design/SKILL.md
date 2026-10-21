@@ -1,7 +1,7 @@
 ---
 name: atelier-design
-description: Atelier design sessions in any repo — run by Luna (Design Director) with Mika (design engineer). Use when the user says "atelier design", "use atelier design for this", "atelier design critique", "atelier design codify", "run an atelier session", or asks Atelier to give design feedback, set design direction, kick off a design revision, or create/enforce a design system. Covers product UI (and hands video boards to Lux).
-argument-hint: "[critique | codify] [quick | deep] [scope]"
+description: Atelier design sessions in any repo — run by Luna (Design Director) with Mika (design engineer). Use when the user says "atelier design", "use atelier design for this", "atelier design critique", "atelier design system", "atelier design codify", "run an atelier session", or asks Atelier to give design feedback, set design direction, kick off a design revision, or create, extract, define or enforce a design system (one per product when a repo holds several). Covers product UI (and hands video boards to Lux).
+argument-hint: "[critique | system] [quick | deep] [scope]"
 ---
 
 # Atelier Design
@@ -15,6 +15,7 @@ folder. (Background only: `docs/design-studio-plan.md`, which exists
 inside the Atelier repo.)
 Formats: `reference/formats.md`. Question bank: `reference/question-bank.md`.
 Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
+Design systems: `reference/system.md`.
 
 ## 0. Load the crew (silently)
 
@@ -42,7 +43,7 @@ sessions run without it.
 | Signal | Verb |
 |---|---|
 | "critique", "review", "feedback", "what's wrong with" | `critique` |
-| "design system", "codify", "tokens", "enforce" | `codify` |
+| "design system", "extract", "codify", "tokens", "enforce" | `system` (see `reference/system.md`; `codify` is an alias) |
 | anything else ("use atelier design for this", "redesign", "direction") | `direct` (default) |
 
 **Scope** — "for this" means what the conversation was working on: a
@@ -62,9 +63,14 @@ once (AskUserQuestion when available):
    Atelier workspace, read its `_brand/DESIGN.md`, `_brand/.atelier-brand.yaml`,
    and `_packs/*/.atelier-pack.yaml`. This is the base taste layer.
    No home configured → say so in one line and continue repo-only.
-2. **Repo system** — `.atelier/design-system.yaml`, `.atelier/DESIGN.md`,
-   prior `.atelier/sessions/*/session.yaml`. Also check for an
-   Impeccable-style `DESIGN.md` at the repo root and treat it as input.
+2. **Repo system** — `atelier system list` shows the systems. A repo with
+   `.atelier/systems.yaml` has one per product: resolve the scope's
+   product with `atelier system which <file>` and read that product's
+   `design-system.yaml` and `DESIGN.md` (under `.atelier/systems/<id>/`)
+   on top of the repo-wide base. Otherwise `.atelier/design-system.yaml`
+   and `.atelier/DESIGN.md`. Also read prior
+   `.atelier/sessions/*/session.yaml`, and treat an Impeccable-style
+   `DESIGN.md` at the repo root as input.
 3. **Mika's brief** — inventory what actually exists for the scope:
    theme/token files (tailwind config, CSS custom properties, token JSON),
    the components and routes in scope, fonts loaded, real vs. aspirational
@@ -116,6 +122,26 @@ density/layout) → detail (shape, motion, imagery, microcopy). In
 Decided dials constrain every later board (see `intent-dials`). Video-related boards go to
 Lux (see `~/.paradigm/agents/lux.agent`) — present her options, credited.
 
+**Luna is a separate agent, not a voice.** When the host can spawn
+agents (Claude Code's Agent tool, `subagent_type: atelier-luna`), the
+session thread spawns Luna to write each board's audit, options and
+reference, with her notebooks loaded. The session thread runs the
+questions and records decisions; it does not write options itself. Fall
+back to playing Luna inline only when no agent can be spawned, and say so
+once.
+
+**Audit gate (before any options).** In `overhaul` and `preserve` modes,
+and for any board that touches existing UI, Luna first shows a short
+audit of the zone in scope: what is there now (each element and its
+job), what is wrong with it (with the evidence: the creator's words, a
+screenshot, file:line), and what must stay. The creator can correct the
+audit in one reply. Options are written against the corrected audit,
+never before it.
+
+**Scope gate.** A board that wasn't in the session's scope (the creator
+raises a new surface mid-session) starts with a one-line rescope, then
+the audit gate. Record the scope change in `session.yaml`.
+
 For each board, Luna writes **2–4 options**:
 
 - grounded in this repo's real UI and the home cascade — never a stock
@@ -134,10 +160,22 @@ For each board, Luna writes **2–4 options**:
   tell on the option ("trips default-warm-paper — it's your brand") so
   picking it records an override.
 
+**Distinctness gate (before publishing).** Each option names the
+structural axis it changes, for example what the zone is *for*, what
+information it shows, where controls live, or how the user interacts.
+Two options may not share the same axis and value. An option whose only
+difference is styling (sizes, borders, order, colour) is cut, or merged
+into another option as a facet. Check it the way the creator will: would
+they see a different idea at a glance, or the same row rearranged? If the
+latter, write a new option.
+
 **Mika vets before publishing:** contrast (WCAG AA unless configured
 otherwise), touch targets, feasibility in this stack, token-first, the
-decided dials, the `preserve:` list, and the in-scope tells. An
-option that fails is dropped or shown with Mika's concern attached. If
+decided dials, the `preserve:` list, and the in-scope tells. She also
+runs her `ui-build-protocol` (`~/.paradigm/agents/designer.agent`) against
+each option as if it were built: inventory, consistency with siblings,
+zone placement and duplicate entry points, states, copy, narrow widths.
+An option that fails is dropped or shown with Mika's concern attached. If
 Luna and Mika disagree, show both positions on the option — the creator
 decides.
 
@@ -176,8 +214,10 @@ Google Fonts are fine), tokens as CSS custom properties.
 - **No UI exists yet (pre-code repos):** synthesize the scope's key
   screen from the spec/conversation — real entity names, realistic data,
   the brand assets you found. Never fall back to abstract swatches.
-- **Redesign modes:** include the current screen as a "Now" column so
-  each option is judged as a change.
+- **Redesign modes, and any board on existing UI:** include the current
+  screen as a "Now" column so each option is judged as a change. Use the
+  real thing: the creator's screenshot, a capture of the running app, or
+  the real markup restyled to match. Never just a sentence describing it.
 
 References obey the tells too: no placeholder names, no div-built fake
 screenshots, no filler copy.
@@ -199,8 +239,10 @@ reference.
 - **Skip** → record Luna's recommendation as `decided_by: recommendation`
   (revisitable).
 
-After each decision, **Mika writes it** into `.atelier/design-system.yaml`
-(tokens + rules, each with provenance back to the session/board). Keep
+After each decision, **Mika writes it** into the governing
+`design-system.yaml`: the product's in a multi-product repo, the
+repo-wide base for decisions shared by every product (tokens, components,
+zones, content, rules, each with provenance back to the session/board). Keep
 the creator oriented with a one-line running tally, e.g.
 `System: 4 tokens · 2 rules · 3/7 boards`.
 
@@ -226,18 +268,19 @@ the creator oriented with a one-line running tally, e.g.
    - `direct` → continue the original task under the new system. Mika
      implements; afterwards Luna runs a finish review against the
      session's decisions, the direction render, the `preserve:` list and
-     the in-scope tells, and reports any drift with `file:line`.
-   - `codify` → offer to install enforcement (`atelier check` + hook) once
-     available; until then, list the rules an agent must follow and add
-     a pointer to `.atelier/design-system.yaml` in the repo's agent
-     instructions (CLAUDE.md / AGENTS.md) if the creator agrees.
+     the in-scope tells, and reports any drift with `file:line`. If the
+     system changed, regenerate its specimen (`atelier system specimen`).
+   - `system` → follow `reference/system.md` (products → extract → draft
+     → reconcile → codify → enforce). It replaces the board loop above
+     with a draft-first loop: the creator sees one summary and only the
+     contested decisions.
    - `critique` → see below.
 
 ## Critique
 
 No boards up front. State the Design Read, then Mika runs the checks
-(contrast, spacing scale, token drift, ad-hoc values, a11y checklist,
-and every in-scope tell) against the scope; Luna adds judgement
+(`atelier check` on the scope's files where a system exists, plus
+contrast, a11y checklist and every in-scope tell) against the scope; Luna adds judgement
 (hierarchy, rhythm, voice, on-brand-ness), and reads the scope's current
 dials. Report findings ranked by impact, each with: what, where
 (`file:line`), why it matters, and the rule, decision or tell id it
