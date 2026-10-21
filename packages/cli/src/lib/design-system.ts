@@ -34,10 +34,18 @@ export type Dict = Record<string, unknown>;
 
 export interface ComponentSpec {
   role?: string;
+  /** input | informational | navigational | container (decides which states it needs). */
+  kind?: string;
+  /** When to pick this over a look-alike component, and why. */
+  when_to_use?: string;
+  /** active (default) | deprecated */
+  status?: string;
+  replaced_by?: string;
   anatomy?: string[];
   variants?: Record<string, unknown>;
   sizes?: Record<string, unknown>;
-  states?: string[];
+  /** The states it can enter: a list, or a map keyed by state, or "a, b, c". */
+  states?: string[] | Record<string, unknown> | string;
   tokens?: Record<string, string>;
   source?: string | string[];
   /** state → markup rendered on the specimen page */
@@ -69,6 +77,12 @@ export interface DesignSystem {
   /** v2 name for v1 `tokens`; the tools read `foundations ?? tokens`. */
   foundations?: Dict;
   tokens?: Dict;
+  /** Role tier: each job (text.primary, surface.raised) → a foundation primitive, or { theme: primitive }. */
+  roles?: Record<string, string | Record<string, string>>;
+  /** Theme ids; each role defines a value per theme (themes are modes, not separate systems). */
+  themes?: string[];
+  /** Text/surface role pairs to contrast-check; default: every text.* on every surface.*. */
+  contrast_pairs?: [string, string][];
   components?: Record<string, ComponentSpec>;
   zones?: Record<string, ZoneSpec>;
   content?: { vocabulary?: { use?: Dict; retired?: Record<string, string> }; voice?: string[] };

@@ -6,7 +6,20 @@ Format: [major.minor.fix] — based on milestone progression.
 
 ## [Unreleased] — v1.0 creator-flow surface
 
+`@a-company/atelier` 0.39.0 carries the two sections below this line ("design playbook v1" and "design systems per product…").
+
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
+
+### Added — design playbook v1
+
+The Figma "Design basics" library (74 pages) was digested into the neurons brain (157 new neurons) and audited against WCAG and the research. What survived is now in the agents. Full record in `docs/playbook/proposals.md` §Playbook v1.
+
+- **Token tiers and theme modes**: `roles` (named for the job, a value per theme) between foundation primitives and components. A new `atelier system lint` checks references (no loops or dangling refs; chains allowed, per W3C DTCG 2025.10), text-on-surface contrast per theme, the spacing base unit, the states each component kind needs, and when-to-use for look-alike components. The specimen shows roles per theme and contrast ratios.
+- **`atelier check`**: `spacing-off-base`, and `literal-has-token` (a raw value that equals a token).
+- **13 new usability rules and 10 new tells.** The rules now ship with the skill as `reference/rules.yaml`, so agents in every repo can cite them; a test keeps both copies identical and every referenced tell real.
+- **Mika's review**: grayscale, realistic-data, in-between-state, contrast-per-state, hover-parity, keyboard-only, grouping, reading-text, target and friction-log passes, and an honest scope for her verdict.
+- **Luna's sessions**: known vs assumed, flows before screens, refresh vs redesign with a baseline, fidelity matched to the question, trade-offs and assumptions on every option and decision, and a coherence check in the finish review.
+- **Video**: grouping by motion, correct-then-grade toward one reference per series, and anchored generated frames (`atelier-produce/reference/motion.md` §8).
 
 ### Added — design systems per product, `atelier check`, and the UI review gate
 

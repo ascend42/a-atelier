@@ -1,8 +1,10 @@
-# Atelier usability rulebook (v0, proposal)
+# Atelier usability rulebook (v1)
 #
 # One deduplicated rulebook built from the four research reports in
 # docs/playbook/research/ (01 hendurhance, 02 awesome-ux, 03 NN/g basics,
 # 04 NN/g topics). About 100 rules in those reports came down to 70 here.
+# Playbook v1 (2026-10-21) adds 13 rules from the Figma Design-basics digest
+# (see the section at the end and docs/playbook/proposals.md).
 # `merged_from` lists the source rules each entry absorbed, using each
 # report's own numbering:
 #   01#n   = 01-hendurhance §4 rule n
@@ -39,8 +41,8 @@
 # Thresholds marked nng-opinion are defaults for `warn`, not `fail`, and can be
 # overridden per repo like a tell (record the override with provenance).
 
-version: 0
-status: proposal
+version: 1
+status: adopted
 
 rules:
 
@@ -388,7 +390,7 @@ rules:
       - https://www.w3.org/WAI/WCAG22/quickref/
       - https://www.nngroup.com/articles/interaction-cost-definition/
       - Tognazzini, First Principles of Interaction Design — Fitts's Law (asktog.com; deep URL not captured)
-    notes: 01#6 attributes 44 px to WCAG 2.5.5. That is the AAA criterion. AA in WCAG 2.2 is 2.5.8 (24 px). Mika's nb-wcag-target-size notebook already has this right.
+    notes: "01#6 attributes 44 px to WCAG 2.5.5. That is the AAA criterion. AA in WCAG 2.2 is 2.5.8 (24 px). Mika's nb-wcag-target-size notebook already has this right. Placement depends on the input (audit au-2026-10-21-5dad): with a mouse, true screen edges and corners are the easiest targets (Tognazzini); on touch, edges and corners are the hardest and the centre/thumb zone wins (Hoober; Avrahami, CHI 2015). Browser-page edges aren't screen edges. Touch targets: 44 pt (iOS), 48 dp (Android). Figma's \"magic pixels are hardest\" reverses Tognazzini."
 
   - id: minimize-interaction-cost
     space: interaction
@@ -444,7 +446,7 @@ rules:
     sources:
       - https://www.nngroup.com/articles/design-systems-101/
       - https://www.nngroup.com/articles/design-systems-vs-style-guides/
-    related_tells: [happy-path-only]
+    related_tells: [happy-path-only, disabled-without-reason]
 
   - id: notification-matches-urgency
     space: interaction
@@ -488,7 +490,7 @@ rules:
       - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
       - https://www.nngroup.com/articles/good-visual-design/
       - Wathan & Schoger, Refactoring UI (book)
-    notes: The "on the scale, from tokens" half is durable system hygiene. The "about 3 sizes" half is a teaching budget; editorial and expressive work can break it. Severity warn.
+    notes: 'The "on the scale, from tokens" half is durable system hygiene. The "about 3 sizes" half is a teaching budget; editorial and expressive work can break it. Severity warn. Audit au-2026-10-21-5836 rated NN/g''s "no more than 3 sizes" low as a system rule (no study cited; Material 3 has 15 type styles): a system scale of about 5–7 text roles is normal; the budget applies to sizes competing within one view or component, with weight and colour carrying hierarchy too.' 
 
   - id: restrained-color-budget
     space: visual
@@ -502,7 +504,7 @@ rules:
     sources:
       - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
       - https://www.nngroup.com/articles/good-visual-design/
-    related_tells: [accent-drift]
+    related_tells: [accent-drift, accent-everywhere]
     notes: Counts are a budget, not a law. The red reservation conflicts with brands that are red; record an override.
 
   - id: group-by-space-before-boxes
@@ -519,6 +521,7 @@ rules:
       - https://www.nngroup.com/articles/visual-hierarchy-ux-definition/
       - https://www.nngroup.com/articles/dark-mode-users-issues/
       - Wathan & Schoger, Refactoring UI (book)
+    related_tells: [card-soup]
 
   - id: decoration-must-communicate
     space: visual
@@ -592,7 +595,7 @@ rules:
       - https://www.w3.org/WAI/WCAG22/quickref/
       - https://www.nngroup.com/articles/principles-visual-design/
       - https://www.nngroup.com/articles/dark-mode-users-issues/
-    related_tells: [contrast-fail]
+    related_tells: [contrast-fail, hue-only-contrast]
 
   - id: keyboard-focus-and-names
     space: accessibility
@@ -1040,3 +1043,199 @@ rules:
     sources:
       - https://www.nngroup.com/articles/ten-usability-heuristics/
       - clig.dev (named as a gap in 01/02; not yet read)
+
+  # ── Playbook v1 additions (2026-10-21) ──────────────────────────────────
+  # From the Figma "Design basics" digest into the neurons brain (n: refs in
+  # notes), cross-checked against WCAG and NN/g. Where Figma's numbers
+  # disagreed with the standard, the standard is used and the note says so.
+  # Validity audits on the underlying sources are pending founder review.
+
+  - id: tokens-tiered-by-role
+    space: visual
+    statement: Values live in three tiers. Primitives hold raw values; roles name each job (text.primary, surface.raised, status.error) and resolve to a primitive; components bind roles, never primitives or raw values. Role references may chain but never loop or dangle.
+    check: "`atelier system lint` (role-literal, role-circular, role-unresolved, role-chain-deep, component-binds-primitive, component-binds-literal) and `atelier check` (literal-has-token, tell primitive-in-component)."
+    pass_evidence: A component's colours trace to roles; changing a role's primitive restyles every component that uses it.
+    fail_evidence: Components using var(--gray-500) or #6b6b6b directly; roles named after colours.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:design-token-architecture", "figma:design-tokens"]
+    sources:
+      - https://www.figma.com/resource-library/design-token-architecture/
+      - https://www.figma.com/resource-library/design-tokens/
+      - https://www.designtokens.org/tr/drafts/format/
+    related_tells: [primitive-in-component, accent-drift]
+    notes: "n:token-tiers, n:keep-primitive-tokens-private, n:name-tokens-for-role, n:semantic-alias-chains. Figma says semantic tokens must never chain; audit au-2026-10-21-98e6 rated that low: W3C DTCG 2025.10 §7.2.2 allows chained references and §7.2.3 forbids only circular ones (Spectrum and Material chain too). So loops and unresolved references fail, chains deeper than 3 hops warn."
+
+  - id: themes-are-modes
+    space: visual
+    statement: Each theme is a set of values for the same role names, not a separate set of components. Every role defines a value in every theme, and text on surface is checked in each one.
+    check: "`atelier system lint` (role-missing-theme, role-contrast per theme)."
+    pass_evidence: One component set; day and night differ only in role values; every pair meets 4.5:1 in both.
+    fail_evidence: A night-only component variant; a role with no night value; muted text that passes in day and fails at night.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:design-tokens"]
+    sources:
+      - https://www.figma.com/resource-library/design-tokens/
+      - https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+    related_tells: [contrast-fail]
+    notes: n:themes-as-token-modes, n:text-contrast-minimums.
+
+  - id: functional-states-say-what-happened
+    space: interaction
+    statement: Beyond default, hover, focus, active and disabled, components that act cover loading, success, error and selected. Disabled says why. Loading blocks a second submit. Error says what failed and what to do, and resets for retry. Success copy names the result ("Saved", not "Success").
+    check: For each input component, list the states designed and read their copy; `atelier system lint` flags input components missing loading or error.
+    pass_evidence: '"Save" → spinner, button locked → "Saved"; on failure "Couldn''t save: offline. Retry".'
+    fail_evidence: A greyed-out button with no reason; a double-submitted form; "Error occurred".
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:button-states"]
+    sources:
+      - https://www.figma.com/resource-library/button-states/
+      - https://www.nngroup.com/articles/error-message-guidelines/
+    related_tells: [happy-path-only, disabled-without-reason]
+    notes: "n:interactive-states, n:disabled-state-explains-why, n:loading-state-prevents-double-submit, n:error-state-resets-for-retry. Figma says 4.5:1 applies in every state and that buttons need at least five; audit au-2026-10-21-751d: every enabled state keeps text at 4.5:1 (1.4.3 AA) and boundaries and state indicators at 3:1 (1.4.11 AA), disabled is exempt (keep it legible by choice), and no standard sets a number of states: spec the states the control can actually enter. State changes run 100–200 ms (about 100 for press/toggle), larger surface changes 200–300, under about 400 (NN/g, animation duration)."
+
+  - id: in-between-states-designed
+    space: interaction
+    statement: The moments between screens are designed too, not just component states. Sequences of loading, partial results, interrupted tasks (a modal closed halfway through a form) and returning to a half-finished flow.
+    check: Draw the state diagram for each changed screen, one variant per state combination including failure paths, and walk each.
+    pass_evidence: A closed half-filled modal keeps or explicitly discards the draft; partial results render while the rest loads.
+    fail_evidence: Closing a modal loses the form silently; a spinner replaces content that was already there.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: ["figma:ux-validation", "figma:button-states"]
+    sources:
+      - https://www.figma.com/resource-library/ux-validation/
+      - https://www.figma.com/resource-library/button-states/
+    related_tells: [happy-path-only]
+    notes: n:design-the-in-between-states, n:state-diagrams-explode-screens.
+
+  - id: hover-has-equivalent
+    space: interaction
+    statement: Anything revealed on hover (actions, tooltips, previews) is also reachable by focus and by tap.
+    check: Inspect every :hover rule and hover handler; confirm a :focus-visible / tap path for each.
+    pass_evidence: Row actions appear on hover, on focus, and in an overflow menu on touch.
+    fail_evidence: Delete appears only on hover; tooltips that never show on a phone.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: ["figma:pricing-page-best-practices", "figma:button-states"]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html
+      - https://www.figma.com/resource-library/pricing-page-best-practices/
+    related_tells: [hover-only-reveal]
+    notes: n:hover-is-absent-on-touch.
+
+  - id: grayscale-holds-hierarchy
+    space: visual
+    statement: Rendered in grayscale, the screen keeps its hierarchy, and every state or category stays distinguishable.
+    check: Capture the UI desaturated (CSS filter grayscale(1)) next to the colour capture and compare.
+    pass_evidence: The primary action still leads; error rows still differ by icon or text.
+    fail_evidence: Status shown only by a coloured dot; the primary button merges with secondary ones.
+    runnable_by: screen-only
+    strength: durable
+    merged_from: ["figma:types-of-color-palettes"]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html
+      - https://www.figma.com/resource-library/types-of-color-palettes/
+    related_tells: [hue-only-contrast]
+    notes: n:grayscale-first, n:color-not-sole-signal.
+
+  - id: readable-body-text
+    space: visual
+    statement: Body text is at least 16px (1rem; 18px for long reading) with line height about 1.5 (1.4–1.6) and a measure of about 60–75 characters, never over 80; headings run tighter (about 1.1–1.25) and wider lines get more leading. Layouts survive a user override to 1.5× line height. The type scale is built from the body size in rem; 48px is a display size, not a default heading.
+    check: Read computed line-height and max-width (in ch) of body text at narrow and wide widths.
+    pass_evidence: Paragraphs at 16px/1.5 with max-width 68ch; headings at 1.2.
+    fail_evidence: Body at line-height 1.15; paragraphs spanning a 1440px window; text clipped when line height is raised to 1.5.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:typography-in-design"]
+    sources:
+      - https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html
+      - https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html
+      - https://www.figma.com/resource-library/typography-in-design/
+    notes: "Audit au-2026-10-21-0ec1: Figma's 1.125–1.2× body leading rated low (a heading range; WCAG 1.4.8 asks for at least 1.5, 1.4.12 requires surviving 1.5; Butterick 120–145%; Rello et al. CHI 2016 found small effects, worst at 0.8 and 1.8). Its 40–60 characters rated medium (Ruder 50–60, Baymard 50–75, Butterick 45–90, WCAG 1.4.8 max 80; Dyson & Kipping 1998: 55 rated easiest, 100 read faster). 16px body is the browser default; H1 48px isn't (the UA default is 2em). n:body-line-height-ratio, n:line-length-40-60-characters, n:type-scale-from-body."
+
+  - id: spacing-on-base-unit
+    space: visual
+    statement: Spacing and sizes are multiples of one base unit (usually 4 or 8 px, set in rem), on a soft grid.
+    check: "`atelier system lint` (space-off-base) on the scale; `atelier check` rule `spacing-off-base` on the code."
+    pass_evidence: Every gap is 4, 8, 12, 16, 24 or 32.
+    fail_evidence: 13px and 22px gaps beside 12 and 24.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:web-design-grid-layout-examples"]
+    sources:
+      - https://www.figma.com/resource-library/web-design-grid-layout-examples/
+    related_tells: [radius-drift]
+    notes: n:soft-grids-and-base-units.
+
+  - id: primary-nav-visible
+    space: ia
+    statement: Primary destinations stay visible (tabs, a bottom bar on mobile, a top bar on desktop); a hamburger or overflow menu holds secondary ones only.
+    check: List the top-level destinations and where each is reachable at each breakpoint.
+    pass_evidence: Four primary sections in a bottom bar; settings and help in the menu.
+    fail_evidence: Every destination behind a hamburger on a three-section app.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:hamburger-menu", "figma:website-structure"]
+    sources:
+      - https://www.figma.com/resource-library/hamburger-menu/
+      - https://www.nngroup.com/articles/hamburger-menus/
+    notes: n:hamburger-menu-tradeoff, n:wayfinding-elements.
+
+  - id: flow-completion-confirmed
+    space: interaction
+    statement: Every multi-step flow ends with an explicit completion message that names what happened and what's next.
+    check: Walk each flow to its end and read the final screen or toast.
+    pass_evidence: '"Order placed. Receipt sent to you@x.com."'
+    fail_evidence: The form resets to empty with no message.
+    runnable_by: walkthrough
+    strength: durable
+    merged_from: ["figma:human-computer-interaction"]
+    sources:
+      - https://www.figma.com/resource-library/human-computer-interaction/
+      - Shneiderman, Designing the User Interface — eight golden rules ("design dialogs to yield closure")
+    related_tells: [happy-path-only]
+    notes: n:shneiderman-eight-golden-rules.
+
+  - id: known-vs-assumed-recorded
+    space: process
+    statement: Each session records what is known about the users (with evidence) and what is assumed, which options depend on which assumptions, and how each assumption would be checked.
+    check: Read session.yaml `known:` / `assumed:`; each option names the assumptions it rests on.
+    pass_evidence: '"Assumed: admins check this weekly (no data). Option B depends on it; check: analytics on /settings visits."'
+    fail_evidence: Options justified by "users want…" with no evidence or tag.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:user-centered-design-questions"]
+    sources:
+      - https://www.figma.com/resource-library/user-centered-design-questions/
+    related_tells: [polish-as-validation]
+    notes: n:known-vs-assumed-inventory, n:you-are-not-the-user. Pairs with evidence-tagged-claims.
+
+  - id: friction-log-walkthrough
+    space: process
+    statement: The reviewer walks the real task end to end as a user and logs every hesitation, wrong turn and wait, separately from checking rules.
+    check: A friction log with a step, what happened, and its cost for each hesitation.
+    pass_evidence: '"Step 3: looked for Save in the header (it''s at the bottom); 4s."'
+    fail_evidence: A review that lists rule ids but never did the task.
+    runnable_by: walkthrough
+    strength: expert-heuristic
+    merged_from: ["figma:how-to-design-an-app"]
+    sources:
+      - https://www.figma.com/resource-library/how-to-design-an-app/
+    notes: n:friction-logging.
+
+  - id: coherent-not-just-consistent
+    space: visual
+    statement: Beyond matching tokens and patterns, the product reads as one product with one voice and one set of values; features don't look built by different teams.
+    check: Put screens from different features side by side and read them as one product; note voice, density and metaphor shifts.
+    pass_evidence: Settings, onboarding and the main view share density, tone and the same mental model.
+    fail_evidence: Each feature consistent with itself, but onboarding is playful, settings are terse and the dashboard is dense.
+    runnable_by: screen-only
+    strength: expert-heuristic
+    merged_from: ["figma:what-is-product-design", "figma:consistency-in-design"]
+    sources:
+      - https://www.figma.com/resource-library/what-is-product-design/
+      - https://www.figma.com/resource-library/consistency-in-design/
+    notes: n:consistency-vs-coherence, n:cohesive-product-voice.

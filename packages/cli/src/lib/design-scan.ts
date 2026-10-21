@@ -124,6 +124,13 @@ export function scanText(text: string, file: string): ScanResult {
 
     const defs = new Set<number>();
     const decls: { rawProp: string; rawValue: string; valueStart: number }[] = [];
+    // SCSS `$ink: #16150f` and LESS `@ink: #16150f` define tokens, like custom properties.
+    const preVar = lineText.match(/^\s*[$@]([\w-]+)\s*:\s*([^;{}\n]+)/);
+    if (preVar && !isScript) {
+      res.customProps.push({ name: (lineText.trim()[0] === "$" ? "$" : "@") + preVar[1], value: preVar[2].trim(), file, line });
+      const start = lineText.indexOf(preVar[2]);
+      for (let k = start; k < start + preVar[2].length; k++) defs.add(k);
+    }
     for (const m of lineText.matchAll(isScript ? DECL_RE_SCRIPT : DECL_RE)) {
       decls.push({ rawProp: m[1], rawValue: m[2], valueStart: (m.index ?? 0) + m[0].indexOf(m[2]) });
     }

@@ -39,7 +39,47 @@ builder's code.
    reading code alone without saying so.
 3. **Run the ui-build-protocol**: inventory, consistency with siblings,
    placement and duplicate entry points, states, copy, responsiveness,
-   accessibility, design record.
+   accessibility, design record. Then the playbook v1 passes (rule ids
+   from `~/.claude/skills/atelier-design/reference/rules.yaml`):
+   - **Grayscale.** Capture it desaturated beside the colour capture.
+     Hierarchy holds and no state or category is told apart by hue alone
+     (`grayscale-holds-hierarchy`). Simulate deutan and protan colour
+     vision first (deuteranomaly is the most common), then tritan.
+   - **Realistic data.** Feed it 0, 1, 5, 50 and 200 items; very long
+     names and labels; a failed image; a pasted paragraph; labels about
+     35% longer as translated text would be; other currency and date
+     formats (`stress-with-real-content`).
+   - **States, including the in-between.** Every state the component can
+     enter, from the system's list for its kind: disabled says why,
+     loading blocks a second submit, error says what and what next and
+     resets for retry, success names the result. Draw the state diagram
+     for each changed screen and walk the interrupted paths too, like a
+     modal closed halfway through a form
+     (`functional-states-say-what-happened`, `in-between-states-designed`).
+   - **Contrast per state and theme.** Enabled states keep text at 4.5:1
+     (WCAG 1.4.3) and boundaries and indicators at 3:1 (1.4.11); disabled
+     is exempt. Focus is always visible (2.4.7), not hidden by sticky UI
+     (2.4.11), and a custom ring is 3:1 against its neighbours.
+   - **Hover parity.** Anything shown on hover is reachable by focus and
+     by tap (`hover-has-equivalent`).
+   - **Keyboard only.** Do the task with the keyboard alone: order, focus
+     visibility, no traps. Report it as "technically conformant", never
+     as "accessible".
+   - **Grouping.** Space inside a group is visibly smaller than space
+     between groups; boxes only where spacing can't group
+     (`group-by-space-before-boxes`, tell `card-soup`). Spacing sits on
+     the base unit (`spacing-on-base-unit`).
+   - **Reading text.** Body at least 16px, line height about 1.5, measure
+     about 60–75ch and never over 80, and nothing clipped when line height
+     is raised to 1.5 (`readable-body-text`).
+   - **Targets and reach.** At least 24×24 CSS px (2.5.8 AA); 44 pt / 48
+     dp for touch and primary actions. On touch, primary actions sit in
+     the thumb zone, not in corners.
+   - **Friction log.** Walk the real task end to end as a user and log
+     every hesitation, wrong turn and wait, separately from the rules
+     (`friction-log-walkthrough`).
+   - **System.** Run `atelier system lint` and `atelier check <files>`
+     where a design system exists.
 4. **Report** in this shape, saving it to the path the builder gives you:
 
    ```
@@ -54,6 +94,11 @@ builder's code.
    ## Rendered     the screenshots you took (paths), or "not rendered: <why>"
    ## Verdict      approved | approved-with-fixes | rework
    ```
+
+   Say what the verdict covers. Your review can establish that the build
+   holds up and passes the heuristics. It can't establish that it solves
+   the right problem or that users can finish the task; name the
+   cheapest check that would (`close-with-falsifying-study`).
 
    Each finding: `file:line`, what's wrong, the rule it breaks (the
    design record, a `rules.yaml` or tell id), and the fix (before → after).

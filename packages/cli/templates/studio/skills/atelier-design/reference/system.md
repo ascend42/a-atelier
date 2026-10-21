@@ -63,16 +63,36 @@ Mika drafts the product's `design-system.yaml` (v2 layers, see
 
 - In each near-duplicate group, the value with the most uses wins, unless
   a recorded decision or the platform convention says otherwise.
-- Tokens are named by role (`text.secondary`, `space.row-gap`), not by
-  value.
-- Each component gets a role in one sentence, anatomy, variants, sizes,
-  states, token bindings, its source file, and an `examples` entry per
-  state using the real markup from the code.
+- Values go in three tiers. `foundations` holds the primitives (the
+  colours, sizes and spacings the code really uses). `roles` names each
+  job (`text.secondary`, `surface.raised`, `status.error`) and points at a
+  primitive, with one value per theme: themes are modes of the same role
+  names, not separate component sets. Components bind roles, never
+  primitives or raw values. Name roles for the job, never the look
+  (`gray-text` is a finding).
+- Spacing gets a `base` unit (usually 4 or 8 px) and a scale of its
+  multiples; the type scale is built from the body size.
+- Each component gets a `kind` (input, informational, navigational,
+  container), a role in one sentence, a `when_to_use` when another
+  component of its kind looks alike, anatomy, variants, sizes, token
+  bindings, its source file, and the states it can actually enter. Inputs
+  cover default, hover, focus, active, disabled (saying why), loading
+  (blocking a second submit), error (what failed and what next) and,
+  where the flow has them, success and selected. Each state gets an
+  `examples` entry using the real markup from the code.
+- Page patterns the product repeats (a pricing table, a settings form, an
+  empty state) are recorded with their order and rules, not just their
+  components.
 - Each zone gets `holds`, `never` and `overflow`.
 - `content.vocabulary.use` gets the terms the product relies on, and
   `retired` gets the terms being phased out.
 - `specimen.stylesheets` and `specimen.themes` point at the product's
   real CSS and theme switches, so the specimen renders the real thing.
+
+Run `atelier system lint` on the draft and fix what it finds before the
+creator sees anything: roles missing a theme, text on surface under
+4.5:1 in a theme, references that loop or dangle, spacing off the base
+unit, components bound to primitives, missing states.
 
 Every entry carries `from:`, either `{ extract: <inventory date> }` or the
 decision it came from. Mark each entry `clear` or `contested`. Contested
@@ -126,10 +146,11 @@ This is the only step that needs the creator.
 
 ## 5. Enforce
 
-1. `atelier check --product <id>`: mechanical rules (`type-off-scale`,
+1. `atelier system lint --product <id>` must pass (no fails), then
+   `atelier check --product <id>`: mechanical rules (`type-off-scale`,
    `spacing-off-scale`, `radius-off-scale`, `color-off-palette`,
-   `font-off-system`, the forbidden lists, retired words, the mechanical
-   tells). Report the baseline counts. Existing drift is the `migration:`
+   `font-off-system`, `spacing-off-base`, the forbidden lists, retired
+   words, raw values that equal a token, the mechanical tells). Report the baseline counts. Existing drift is the `migration:`
    list, not a reason to weaken the rules.
 2. Offer the migration as its own `direct`-style task, done in batches by
    zone or component. Each batch goes through the UI gate's review. Never
@@ -142,6 +163,19 @@ This is the only step that needs the creator.
    change in any session to the product's system through Mika's review.
 
 ## 6. Maintain
+
+- **Contribution and retirement.** A new component or pattern is
+  proposed to the system (kind, role, states, when to use), reviewed
+  against the rules, and published with its specimen entry. A component
+  being replaced is marked `status: deprecated` with `replaced_by`, and
+  the migration list says where it is still used.
+- **Overrides are a signal.** Repeated local overrides, or a component
+  rebuilt by hand next to the system one, mean the system doesn't cover a
+  real need. Report it to the creator as a gap, not only as a violation.
+- **Token changes by risk.** A change to a primitive or role that many
+  components use (the brand colour, the body size) needs the creator's
+  yes with a rendered before/after specimen. A fix to one component's
+  binding doesn't. Every change gets a line in the changelog.
 
 - A review that finds a new pattern proposes it as a system addition
   (`ui-build-protocol` step 8) instead of letting it ship as a one-off.

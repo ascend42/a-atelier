@@ -802,3 +802,44 @@ Out of scope for now: XR, career and portfolio material, the bootcamp article la
 8. **Yocco's thresholds** (85% accept, 5% revert → disable) are unsourced. They are hypotheses for the calibration loop, not rules. 01 already flagged this; I agree.
 9. **Context-architecture rules (04:R16, R17)** are partly Workshop product requirements rather than general UX. I kept one merged rule (`context-and-memory-legible`) because it is genuinely IA, but its line-budget detail belongs in the Gnomon spec, not the global rulebook.
 10. **Several sources lack deep URLs.** The reports named about 15 pages (Tog, NN/g Sketch Test, Design Critiques, Microinteractions, Carbon AI label, LukeW, Wattenberger, Yocco, MeasuringU, digital.gov) without recording the URL. `rules.yaml` marks each as "deep URL not captured". Verify them before adoption rather than guess them.
+
+---
+
+# Playbook v1: adopted (2026-10-21)
+
+Status: applied to the skill, Mika's agent file, the rules and the CLI in the same PR as this section. Unlike v0 this is not a proposal list. The founder asked for the changes to be made, and asked for validity audits on the claims they rest on.
+
+Source: Figma's resource library, "Design basics" (74 of its 129 pages; the font listicles, print, trend and statistics pages were skipped). Six agents digested them into the neurons brain: 157 new neurons and 16 updated, filed under `design-ux/systems`, `design-ux/visual` (+ `typography`, `color`), `design-ux/interaction`, `design-ux/layout`, `design-ux/research`, `design-ux/accessibility` and `design/process`. Figma's own claims are recorded as claims; where they disagreed with WCAG or the research, the standard is used here.
+
+## What changed, and where
+
+| Change | Where | Neurons |
+|---|---|---|
+| Token tiers: primitives (`foundations`) → `roles` named for the job → components bind roles. Themes are modes: each role has a value per theme. | `formats.md`, `system.md`, `atelier system lint`, rules `tokens-tiered-by-role`, `themes-are-modes`, tell `primitive-in-component`, check `literal-has-token` | n:token-tiers, n:themes-as-token-modes, n:name-tokens-for-role |
+| Text-on-surface contrast computed per theme from the roles | `atelier system lint` (role-contrast), specimen "Text on surface" table | n:text-contrast-minimums |
+| Spacing on a base unit | `foundations.space.base`, lint `space-off-base`, check `spacing-off-base`, rule `spacing-on-base-unit` | n:soft-grids-and-base-units |
+| Component kinds, the states each kind needs, `when_to_use` for look-alikes, `status`/`replaced_by` | `formats.md`, `system.md`, lint `component-*`, rules `functional-states-say-what-happened`, `in-between-states-designed` | n:interactive-states, n:ui-element-types, n:document-component-usage-rationale |
+| Mika's v1 passes: grayscale, realistic data, states incl. in-between, contrast per state, hover parity, keyboard only, grouping, reading text, targets and reach, friction log, three kinds of verdict | `agents/atelier-mika.md`, rules `grayscale-holds-hierarchy`, `hover-has-equivalent`, `readable-body-text`, `friction-log-walkthrough` | n:grayscale-first, n:stress-test-with-realistic-data, n:hover-is-absent-on-touch, n:friction-logging |
+| Luna: known vs assumed, flows before screens, refresh vs redesign with a baseline, fidelity matched to the question with a `testing:` header, trade-offs and assumptions on options, problem + trade-off on decisions, coherence in the finish review | `SKILL.md`, `formats.md` (session.yaml), rules `known-vs-assumed-recorded`, `coherent-not-just-consistent` | n:known-vs-assumed-inventory, n:match-fidelity-to-confidence, n:redesign-vs-refresh, n:consistency-vs-coherence |
+| Governance: contribution and retirement, overrides as a coverage signal, token changes by risk | `system.md` §6 | n:design-system-contribution-and-retirement, n:detachment-signals-adoption-gaps |
+| Navigation and closure | rules `primary-nav-visible`, `flow-completion-confirmed` | n:hamburger-menu-tradeoff, n:shneiderman-eight-golden-rules |
+| Ten tells: card soup, accent everywhere, hue-only contrast, soft UI, near-miss pairing, the ratio as the reason, polish as validation, primitive in component, hover-only reveal, disabled without a reason | `tells.yaml` | various |
+| Video: things that move together, correct then grade toward one reference, anchored generated frames | `atelier-produce/reference/motion.md` §8 | n:gestalt-common-fate, n:grade-from-a-reference |
+| The rules ship with the skill (`reference/rules.yaml`), so agents in every repo can read them; a test keeps it identical to this folder's copy | skill reference, `setup.test.ts` | |
+
+## Validity audits (pending founder review)
+
+All six are drafts in the brain until the founder says keep, keep part or discard. What they changed here:
+
+| Audit | Source | Verdict | Effect on v1 |
+|---|---|---|---|
+| au-2026-10-21-0ec1 | Figma, Typography in design | 4 of 11 hold; body leading and a history claim wrong | `readable-body-text` uses ≈1.5 body leading, 60–75ch (cap 80), 16px minimum body, 48px as display |
+| au-2026-10-21-5836 | NN/g, 5 principles of visual design | 5 of 11 hold; "no more than 3 sizes" unsupported as a system rule | `limited-type-scale` note: 5–7 text roles per system, ~3 competing per view |
+| au-2026-10-21-751d | Figma, Button states | 5 of 12 hold; WCAG levels misattributed | 4.5:1 text and 3:1 indicators in enabled states, disabled exempt; focus wording by SC; 100–200 ms state changes |
+| au-2026-10-21-9586 | Figma, Accessible and inclusive design | 4 of 9 hold; protanopia "most common" wrong | Mika simulates deutan first |
+| au-2026-10-21-5dad | Figma, Fitts' law | 6 of 11 hold; "magic pixels are hardest" reversed | `targets-sized-and-placed` note: placement depends on the input |
+| au-2026-10-21-98e6 | Figma, Design tokens | 3 of 10 hold; "never chain" isn't the standard | lint fails loops and dangling references, warns on chains over 3 hops (W3C DTCG 2025.10) |
+
+## Not measured yet
+
+None of this has been through the design-eye benchmark. Bench v2 is still being built (`calibration.md` §1.6). When it runs, v1 is the configuration under test: the rules, tells and Mika passes above, hashed in the run's config.
