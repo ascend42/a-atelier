@@ -100,6 +100,19 @@ Real misses become new items. When a shipped screen draws a complaint that a cri
 
 ---
 
+### 1.6 Bench v2 (2026-10-18)
+
+Bench v1 saturated: B0 caught 88% of planted defects at 94% precision, and its certified-clean controls hid 41 real problems (`b0-baseline.md`). Bench v2 changes how items are made. The only scoring change is accepted labels (below).
+
+- **Surfaces.** Founder ruling: only the Elvanti client apps and Gnomon's CLI, the surfaces under active design. Gnomon has no visual UI yet, so its items are terminal transcripts (120x40 and 80x24, with exit codes).
+- **Harder seeds.** At least 60% of defects are subtle (plausible mistakes a quick scan misses). At least 30% are multi-step: they only show across a flow or a state change, captured as `trace.jsonl` or step captures. They are weighted toward control and recovery, agent and automation UX, and irreversible actions, B0's weakest areas. Each label records `difficulty` and `evidence_kind`.
+- **Decision-checked seeds.** Every seed is checked against the repo's recorded decisions before certification, as in v1 round 2.
+- **Pre-audited controls.** Before the founder sees a control, three independent judges review the cleaned copy, blind to the item id and to earlier rounds. Every real warn+ problem they find is fixed in the copy, preferring to remove or simplify UI over adding it, and the audit runs at most three rounds. Then the founder adjudicates what the last round found: fix it (no further round), reject it, or accept it. A control is replaced only if the founder says so.
+- **Accepted labels.** A real problem the founder accepts at certification goes in the label file's `accepted:` list, beside `defects:`, with `origin: found` and the ruling. Typical cases: a recorded decision the judges disagree with (the record wins), a limit set by the product's own spec, or a bug outside the reviewed copy. The matcher sees accepted labels; a finding matched to one counts neither as a hit nor as a false alarm, and accepted labels add no recall rows (`score.py`). Each is also handed on as a product finding (`certification/product-findings.md`).
+- **Why the bar moved.** On v2 the strict rule (repeat until a round finds nothing) did not converge: 52, 47 and 33 problems across the three rounds, with majors falling from 18 to 2 findings. Each round's fixes caused some new problems (13 in round 2), and fresh judges found about 20 new minor problems every round. A judge panel at high recall always finds something on a rich screen, so a fourth round would not have reached zero either.
+- **Shared bases.** When a control and seeded items are built from the same base (the Gnomon CLI: CC-27 and DE-63 to DE-65), fixes found on the control are ported into the shared base and the seeds re-planted, so the seeded items do not carry unlabelled base problems.
+- **No carried-over labels.** The v1 critic-found problems were fixed in the apps. Labels found by the critic on v2 enter v3 and are scored separately from planted ones, because the same critic found them.
+
 ## 2. Scoring
 
 ### 2.1 A run
@@ -262,6 +275,16 @@ These are written before the first run so that they can fail. Each states the co
 | F8 | No leakage | Zero canary or item-id hits in the weekly grep | The bench is contaminated: retire the affected items, and void any run that used them |
 | F9 | Honesty holds | Zero findings or session outputs claiming real-user testing without a study record (section 5) | A hard fail regardless of all other numbers |
 | F10 | Severity is calibrated | Weighted κ (severity) ≥ 0.5 at P1; mean signed severity error within ±0.5 tier | The critic inflates or deflates severity; ranking findings by impact cannot be trusted |
+
+**Gates for bench v2 (proposed 2026-10-18, founder approval at v2 certification).** Fixed absolute targets broke on v1 because B0 was already near the ceiling. On v2 the gates are measured against the error left after B0:
+
+| # | Gate | Pass |
+|---|---|---|
+| F3' | Fewer misses | Held-out miss rate (1 − recall) falls by at least a third: (miss B0 − miss P1) / miss B0 ≥ 0.33, with the 90% CI of the paired difference above 0. No space loses more than 0.10 recall |
+| F4' | Fewer invented findings | Invented warn+ findings per item fall by at least a third: P1 ≤ 0.67 × B0, with the CI of the paired difference above 0. Precision does not drop more than 0.02. Override respect on decoys ≥ 0.8 |
+| F0 | Bench has headroom | Pre-registered stop rule. If B0 on v2 has held-out recall ≥ 0.85 and invented warn+ findings per item ≤ 0.3, v2 is saturated too: stop, report it, and redesign the seeds before running P1 |
+
+F1-F2 and F5-F10 are unchanged.
 
 At day 30, Loid writes one review: each falsifier's value, its interval, and pass or fail. A failed falsifier is not re-defined after the fact. If a threshold proves badly set, the change applies from the next month and is recorded as a decision with its reasoning.
 
