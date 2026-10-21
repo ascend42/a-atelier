@@ -17,6 +17,7 @@ import { parse as parseYaml } from "yaml";
 import { foundationsOf, systemForFile, uiFilesFor, type ResolvedSystem, type RuleSpec, type Dict } from "./design-system.js";
 import { scanText, normColor, primaryFamily, type ValueKind } from "./design-scan.js";
 import { allowedValues, isOnSystem } from "./design-extract.js";
+import { primitives, spaceScale } from "./design-lint.js";
 
 export interface Finding {
   id: string;
@@ -38,13 +39,15 @@ export const CHECK_IDS = [
   "spacing-off-scale",
   "radius-off-scale",
   "easing-forbidden",
+  "spacing-off-base",
   "retired-term",
+  "literal-has-token",
 ] as const;
 
 interface Tell {
   id: string;
   severity?: "warn" | "fail";
-  detect?: { kind: string; values?: string[]; target?: string; regex?: string; flags?: string; where?: string; what?: string };
+  detect?: { kind: string; values?: string[]; target?: string; regex?: string; flags?: string; where?: string; what?: string; skip_definitions?: boolean };
 }
 
 /** The tells catalog: the installed skill's copy, else the one bundled with the CLI. */
@@ -105,6 +108,16 @@ export function checkText(text: string, file: string, sys: ResolvedSystem, tells
       }
       continue;
     }
+    if (rule.check === "spacing-off-base") {
+      const base = spaceScale(sys.system).base ?? Number(rule.args?.base);
+      if (!(base > 0)) continue;
+      for (const o of scan.occurrences) {
+        if (o.kind === "spacing" && !o.definition && Number(o.value) > 2 && Number(o.value) % base !== 0) {
+          push({ id: rule.id, source: "rule", severity: rule.severity ?? "warn", line: o.line, message: `${o.raw} isn't a multiple of the ${base}px base unit` });
+        }
+      }
+      continue;
+    }
     const forbiddenKind = FORBIDDEN[rule.check!];
     if (forbiddenKind) {
       const values = new Set(((rule.args?.values as string[]) ?? []).map((v) => norm(forbiddenKind, v)));
@@ -113,6 +126,22 @@ export function checkText(text: string, file: string, sys: ResolvedSystem, tells
           push({ id: rule.id, source: "rule", severity: rule.severity ?? "fail", line: o.line, message: `${o.raw} is forbidden here` });
         }
       }
+    }
+  }
+
+  // A literal that equals a foundation value should be the token. On unless
+  // overridden (overrides: [{ tell: literal-has-token, reason }]); a file that
+  // spells out several token values is the token source itself and is skipped.
+  const overriddenEarly = new Set((sys.system.overrides ?? []).map((o) => o.tell));
+  const tokenByValue = new Map<string, string>();
+  for (const [name, value] of primitives(sys.system)) {
+    if (/^#|^rgb/i.test(value)) tokenByValue.set(normColor(value), name);
+  }
+  const literalHits = scan.occurrences.filter((o) => o.kind === "color" && !o.definition && tokenByValue.has(o.value));
+  const isTokenSource = new Set(literalHits.map((o) => o.value)).size >= 3;
+  if (!overriddenEarly.has("literal-has-token") && !isTokenSource) {
+    for (const o of literalHits) {
+      push({ id: "literal-has-token", source: "rule", severity: "warn", line: o.line, message: `${o.raw} is the ${tokenByValue.get(o.value)} token; use the token (or its role) instead of the value` });
     }
   }
 
@@ -155,8 +184,11 @@ export function checkText(text: string, file: string, sys: ResolvedSystem, tells
       if (d.where === "user-visible strings") {
         for (const s of scan.strings) if (re.test(s.text)) push({ id: tell.id, source: "tell", severity: severityOf(tell), line: s.line, message: `"${s.text.slice(0, 60)}" (tell: ${tell.id})` });
       } else {
+        const themeBlock = d.skip_definitions ? themeBlockLines(lines) : [];
         lines.forEach((l, i) => {
-          if (re.test(l)) push({ id: tell.id, source: "tell", severity: severityOf(tell), line: i + 1, message: `${l.trim().slice(0, 80)} (tell: ${tell.id})` });
+          // Theme and :root blocks define roles in terms of primitives; that's the one place it's right.
+          const text = d.skip_definitions && themeBlock[i] ? l.replace(/--[\w-]+\s*:\s*[^;}]*;?/g, "") : l;
+          if (re.test(text)) push({ id: tell.id, source: "tell", severity: severityOf(tell), line: i + 1, message: `${l.trim().slice(0, 80)} (tell: ${tell.id})` });
         });
       }
     } else if (d.kind === "count" && (tell.id === "accent-drift" || tell.id === "radius-drift")) {
@@ -170,6 +202,36 @@ export function checkText(text: string, file: string, sys: ResolvedSystem, tells
         }
       }
     }
+  }
+  return out;
+}
+
+/** Selectors whose custom properties are the role layer (themes, :root, design-token blocks). */
+const THEME_SELECTOR = /:root|:host|\bhtml\b|\[data-(theme|mode|color-scheme)|\.(dark|light|theme[\w-]*|night|day)\b|@theme|prefers-color-scheme/;
+
+/** For each line, whether it sits inside (or opens) a theme/:root block. Brace-counting, line-based. */
+export function themeBlockLines(lines: string[]): boolean[] {
+  const out: boolean[] = [];
+  const stack: boolean[] = [];
+  for (const line of lines) {
+    let inTheme = stack.some(Boolean);
+    let lineTheme = inTheme;
+    let selector = "";
+    for (const ch of line) {
+      if (ch === "{") {
+        const t = THEME_SELECTOR.test(selector) || stack.some(Boolean);
+        stack.push(t);
+        if (t) lineTheme = true;
+        selector = "";
+      } else if (ch === "}") {
+        stack.pop();
+        selector = "";
+      } else {
+        selector += ch;
+      }
+    }
+    inTheme = stack.some(Boolean);
+    out.push(lineTheme || inTheme);
   }
   return out;
 }

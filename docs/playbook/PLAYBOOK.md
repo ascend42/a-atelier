@@ -1,6 +1,6 @@
 # The Atelier design playbook (v0)
 
-Status: proposal, written by Luna with Mika's vetting rules. Nothing in the skill, the notebooks or `tells.yaml` has changed yet. The concrete changes are in [`proposals.md`](./proposals.md).
+Status: v0 was a proposal; playbook v1 (2026-10-21) is applied — see the v1 section at the end of [`proposals.md`](./proposals.md). The rules now ship with the skill as `reference/rules.yaml`.
 
 Companion files:
 

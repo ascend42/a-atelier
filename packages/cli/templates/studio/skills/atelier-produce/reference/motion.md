@@ -61,3 +61,12 @@ The motion tells in `atelier-design/reference/tells.yaml` (scope `content`): pag
 ## 7. When a tell keeps coming back
 
 Ask whether our own wording caused it: agents read instructions literally. Record the root cause as **prescribed** (a skill, template or notebook led the agent there: edit that), **ignored** (a clear rule was broken: make the rule "delete it, don't justify it") or **missing** (no rule: write one).
+
+## 8. Grouping, grade and generated frames
+
+From the 2026-10-21 Figma Design-basics digest (neurons n:gestalt-common-fate, n:color-correction-vs-grading, n:grading-controls-in-order, n:grade-from-a-reference, n:anchor-generated-frames-with-references). These are working rules, not measured ones.
+
+- **Things that move together read as one group.** Stagger and transition the real groups: a card's title, number and icon arrive together; separate cards arrive apart. Something that moves on its own reads as separate, so don't animate one item of a set unless it's the point.
+- **Correct, then grade.** Correction makes footage neutral and consistent (exposure, white balance, matching shots). Grading sets the look, and only after correction. Work the controls in order: exposure and contrast, white balance, saturation, then the look.
+- **One written grade reference per series**, kept in the series kit (a still plus a sentence: "warm highlights, lifted blacks, desaturated greens"). Grade every episode toward it. One per brand, not a shared gallery, or every brand converges on the same look. Check the grade in the export colour space.
+- **Generated frames are anchored.** Lock the character and style reference frames before generating any shot, and keep each prompt next to its frame. A frame generated without the reference drifts; regenerate it rather than correcting it by hand.

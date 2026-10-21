@@ -14,6 +14,7 @@ import {
 import { extract } from "../lib/design-extract.js";
 import { inventoryPage, specimenPage, specimenFramePage } from "../lib/design-pages.js";
 import { check, loadTells, CHECK_IDS, type Finding } from "../lib/design-check.js";
+import { lintSystem } from "../lib/design-lint.js";
 import { templatesDir } from "./setup.js";
 
 /**
@@ -24,6 +25,7 @@ import { templatesDir } from "./setup.js";
  *   atelier system init [dir] --product <id> --paths a,b [--name N] [--extends id]
  *   atelier system extract [dir] [--product id | --paths a,b] [--json]
  *   atelier system specimen [dir] [--product id]
+ *   atelier system lint [dir] [--product id] [--json]  the system against the playbook; exit 1 on a fail
  *   atelier check [files...] [--product id] [--json]   exit 1 on a fail
  *
  * The process around these (extract → reconcile with the creator → codify →
@@ -204,6 +206,30 @@ export function systemCommand(program: Command): void {
         writeFileSync(join(s.dir, "specimen-frame.html"), specimenFramePage(s, file));
         console.log(`  ${s.name} → ${relative(process.cwd(), file)}`);
       }
+    });
+  sys
+    .command("lint [dir]")
+    .description("Check each design system against the playbook: token tiers, roles per theme, text contrast per theme, base unit, component states")
+    .option("--product <id>", "Only this product")
+    .option("--json", "Machine-readable output")
+    .action((dir: string | undefined, opts: { product?: string; json?: boolean }) => {
+      const root = findSystemRoot(dir ?? process.cwd());
+      if (!root) {
+        console.error("  No design system here yet.");
+        process.exit(1);
+      }
+      const systems = opts.product ? [resolveProduct(root, opts.product)] : listSystems(root);
+      const results = systems.map((s) => ({ product: s.product, name: s.name, findings: lintSystem(s.system) }));
+      const fails = results.reduce((n, r) => n + r.findings.filter((f) => f.severity === "fail").length, 0);
+      if (opts.json) {
+        console.log(JSON.stringify({ ok: fails === 0, results }, null, 2));
+      } else {
+        for (const r of results) {
+          console.log(`  ${r.name}${r.findings.length ? "" : ": clean"}`);
+          for (const f of r.findings) console.log(`    ${f.severity === "fail" ? "fail" : "warn"}  ${f.id}  ${f.where}: ${f.message}`);
+        }
+      }
+      if (fails) process.exit(1);
     });
 }
 

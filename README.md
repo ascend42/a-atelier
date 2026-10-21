@@ -80,6 +80,36 @@ Then start a **new** Claude Code session (skills load at session start) and ask,
 
 `atelier setup --home <workspace>` points sessions at your brand workspace so they inherit its cascade. Re-run `atelier setup` after upgrading; it refreshes the skills and keeps the crew's learned notebooks.
 
+#### Updating
+
+The skills, agents and rules your sessions use are copies in `~/.claude` and `~/.atelier`, so pulling the repo alone changes nothing. After every update:
+
+```bash
+# npm install
+npm i -g @a-company/atelier@latest && atelier setup
+
+# a clone
+git pull
+pnpm install && pnpm build
+node packages/cli/dist/cli.js setup     # or `atelier setup` if it's linked
+```
+
+Then run `atelier doctor`, which flags skills that are older than your CLI, and start a **new** Claude Code session. Learned notebooks in `~/.paradigm` are kept; `--force` resets them.
+
+#### The UI review gate (opt in)
+
+`atelier setup` installs `~/.atelier/hooks/ui-gate.mjs` but doesn't switch it on, because hooks change how every Claude Code session behaves. Once on, an agent that edits UI in any repo gets one brief (follow the repo's design system, get an independent review from Mika). It can't finish until that review, or a one-line `Waived: <why>`, is saved. To turn it on, add this to `~/.claude/settings.json`, merged with any hooks you already have:
+
+```json
+"hooks": {
+  "PostToolUse": [{ "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+    "hooks": [{ "type": "command", "command": "node \"$HOME/.atelier/hooks/ui-gate.mjs\" post", "timeout": 5 }] }],
+  "Stop": [{ "hooks": [{ "type": "command", "command": "node \"$HOME/.atelier/hooks/ui-gate.mjs\" stop", "timeout": 5 }] }]
+}
+```
+
+To turn it off: `ATELIER_UI_GATE=off`, or `{"off": true}` in a repo's `.atelier/ui-gate.json`.
+
 ---
 
 ## Quick Start

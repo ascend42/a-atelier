@@ -14,9 +14,10 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { listSystems, resolveProduct, systemForFile, uiFilesFor, mergeSystems, isUiPath } from "./design-system.js";
 import { scanText, normColor } from "./design-scan.js";
-import { checkText } from "./design-check.js";
+import { checkText, themeBlockLines } from "./design-check.js";
 import { extract, nearDuplicates } from "./design-extract.js";
 import { specimenPage, specimenFramePage, inventoryPage } from "./design-pages.js";
+import { lintSystem, contrastRatio, contrastPairs, INTERACTIVE_STATES, INPUT_STATES } from "./design-lint.js";
 
 let root: string;
 
@@ -206,5 +207,173 @@ describe("extract and pages", () => {
     const frame = specimenFramePage(sys, out);
     expect(frame).toContain('href="../../../apps/console/app.css"');
     expect(frame).not.toContain("</span>"); // markup is JSON-escaped inside the script
+  });
+});
+
+describe("system lint (playbook v1)", () => {
+  const base = {
+    themes: ["day", "night"],
+    foundations: {
+      color: { ink: "#16150f", paper: "#ede8dc", mist: "#d9d4c8" },
+      space: { base: 4, scale: [4, 8, 12, 14, 16] },
+    },
+  };
+
+  it("passes a tiered system with contrast in every theme", () => {
+    const s = {
+      ...base,
+      foundations: { ...base.foundations, space: { base: 4, scale: [4, 8, 12, 16] } },
+      roles: {
+        "text.primary": { day: "color.ink", night: "color.paper" },
+        "surface.base": { day: "color.paper", night: "color.ink" },
+      },
+      components: { chip: { kind: "informational", tokens: { text: "text.primary" } } },
+    };
+    expect(lintSystem(s)).toEqual([]);
+  });
+
+  it("flags look-named roles, missing themes, chains, literals, low contrast and off-base spacing", () => {
+    const s = {
+      ...base,
+      roles: {
+        "text.primary": { day: "color.ink" },
+        "surface.base": { day: "color.paper", night: "color.mist" },
+        "text.muted": { day: "color.mist", night: "color.paper" },
+        "gray-border": "#cccccc",
+        "border.subtle": "surface.base",
+        "loop.a": "loop.b",
+        "loop.b": "loop.a",
+        "link.color": "color.missing",
+        "d.1": "d.2",
+        "d.2": "d.3",
+        "d.3": "d.4",
+        "d.4": "color.ink",
+      },
+    };
+    const ids = lintSystem(s).map((f) => `${f.id}:${f.where}`);
+    expect(ids).toContain("role-missing-theme:roles.text.primary");
+    expect(ids).toContain("role-named-by-look:roles.gray-border");
+    expect(ids).toContain("role-literal:roles.gray-border");
+    expect(ids.some((i) => i.startsWith("role-chain-deep:roles.border.subtle"))).toBe(false); // a one-hop chain is fine
+    expect(ids).toContain("role-circular:roles.loop.a");
+    expect(ids).toContain("role-unresolved:roles.link.color");
+    expect(ids).toContain("role-chain-deep:roles.d.1");
+    expect(ids).toContain("role-contrast:text.muted on surface.base (day)");
+    expect(ids).toContain("role-contrast:text.muted on surface.base (night)");
+    expect(ids).toContain("space-off-base:foundations.space.scale");
+  });
+
+  it("asks components for role bindings, the states their kind needs, and when-to-use for look-alikes", () => {
+    const s = {
+      foundations: { color: { ink: "#111111" } },
+      roles: { "text.primary": "color.ink" },
+      components: {
+        "button-primary": { kind: "input", states: ["default", "hover"], tokens: { fill: "color.ink", text: "#fff" } },
+        "button-ghost": { kind: "input", states: [...INTERACTIVE_STATES, ...INPUT_STATES], when_to_use: "secondary actions" },
+        old: { status: "deprecated" },
+      },
+    };
+    const ids = lintSystem(s).map((f) => `${f.id}:${f.where}`);
+    expect(ids).toContain("component-binds-primitive:components.button-primary.tokens.fill");
+    expect(ids).toContain("component-binds-literal:components.button-primary.tokens.text");
+    expect(ids).toContain("component-states:components.button-primary");
+    expect(ids).toContain("component-when-to-use:components (input)");
+    expect(ids).toContain("component-deprecated-without-replacement:components.old");
+    expect(ids.filter((i) => i.startsWith("component-states"))).toHaveLength(1);
+  });
+
+  it("computes WCAG contrast", () => {
+    expect(contrastRatio("#000000", "#ffffff")).toBeCloseTo(21, 1);
+    expect(contrastRatio("#767676", "#ffffff")).toBeCloseTo(4.54, 1);
+    expect(contrastRatio("oklch(0.5 0.1 200)", "#fff")).toBeNull();
+  });
+
+  it("check: literals that are tokens, and spacing off the base unit", () => {
+    write(".atelier/systems/console/design-system.yaml", "version: 2\nfoundations:\n  color: { ink: '#16150f' }\n  space: { base: 4 }\nrules:\n  - { id: on-base, check: spacing-off-base }\n");
+    const f = write("apps/console/a.css", ".a { color: #16150F; padding: 6px 8px; }");
+    const ids = checkText(".a { color: #16150F; padding: 6px 8px; }", f, systemForFile(f)!).map((x) => `${x.id}:${x.message.split(" ")[0]}`);
+    expect(ids).toEqual(["on-base:6px", "literal-has-token:#16150F"]);
+  });
+});
+
+describe("tells catalog in check (playbook v1)", () => {
+  it("flags palette steps in components but not in the role definitions", () => {
+    const tells = [{ id: "primitive-in-component", severity: "warn" as const, detect: { kind: "pattern", regex: "var\\(--(?:[a-z]+-)?(?:gray|blue)-?\\d{2,3}\\)", skip_definitions: true } }];
+    const f = write("apps/console/b.css", ":root { --text-muted: var(--gray-500); }\n.b { color: var(--gray-500); }");
+    const found = checkText(":root {\n  --text-muted: var(--gray-500);\n}\n.b { color: var(--gray-500); }", f, systemForFile(f)!, tells);
+    expect(found.map((x) => x.line)).toEqual([4]);
+  });
+});
+
+describe("system lint: review fixes (PR #15)", () => {
+  it("infers themes from the roles when none are declared, instead of skipping every check", () => {
+    const s = { foundations: { color: { mist: "#eeeeee", paper: "#ffffff" } }, roles: { "text.primary": { light: "color.mist", dark: "color.missing" }, "surface.base": { light: "color.paper" } } };
+    const ids = lintSystem(s).map((f) => `${f.id}:${f.where}`);
+    expect(ids).toContain("role-unresolved:roles.text.primary (dark)");
+    expect(ids).toContain("role-missing-theme:roles.surface.base");
+    expect(ids).toContain("role-contrast:text.primary on surface.base (light)");
+  });
+
+  it("treats a theme literally named default like any other", () => {
+    const s = { themes: ["default", "dark"], foundations: { color: { ink: "#111111" } }, roles: { "text.primary": { default: "color.ink" } } };
+    expect(lintSystem(s).map((f) => f.id)).toContain("role-missing-theme");
+  });
+
+  it("pairs inverse text with inverse surfaces and on-X text with X, so a correct inverse set passes", () => {
+    const s = {
+      foundations: { color: { ink: "#111111", paper: "#ffffff", accent: "#1d4ed8" } },
+      roles: { "text.primary": "color.ink", "text.inverse": "color.paper", "surface.base": "color.paper", "surface.inverse": "color.ink", "text.on-accent": "color.paper", accent: "color.accent" },
+    };
+    expect(contrastPairs(s)).toEqual([["text.primary", "surface.base"], ["text.inverse", "surface.inverse"], ["text.on-accent", "accent"]]);
+    expect(lintSystem(s).filter((f) => f.id === "role-contrast")).toEqual([]);
+  });
+
+  it("reads states written as a map or a string without crashing", () => {
+    const s = { components: { a: { kind: "input", states: { default: "<b/>", hover: "<b/>" } }, b: { kind: "navigational", states: "default, hover, focus, active, disabled" } } };
+    const f = lintSystem(s);
+    expect(f.filter((x) => x.id === "component-states").map((x) => x.where)).toEqual(["components.a"]);
+  });
+
+  it("reports a theme-independent role once, not once per theme", () => {
+    const s = { themes: ["day", "night"], foundations: { color: {} }, roles: { "border.subtle": "#cccccc", "link.x": "color.nope" } };
+    const ids = lintSystem(s).map((f) => `${f.id}:${f.where}`);
+    expect(ids.filter((i) => i === "role-literal:roles.border.subtle")).toHaveLength(1);
+    expect(ids.filter((i) => i === "role-unresolved:roles.link.x")).toHaveLength(1);
+  });
+
+  it("reads a base with units and a named scale", () => {
+    expect(lintSystem({ foundations: { space: { base: "4px", scale: ["4px", "6px"] } } }).map((f) => f.id)).toEqual(["space-off-base"]);
+    expect(lintSystem({ foundations: { space: { base: 4, scale: { sm: 4, md: 6 } } } }).map((f) => f.id)).toEqual(["space-off-base"]);
+  });
+
+  it("doesn't score translucent colours as opaque", () => {
+    expect(contrastRatio("#111111", "#ffffff10")).toBeNull();
+    const s = { foundations: { color: { ink: "#111111", glass: "#ffffff10" } }, roles: { "text.primary": "color.ink", "surface.glass": "color.glass" } };
+    expect(lintSystem(s).map((f) => f.id)).toEqual(["role-contrast-unknown"]);
+  });
+});
+
+describe("check: review fixes (PR #15)", () => {
+  it("doesn't flag the token source file, honours an override, and counts SCSS vars as definitions", () => {
+    write(".atelier/systems/console/design-system.yaml", "version: 2\nfoundations:\n  color: { ink: '#16150f', paper: '#ede8dc', accent: '#44577c' }\n");
+    const src = write("apps/console/tokens.ts", 'export const colors = { ink: "#16150f", paper: "#ede8dc", accent: "#44577c" };');
+    expect(checkText(require("node:fs").readFileSync(src, "utf8"), src, systemForFile(src)!).filter((x) => x.id === "literal-has-token")).toEqual([]);
+    const scss = write("apps/console/_vars.scss", "$ink: #16150f;\n.a { color: $ink; }");
+    expect(checkText("$ink: #16150f;\n.a { color: $ink; }", scss, systemForFile(scss)!).filter((x) => x.id === "literal-has-token")).toEqual([]);
+    const use = write("apps/console/b.css", ".b { color: #16150f; }");
+    expect(checkText(".b { color: #16150f; }", use, systemForFile(use)!).map((x) => x.id)).toEqual(["literal-has-token"]);
+    write(".atelier/systems/console/design-system.yaml", "version: 2\nfoundations:\n  color: { ink: '#16150f' }\noverrides:\n  - { tell: literal-has-token, reason: legacy }\n");
+    expect(checkText(".b { color: #16150f; }", use, systemForFile(use)!)).toEqual([]);
+  });
+
+  it("skips role definitions only inside theme blocks, one-line or not", () => {
+    const tells = [{ id: "primitive-in-component", severity: "warn" as const, detect: { kind: "pattern", regex: "var\\(--(?:[a-z]+-)?(?:gray|blue)-?\\d{2,3}\\)", skip_definitions: true } }];
+    const f = write("apps/console/c.css", "");
+    const text = [".dark { --text-muted: var(--gray-400); }", ".btn {", "  --btn-bg: var(--blue-500);", "}"].join("\n");
+    expect(checkText(text, f, systemForFile(f)!, tells).map((x) => x.line)).toEqual([3]);
+  });
+
+  it("marks theme blocks line by line", () => {
+    expect(themeBlockLines([":root {", "  --a: 1;", "}", ".x {", "  --b: 2;", "}"])).toEqual([true, true, true, false, false, false]);
   });
 });

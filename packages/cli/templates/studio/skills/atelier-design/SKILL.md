@@ -15,7 +15,8 @@ folder. (Background only: `docs/design-studio-plan.md`, which exists
 inside the Atelier repo.)
 Formats: `reference/formats.md`. Question bank: `reference/question-bank.md`.
 Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
-Design systems: `reference/system.md`.
+Design systems: `reference/system.md`. Usability rules:
+`reference/rules.yaml` (findings cite its ids).
 
 ## 0. Load the crew (silently)
 
@@ -80,6 +81,9 @@ once (AskUserQuestion when available):
 5. **Tells** — load `reference/tells.yaml`, then apply the repo's
    `tells.severity` and `overrides` from `design-system.yaml`. Keep only
    the tells whose `scope` matches this work (landing, product, content).
+6. **Rules** — `reference/rules.yaml`: the usability rules (will this cost
+   the user?). Tells ask whether it reads machine-made; rules ask whether
+   it works. Load the rules for the surface in scope.
 
 ## 2b. Design Read and mode
 
@@ -94,10 +98,22 @@ It's a claim the creator can correct in one reply. Correct it, then
 continue. Record it as `read:` in `session.yaml`, and in
 `design-system.yaml` on close.
 
+Then, in `session.yaml` (not shown unless it changes the conversation),
+record what is **known** about the users, each with its evidence, and
+what is **assumed**, each with how it would be checked. Options name the
+assumptions they rest on (`known-vs-assumed-recorded`).
+
+For multi-screen scope, sketch the **flow before the screens**: one
+person, one goal, the steps from entry to done, including where it can
+fail. Boards are then placed on the flow, not on isolated screens.
+
 For `direct` and `critique`, if the scope already exists as working UI,
 settle the **redesign mode** (`greenfield` / `preserve` / `overhaul`) and
 run the audit in `reference/redesign.md` before options. The mode can be
-the one scoping question; don't ask a second.
+the one scoping question; don't ask a second. Also classify the change
+(`change:` in `session.yaml`): a **refresh** touches the surface only; a
+**redesign** changes structure, so record a `baseline:` (the numbers or
+behaviour you'll compare against) before changing anything.
 
 ## 3. Open the session
 
@@ -142,6 +158,15 @@ never before it.
 raises a new surface mid-session) starts with a one-line rescope, then
 the audit gate. Record the scope change in `session.yaml`.
 
+**Fidelity matches the question.** A board about structure, hierarchy or
+flow shows grayscale structure; polished visuals come once the direction
+is settled. Skip the low-fidelity step when the system already covers
+the pattern. Every board states, in one line at the top, the one question
+it tests and what is deliberately unfinished (`testing:` and `fidelity:`
+on the board), so feedback lands on the question. If the creator's notes
+go to visuals while the question is structure, lower the fidelity and
+show it again.
+
 For each board, Luna writes **2–4 options**:
 
 - grounded in this repo's real UI and the home cascade — never a stock
@@ -151,6 +176,8 @@ For each board, Luna writes **2–4 options**:
 - each with: name, one-line description, the tokens/rules it would write,
   and its mixable facets;
 - one marked **recommended**, with one sentence of why;
+- each with its **trade-off**: what it gains and what it gives up
+  (`tradeoff:`), and the assumptions it rests on (`assumes:`);
 - any departure from the home cascade stated on the option;
 - structurally distinct, not just recolored: options should differ on at
   least one of layout structure, type character, color strategy, density,
@@ -174,7 +201,9 @@ otherwise), touch targets, feasibility in this stack, token-first, the
 decided dials, the `preserve:` list, and the in-scope tells. She also
 runs her `ui-build-protocol` (`~/.paradigm/agents/designer.agent`) against
 each option as if it were built: inventory, consistency with siblings,
-zone placement and duplicate entry points, states, copy, narrow widths.
+zone placement and duplicate entry points, states, copy, narrow widths,
+and the playbook v1 passes (grayscale, realistic data, states including
+the in-between, hover parity; see `agents/atelier-mika.md`).
 An option that fails is dropped or shown with Mika's concern attached. If
 Luna and Mika disagree, show both positions on the option — the creator
 decides.
@@ -228,6 +257,10 @@ reference.
 
 ### Decisions
 
+Every recorded decision carries the **problem** it answers (not the
+requested fix), the **trade-off** accepted, and the assumptions that
+survived, so it isn't relitigated later.
+
 - **Pick** → record it.
 - **Mix & match** → compose a merged option, show it back as a new
   option, confirm, then record.
@@ -267,9 +300,13 @@ the creator oriented with a one-line running tally, e.g.
 5. Then by verb:
    - `direct` → continue the original task under the new system. Mika
      implements; afterwards Luna runs a finish review against the
-     session's decisions, the direction render, the `preserve:` list and
-     the in-scope tells, and reports any drift with `file:line`. If the
-     system changed, regenerate its specimen (`atelier system specimen`).
+     session's decisions, the direction render, the `preserve:` list,
+     the in-scope tells and rules, and reports any drift with
+     `file:line`. She also reads the changed screens beside the rest of
+     the product: does it still read as one product, with one voice and
+     density (`coherent-not-just-consistent`)? If the system changed,
+     regenerate its specimen (`atelier system specimen`) and run
+     `atelier system lint`.
    - `system` → follow `reference/system.md` (products → extract → draft
      → reconcile → codify → enforce). It replaces the board loop above
      with a draft-first loop: the creator sees one summary and only the
@@ -280,7 +317,8 @@ the creator oriented with a one-line running tally, e.g.
 
 No boards up front. State the Design Read, then Mika runs the checks
 (`atelier check` on the scope's files where a system exists, plus
-contrast, a11y checklist and every in-scope tell) against the scope; Luna adds judgement
+contrast, a11y checklist, the in-scope rules from `reference/rules.yaml`
+and every in-scope tell) against the scope; Luna adds judgement
 (hierarchy, rhythm, voice, on-brand-ness), and reads the scope's current
 dials. Report findings ranked by impact, each with: what, where
 (`file:line`), why it matters, and the rule, decision or tell id it

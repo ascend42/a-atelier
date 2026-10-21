@@ -295,6 +295,89 @@ tells:
     severity: warn
     override: The motion dial is high and the creator chose it.
 
+  # ── Systems & structure (playbook v1) ───────────────────────────────
+  # From the Figma "Design basics" digest (2026-10-21), cross-checked against
+  # NN/g and WCAG; see docs/playbook/proposals.md §Playbook v1.
+  - id: card-soup
+    name: Card soup
+    scope: [product, landing]
+    detect: { kind: structure, what: "groups wrapped in bordered or filled boxes where spacing alone would separate them (boxes inside boxes, every list item a card)" }
+    why: When every group is a box, the box stops meaning anything; proximity should group first.
+    severity: warn
+    override: The container carries meaning (a draggable card, a selectable tile, a distinct surface).
+
+  - id: accent-everywhere
+    name: Accent everywhere
+    scope: [product, landing]
+    detect: { kind: count, what: "elements using the accent or another saturated hue in one view", max: "about a tenth of the view" }
+    why: If most things are emphasised, nothing is; the accent stops pointing at the one thing.
+    severity: warn
+    override: An expressive brand surface (a campaign page) where colour is the content.
+
+  - id: hue-only-contrast
+    name: Contrast by hue alone
+    scope: [product, landing, content]
+    detect: { kind: structure, what: "text or meaningful marks whose colour differs from the background in hue but not in lightness (luminance ratio under 3:1), e.g. saturated complements" }
+    why: Hue contrast isn't luminance contrast; it vibrates, fails WCAG and vanishes in grayscale.
+    severity: fail
+    override: none
+
+  - id: soft-ui-low-contrast
+    name: Soft UI
+    scope: [product, landing]
+    detect: { kind: review, hint: "neumorphic or embossed controls whose edges and states rely on faint shadows on a same-colour surface" }
+    why: Controls dissolve into the surface; boundaries and states fail non-text contrast (WCAG 1.4.11).
+    severity: warn
+    override: Decorative elements that aren't controls.
+
+  - id: near-miss-pairing
+    name: Near-miss font pairing
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "two families that are close but not the same (two geometric sans, two transitional serifs) used as a pairing" }
+    why: Pairings work by clear contrast or one family in several weights; "almost the same" reads as a mistake.
+    severity: warn
+    override: The second family has a job the first can't do (tabular figures, a script for a wordmark).
+
+  - id: ratio-as-reason
+    name: The ratio as the reason
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "a type or spacing scale, or a layout split, justified only by the golden ratio or another named proportion" }
+    why: Named ratios are coarse for UI and much of the case for them is myth; the scale should come from the content and the base unit.
+    severity: warn
+    override: The ratio was tested against the real content and kept for that reason.
+
+  - id: polish-as-validation
+    name: Polish as validation
+    scope: [product]
+    detect: { kind: review, hint: "generated or high-fidelity UI accepted because it looks finished, with no record of the problem, what is known vs assumed, or how it was checked" }
+    why: Finish makes untested ideas look decided (the aesthetic-usability effect works on reviewers too).
+    severity: warn
+    override: none
+
+  - id: primitive-in-component
+    name: Primitive token in a component
+    scope: [product]
+    detect: { kind: pattern, regex: "var\\(--(?:[a-z]+-)?(?:red|orange|yellow|green|teal|blue|indigo|purple|violet|pink|gray|grey|neutral|slate|zinc|stone)-?\\d{2,3}\\)", skip_definitions: true }
+    why: Components that reach for a palette step (var(--gray-500)) skip the role layer, so themes and rebrands miss them.
+    severity: warn
+    override: The file defines the role tokens themselves.
+
+  - id: hover-only-reveal
+    name: Hover-only reveal
+    scope: [product, landing]
+    detect: { kind: review, hint: "actions, tooltips or previews that only appear on :hover, with no focus or tap path" }
+    why: Touch has no hover and keyboards need focus; the feature doesn't exist for them.
+    severity: fail
+    override: none
+
+  - id: disabled-without-reason
+    name: Disabled without a reason
+    scope: [product]
+    detect: { kind: review, hint: "disabled controls with nothing nearby saying why or what would enable them" }
+    why: A greyed-out button with no reason is a dead end.
+    severity: warn
+    override: The reason is obvious from the surrounding form (an empty required field highlighted).
+
   # ── Motion (content) ────────────────────────────────────────────────
   # Video and motion graphics. `atelier render-check` computes the entries
   # marked render-check; the rest are judged on the render and its frames.
