@@ -44,7 +44,8 @@ export interface ComponentSpec {
   anatomy?: string[];
   variants?: Record<string, unknown>;
   sizes?: Record<string, unknown>;
-  states?: string[];
+  /** The states it can enter: a list, or a map keyed by state, or "a, b, c". */
+  states?: string[] | Record<string, unknown> | string;
   tokens?: Record<string, string>;
   source?: string | string[];
   /** state → markup rendered on the specimen page */

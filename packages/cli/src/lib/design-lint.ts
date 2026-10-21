@@ -46,46 +46,81 @@ export function primitives(system: DesignSystem): Map<string, string> {
   return out;
 }
 
-/** Theme ids: `themes:` if declared, else the specimen's themes, else one implicit theme. */
-export function themesOf(system: DesignSystem): string[] {
-  const declared = system.themes;
-  if (Array.isArray(declared) && declared.length) return declared.map(String);
-  const spec = Object.keys(system.specimen?.themes ?? {});
-  return spec.length ? spec : ["default"];
-}
-
 type RoleValue = string | Record<string, string>;
 
+/**
+ * Theme ids: `themes:` if declared, else the specimen's themes, else the
+ * theme keys the roles themselves use. `explicit` is false only when no
+ * role is per-theme at all (a single-theme system).
+ */
+export function themeInfo(system: DesignSystem): { themes: string[]; explicit: boolean } {
+  const declared = system.themes;
+  if (Array.isArray(declared) && declared.length) return { themes: declared.map(String), explicit: true };
+  const spec = Object.keys(system.specimen?.themes ?? {});
+  if (spec.length) return { themes: spec, explicit: true };
+  const used = new Set<string>();
+  for (const v of Object.values(system.roles ?? {})) if (v && typeof v === "object") Object.keys(v).forEach((k) => used.add(k));
+  return used.size ? { themes: [...used], explicit: true } : { themes: [""], explicit: false };
+}
+
+export function themesOf(system: DesignSystem): string[] {
+  return themeInfo(system).themes;
+}
+
 /** A role's value in one theme: the raw reference (not yet resolved). */
-export function roleRef(value: RoleValue, theme: string): string | undefined {
+export function roleRef(value: RoleValue | undefined, theme: string): string | undefined {
   if (typeof value === "string") return value;
   if (value && typeof value === "object") return value[theme];
   return undefined;
 }
 
-/** Resolve a role in a theme to a concrete value, following primitive refs (and role refs, which lint flags). */
-export function resolveRole(system: DesignSystem, role: string, theme: string, seen = new Set<string>()): string | undefined {
-  const roles = (system.roles ?? {}) as Record<string, RoleValue>;
-  const prims = primitives(system);
+/** Resolve a role in a theme to a concrete value, following primitive and role refs. Pass `prims` to avoid rebuilding it. */
+export function resolveRole(system: DesignSystem, role: string, theme: string, prims: Map<string, string> = primitives(system), seen = new Set<string>()): string | undefined {
+  const roles: Record<string, RoleValue> = system.roles ?? {};
   const ref = roleRef(roles[role], theme);
   if (ref === undefined) return undefined;
   if (prims.has(ref)) return prims.get(ref);
-  if (ref in roles && !seen.has(ref)) return resolveRole(system, ref, theme, new Set([...seen, role]));
+  if (ref in roles && !seen.has(ref)) return resolveRole(system, ref, theme, prims, new Set([...seen, role]));
   return ref;
 }
 
-/** WCAG 2.x relative luminance of #rrggbb. */
-export function luminance(hex: string): number | null {
-  const rgb = rgbOf(normColor(hex));
+/** A length in px from 4, "4px", "0.25rem"; null otherwise. */
+function px(v: unknown): number | null {
+  const m = String(v ?? "").trim().match(/^(-?[\d.]+)(px|rem|em)?$/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isNaN(n) ? null : m[2] === "rem" || m[2] === "em" ? n * 16 : n;
+}
+
+/** The spacing base unit in px and the scale steps in px, whether the scale is a list or a named map. */
+export function spaceScale(system: DesignSystem): { base: number | null; steps: number[] } {
+  const space = (foundationsOf(system).space ?? {}) as Dict;
+  const raw = Array.isArray(space.scale) ? space.scale : space.scale && typeof space.scale === "object" ? Object.values(space.scale as Dict) : [];
+  return { base: px(space.base), steps: (raw as unknown[]).map(px).filter((n): n is number => n !== null) };
+}
+
+/** A component's states as a list, whether written as a list, a map (state → markup) or a string. */
+export function statesOf(states: unknown): string[] {
+  if (Array.isArray(states)) return states.map((x) => String(x).toLowerCase());
+  if (states && typeof states === "object") return Object.keys(states).map((x) => x.toLowerCase());
+  if (typeof states === "string") return states.split(/[\s,]+/).filter(Boolean).map((x) => x.toLowerCase());
+  return [];
+}
+
+/** WCAG 2.x relative luminance of an opaque colour; null for non-sRGB or translucent colours. */
+export function luminance(color: string): number | null {
+  const hex = normColor(color);
+  if (/^#[0-9a-f]{8}$/.test(hex) && !hex.endsWith("ff")) return null; // translucent: depends on what's behind it
+  const rgb = rgbOf(hex);
   if (!rgb) return null;
   const [r, g, b] = rgb.map((c) => {
-    const s = c / 255;
-    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
   });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** WCAG contrast ratio, or null when either colour isn't sRGB hex/rgb. */
+/** WCAG contrast ratio, or null when either colour isn't opaque sRGB. */
 export function contrastRatio(a: string, b: string): number | null {
   const la = luminance(a);
   const lb = luminance(b);
@@ -94,61 +129,79 @@ export function contrastRatio(a: string, b: string): number | null {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-/** Text-on-surface pairs to check: `contrast_pairs` if given, else every text.* role on every surface.* / bg.* role. */
+/**
+ * Text-on-surface pairs to check: `contrast_pairs` if given. Otherwise
+ * ordinary text roles go on ordinary surfaces; inverse text on inverse
+ * surfaces; "on-X" text (text.on-accent) on the roles named X. Disabled
+ * and placeholder text are exempt (WCAG 1.4.3 inactive components).
+ */
 export function contrastPairs(system: DesignSystem): [string, string][] {
   const explicit = system.contrast_pairs;
   if (Array.isArray(explicit) && explicit.length) return explicit.filter((p) => Array.isArray(p) && p.length === 2) as [string, string][];
   const names = Object.keys(system.roles ?? {});
-  const text = names.filter((n) => /^(text|fg|foreground|on)\b|^text[.\-_]/.test(n) && !/disabled|placeholder/.test(n));
-  const surface = names.filter((n) => /^(surface|bg|background)\b|^surface[.\-_]/.test(n));
-  return text.flatMap((t) => surface.map((s) => [t, s] as [string, string]));
+  const isText = (n: string): boolean => /^(text|fg|foreground)([.\-_]|$)/.test(n) && !/disabled|placeholder/.test(n);
+  const isSurface = (n: string): boolean => /^(surface|bg|background)([.\-_]|$)/.test(n);
+  const inverse = (n: string): boolean => /inverse|inverted/.test(n);
+  const pairs: [string, string][] = [];
+  for (const t of names.filter(isText)) {
+    const on = t.match(/[.\-_]on[.\-_]([\w-]+)$/)?.[1];
+    if (on) {
+      for (const r of names) if (r !== t && r.split(/[.\-_]/).includes(on) && !isText(r)) pairs.push([t, r]);
+      continue;
+    }
+    for (const sf of names.filter(isSurface)) if (inverse(t) === inverse(sf)) pairs.push([t, sf]);
+  }
+  return pairs;
 }
 
 export function lintSystem(system: DesignSystem): LintFinding[] {
   const out: LintFinding[] = [];
+  const seenFindings = new Set<string>();
   const push = (f: LintFinding): void => {
+    const key = `${f.id}|${f.where}|${f.message}`;
+    if (seenFindings.has(key)) return;
+    seenFindings.add(key);
     out.push(f);
   };
   const prims = primitives(system);
   const roles: Record<string, RoleValue> = system.roles ?? {};
-  const themes = themesOf(system);
+  const { themes, explicit } = themeInfo(system);
+  const tag = (theme: string): string => (explicit && themes.length > 1 ? ` (${theme})` : "");
+  const isRef = (v: string): boolean => /^[a-z][\w-]*(\.[\w-]+)+$/i.test(v);
 
-  // Roles: named by job, defined in every theme, one hop to a primitive.
+  // Roles: named by job, defined in every theme, resolving to a primitive.
   for (const [role, value] of Object.entries(roles)) {
     if (LOOK_WORDS.test(role)) {
       push({ id: "role-named-by-look", severity: "warn", where: `roles.${role}`, message: `"${role}" names a look, not a job; name it for what it does (text.secondary, surface.raised, status.error)` });
     }
-    if (value && typeof value === "object") {
+    if (value && typeof value === "object" && explicit) {
       const missing = themes.filter((t) => !(t in value));
-      if (missing.length && themes[0] !== "default") {
-        push({ id: "role-missing-theme", severity: "fail", where: `roles.${role}`, message: `no value for theme ${missing.join(", ")}` });
-      }
+      if (missing.length) push({ id: "role-missing-theme", severity: "fail", where: `roles.${role}`, message: `no value for theme ${missing.join(", ")}` });
     }
-    for (const theme of themes) {
+    // A plain string is the same in every theme: check it once.
+    const checkThemes = typeof value === "string" ? [themes[0]] : themes;
+    for (const theme of checkThemes) {
       const ref = roleRef(value, theme);
       if (ref === undefined) continue;
+      const where = `roles.${role}${typeof value === "string" ? "" : tag(theme)}`;
       if (ref in roles) {
-        // Chains are allowed (W3C DTCG 2025.10 §7.2.2); loops and deep chains are not.
+        // Chains are allowed (W3C DTCG 2025.10 §7.2.2); loops, dangling ends and deep chains are not.
         const chain = [role];
         let cur: string | undefined = ref;
         while (cur !== undefined && cur in roles && !chain.includes(cur)) {
           chain.push(cur);
           cur = roleRef(roles[cur], theme);
         }
-        const where = `roles.${role}${themes.length > 1 ? ` (${theme})` : ""}`;
         if (cur !== undefined && chain.includes(cur)) {
           push({ id: "role-circular", severity: "fail", where, message: `references loop: ${[...chain, cur].join(" → ")}` });
-        } else if (cur !== undefined && !prims.has(cur) && /^[a-z][\w-]*(\.[\w-]+)+$/i.test(cur)) {
+        } else if (cur !== undefined && !prims.has(cur) && isRef(cur)) {
           push({ id: "role-unresolved", severity: "fail", where, message: `${chain.join(" → ")} ends at "${cur}", which isn't a role or a primitive` });
         } else if (chain.length > 3) {
           push({ id: "role-chain-deep", severity: "warn", where, message: `${chain.length} hops (${chain.join(" → ")}); keep chains short so a change is easy to trace` });
         }
       } else if (!prims.has(ref)) {
-        if (/^[a-z][\w-]*(\.[\w-]+)+$/i.test(ref)) {
-          push({ id: "role-unresolved", severity: "fail", where: `roles.${role}`, message: `"${ref}" isn't a role or a primitive` });
-        } else {
-          push({ id: "role-literal", severity: "warn", where: `roles.${role}`, message: `"${ref}" is a raw value; add it to foundations and point the role at it` });
-        }
+        if (isRef(ref)) push({ id: "role-unresolved", severity: "fail", where, message: `"${ref}" isn't a role or a primitive` });
+        else push({ id: "role-literal", severity: "warn", where, message: `"${ref}" is a raw value; add it to foundations and point the role at it` });
       }
     }
   }
@@ -156,26 +209,25 @@ export function lintSystem(system: DesignSystem): LintFinding[] {
   // Text on surface, per theme.
   for (const [text, surface] of contrastPairs(system)) {
     for (const theme of themes) {
-      const fg = resolveRole(system, text, theme);
-      const bg = resolveRole(system, surface, theme);
+      const fg = resolveRole(system, text, theme, prims);
+      const bg = resolveRole(system, surface, theme, prims);
       if (!fg || !bg) continue;
       const ratio = contrastRatio(fg, bg);
-      if (ratio !== null && ratio < 4.5) {
-        push({
-          id: "role-contrast",
-          severity: "fail",
-          where: `${text} on ${surface}${themes.length > 1 ? ` (${theme})` : ""}`,
-          message: `${ratio.toFixed(2)}:1 is under 4.5:1 for text (WCAG 1.4.3)`,
-        });
+      const where = `${text} on ${surface}${tag(theme)}`;
+      if (ratio === null) {
+        if (/^#[0-9a-f]{8}$/i.test(normColor(fg)) || /^#[0-9a-f]{8}$/i.test(normColor(bg))) {
+          push({ id: "role-contrast-unknown", severity: "warn", where, message: "a translucent colour: contrast depends on what's behind it; check it rendered, or list the composited pair in contrast_pairs" });
+        }
+      } else if (ratio < 4.5) {
+        push({ id: "role-contrast", severity: "fail", where, message: `${ratio.toFixed(2)}:1 is under 4.5:1 for text (WCAG 1.4.3)` });
       }
     }
   }
 
   // Spacing on the base unit.
-  const space = (foundationsOf(system).space ?? {}) as Dict;
-  const base = Number(space.base);
-  if (base > 0 && Array.isArray(space.scale)) {
-    const off = (space.scale as unknown[]).map(Number).filter((v) => v > 2 && v % base !== 0);
+  const { base, steps } = spaceScale(system);
+  if (base && base > 0) {
+    const off = steps.filter((v) => v > 2 && v % base !== 0);
     if (off.length) push({ id: "space-off-base", severity: "warn", where: "foundations.space.scale", message: `${off.join(", ")} aren't multiples of the ${base}px base unit` });
   }
 
@@ -195,9 +247,9 @@ export function lintSystem(system: DesignSystem): LintFinding[] {
         push({ id: "component-token-unknown", severity: "warn", where: `${where}.tokens.${slot}`, message: `"${r}" isn't a role in this system` });
       }
     }
-    const states = (c.states ?? []).map((s) => s.toLowerCase());
+    const states = statesOf(c.states);
     const needed = c.kind === "input" ? [...INTERACTIVE_STATES, ...INPUT_STATES] : c.kind === "navigational" ? INTERACTIVE_STATES : [];
-    const missing = needed.filter((s) => !states.includes(s));
+    const missing = needed.filter((st) => !states.includes(st));
     if (missing.length && c.status !== "deprecated") {
       push({ id: "component-states", severity: "warn", where, message: `a ${c.kind} component needs ${missing.join(", ")} (disabled says why; loading blocks a second submit; error says what and what next)` });
     }
@@ -214,7 +266,7 @@ export function lintSystem(system: DesignSystem): LintFinding[] {
   }
   for (const [kind, ids] of byKind) {
     if (ids.length < 2) continue;
-    const undocumented = ids.filter((id) => !system.components?.[id]?.when_to_use);
+    const undocumented = ids.filter((cid) => !system.components?.[cid]?.when_to_use);
     if (undocumented.length) {
       push({ id: "component-when-to-use", severity: "warn", where: `components (${kind})`, message: `${undocumented.join(", ")} share kind "${kind}" with other components but say nothing about when to use them` });
     }

@@ -6,6 +6,8 @@ Format: [major.minor.fix] — based on milestone progression.
 
 ## [Unreleased] — v1.0 creator-flow surface
 
+`@a-company/atelier` 0.39.0 carries the two sections below this line ("design playbook v1" and "design systems per product…").
+
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
 ### Added — design playbook v1

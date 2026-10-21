@@ -12,7 +12,7 @@
 import { dirname, relative } from "node:path";
 import { foundationsOf, type ResolvedSystem, type Dict, type ComponentSpec } from "./design-system.js";
 import type { Inventory, ValueEntry } from "./design-extract.js";
-import { contrastPairs, contrastRatio, resolveRole, themesOf } from "./design-lint.js";
+import { contrastPairs, contrastRatio, primitives, resolveRole, roleRef, statesOf, themesOf } from "./design-lint.js";
 
 const esc = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -256,12 +256,14 @@ ${s.read ? `<p>${esc(s.read)}</p>` : ""}
   const roles = Object.keys(s.roles ?? {});
   if (roles.length) {
     const themeIds = themesOf(s);
-    parts.push(`<h3>Roles</h3><p class="meta">Each job and the primitive it uses in each theme. Components bind roles, never primitives.</p><div class="scroll"><table><tr><th>Role</th>${themeIds.map((t) => `<th>${esc(t)}</th>`).join("")}</tr>`);
+    const prims = primitives(s);
+    const label = (t: string): string => t || "value";
+    parts.push(`<h3>Roles</h3><p class="meta">Each job and the primitive it uses in each theme. Components bind roles, never primitives.</p><div class="scroll"><table><tr><th>Role</th>${themeIds.map((t) => `<th>${esc(label(t))}</th>`).join("")}</tr>`);
     for (const r of roles) {
       parts.push(`<tr><td class="mono">${esc(r)}</td>${themeIds
         .map((t) => {
-          const v = resolveRole(s, r, t);
-          const ref = typeof s.roles![r] === "string" ? s.roles![r] : (s.roles![r] as Record<string, string>)[t];
+          const v = resolveRole(s, r, t, prims);
+          const ref = roleRef(s.roles![r], t);
           return `<td><div class="row">${v && /^#|^rgb/i.test(v) ? `<span style="width:18px;height:18px;border-radius:4px;border:1px solid var(--line);background:${esc(v)}"></span>` : ""}<span class="mono">${esc(ref ?? "—")}</span></div></td>`;
         })
         .join("")}</tr>`);
@@ -269,12 +271,12 @@ ${s.read ? `<p>${esc(s.read)}</p>` : ""}
     parts.push(`</table></div>`);
     const pairs = contrastPairs(s);
     if (pairs.length) {
-      parts.push(`<h3>Text on surface</h3><div class="scroll"><table><tr><th>Pair</th>${themeIds.map((t) => `<th>${esc(t)}</th>`).join("")}</tr>`);
+      parts.push(`<h3>Text on surface</h3><div class="scroll"><table><tr><th>Pair</th>${themeIds.map((t) => `<th>${esc(label(t))}</th>`).join("")}</tr>`);
       for (const [fg, bg] of pairs) {
         parts.push(`<tr><td class="mono">${esc(fg)} on ${esc(bg)}</td>${themeIds
           .map((t) => {
-            const a = resolveRole(s, fg, t);
-            const b = resolveRole(s, bg, t);
+            const a = resolveRole(s, fg, t, prims);
+            const b = resolveRole(s, bg, t, prims);
             const ratio = a && b ? contrastRatio(a, b) : null;
             if (ratio === null) return `<td class="meta">n/a</td>`;
             return `<td><div class="row"><span style="padding:2px 8px;border-radius:4px;background:${esc(b)};color:${esc(a)}">Aa</span><span class="badge ${ratio >= 4.5 ? "on" : "off"}">${ratio.toFixed(2)}:1</span></div></td>`;
@@ -294,7 +296,7 @@ ${s.read ? `<p>${esc(s.read)}</p>` : ""}
 <tr><th style="width:110px">Anatomy</th><td>${list(c.anatomy)}</td></tr>
 <tr><th>Variants</th><td>${entries(c.variants).length ? entries(c.variants).map(([k, v]) => `<div><b>${esc(k)}</b>: ${esc(typeof v === "object" ? JSON.stringify(v) : v)}</div>`).join("") : `<span class="meta">none recorded</span>`}</td></tr>
 <tr><th>Sizes</th><td>${entries(c.sizes).length ? entries(c.sizes).map(([k, v]) => `<div><b>${esc(k)}</b>: <span class="mono">${esc(typeof v === "object" ? JSON.stringify(v) : v)}</span></div>`).join("") : `<span class="meta">none recorded</span>`}</td></tr>
-<tr><th>States</th><td>${list(c.states)}</td></tr>
+<tr><th>States</th><td>${list(statesOf(c.states))}</td></tr>
 <tr><th>Tokens</th><td class="mono">${entries(c.tokens).map(([k, v]) => `${esc(k)} → ${esc(v)}`).join("<br>") || `<span class="meta">none recorded</span>`}</td></tr>
 <tr><th>Source</th><td class="mono">${[c.source].flat().filter(Boolean).map(esc).join("<br>") || `<span class="meta">not linked</span>`}</td></tr>
 </table></div>`);
@@ -307,9 +309,9 @@ ${s.read ? `<p>${esc(s.read)}</p>` : ""}
         }
         parts.push(`</div>`);
       }
-      const missing = (c.states ?? []).filter((st) => !ex.some(([k]) => k === st));
+      const missing = statesOf(c.states).filter((st) => !ex.some(([k]) => k.toLowerCase() === st));
       if (missing.length) parts.push(`<div class="callout">No example for: ${missing.map(esc).join(", ")}. Every state needs one before the component counts as specified.</div>`);
-    } else if (c.states?.length) {
+    } else if (statesOf(c.states).length) {
       parts.push(`<div class="callout">No examples yet: add <code>examples: { state: markup }</code> so each state renders here.</div>`);
     }
     parts.push(`</div>`);
