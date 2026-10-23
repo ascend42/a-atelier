@@ -1,0 +1,777 @@
+{
+ "version": "1.0",
+ "name": "Atelier reveal",
+ "description": "The compass lands, draws its crossbar, and becomes the A of Atelier.",
+ "canvas": {
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "background": "#f6f3ee"
+ },
+ "assets": {
+  "body": {
+   "type": "svg",
+   "src": "parts/body.svg"
+  },
+  "pencil": {
+   "type": "svg",
+   "src": "parts/pencil-leg.svg"
+  },
+  "l0": {
+   "type": "svg",
+   "src": "parts/letter-0-t.svg"
+  },
+  "l1": {
+   "type": "svg",
+   "src": "parts/letter-1-e.svg"
+  },
+  "l2": {
+   "type": "svg",
+   "src": "parts/letter-2-l.svg"
+  },
+  "l3": {
+   "type": "svg",
+   "src": "parts/letter-3-i.svg"
+  },
+  "l4": {
+   "type": "svg",
+   "src": "parts/letter-4-e.svg"
+  },
+  "l5": {
+   "type": "svg",
+   "src": "parts/letter-5-r.svg"
+  },
+  "tag": {
+   "type": "svg",
+   "src": "parts/tagline.svg"
+  }
+ },
+ "layers": [
+  {
+   "id": "lockup",
+   "visual": {
+    "type": "group"
+   },
+   "frame": {
+    "x": 360.77,
+    "y": 200.0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 720.0
+   },
+   "anchorPoint": {
+    "x": 0.1352,
+    "y": 0.35
+   }
+  },
+  {
+   "id": "arc",
+   "parentId": "lockup",
+   "visual": {
+    "type": "shape",
+    "shape": {
+     "type": "path",
+     "closed": false,
+     "points": [
+      {
+       "x": 103.16,
+       "y": 319.5,
+       "out": {
+        "x": 27.33,
+        "y": 43.2
+       }
+      },
+      {
+       "x": 220.84,
+       "y": 319.5,
+       "in": {
+        "x": -27.33,
+        "y": 43.2
+       }
+      }
+     ]
+    },
+    "stroke": {
+     "color": "#c2410c",
+     "width": 36.0
+    }
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "body",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "body"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "pencil",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "pencil"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   },
+   "anchorPoint": {
+    "x": 0.1352,
+    "y": 0.2419
+   }
+  },
+  {
+   "id": "l0",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l0"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "l1",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l1"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "l2",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l2"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "l3",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l3"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "l4",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l4"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "l5",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "l5"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 558.0
+   }
+  },
+  {
+   "id": "tag",
+   "parentId": "lockup",
+   "visual": {
+    "type": "image",
+    "assetId": "tag"
+   },
+   "frame": {
+    "x": 0,
+    "y": 0
+   },
+   "bounds": {
+    "width": 1198.46,
+    "height": 720.0
+   }
+  }
+ ],
+ "states": {
+  "reveal": {
+   "duration": 114,
+   "deltas": [
+    {
+     "layer": "lockup",
+     "property": "scale.x",
+     "range": [
+      0,
+      20
+     ],
+     "from": 1.5,
+     "to": 1.04,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "lockup",
+     "property": "scale.y",
+     "range": [
+      0,
+      20
+     ],
+     "from": 1.5,
+     "to": 1.04,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "body",
+     "property": "opacity",
+     "range": [
+      0,
+      5
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "pencil",
+     "property": "opacity",
+     "range": [
+      0,
+      5
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "pencil",
+     "property": "rotation",
+     "range": [
+      0,
+      8
+     ],
+     "from": 31,
+     "to": 31,
+     "easing": "linear"
+    },
+    {
+     "layer": "pencil",
+     "property": "rotation",
+     "range": [
+      8,
+      34
+     ],
+     "from": 31,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.7,
+      "y1": 0.15,
+      "x2": 0.45,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "arc",
+     "property": "visual.stroke.end",
+     "range": [
+      0,
+      10
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "arc",
+     "property": "visual.stroke.end",
+     "range": [
+      10,
+      34
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.7,
+      "y1": 0.15,
+      "x2": 0.45,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "lockup",
+     "property": "frame.x",
+     "range": [
+      0,
+      28
+     ],
+     "from": 798.0,
+     "to": 798.0,
+     "easing": "linear"
+    },
+    {
+     "layer": "lockup",
+     "property": "frame.x",
+     "range": [
+      28,
+      52
+     ],
+     "from": 798.0,
+     "to": 360.77,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.7,
+      "y1": 0.15,
+      "x2": 0.45,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l0",
+     "property": "opacity",
+     "range": [
+      0,
+      34
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l0",
+     "property": "opacity",
+     "range": [
+      34,
+      40
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l0",
+     "property": "frame.y",
+     "range": [
+      0,
+      34
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l0",
+     "property": "frame.y",
+     "range": [
+      34,
+      46
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l1",
+     "property": "opacity",
+     "range": [
+      0,
+      36
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l1",
+     "property": "opacity",
+     "range": [
+      36,
+      42
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l1",
+     "property": "frame.y",
+     "range": [
+      0,
+      36
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l1",
+     "property": "frame.y",
+     "range": [
+      36,
+      48
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l2",
+     "property": "opacity",
+     "range": [
+      0,
+      39
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l2",
+     "property": "opacity",
+     "range": [
+      39,
+      45
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l2",
+     "property": "frame.y",
+     "range": [
+      0,
+      39
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l2",
+     "property": "frame.y",
+     "range": [
+      39,
+      51
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l3",
+     "property": "opacity",
+     "range": [
+      0,
+      41
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l3",
+     "property": "opacity",
+     "range": [
+      41,
+      47
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l3",
+     "property": "frame.y",
+     "range": [
+      0,
+      41
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l3",
+     "property": "frame.y",
+     "range": [
+      41,
+      53
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l4",
+     "property": "opacity",
+     "range": [
+      0,
+      44
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l4",
+     "property": "opacity",
+     "range": [
+      44,
+      50
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l4",
+     "property": "frame.y",
+     "range": [
+      0,
+      44
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l4",
+     "property": "frame.y",
+     "range": [
+      44,
+      56
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "l5",
+     "property": "opacity",
+     "range": [
+      0,
+      46
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "l5",
+     "property": "opacity",
+     "range": [
+      46,
+      52
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "l5",
+     "property": "frame.y",
+     "range": [
+      0,
+      46
+     ],
+     "from": 26,
+     "to": 26,
+     "easing": "linear"
+    },
+    {
+     "layer": "l5",
+     "property": "frame.y",
+     "range": [
+      46,
+      58
+     ],
+     "from": 26,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "tag",
+     "property": "opacity",
+     "range": [
+      0,
+      52
+     ],
+     "from": 0,
+     "to": 0,
+     "easing": "linear"
+    },
+    {
+     "layer": "tag",
+     "property": "opacity",
+     "range": [
+      52,
+      60
+     ],
+     "from": 0,
+     "to": 1,
+     "easing": "linear"
+    },
+    {
+     "layer": "tag",
+     "property": "frame.y",
+     "range": [
+      0,
+      52
+     ],
+     "from": 18,
+     "to": 18,
+     "easing": "linear"
+    },
+    {
+     "layer": "tag",
+     "property": "frame.y",
+     "range": [
+      52,
+      70
+     ],
+     "from": 18,
+     "to": 0,
+     "easing": {
+      "type": "cubic-bezier",
+      "x1": 0.15,
+      "y1": 0.25,
+      "x2": 0.15,
+      "y2": 0.95
+     }
+    },
+    {
+     "layer": "lockup",
+     "property": "scale.x",
+     "range": [
+      20,
+      114
+     ],
+     "from": 1.04,
+     "to": 0.965,
+     "easing": "linear"
+    },
+    {
+     "layer": "lockup",
+     "property": "scale.y",
+     "range": [
+      20,
+      114
+     ],
+     "from": 1.04,
+     "to": 0.965,
+     "easing": "linear"
+    }
+   ]
+  }
+ }
+}
