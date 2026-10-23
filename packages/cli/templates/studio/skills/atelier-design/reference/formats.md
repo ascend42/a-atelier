@@ -100,6 +100,46 @@ closed: null
 summary: null
 ```
 
+## brand.yaml
+
+In `.atelier/brand/`, `.atelier/systems/<product>/brand/` or a home
+studio's `_brand/`, next to `marks/` and `brand.html`. Written by Mika
+through the `brand` verb (`brand.md`); checked by `atelier brand check`,
+rendered by `atelier brand sheet`.
+
+```yaml
+version: 1
+name: Golden Bear Equities
+kind: new                    # new | refresh | redesign
+strategy:
+  truths:                    # what sets it apart, each with evidence
+    - { truth: "Buys and fixes houses across California", evidence: "founder brief" }
+  audience: "homeowners selling a house that needs work"
+  personality: [steady, local, straight-talking]
+nouns:
+  kept: [campanile, bear silhouette, gold sparkle, five-pointed star, rising sun, G+B, roofline]
+  struck: [{ noun: gold nugget, why: "reads as mining, not housing" }]
+equity: []                   # redesigns: what people already recognise and must survive
+mark:
+  idea: "A bear whose stride frames a house: strength and homes in one shape."
+  nouns: [bear silhouette, roofline]
+  second_read: "The house is the space under the bear."
+  file: marks/mark.svg
+system:                      # small media (short story) → large media (long story)
+  - { id: mark, file: marks/mark.svg, use: "favicon, avatar, app icon", min_px: 16 }
+  - { id: horizontal, file: marks/horizontal.svg, use: "site header, docs", min_px: 24 }
+  - { id: vertical, file: marks/vertical.svg, use: "cards, title slides" }
+  - { id: badge, file: marks/badge.svg, use: "stickers, signage, merch" }
+color: { ink: "#14213d", paper: "#ffffff", accent: "#f2b705" }
+type: { display: "Bebas Neue", text: "Inter" }
+voice: { adjectives: [steady, local], do: [], dont: [] }
+clearspace: "the height of the bear's head on every side"
+misuse: ["don't put the bear on a busy photo", "don't recolour the house"]
+rounds:
+  - { round: 1, method: "6 SVG mocks", shown: [A, B, C, D, E, F], picked: [B, E], misreadings: { C: ["a hedgehog"] } }
+decisions: []                # as in session.yaml: choice, problem, trade-off
+```
+
 ## design-system.yaml
 
 Version 2 adds layers to version 1. Both are read: `foundations` is v2's

@@ -378,6 +378,49 @@ tells:
     severity: warn
     override: The reason is obvious from the surrounding form (an empty required field highlighted).
 
+  # ── Marks (brand) ───────────────────────────────────────────────────
+  # From Allan Peters's practice in the neurons brain (design/branding);
+  # checked in every round of the `brand` verb (reference/brand.md).
+  - id: initial-only-mark
+    name: The initial as the mark
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "a brand mark that is just the name's first letter (or initials) set in the logotype's font, with no idea from the brand's strategy" }
+    why: Simple, but not memorable, unique or ownable; it says nothing about the brand (PELUVA's P).
+    severity: warn
+    override: A monogram drawn as a real idea (letters combined or reshaped to carry the brand's story, like Golden Bear's G+B).
+
+  - id: stock-symbol-mark
+    name: Stock symbol
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "a generic symbol any company in the category could use: a lightbulb for ideas, a globe for global, a rocket for growth, a leaf for green, a shield for security" }
+    why: Fails "unique" and "ownable"; it marks the category, not the brand.
+    severity: warn
+    override: The symbol is combined or reshaped into something only this brand could own.
+
+  - id: literal-add-on
+    name: The literal add-on
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "the subject pasted onto a logotype or mark as a separate drawing (a jet on top of 'JET', a fork beside a restaurant name)" }
+    why: The obvious move; earning the image from the shapes already there (negative space, one detail) is what people remember.
+    severity: warn
+    override: none
+
+  - id: illustration-as-mark
+    name: Illustration as a mark
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "a mark with fine detail, many colours, gradients or thin lines that turns to mush at 32px and 16px" }
+    why: The mark has to serve the smallest media (favicon, avatar) first; detail belongs in large-media lockups.
+    severity: warn
+    override: The illustration is a large-media badge, and a reduced mark exists for small media.
+
+  - id: abstract-orb-mark
+    name: Abstract orb or sparkle
+    scope: [landing, product, content]
+    detect: { kind: review, hint: "a gradient orb, blob, swirl or four-point sparkle as the mark, with no subject from the brand" }
+    why: The default mark generated tools and AI products reach for; it signals nothing about this brand.
+    severity: warn
+    override: The brand's own nouns really are light or energy and the form is drawn from them.
+
   # ── Motion (content) ────────────────────────────────────────────────
   # Video and motion graphics. `atelier render-check` computes the entries
   # marked render-check; the rest are judged on the render and its frames.

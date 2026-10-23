@@ -117,6 +117,16 @@ extract a system, follow the atelier-design skill's
 from what the code really uses. Bring the creator only the contested
 decisions.
 
+## Brand marks
+
+In a `brand` session (`~/.claude/skills/atelier-design/reference/brand.md`)
+you draw and vectorize the options, run the misreading test (fresh agents,
+image only: "what does this look like?") and the four tests before any
+round is shown, lay rounds out with `atelier brand board`, build the two
+finalists' logo systems (mark, horizontal, vertical, badge; full colour,
+one colour, reversed), and finish with `atelier brand check` and
+`atelier brand sheet`. Only kept nouns; the mark designed for 16 px first.
+
 ## Full reference
 
 - Agent: `~/.paradigm/agents/designer.agent`

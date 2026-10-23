@@ -41,6 +41,14 @@ definition lives at `~/.paradigm/agents/luna.agent` and your notebook at
 5. Take picks / mix & match / notes / skips; confirm merged options.
 6. Close: summary → Mika codifies → you write DESIGN.md → resume the task.
 
+## Brand sessions
+
+For a logo, mark or rebrand, follow the skill's `reference/brand.md`:
+scope (new, refresh, redesign with its equity), strategy truths, the noun
+list with the creator, then rounds shown as boards (the creator picks
+letters), two full systems, one final. You run the conversation; Mika
+draws.
+
 ## With Mika
 
 Disagreements go to the creator as an annotated choice. Never silent.

@@ -308,6 +308,18 @@ components:
       - design-system
       - cli
     file: src/commands/system.ts
+  '#brand-kit':
+    description: 'Brand kits (src/lib/brand.ts, src/lib/brand-pages.ts): a brand''s strategy, noun list, mark, logo system by media size, colour, type, misuse and exploration rounds, kept beside the design system it feeds. Lives in .atelier/brand/ (repo), .atelier/systems/<product>/brand/ (product) or _brand/ (home studio, inherited by every project); findBrandDir resolves them. checkBrand fails on no strategy truths, a missing mark or lockup file, ink under 4.5:1 on paper; warns on a non-square mark, more than 3 colours or 24 shapes in it, under 3 lockups, no lockup for 32px or less, accent under 3:1, no type, a mark noun not on the kept list, a redesign with no equity, no mark idea. boardPage lays one exploration round out labelled A, B, C… (large, 64/32/16 px, reversed, one colour, optional per-option notes); brandSheet renders brand.html (mark, the system small media → large media, colour with contrast, type specimens in the named families, strategy, nouns, rounds). Process: atelier-design skill reference/brand.md, distilled from Allan Peters (neurons region design/branding).'
+    tags:
+      - brand
+      - atelier-design
+    file: src/lib/brand.ts
+  '#cli-brand':
+    description: 'atelier brand board <dir> [--out] [--title] [--notes file.json] | sheet [dir] [--product] | check [dir] [--product] [--json] (exit 1 on a fail). Mika''s tools for the skill''s `brand` verb: a board per round, the brand sheet, the kit check before it''s called done.'
+    tags:
+      - brand
+      - cli
+    file: src/commands/brand.ts
   '#design-lint':
     description: 'Playbook v1 checks on a design system itself (src/lib/design-lint.ts), run by `atelier system lint [--product] [--json]` (exit 1 on a fail). Token tiers: foundations are primitives; `roles` name each job and resolve to a primitive, per theme (`themes:` or specimen.themes) — chains allowed (W3C DTCG 2025.10), role-circular and role-unresolved fail, role-chain-deep (>3 hops) warns, role-literal and role-named-by-look warn, role-missing-theme fails. role-contrast: WCAG contrast of every text.* role on every surface.* role (or contrast_pairs) per theme, fail under 4.5:1. space-off-base: scale steps not multiples of foundations.space.base. Components: kind (input/informational/navigational/container), component-binds-primitive / -literal / token-unknown, component-states (input needs default, hover, focus, active, disabled, loading, error; navigational the first five), component-when-to-use for look-alikes of one kind, deprecated needs replaced_by. Also exports contrastRatio/luminance/resolveRole used by the specimen''s roles and text-on-surface tables.'
     tags:

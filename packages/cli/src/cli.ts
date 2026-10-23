@@ -30,6 +30,7 @@ import { setupCommand } from "./commands/setup.js";
 import { doctorCommand } from "./commands/doctor.js";
 import { renderCheckCommand } from "./commands/render-check.js";
 import { systemCommand, checkCommand } from "./commands/system.js";
+import { brandCommand } from "./commands/brand.js";
 
 const program = new Command();
 
@@ -67,5 +68,6 @@ doctorCommand(program);
 renderCheckCommand(program);
 systemCommand(program);
 checkCommand(program);
+brandCommand(program);
 
 program.parse();
