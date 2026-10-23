@@ -34,3 +34,7 @@ packages/cli/university/
 # Anything under here is private; iterate on the engine and on real content
 # in the same repo without committing personal projects.
 /creator/
+
+# Python bytecode (brand generators)
+__pycache__/
+*.pyc

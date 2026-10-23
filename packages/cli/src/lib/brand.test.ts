@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { findBrandDir, loadBrand, checkBrand, svgAspect, svgColors, type Brand } from "./brand.js";
+import { findBrandDir, loadBrand, checkBrand, svgAspect, svgColors, BrandError, type Brand } from "./brand.js";
 import { boardPage, brandSheet } from "./brand-pages.js";
 
 let root: string;
@@ -54,6 +54,16 @@ describe("where a brand lives", () => {
     expect(loadBrand(findBrandDir(join(ws, "projects"))!)?.name).toBe("Studio");
     rmSync(ws, { recursive: true, force: true });
   });
+
+  it("takes a brand folder passed directly, and refuses an undeclared product", () => {
+    write(".atelier/brand/brand.yaml", "name: Repo\n");
+    write(".atelier/systems/app/brand/brand.yaml", "name: App\n");
+    expect(findBrandDir(join(root, ".atelier", "systems", "app", "brand"))).toBe(join(root, ".atelier", "systems", "app", "brand"));
+    // no systems.yaml: --product is an error, not a silent fall back to the repo brand
+    expect(() => findBrandDir(root, "app")).toThrow(BrandError);
+    write(".atelier/systems.yaml", "products:\n  app: { paths: [app] }\n");
+    expect(() => findBrandDir(root, "typo")).toThrow(BrandError);
+  });
 });
 
 describe("brand check", () => {
@@ -84,6 +94,14 @@ describe("brand check", () => {
     expect(checkBrand(b, join(root, ".atelier", "brand")).map((c) => c.id)).toEqual(["brand-ink-contrast", "brand-accent-contrast"]);
   });
 
+  it("treats 3:4 and 4:3 marks alike", () => {
+    for (const f of ["horizontal", "badge"]) write(`.atelier/brand/marks/${f}.svg`, square);
+    for (const vb of ["0 0 400 300", "0 0 300 400"]) {
+      write(".atelier/brand/marks/mark.svg", `<svg viewBox="${vb}"><path fill="#14213d" d="M0 0h1v1z"/></svg>`);
+      expect(checkBrand(good(), join(root, ".atelier", "brand")).map((c) => c.id)).not.toContain("mark-not-compact");
+    }
+  });
+
   it("reads SVG aspect and colours", () => {
     expect(svgAspect('<svg viewBox="0 0 120 40">')).toBe(3);
     expect(svgAspect('<svg width="32" height="32">')).toBe(1);
@@ -106,6 +124,19 @@ describe("brand pages", () => {
     expect(html).toContain("small media → large media");
     expect(html).toContain('src="marks/mark.svg"');
     expect(html).toContain("brand-no-type");
+  });
+
+  it("takes board notes by letter or file name", () => {
+    const html = boardPage("R", ["x/a.svg", "x/b.svg"], { A: "by letter", "b.svg": "by file" });
+    expect(html).toContain("by letter");
+    expect(html).toContain("by file");
+  });
+
+  it("survives non-string type values and skips generic families in the font request", () => {
+    const b = good();
+    b.type = { weight: 420 as unknown as string, text: "system-ui" };
+    const html = brandSheet(b, "/r/.atelier/brand", "/r/.atelier/brand/brand.html");
+    expect(html).not.toContain("fonts.googleapis.com");
   });
 
   it("sets type specimens in the family named before any notes, and loads it", () => {

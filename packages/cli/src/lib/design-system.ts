@@ -170,7 +170,7 @@ export function readIndex(root: string): SystemsIndex | null {
   return readYaml<SystemsIndex>(join(root, ".atelier", "systems.yaml"));
 }
 
-function productDir(root: string, id: string, entry: ProductEntry): string {
+export function productDir(root: string, id: string, entry: ProductEntry): string {
   return join(root, ".atelier", entry.system ?? join("systems", id));
 }
 

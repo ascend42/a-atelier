@@ -18,7 +18,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { parse as parseYaml } from "yaml";
-import { findSystemRoot, readIndex } from "./design-system.js";
+import { findSystemRoot, productDir, readIndex } from "./design-system.js";
 import { contrastRatio } from "./design-lint.js";
 
 export interface BrandLockup {
@@ -52,6 +52,12 @@ export interface Brand {
   [key: string]: unknown;
 }
 
+/** A user-facing brand error (bad --product); the CLI prints its message, no stack. */
+export class BrandError extends Error {}
+
+/** The colour a brand's ink and accent are measured against. */
+export const brandGround = (c: Record<string, string> = {}): string | undefined => c.paper ?? c.background ?? c.surface;
+
 export interface BrandCheck {
   id: string;
   severity: "warn" | "fail";
@@ -59,16 +65,20 @@ export interface BrandCheck {
 }
 
 /**
- * Find the brand folder for a directory: the product's (when `product` is
- * given), else the repo's `.atelier/brand/`, else a workspace `_brand/`.
+ * Find the brand folder for a directory: `start` itself when it holds
+ * brand.yaml, the product's (when `product` is given), else the nearest
+ * `.atelier/brand/`, else a workspace `_brand/`. Throws BrandError for a
+ * product that isn't declared.
  */
 export function findBrandDir(start: string, product?: string): string | null {
-  const root = findSystemRoot(start);
-  if (root && product) {
-    const entry = readIndex(root)?.products?.[product];
-    if (!entry) throw new Error(`No product "${product}" in .atelier/systems.yaml`);
-    return join(root, ".atelier", entry.system ?? join("systems", product), "brand");
+  if (product) {
+    const root = findSystemRoot(start);
+    const entry = root ? readIndex(root)?.products?.[product] : undefined;
+    if (!root || !entry) throw new BrandError(`No product "${product}" in .atelier/systems.yaml (atelier system init --product ${product} declares one)`);
+    return join(productDir(root, product, entry), "brand");
   }
+  if (existsSync(join(resolve(start), "brand.yaml"))) return resolve(start);
+  const root = findSystemRoot(start);
   let dir = resolve(start);
   for (;;) {
     if (existsSync(join(dir, ".atelier", "brand", "brand.yaml"))) return join(dir, ".atelier", "brand");
@@ -119,7 +129,7 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
   else if (markFile.endsWith(".svg")) {
     const svg = readFileSync(join(dir, markFile), "utf8");
     const aspect = svgAspect(svg);
-    if (aspect !== null && (aspect < 0.75 || aspect > 1.33)) {
+    if (aspect !== null && (aspect < 3 / 4 - 1e-6 || aspect > 4 / 3 + 1e-6)) {
       push("mark-not-compact", "warn", `the mark is ${aspect.toFixed(2)}:1; the smallest media (avatar, favicon) need a roughly square mark, so keep wide forms for lockups`);
     }
     const colors = svgColors(svg);
@@ -138,7 +148,7 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
   if (system.length && !(smallest <= 32)) push("brand-no-small-form", "warn", "no lockup is meant for 32px or smaller: say which one serves favicons and avatars (min_px)");
 
   const c = brand.color ?? {};
-  const ground = c.paper ?? c.background ?? c.surface;
+  const ground = brandGround(c);
   if (c.ink && ground) {
     const r = contrastRatio(c.ink, ground);
     if (r !== null && r < 4.5) push("brand-ink-contrast", "fail", `ink on paper is ${r.toFixed(2)}:1, under 4.5:1 for text`);

@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, dirname } from "node:path";
-import { findBrandDir, loadBrand, checkBrand } from "../lib/brand.js";
+import { findBrandDir as findBrandDirOrThrow, loadBrand, checkBrand, BrandError } from "../lib/brand.js";
 import { boardPage, brandSheet } from "../lib/brand-pages.js";
 
 /**
@@ -11,6 +11,17 @@ import { boardPage, brandSheet } from "../lib/brand-pages.js";
  *   atelier brand sheet [dir] [--product id]             brand.yaml + marks/ → brand.html
  *   atelier brand check [dir] [--product id] [--json]    the kit against the process; exit 1 on a fail
  */
+/** findBrandDir, printing a BrandError (an undeclared --product) as a one-line error. */
+function findBrandDir(start: string, product?: string): string | null {
+  try {
+    return findBrandDirOrThrow(start, product);
+  } catch (e) {
+    if (!(e instanceof BrandError)) throw e;
+    console.error(`  ${e.message}`);
+    process.exit(1);
+  }
+}
+
 export function brandCommand(program: Command): void {
   const brand = program.command("brand").description("Brand kits: exploration boards, the brand sheet, and checks");
 
@@ -26,7 +37,10 @@ export function brandCommand(program: Command): void {
         console.error(`  ${dir} doesn't exist`);
         process.exit(1);
       }
-      const files = readdirSync(abs).filter((f) => /\.(svg|png|jpe?g|webp)$/i.test(f)).sort();
+      // one option per name: an SVG wins over its own PNG render
+      const all = readdirSync(abs).filter((f) => /\.(svg|png|jpe?g|webp)$/i.test(f)).sort();
+      const svgStems = new Set(all.filter((f) => /\.svg$/i.test(f)).map((f) => f.replace(/\.svg$/i, "")));
+      const files = all.filter((f) => /\.svg$/i.test(f) || !svgStems.has(f.replace(/\.[a-z]+$/i, "")));
       if (!files.length) {
         console.error("  No .svg/.png/.jpg/.webp files to show.");
         process.exit(1);
@@ -34,11 +48,15 @@ export function brandCommand(program: Command): void {
       const out = resolve(opts.out ?? join(abs, "board.html"));
       const srcs = files.map((f) => relative(dirname(out), join(abs, f)));
       mkdirSync(dirname(out), { recursive: true });
-      const byFile: Record<string, string> = opts.notes ? JSON.parse(readFileSync(resolve(opts.notes), "utf8")) : {};
-      const notes: Record<string, string> = {};
-      files.forEach((f, i) => {
-        if (byFile[f]) notes[i < 26 ? String.fromCharCode(65 + i) : `A${String.fromCharCode(65 + i - 26)}`] = byFile[f];
-      });
+      let notes: Record<string, string> = {};
+      if (opts.notes) {
+        try {
+          notes = JSON.parse(readFileSync(resolve(opts.notes), "utf8"));
+        } catch (e) {
+          console.error(`  --notes ${opts.notes}: ${(e as Error).message}`);
+          process.exit(1);
+        }
+      }
       writeFileSync(out, boardPage(opts.title, srcs, notes));
       console.log(`  ${files.length} options → ${relative(process.cwd(), out)}`);
     });
