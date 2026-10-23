@@ -77,6 +77,13 @@ misuse:
   - "Don't extend the arc past the legs (it reads as a moustache; round 2b)"
   - "Don't put the mark inside a circle or seal (reads as a lodge emblem; round 3)"
   - "Don't lower the crossbar arc toward the feet (reads as a figure; round 3)"
+motion:
+  - id: reveal
+    file: motion/reveal.mp4
+    also: [motion/reveal.gif, motion/reveal.atelier]
+    story: "The compass lands at centre, the pencil leg swings open while the vermilion arc draws the A's crossbar, it glides left as 'telier' rises in letter by letter, the tagline settles, and the lockup drifts smaller through the end."
+    length_s: 3.8
+    render_check: "G0, G2 (no dead frames), G3 pass; motion density 1.31, low by design: one mark on a flat paper ground"
 rounds:
   - round: 1
     method: "10 hand-drawn SVG mocks (no image model); 3 blind viewers on the first 7, 2 on the 3 added after"
