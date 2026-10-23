@@ -14,7 +14,7 @@ import { foundationsOf, type ResolvedSystem, type Dict, type ComponentSpec } fro
 import type { Inventory, ValueEntry } from "./design-extract.js";
 import { contrastPairs, contrastRatio, primitives, resolveRole, roleRef, statesOf, themesOf } from "./design-lint.js";
 
-const esc = (s: unknown): string =>
+export const esc = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 const STYLE = `
@@ -55,7 +55,7 @@ nav.toc a{color:var(--accent)}
 
 const TOGGLE = `<button class="theme-toggle" type="button" onclick="(function(r){var d=r.getAttribute('data-theme');var dark=d?d==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.setAttribute('data-theme',dark?'light':'dark')})(document.documentElement)">Theme</button>`;
 
-function page(title: string, body: string): string {
+export function page(title: string, body: string): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>${STYLE}</style></head><body>${TOGGLE}<main>${body}</main></body></html>\n`;
 }
 

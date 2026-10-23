@@ -10,6 +10,15 @@ Format: [major.minor.fix] — based on milestone progression.
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
+### Added — brand mode (`atelier design brand`, `atelier brand`)
+
+Allan Peters's logo process, distilled into the neurons brain (region `design/branding`, 10 neurons) and into the agents.
+
+- **The `brand` verb** (`atelier-design/reference/brand.md`): scope (new, refresh, redesign with equity) → strategy truths → a noun list agreed with the creator → round 1 wide → round 2 refine (reduce to the edge, a hidden second read, redraw the type) → round 3 the logo system by media size → codify. The width of round 1 depends on the tools: volume with an image model, 6–9 deliberate SVG mocks without one. Every option passes a blind misreading test (fresh agents see only the image) and the four tests (simple, unique, memorable, ownable) before the creator sees it.
+- **`atelier brand board | sheet | check`**: a labelled board per round (large, 64/32/16 px, reversed, one colour, notes per option); the brand sheet; the kit check (strategy before marks, a system from 16 px to the long story, the mark compact and simple, ink and accent contrast).
+- **Brand kits** live in `.atelier/brand/`, `.atelier/systems/<product>/brand/` or a workspace `_brand/`; `brand.yaml` is documented in `reference/formats.md`. Five new tells for marks (initial-only, stock symbol, literal add-on, illustration as mark, abstract orb). Mika and Luna know their parts.
+- **Atelier's own mark**, made with it: a drafting compass standing as the A, the crossbar the arc it draws (in vermilion), Fraunces wordmark reading "Atelier". Four rounds and six blind tests are recorded in `.atelier/brand/brand.yaml`.
+
 ### Added — design playbook v1
 
 The Figma "Design basics" library (74 pages) was digested into the neurons brain (157 new neurons) and audited against WCAG and the research. What survived is now in the agents. Full record in `docs/playbook/proposals.md` §Playbook v1.

@@ -1,7 +1,7 @@
 ---
 name: atelier-design
-description: Atelier design sessions in any repo — run by Luna (Design Director) with Mika (design engineer). Use when the user says "atelier design", "use atelier design for this", "atelier design critique", "atelier design system", "atelier design codify", "run an atelier session", or asks Atelier to give design feedback, set design direction, kick off a design revision, or create, extract, define or enforce a design system (one per product when a repo holds several). Covers product UI (and hands video boards to Lux).
-argument-hint: "[critique | system] [quick | deep] [scope]"
+description: Atelier design sessions in any repo — run by Luna (Design Director) with Mika (design engineer). Use when the user says "atelier design", "use atelier design for this", "atelier design critique", "atelier design system", "atelier design codify", "run an atelier session", or asks Atelier to give design feedback, set design direction, kick off a design revision, create, extract, define or enforce a design system (one per product when a repo holds several), or design, fix or refresh a logo, brand mark or brand identity ("atelier design brand"). Covers product UI (and hands video boards to Lux).
+argument-hint: "[critique | system | brand] [quick | deep] [scope]"
 ---
 
 # Atelier Design
@@ -15,7 +15,7 @@ folder. (Background only: `docs/design-studio-plan.md`, which exists
 inside the Atelier repo.)
 Formats: `reference/formats.md`. Question bank: `reference/question-bank.md`.
 Tells: `reference/tells.yaml`. Redesign mode: `reference/redesign.md`.
-Design systems: `reference/system.md`. Usability rules:
+Design systems: `reference/system.md`. Brands and marks: `reference/brand.md`. Usability rules:
 `reference/rules.yaml` (findings cite its ids).
 
 ## 0. Load the crew (silently)
@@ -45,6 +45,7 @@ sessions run without it.
 |---|---|
 | "critique", "review", "feedback", "what's wrong with" | `critique` |
 | "design system", "extract", "codify", "tokens", "enforce" | `system` (see `reference/system.md`; `codify` is an alias) |
+| "logo", "brand mark", "rebrand", "brand identity", "fix the logo" | `brand` (see `reference/brand.md`) |
 | anything else ("use atelier design for this", "redesign", "direction") | `direct` (default) |
 
 **Scope** — "for this" means what the conversation was working on: a
@@ -69,7 +70,9 @@ once (AskUserQuestion when available):
    product with `atelier system which <file>` and read that product's
    `design-system.yaml` and `DESIGN.md` (under `.atelier/systems/<id>/`)
    on top of the repo-wide base. Otherwise `.atelier/design-system.yaml`
-   and `.atelier/DESIGN.md`. Also read prior
+   and `.atelier/DESIGN.md`. If the repo or product has a brand kit
+   (`brand/brand.yaml` beside the system), its mark, colour, type and
+   voice are inputs every option respects. Also read prior
    `.atelier/sessions/*/session.yaml`, and treat an Impeccable-style
    `DESIGN.md` at the repo root as input.
 3. **Mika's brief** — inventory what actually exists for the scope:
@@ -307,6 +310,9 @@ the creator oriented with a one-line running tally, e.g.
      density (`coherent-not-just-consistent`)? If the system changed,
      regenerate its specimen (`atelier system specimen`) and run
      `atelier system lint`.
+   - `brand` → follow `reference/brand.md` (scope → strategy → noun list
+     → rounds → two full systems → codify). Its rounds replace the board
+     loop above.
    - `system` → follow `reference/system.md` (products → extract → draft
      → reconcile → codify → enforce). It replaces the board loop above
      with a draft-first loop: the creator sees one summary and only the
