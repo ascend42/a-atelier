@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Atelier brand</title><style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#1b1c1e;--muted:#5d6066;--line:#e3e3df;--warn:#9a5b00;--warn-bg:#fff4e0;--ok:#1f6b3a;--ok-bg:#e6f4ea;--accent:#2b59c3;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--panel:#1c1d21;--ink:#ececea;--muted:#a3a6ad;--line:#2e3036;--warn:#f0b35a;--warn-bg:#3a2a12;--ok:#7fd29a;--ok-bg:#163222;--accent:#8fb0ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141518;--panel:#1c1d21;--ink:#ececea;--muted:#a3a6ad;--line:#2e3036;--warn:#f0b35a;--warn-bg:#3a2a12;--ok:#7fd29a;--ok-bg:#163222;--accent:#8fb0ff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1120px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:28px;line-height:1.2;margin:0 0 4px}
+h2{font-size:19px;margin:40px 0 12px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:15px;margin:20px 0 8px}
+p,li{max-width:72ch}
+.meta{color:var(--muted);font-size:13px}
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+.swatch{height:56px;border-radius:6px;border:1px solid var(--line);margin-bottom:8px;background-image:linear-gradient(var(--c),var(--c)),conic-gradient(#ccc 25%,#fff 0 50%,#ccc 0 75%,#fff 0);background-size:auto,12px 12px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.badge{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.badge.off{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.badge.on{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:20px}
+.stat b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+.bar{height:12px;background:var(--accent);border-radius:2px}
+.where{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.callout{background:var(--warn-bg);color:var(--ink);border-radius:8px;padding:12px 14px;margin:12px 0}
+iframe{width:100%;border:1px solid var(--line);border-radius:6px;background:transparent;height:72px;display:block}
+nav.toc{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:13px;margin-top:12px}
+nav.toc a{color:var(--accent)}
+.theme-toggle{position:fixed;top:12px;right:12px;font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+</style></head><body><button class="theme-toggle" type="button" onclick="(function(r){var d=r.getAttribute('data-theme');var dark=d?d==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.setAttribute('data-theme',dark?'light':'dark')})(document.documentElement)">Theme</button><main><style>
+.opt{display:flex;flex-direction:column;gap:10px}
+.opt .big{aspect-ratio:1;display:grid;place-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12%}
+.opt .big img{max-width:100%;max-height:100%}
+.sizes{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
+.chip{display:grid;place-items:center;border-radius:6px;border:1px solid var(--line);padding:6px}
+.chip.light{background:#fff}.chip.dark{background:#111}.chip.dark img{filter:brightness(0) invert(1)}
+.mono img{filter:grayscale(1) contrast(1.4)}
+.label{font-size:20px;font-weight:700}
+.chart{display:grid;grid-template-columns:auto 1fr auto;gap:0 16px;align-items:stretch}
+.axis{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:12px;color:var(--muted);border-left:2px solid var(--line);padding:0 4px}
+.lockups{display:flex;flex-direction:column;gap:0}
+.lockup{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.lockup .art{background:#fff;border-radius:8px;padding:16px;display:grid;place-items:center;min-height:96px}
+.lockup .art img{max-height:120px;max-width:100%}
+</style>
+<h1>Atelier</h1>
+<p>A drafting compass standing as the letter A: the studio&#39;s tool of exact making, and the A of Atelier.</p>
+<p class="meta"><b>Second read:</b> The crossbar is the arc the compass draws; in full colour it&#39;s the accent, the line being made.</p>
+<p class="meta">Generated from <code>brand.yaml</code>. Regenerate with <code>atelier brand sheet</code>; edit the YAML and the files in <code>marks/</code>, not this page.</p>
+<nav class="toc"><a href="#mark">Mark</a><a href="#system">System</a><a href="#color">Colour</a><a href="#type">Type</a><a href="#strategy">Strategy</a><a href="#rounds">Rounds</a></nav>
+<h2 id="mark">Mark</h2><div class="grid" style="grid-template-columns:minmax(220px,320px) 1fr;align-items:start"><div class="opt"><div class="big"><img src="marks/mark.svg" alt="Atelier mark"></div></div><div><div class="sizes"><div class="chip light"><img src="marks/mark.svg" alt="Atelier mark at 64px" style="height:64px;width:auto"></div><div class="chip light"><img src="marks/mark.svg" alt="Atelier mark at 32px" style="height:32px;width:auto"></div><div class="chip light"><img src="marks/mark.svg" alt="Atelier mark at 16px" style="height:16px;width:auto"></div><div class="chip dark"><img src="marks/mark.svg" alt="Atelier mark reversed on dark" style="height:32px;width:auto"></div><div class="chip light mono"><img src="marks/mark.svg" alt="Atelier mark in one colour" style="height:32px;width:auto"></div></div><p class="meta">Large, then 64, 32 and 16 px; on dark; in one colour.</p></div></div>
+<h2 id="system">Logo system</h2><p class="meta">Small media tell a short story; large media a long one (n:logo-system-by-media-size).</p><div class="chart"><div class="axis">small media → large media</div><div class="lockups">
+<div class="lockup"><div><b>mark-small</b><div class="meta">favicon, app icon, 16-24px: heavier legs and bar, no handle, ink only</div><div class="meta">min 16px</div></div><div class="art"><img src="marks/mark-small.svg" alt="Atelier mark-small"></div></div>
+<div class="lockup"><div><b>mark</b><div class="meta">avatar, social, 32px and up</div><div class="meta">min 32px</div></div><div class="art"><img src="marks/mark.svg" alt="Atelier mark"></div></div>
+<div class="lockup"><div><b>horizontal</b><div class="meta">site and app header, docs, slides: the compass is the A of &#39;Atelier&#39;</div><div class="meta">min 20px</div></div><div class="art"><img src="marks/horizontal.svg" alt="Atelier horizontal"></div></div>
+<div class="lockup"><div><b>vertical</b><div class="meta">title cards, splash, square posts</div><div class="meta">min 64px</div></div><div class="art"><img src="marks/vertical.svg" alt="Atelier vertical"></div></div>
+<div class="lockup"><div><b>badge</b><div class="meta">stickers, merch, end cards: the long story (mark, wordmark, rule, DESIGN &amp; CONTENT STUDIO); no seal</div><div class="meta">min 96px</div></div><div class="art"><img src="marks/badge.svg" alt="Atelier badge"></div></div>
+</div><div class="axis">short story → long story</div></div>
+<p><b>Clear space:</b> the hinge&#39;s diameter on every side of the mark; the mark&#39;s width between mark and wordmark in lockups</p>
+<h3>Don't</h3><ul><li>Don&#39;t put the accent anywhere but the arc</li><li>Don&#39;t add a frame or container around the mark (an A in a box reads as signage; round 1)</li><li>Don&#39;t use the full mark under 32px; use mark-small</li><li>Don&#39;t set the full word &#39;atelier&#39; beside the mark in a row (reads &#39;A atelier&#39;); the horizontal is the compass + &#39;telier&#39;</li><li>Don&#39;t extend the arc past the legs (it reads as a moustache; round 2b)</li><li>Don&#39;t put the mark inside a circle or seal (reads as a lodge emblem; round 3)</li><li>Don&#39;t lower the crossbar arc toward the feet (reads as a figure; round 3)</li></ul>
+<h2 id="color">Colour</h2><div class="grid">
+<div class="card"><div class="swatch" style="--c:#1d1c1a"></div><b>ink</b><div class="mono meta">#1d1c1a</div><div class="meta">15.38:1 on paper</div></div>
+<div class="card"><div class="swatch" style="--c:#f6f3ee"></div><b>paper</b><div class="mono meta">#f6f3ee</div></div>
+<div class="card"><div class="swatch" style="--c:#c2410c"></div><b>accent</b><div class="mono meta">#c2410c</div><div class="meta">4.68:1 on paper</div></div>
+</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces&family=Geist&family=Geist+500&display=swap">
+<h2 id="type">Type</h2>
+<div class="card" style="margin-bottom:8px"><div class="meta">display · <span class="mono">Fraunces (wght 420, opsz 72, SOFT 50); the wordmark is outlined, tracked -0.04em: &#39;telier&#39; after the compass in the horizontal, lowercase &#39;atelier&#39; under it when stacked</span></div><div style="font-family:&quot;Fraunces&quot;,system-ui;font-size:24px">Atelier, made by hand</div></div>
+<div class="card" style="margin-bottom:8px"><div class="meta">text · <span class="mono">Geist</span></div><div style="font-family:&quot;Geist&quot;,system-ui;font-size:24px">Atelier, made by hand</div></div>
+<div class="card" style="margin-bottom:8px"><div class="meta">label · <span class="mono">Geist 500, caps, tracked</span></div><div style="font-family:&quot;Geist 500&quot;,system-ui;font-size:24px">Atelier, made by hand</div></div>
+<h2 id="strategy">Strategy</h2>
+<h3>What sets it apart</h3><ul><li>A studio, not a tool: a named crew (Luna directs, Mika engineers, Quill writes, Lux frames, Iris builds, Patrick produces) <span class="meta">(atelier-design / atelier-produce skills and agents)</span></li><li>A tool of knowledge: the crew works from rules, notebooks and a research brain, and vets its work before you see it <span class="meta">(playbook rules, tells, validity audits, the UI review gate, the founder 2026-10-23)</span></li><li>One brand runs through every project: the home studio cascades into every repo and product <span class="meta">(cascade-merge, per-product design systems)</span></li></ul>
+<p><b>For:</b> a founder or creator running several products and series with AI agents</p>
+<p><b>Personality:</b> <span class="badge">crafted</span> <span class="badge">exacting</span> <span class="badge">calm</span> <span class="badge">generous</span></p>
+<h3>Noun list</h3><p><span class="badge on">workbench</span> <span class="badge on">north-light skylight</span> <span class="badge on">studio window grid</span> <span class="badge on">arched doorway</span> <span class="badge on">easel</span> <span class="badge on">drafting compass</span> <span class="badge on">set square</span> <span class="badge on">ruling pen</span> <span class="badge on">pencil</span> <span class="badge on">brush</span> <span class="badge on">plumb line</span> <span class="badge on">six marks or figures</span> <span class="badge on">guild sign</span> <span class="badge on">maker&#39;s mark</span> <span class="badge on">stamp or seal</span> <span class="badge on">level</span> <span class="badge on">check mark</span> <span class="badge on">cascade</span> <span class="badge on">stacked layers</span> <span class="badge on">nested frames</span> <span class="badge on">open book</span> <span class="badge on">notebook</span> <span class="badge on">library shelf</span> <span class="badge on">lamp</span> <span class="badge on">A</span> <span class="badge on">logotype</span> <span class="badge on">keyframe diamond</span> <span class="badge on">easing curve</span></p>
+<p class="meta">Struck: <s>needle and thread (couture; Atelier is a tool of knowledge, not a fashion house (founder))</s>, <s>pin (couture)</s>, <s>tailor&#39;s chalk (couture)</s>, <s>measuring tape (couture)</s>, <s>apron (couture)</s>, <s>constellation (a-constellation is a separate product of the founder&#39;s)</s></p>
+<h2 id="rounds">Rounds</h2>
+<div class="scroll"><table><tr><th>Round</th><th>Method</th><th>Shown</th><th>Picked</th><th>Misreadings</th></tr>
+<tr><td>1</td><td>10 hand-drawn SVG mocks (no image model); 3 blind viewers on the first 7, 2 on the 3 added after</td><td>A B C D E F G H I J</td><td></td><td class="meta">A: drafting compass, letter A, Freemasons&#39; square-and-compass<br>B: stop sign, A-grade badge, keycap<br>C: factory roof, bar chart, tombstones<br>D: tent, downward arrow, phallic<br>E: pool rack, pyramid scheme, Illuminati<br>F: tombstone<br>G: tombstone, siren light<br>H: drip, sperm cell, bomb<br>I: Pixar Luxo Jr. lamp<br>J: generic venue icon, AA sign</td></tr>
+<tr><td>2</td><td>6 hand-drawn SVG mocks; 3 blind viewers</td><td>A B C D E F</td><td></td><td class="meta">A: drafting compass, letter A, the arc being drawn, lopsided, faint Masonic echo<br>B: letter A, compass, keyring tag, generic A<br>C: hazard sign, Illuminati triangle, bared teeth<br>D: easel clip-art, gallows, hooded figure<br>E: spirit level, toggle switch, crude figure<br>F: Assassin&#39;s Creed A, broken letter, hood silhouette</td></tr>
+<tr><td>2.5</td><td>3 refinements of A toward the circle-drawing compass (creator&#39;s note); 3 blind viewers</td><td>A1 A2</td><td></td><td class="meta">A1: compass drawing a circle, clock hand, gauge needle, no-sign at 16px, lowercase a<br>A2: drafting compass, letter A, moustache or handlebars (arc ends), Avengers A, faint Masonic echo<br>A3: A with O, stick figure, ring at the crotch (crude, 2/3), Anarchy symbol, plumb bob</td></tr>
+<tr><td>3</td><td>one full system on A2 (founder&#39;s pick): mark, small mark, horizontal, vertical, badge x full colour, one colour, reversed; wordmark in Fraunces with Instrument Serif and Geist as alternates</td><td>system wordmark alternates</td><td>system compass-is-the-a</td><td class="meta">draft-1: low orange arc + round hinge read as a figure in underwear at 16px, compass in a circle seal = Masonic lodge emblem, A atelier stutter, mark towers over the word<br>draft-2: arc too thin (reads as a smile), favicon knob reads as a hooded figure, two competing orange accents</td></tr>
+</table></div></main></body></html>

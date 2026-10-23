@@ -1,0 +1,8 @@
+{
+  "a1-compass-drawing.svg": "PASSED. The compass drawing its own crossbar. Seen as: drafting compass, letter A, and 2 of 3 viewers read the crossbar as the arc being drawn (the second read works). Weak: a bit lopsided and scrappy; one faint Masonic echo.",
+  "a2-compass-reduced.svg": "PASSED. The compass reduced to a bold A. Strongest at 16px. Seen as: letter A, compass from the front, but also a keyring tag (the apex hole) and a slightly generic, soft A.",
+  "b-set-square.svg": "DROPPED. Seen as: hazard sign, Illuminati / eye-of-providence triangle, bared teeth, comb. Reads least like an A.",
+  "c-easel.svg": "DROPPED. Seen as: easel clip-art, lectern, gallows, a hooded figure.",
+  "d-level.svg": "DROPPED. Seen as: spirit level (one viewer), toggle switch, robot face, and a crude belt-and-crotch figure.",
+  "e-pencils.svg": "DROPPED. Seen as: two pencils (weakly), Assassin's Creed-style A, a broken letter, a hood silhouette."
+}

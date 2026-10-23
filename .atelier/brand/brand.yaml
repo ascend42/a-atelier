@@ -1,0 +1,136 @@
+# Atelier's own brand. Built with the atelier-design `brand` verb (reference/brand.md).
+version: 1
+name: Atelier
+kind: new
+strategy:
+  positioning: "A design and content studio: an agent team with the knowledge to execute. Motion is shown through a showcase animation, not the mark."
+  truths:
+    - { truth: "A studio, not a tool: a named crew (Luna directs, Mika engineers, Quill writes, Lux frames, Iris builds, Patrick produces)", evidence: "atelier-design / atelier-produce skills and agents" }
+    - { truth: "A tool of knowledge: the crew works from rules, notebooks and a research brain, and vets its work before you see it", evidence: "playbook rules, tells, validity audits, the UI review gate, the founder 2026-10-23" }
+    - { truth: "One brand runs through every project: the home studio cascades into every repo and product", evidence: "cascade-merge, per-product design systems" }
+  audience: "a founder or creator running several products and series with AI agents"
+  personality: [crafted, exacting, calm, generous]
+nouns:
+  kept:
+    - workbench
+    - north-light skylight
+    - studio window grid
+    - arched doorway
+    - easel
+    - drafting compass
+    - set square
+    - ruling pen
+    - pencil
+    - brush
+    - plumb line
+    - six marks or figures
+    - guild sign
+    - maker's mark
+    - stamp or seal
+    - level
+    - check mark
+    - cascade
+    - stacked layers
+    - nested frames
+    - open book
+    - notebook
+    - library shelf
+    - lamp
+    - A
+    - logotype
+    - keyframe diamond
+    - easing curve
+  struck:
+    - { noun: needle and thread, why: "couture; Atelier is a tool of knowledge, not a fashion house (founder)" }
+    - { noun: pin, why: couture }
+    - { noun: tailor's chalk, why: couture }
+    - { noun: measuring tape, why: couture }
+    - { noun: apron, why: couture }
+    - { noun: constellation, why: "a-constellation is a separate product of the founder's" }
+mark:
+  idea: "A drafting compass standing as the letter A: the studio's tool of exact making, and the A of Atelier."
+  second_read: "The crossbar is the arc the compass draws; in full colour it's the accent, the line being made."
+  nouns: [drafting compass, A]
+  file: marks/mark.svg
+# Smallest media first: short story to long story (n:logo-system-by-media-size).
+system:
+  - { id: mark-small, file: marks/mark-small.svg, use: "favicon, app icon, 16-24px: heavier legs and bar, no handle, ink only", min_px: 16 }
+  - { id: mark, file: marks/mark.svg, use: "avatar, social, 32px and up", min_px: 32 }
+  - { id: horizontal, file: marks/horizontal.svg, use: "site and app header, docs, slides: the compass is the A of 'Atelier'", min_px: 20 }
+  - { id: vertical, file: marks/vertical.svg, use: "title cards, splash, square posts", min_px: 64 }
+  - { id: badge, file: marks/badge.svg, use: "stickers, merch, end cards: the long story (mark, wordmark, rule, DESIGN & CONTENT STUDIO); no seal", min_px: 96 }
+variants: "every lockup ships as <id>.svg (ink + accent arc), <id>-mono.svg (ink only) and <id>-reversed.svg (paper on ink)"
+color:
+  ink: "#1d1c1a"
+  paper: "#f6f3ee"
+  accent: "#c2410c"
+type:
+  display: "Fraunces (wght 420, opsz 72, SOFT 50); the wordmark is outlined, tracked -0.04em: 'telier' after the compass in the horizontal, lowercase 'atelier' under it when stacked"
+  text: Geist
+  label: "Geist 500, caps, tracked"
+clearspace: "the hinge's diameter on every side of the mark; the mark's width between mark and wordmark in lockups"
+misuse:
+  - "Don't put the accent anywhere but the arc"
+  - "Don't add a frame or container around the mark (an A in a box reads as signage; round 1)"
+  - "Don't use the full mark under 32px; use mark-small"
+  - "Don't set the full word 'atelier' beside the mark in a row (reads 'A atelier'); the horizontal is the compass + 'telier'"
+  - "Don't extend the arc past the legs (it reads as a moustache; round 2b)"
+  - "Don't put the mark inside a circle or seal (reads as a lodge emblem; round 3)"
+  - "Don't lower the crossbar arc toward the feet (reads as a figure; round 3)"
+rounds:
+  - round: 1
+    method: "10 hand-drawn SVG mocks (no image model); 3 blind viewers on the first 7, 2 on the 3 added after"
+    shown: [A, B, C, D, E, F, G, H, I, J]
+    passed: [A]
+    picked: []
+    misreadings:
+      A: [drafting compass, letter A, "Freemasons' square-and-compass"]
+      B: [stop sign, A-grade badge, keycap]
+      C: [factory roof, bar chart, tombstones]
+      D: [tent, downward arrow, phallic]
+      E: [pool rack, pyramid scheme, Illuminati]
+      F: [tombstone]
+      G: [tombstone, siren light]
+      H: [drip, sperm cell, bomb]
+      I: [Pixar Luxo Jr. lamp]
+      J: [generic venue icon, AA sign]
+    notes:
+      - "An A placed inside a container (sign, octagon, arch) reads as signage or a grave; an A built from a tool (the compass) holds up."
+    picked_by_founder: "develop the compass + a new batch of A-from-a-tool ideas"
+  - round: 2
+    method: "6 hand-drawn SVG mocks; 3 blind viewers"
+    shown: [A, B, C, D, E, F]
+    passed: [A, B]
+    picked: []
+    misreadings:
+      A: [drafting compass, letter A, "the arc being drawn", lopsided, faint Masonic echo]
+      B: [letter A, compass, keyring tag, generic A]
+      C: [hazard sign, Illuminati triangle, bared teeth]
+      D: [easel clip-art, gallows, hooded figure]
+      E: [spirit level, toggle switch, crude figure]
+      F: [Assassin's Creed A, broken letter, hood silhouette]
+
+  - round: 2.5
+    method: "3 refinements of A toward the circle-drawing compass (creator's note); 3 blind viewers"
+    shown: [A1, A2]
+    dropped: [A3]
+    picked: []
+    misreadings:
+      A1: [compass drawing a circle, clock hand, gauge needle, no-sign at 16px, lowercase a]
+      A2: [drafting compass, letter A, "moustache or handlebars (arc ends)", Avengers A, faint Masonic echo]
+      A3: [A with O, stick figure, "ring at the crotch (crude, 2/3)", Anarchy symbol, plumb bob]
+  - round: 3
+    method: "one full system on A2 (founder's pick): mark, small mark, horizontal, vertical, badge x full colour, one colour, reversed; wordmark in Fraunces with Instrument Serif and Geist as alternates"
+    shown: [system, wordmark alternates]
+    picked: [system, compass-is-the-a]
+    misreadings:
+      draft-1: ["low orange arc + round hinge read as a figure in underwear at 16px", "compass in a circle seal = Masonic lodge emblem", "A atelier stutter", mark towers over the word]
+      draft-2: [arc too thin (reads as a smile), "favicon knob reads as a hooded figure", two competing orange accents]
+    notes:
+      - "Fixed before showing: crossbar raised to A height and thickened; small form ink-only, no knob, closed apex; seal dropped for a stacked badge with an ink rule; wordmark enlarged onto the legs' baseline; 'compass is the A' alternate for the stutter."
+decisions:
+  - date: 2026-10-23
+    decision: "Atelier's mark is the drafting compass standing as the A; the horizontal lockup reads 'Atelier' with the compass as its A"
+    problem: "Atelier needed a mark for a design and content studio that is a tool of knowledge and an agent team, not a couture house"
+    tradeoff: "A compass carries a faint Masonic echo; kept it off seals and circles, and the type and the vermilion arc pull it toward drafting and making"
+    by: founder ("this really brought it home")
