@@ -1,10 +1,21 @@
 {
   "name": "@a-company/atelier-svg",
-  "version": "0.25.1",
+  "version": "0.25.2",
   "publishConfig": {
     "access": "public"
   },
   "description": "SVG renderer — render any frame as an SVG string",
+  "license": "MIT",
+  "author": "Matt Canoy (https://github.com/ascend42)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascend42/a-atelier.git",
+    "directory": "packages/svg"
+  },
+  "homepage": "https://github.com/ascend42/a-atelier#readme",
+  "bugs": {
+    "url": "https://github.com/ascend42/a-atelier/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

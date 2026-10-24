@@ -1,7 +1,18 @@
 {
   "name": "@a-company/atelier",
-  "version": "0.39.0",
-  "description": "CLI tool — validate, preview, render, info commands",
+  "version": "1.0.0",
+  "description": "Atelier: an AI-native animation engine and design/produce studio for Claude Code. CLI, MCP server, and the atelier design and atelier produce skills.",
+  "license": "MIT",
+  "author": "Matt Canoy (https://github.com/ascend42)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascend42/a-atelier.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/ascend42/a-atelier#readme",
+  "bugs": {
+    "url": "https://github.com/ascend42/a-atelier/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -68,5 +79,16 @@
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
-  }
+  },
+  "keywords": [
+    "atelier",
+    "claude-code",
+    "mcp",
+    "animation",
+    "design-system",
+    "brand",
+    "video",
+    "lottie",
+    "svg"
+  ]
 }

@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 0.38.0** | 11 packages | 2 apps
+**Version 1.0.0** | 13 packages | 2 apps | [MIT](LICENSE)
 
 ---
 
@@ -48,8 +48,11 @@ The engine supports 27 animatable properties, 5 easing types (linear, cubic-bezi
 
 ## Install
 
+Requires Node 20 or newer. `ffmpeg` and `whisper-cli` are optional; only video renders and episode runs need them (`atelier doctor` tells you).
+
 ```bash
 npm i -g @a-company/atelier
+atelier --version
 ```
 
 This gives you two commands:
@@ -62,12 +65,14 @@ This gives you two commands:
 `atelier design` (design direction, critique and design systems in any repo, run by Luna with Mika) and `atelier produce` (content series kits and episode runs, run by Patrick) are Claude Code skills. Installing the package doesn't activate them; `atelier setup` does:
 
 ```bash
-npm i -g @a-company/atelier     # needs a release that includes `setup`
+npm i -g @a-company/atelier
 atelier setup                   # installs the skills + crew into ~/.claude and ~/.paradigm
 atelier doctor                  # checks everything is ready
 ```
 
-From a clone of this repo (pnpm workspace; `npm install` won't work here):
+Prefer not to install globally? `npx @a-company/atelier setup` runs it once.
+
+Developing Atelier itself? Use a clone instead (a pnpm workspace; `npm install` is refused there on purpose, and isn't needed for the global install above):
 
 ```bash
 corepack enable                 # provides the pinned pnpm
@@ -365,6 +370,8 @@ states:
 
 | Version | Milestone |
 |---------|-----------|
+| 1.0.0 | First public release: MIT license, npm package metadata, brand mode (`atelier brand`) with Atelier's own mark and motion showcase |
+| 0.39.0 | Design playbook v1, design systems per product, `atelier check`, the UI review gate |
 | 0.25.1 | Paradigm framework repair: fix .purpose YAML errors, add svg/lottie/types/core coverage |
 | 0.25.0 | M14: Performance analysis — 4 new MCP tools (profile, diff, batch, complexity) |
 | 0.24.0 | M13: Composition/nesting — 2 new MCP ref layer tools |
@@ -400,3 +407,7 @@ states:
 | 0.0.1 | Monorepo scaffold |
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
+
+## License
+
+[MIT](LICENSE) © Matt Canoy

@@ -1,10 +1,21 @@
 {
   "name": "@a-company/atelier-mcp",
-  "version": "0.27.2",
+  "version": "0.27.3",
   "publishConfig": {
     "access": "public"
   },
   "description": "MCP server — AI authoring interface for animations",
+  "license": "MIT",
+  "author": "Matt Canoy (https://github.com/ascend42)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascend42/a-atelier.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://github.com/ascend42/a-atelier#readme",
+  "bugs": {
+    "url": "https://github.com/ascend42/a-atelier/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

@@ -1,10 +1,21 @@
 {
   "name": "@a-company/atelier-core",
-  "version": "0.26.0",
+  "version": "0.26.1",
   "publishConfig": {
     "access": "public"
   },
   "description": "Animation engine — delta resolution, builder API, state machine",
+  "license": "MIT",
+  "author": "Matt Canoy (https://github.com/ascend42)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascend42/a-atelier.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/ascend42/a-atelier#readme",
+  "bugs": {
+    "url": "https://github.com/ascend42/a-atelier/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
