@@ -10,6 +10,16 @@ Format: [major.minor.fix] — based on milestone progression.
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
+### Fixed — brand mode hardening (from the PR #19 review of #17/#18)
+
+- **Kit paths stay in the kit**: `brand.yaml` file paths that are absolute or climb out with `..` now fail `atelier brand check` (`brand-path-outside-kit`) and are never read or linked by the sheet; a mark path that is a directory reports a missing file instead of throwing.
+- **No CSS or URL injection on the pages**: colour values go through `safeColor` (hex, name, rgb()/hsl() only), file names are percent-encoded on boards and sheets, and font families are validated before the Google Fonts request. `atelier brand sheet --offline` skips that request.
+- **Reversed mark** gets its own dark ground, so a transparent light mark shows on the sheet.
+- **Option labels** run A…Z, AA…AZ, BA… (they went wrong past 52 options).
+- **SVG checks read the root `<svg>`** for size (px or unitless only, never `%` or a child element) and count named, `rgb()` and `hsl()` colours as well as hex.
+- **Contrast** is checked against every ground (paper, background, surface) and names the one that fails.
+- **Not found** now says where it looked and searched from.
+
 ### Added — brand mode (`atelier design brand`, `atelier brand`)
 
 Allan Peters's logo process, distilled into the neurons brain (region `design/branding`, 10 neurons) and into the agents.

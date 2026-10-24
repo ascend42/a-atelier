@@ -10,7 +10,7 @@ import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { findBrandDir, loadBrand, checkBrand, svgAspect, svgColors, BrandError, type Brand } from "./brand.js";
-import { boardPage, brandSheet } from "./brand-pages.js";
+import { boardPage, brandSheet, optionLabel, urlPath, safeColor } from "./brand-pages.js";
 
 let root: string;
 const write = (rel: string, body: string): string => {
@@ -109,7 +109,70 @@ describe("brand check", () => {
   });
 });
 
+describe("brand hardening", () => {
+  it("fails kit files that leave the brand folder or aren't files", () => {
+    for (const f of ["horizontal", "badge"]) write(`.atelier/brand/marks/${f}.svg`, square);
+    mkdirSync(join(root, ".atelier", "brand", "marks", "dir.svg"), { recursive: true });
+    const dir = join(root, ".atelier", "brand");
+    for (const file of ["../../secret.svg", join(root, "secret.svg")]) {
+      const b = good();
+      b.mark!.file = file;
+      expect(checkBrand(b, dir).map((c) => `${c.id}:${c.severity}`)).toContain("brand-path-outside-kit:fail");
+    }
+    const b = good();
+    b.mark!.file = "marks/dir.svg";
+    expect(() => checkBrand(b, dir)).not.toThrow();
+    expect(checkBrand(b, dir).map((c) => c.id)).toContain("brand-missing-file");
+  });
+
+  it("reads the root svg's size, ignoring children, percentages and other units", () => {
+    expect(svgAspect('<svg width="100%" height="100%"><rect width="10" height="40"/></svg>')).toBeNull();
+    expect(svgAspect('<svg width="64px" height="32px"><rect width="10" height="40"/></svg>')).toBe(2);
+    expect(svgAspect('<svg><rect width="10" height="40"/></svg>')).toBeNull();
+  });
+
+  it("counts named and functional colours, not none, currentColor or paint servers", () => {
+    expect(svgColors('<path fill="red"/><path fill="rgb(1, 2, 3)"/><path fill="none"/><path stroke="currentColor"/><path fill="url(#g)"/><g style="fill:Blue"/>')).toEqual(["red", "rgb(1,2,3)", "blue"]);
+  });
+
+  it("measures ink and accent against every ground, and names it", () => {
+    for (const f of ["mark", "horizontal", "badge"]) write(`.atelier/brand/marks/${f}.svg`, square);
+    const b = good();
+    b.color = { ink: "#14213d", paper: "#ffffff", background: "#1d1c1a", accent: "#b45309" };
+    const msgs = checkBrand(b, join(root, ".atelier", "brand")).map((c) => `${c.id} ${c.message}`);
+    expect(msgs.some((m) => m.startsWith("brand-ink-contrast ink on background"))).toBe(true);
+  });
+});
+
 describe("brand pages", () => {
+  it("labels options spreadsheet-style past Z", () => {
+    expect([0, 25, 26, 27, 51, 52, 701, 702].map(optionLabel)).toEqual(["A", "Z", "AA", "AB", "AZ", "BA", "ZZ", "AAA"]);
+  });
+
+  it("encodes file names for the page and keeps unsafe colours out of style", () => {
+    expect(urlPath("x y/a#2.svg")).toBe("x%20y/a%232.svg");
+    expect(boardPage("R", ["option 1#.svg"])).toContain('src="option%201%23.svg"');
+    expect(safeColor("red;background:url(https://x/t)")).toBe("transparent");
+    expect(safeColor("#b45309")).toBe("#b45309");
+    const b = good();
+    b.color = { ink: "#14213d", paper: "#fff;display:none" };
+    const sheet = brandSheet(b, "/r/.atelier/brand", "/r/.atelier/brand/brand.html");
+    expect(sheet).toContain('style="--c:transparent"');
+    expect(sheet).not.toMatch(/style="[^"]*display:none/);
+  });
+
+  it("gives the reversed mark its own dark ground, never links outside the kit, and can skip fonts", () => {
+    const dir = join(root, ".atelier", "brand");
+    write(".atelier/brand/marks/mark.svg", square);
+    write(".atelier/brand/marks/mark-reversed.svg", square);
+    const b = good();
+    b.system![1].file = "../../secret.svg";
+    const html = brandSheet(b, dir, join(dir, "brand.html"), [], { fonts: false });
+    expect(html).toContain('class="chip darkbg"');
+    expect(html).not.toContain("secret.svg");
+    expect(html).not.toContain("fonts.googleapis.com");
+  });
+
   it("labels a board's options and shows each at 64/32/16 px", () => {
     const html = boardPage("Round 1", ["a.svg", "b.svg"]);
     expect(html).toContain(">A<");

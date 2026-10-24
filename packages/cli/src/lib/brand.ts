@@ -15,8 +15,8 @@
  * n:logo-system-by-media-size, n:mark-quality-tests).
  */
 
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { findSystemRoot, productDir, readIndex } from "./design-system.js";
 import { contrastRatio } from "./design-lint.js";
@@ -55,8 +55,34 @@ export interface Brand {
 /** A user-facing brand error (bad --product); the CLI prints its message, no stack. */
 export class BrandError extends Error {}
 
-/** The colour a brand's ink and accent are measured against. */
-export const brandGround = (c: Record<string, string> = {}): string | undefined => c.paper ?? c.background ?? c.surface;
+/** The grounds a brand's ink and accent are measured against, in order: paper, background, surface. */
+export const brandGrounds = (c: Record<string, string> = {}): [string, string][] =>
+  (["paper", "background", "surface"] as const).flatMap((k) => (typeof c[k] === "string" ? [[k, c[k]] as [string, string]] : []));
+
+/** The first ground (what the sheet shows contrast against). */
+export const brandGround = (c: Record<string, string> = {}): string | undefined => brandGrounds(c)[0]?.[1];
+
+/**
+ * A kit file's absolute path, or null when `file` leaves the kit folder
+ * (absolute, or climbing out with `..`): brand.yaml is data, not a licence to
+ * read or link anywhere on disk.
+ */
+export function kitPath(dir: string, file: string): string | null {
+  if (typeof file !== "string" || !file || isAbsolute(file)) return null;
+  const abs = resolve(dir, file);
+  const rel = relative(resolve(dir), abs);
+  return rel === "" || rel.startsWith("..") || isAbsolute(rel) ? null : abs;
+}
+
+/** kitPath, and it names a file that exists (not a directory). */
+export function kitFileExists(dir: string, file: string): boolean {
+  const abs = kitPath(dir, file);
+  try {
+    return abs !== null && statSync(abs).isFile();
+  } catch {
+    return false;
+  }
+}
 
 export interface BrandCheck {
   id: string;
@@ -97,18 +123,28 @@ export function loadBrand(dir: string): Brand | null {
   return parsed && typeof parsed === "object" ? (parsed as Brand) : null;
 }
 
-/** An SVG's viewBox aspect (width / height), or null. */
+/** An SVG's aspect (width / height) from the root <svg> tag's viewBox, else its unitless or px width and height; null when it can't tell. */
 export function svgAspect(svg: string): number | null {
-  const vb = svg.match(/viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i);
-  if (vb) return Number(vb[1]) / Number(vb[2]);
-  const w = svg.match(/\swidth\s*=\s*["']([\d.]+)/i);
-  const h = svg.match(/\sheight\s*=\s*["']([\d.]+)/i);
-  return w && h ? Number(w[1]) / Number(h[1]) : null;
+  const root = svg.match(/<svg\b[^>]*/i)?.[0];
+  if (!root) return null;
+  const vb = root.match(/viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i);
+  if (vb) return Number(vb[2]) ? Number(vb[1]) / Number(vb[2]) : null;
+  const dim = (name: string): number | null => {
+    const m = root.match(new RegExp(`\\s${name}\\s*=\\s*["']\\s*([\\d.]+)\\s*(px)?\\s*["']`, "i"));
+    return m ? Number(m[1]) : null;
+  };
+  const w = dim("width");
+  const h = dim("height");
+  return w && h ? w / h : null;
 }
 
-/** Hex colours an SVG paints with (fill/stroke attributes and styles). */
+/** Colours an SVG paints with (fill, stroke and stop-color in attributes and styles): hex, rgb()/hsl() and named. none, currentColor, transparent and paint servers don't count. */
 export function svgColors(svg: string): string[] {
-  return [...new Set([...svg.matchAll(/(?:fill|stroke|stop-color)\s*[:=]\s*["']?\s*(#[0-9a-f]{3,8})\b/gi)].map((m) => m[1].toLowerCase()))];
+  const skip = new Set(["none", "transparent", "currentcolor", "inherit", "url", "context-fill", "context-stroke"]);
+  const found = [...svg.matchAll(/(?:fill|stroke|stop-color)\s*[:=]\s*["']?\s*(#[0-9a-f]{3,8}\b|(?:rgb|hsl)a?\([^)]*\)|[a-z]+)/gi)]
+    .map((m) => m[1].toLowerCase().replace(/\s+/g, ""))
+    .filter((c) => !skip.has(c));
+  return [...new Set(found)];
 }
 
 const noun = (n: string | { noun: string }): string => (typeof n === "string" ? n : n.noun);
@@ -125,9 +161,10 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
 
   const markFile = brand.mark?.file ?? brand.system?.[0]?.file;
   if (!markFile) push("brand-no-mark", "fail", "no mark file (mark.file or the first system entry)");
-  else if (!existsSync(join(dir, markFile))) push("brand-missing-file", "fail", `mark file ${markFile} doesn't exist`);
+  else if (kitPath(dir, markFile) === null) push("brand-path-outside-kit", "fail", `mark file ${markFile} is outside the brand folder; keep kit files inside it (marks/)`);
+  else if (!kitFileExists(dir, markFile)) push("brand-missing-file", "fail", `mark file ${markFile} doesn't exist`);
   else if (markFile.endsWith(".svg")) {
-    const svg = readFileSync(join(dir, markFile), "utf8");
+    const svg = readFileSync(kitPath(dir, markFile)!, "utf8");
     const aspect = svgAspect(svg);
     if (aspect !== null && (aspect < 3 / 4 - 1e-6 || aspect > 4 / 3 + 1e-6)) {
       push("mark-not-compact", "warn", `the mark is ${aspect.toFixed(2)}:1; the smallest media (avatar, favicon) need a roughly square mark, so keep wide forms for lockups`);
@@ -142,20 +179,22 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
   const system = brand.system ?? [];
   if (system.length < 3) push("brand-system-thin", "warn", `the logo system has ${system.length} lockup(s); a system runs from the bare mark (small media) to a full badge or lockup (large media)`);
   for (const l of system) {
-    if (!existsSync(join(dir, l.file))) push("brand-missing-file", "fail", `${l.id}: ${l.file} doesn't exist`);
+    if (kitPath(dir, l.file) === null) push("brand-path-outside-kit", "fail", `${l.id}: ${l.file} is outside the brand folder; keep kit files inside it (marks/)`);
+    else if (!kitFileExists(dir, l.file)) push("brand-missing-file", "fail", `${l.id}: ${l.file} doesn't exist`);
   }
   const smallest = Math.min(...system.map((l) => l.min_px ?? Infinity));
   if (system.length && !(smallest <= 32)) push("brand-no-small-form", "warn", "no lockup is meant for 32px or smaller: say which one serves favicons and avatars (min_px)");
 
   const c = brand.color ?? {};
-  const ground = brandGround(c);
-  if (c.ink && ground) {
-    const r = contrastRatio(c.ink, ground);
-    if (r !== null && r < 4.5) push("brand-ink-contrast", "fail", `ink on paper is ${r.toFixed(2)}:1, under 4.5:1 for text`);
-  }
-  if (c.accent && ground) {
-    const r = contrastRatio(c.accent, ground);
-    if (r !== null && r < 3) push("brand-accent-contrast", "warn", `accent on paper is ${r.toFixed(2)}:1; a mark or control in the accent needs 3:1 (WCAG 1.4.11)`);
+  for (const [key, ground] of brandGrounds(c)) {
+    if (c.ink) {
+      const r = contrastRatio(c.ink, ground);
+      if (r !== null && r < 4.5) push("brand-ink-contrast", "fail", `ink on ${key} is ${r.toFixed(2)}:1, under 4.5:1 for text`);
+    }
+    if (c.accent) {
+      const r = contrastRatio(c.accent, ground);
+      if (r !== null && r < 3) push("brand-accent-contrast", "warn", `accent on ${key} is ${r.toFixed(2)}:1; a mark or control in the accent needs 3:1 (WCAG 1.4.11)`);
+    }
   }
   if (!brand.type || !Object.keys(brand.type).length) push("brand-no-type", "warn", "no typography recorded; the lockups share one type system");
 
