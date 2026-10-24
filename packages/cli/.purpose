@@ -1139,19 +1139,20 @@ aspects:
       - localhost-only
       - core-invariant
     anchors:
-      - src/commands/studio.ts:2826
-      - src/commands/studio.ts:2885-2890
+      - src/commands/studio.ts:2826-2830
+      - src/commands/studio.ts:2889-2894
+      - src/commands/studio.ts:3293-3295
     enforcement: explicit 127.0.0.1 host bind
   studio-origin-check-bridge-vs-mcp-split:
-    description: '^localhost-only: mutating /api/* requests AND the /bridge WS upgrade enforce STRICT same-origin (isAllowedOrigin: a present Origin matching the server''s own loopback), but /mcp uses isAllowedMcpOrigin which TOLERATES a missing Origin — non-browser MCP clients (Claude Desktop) send no Origin and would otherwise 403, while a present-but-foreign Origin (a browser tab on evil.com) is still rejected on both.'
+    description: '^localhost-only: mutating /api/* requests AND the /bridge WS upgrade enforce STRICT same-origin (isAllowedOrigin: a present Origin matching the server''s own loopback), but /mcp uses isAllowedMcpOrigin which TOLERATES a missing Origin — non-browser MCP clients (Claude Desktop) send no Origin and would otherwise 403, while a present-but-foreign Origin (a browser tab on evil.com) is still rejected on both. Every check (REST middleware, /bridge and /mcp upgrades) calls these helpers with boundPort, the port Vite actually bound after listen() — with strictPort:false Vite falls back to the next free port, and checking the requested port would 403 the studio''s own saves.'
     tags:
       - security
       - localhost-only
       - core-invariant
     anchors:
       - src/commands/studio.ts:265-290
-      - src/commands/studio.ts:3305-3322
-      - src/commands/studio.ts:2899-2919
+      - src/commands/studio.ts:3307-3324
+      - src/commands/studio.ts:2903-2920
     enforcement: strict origin for bridge, tolerant for mcp
   studio-ws-upgrade-rechecks-origin:
     description: '^localhost-only: WebSocket upgrade requests bypass connect middleware (Node fires "upgrade" before connect), so the upgrade handler MUST re-run the Origin check before accepting /bridge or /mcp — without it the bridge would be cross-origin-reachable from any tab. A failed check writes a raw 403 and destroys the socket.'
@@ -1160,7 +1161,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - src/commands/studio.ts:3305-3322
+      - src/commands/studio.ts:3307-3324
     enforcement: re-run origin check on WS upgrade
   studio-llm-only-broadcast:
     description: 'shouldBroadcastMutation returns true ONLY for source "llm": "human" edits (the browser is already current) and "system" edits (GET-hydration of a just-opened file) are NOT broadcast or re-persisted — otherwise a plain file-open would fire a phantom "agent edited document" toast, a bogus undo entry, and a needless rewrite of the just-read bytes. This is the studio half of the source-tagged-mutation invariant.'
@@ -1170,7 +1171,7 @@ aspects:
       - core-invariant
     anchors:
       - src/commands/studio.ts:292-302
-      - src/commands/studio.ts:2864-2883
+      - src/commands/studio.ts:2868-2887
     enforcement: broadcast/persist only source === llm
   studio-contained-path-guard:
     description: isSafePath rejects absolute inputs and any path resolving outside cwd using an exact-or-trailing-separator prefix match (so sibling `/a/project-x` is NOT treated as inside cwd `/a/proj`); it deliberately does NOT reject a literal ".." substring (that would block legit names like my..backup.atelier and adds no real security — the resolved containment check is the actual guard). All file API handlers gate on it.

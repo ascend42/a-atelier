@@ -1,4 +1,4 @@
-version: 1.0.1
+version: 1.0.2
 description: AI-native animation engine — declarative YAML format (.atelier files) authored through MCP tools, rendered to Canvas 2D/SVG, exported to video/Lottie
 context:
   - 'Monorepo: 11 packages (types, math, schema, core, canvas, svg, lottie, react, studio, mcp, cli) + 2 apps (playground, showcase)'
@@ -120,7 +120,7 @@ aspects:
       - packages/mcp/src/store.ts:62-65
       - packages/mcp/src/store.ts:114-127
       - packages/cli/src/commands/studio.ts:292-302
-      - packages/cli/src/commands/studio.ts:2864-2883
+      - packages/cli/src/commands/studio.ts:2868-2887
       - packages/studio/src/studio.ts:237-312
     tags:
       - convention

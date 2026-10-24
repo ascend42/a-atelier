@@ -2824,6 +2824,10 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
         // but we pin 127.0.0.1 to make the invariant intentional + auditable
         // and to defeat any future change in Vite defaults.
         const HOSTNAME = "127.0.0.1";
+        // Vite moves to the next free port when `port` is taken (strictPort:
+        // false), so origin checks read the port it actually bound — set
+        // after listen() below. Checks only run per request, after that.
+        let boundPort = port;
 
         // Shared session state for the bridge + MCP-over-WS endpoints.
         // The same DocumentStore is fed by:
@@ -2901,10 +2905,6 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                 // fetch('http://localhost:4321/api/file', { method: 'POST', ... })
                 // and write .atelier files into the user's CWD.
                 // Only allow Origins that match this server's own loopback host.
-                const allowedOrigins = new Set([
-                  `http://localhost:${port}`,
-                  `http://127.0.0.1:${port}`,
-                ]);
                 const MUTATING = new Set(["POST", "PUT", "DELETE", "PATCH"]);
 
                 server.middlewares.use((req, res, next) => {
@@ -2912,7 +2912,7 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
 
                   if (req.method && MUTATING.has(req.method) && url.pathname.startsWith("/api/")) {
                     const origin = req.headers.origin;
-                    if (!origin || !allowedOrigins.has(origin)) {
+                    if (!isAllowedOrigin(origin, boundPort)) {
                       res.statusCode = 403;
                       res.end("Forbidden: cross-origin mutating request rejected");
                       return;
@@ -3291,6 +3291,8 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
         });
 
         await server.listen();
+        const address = server.httpServer?.address();
+        if (address && typeof address === "object") boundPort = address.port;
 
         // Mount WebSocket bridge + MCP transport on Vite's HTTP server.
         // ^localhost-only: the connect middleware does NOT run on WS upgrades
@@ -3313,8 +3315,8 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
             const origin = req.headers.origin;
             const originOk =
               url.pathname === "/mcp"
-                ? isAllowedMcpOrigin(origin, port)
-                : isAllowedOrigin(origin, port);
+                ? isAllowedMcpOrigin(origin, boundPort)
+                : isAllowedOrigin(origin, boundPort);
             if (!originOk) {
               socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
               socket.destroy();
@@ -3359,7 +3361,7 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
           });
         }
 
-        const resolvedUrl = server.resolvedUrls?.local[0] ?? `http://localhost:${port}`;
+        const resolvedUrl = server.resolvedUrls?.local[0] ?? `http://localhost:${boundPort}`;
         const url = resolvedUrl;
 
         console.log(`  Server running at: ${url}`);

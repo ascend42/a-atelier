@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [1.0.2] — `@a-company/atelier` studio on a busy port
+
+### Fixed
+
+- **`atelier studio` saves when port 4321 is taken.** Vite falls back to the next free port, but the origin checks still expected 4321, so every save (`/api/*`) and the live `/bridge` connection were rejected with 403 while the editor looked fine. All checks now use the port the server actually bound, through the one shared `isAllowedOrigin` helper (the REST middleware had its own copy).
+
 ## [1.0.1] — `@a-company/atelier` fixes found after the 1.0.0 release
 
 A fresh `npm i @a-company/atelier` turned up four broken paths. Only `@a-company/atelier` changes; the other 12 packages stay as published.
