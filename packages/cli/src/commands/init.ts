@@ -20,6 +20,7 @@ import {
   findWorkspace,
   hasProjectMarker,
   isValidProjectName,
+  isV2Workspace,
   listProjects,
   projectsDir,
   readWorkspace,
@@ -140,8 +141,9 @@ export function initCommand(program: Command): void {
 
         // Refresh the workspace manifest's advisory `projects` list to
         // include the newly-initialized project, if cwd was inside a
-        // workspace and the new project landed inside it.
-        if (workspaceCtx) {
+        // workspace and the new project landed inside it. v2 manifests don't
+        // track projects (on-disk `projects/` is the list), so skip them.
+        if (workspaceCtx && !isV2Workspace(workspaceCtx.workspaceDir)) {
           try {
             const projects = listProjects(workspaceCtx.workspaceDir);
             writeWorkspace(workspaceCtx.workspaceDir, {

@@ -240,7 +240,7 @@ export async function renderDocument(
   // Pre-load images before the render loop
   const { imageCache } = await preloadImages(doc, loadImage);
 
-  const canvas = createCanvas(width, height);
+  const canvas = createCanvas(width, height) as ReturnType<typeof createCanvas> & { data(): Buffer };
   const ctx = canvas.getContext("2d") as unknown as RenderContext & {
     getImageData(x: number, y: number, w: number, h: number): { data: Uint8ClampedArray };
   };
@@ -251,6 +251,8 @@ export async function renderDocument(
   const sourceVideoPath = findPrimaryVideoSource(doc, opts.docPath) ?? undefined;
   // Spawn FFmpeg
   const ffmpegArgs = buildFfmpegArgs(width, height, fps, format, output, sourceVideoPath);
+  // Same condition buildFfmpegArgs uses for its two-input overlay mode.
+  const overlay = sourceVideoPath !== undefined && format === "mp4";
   const ffmpeg = spawn("ffmpeg", ffmpegArgs, {
     stdio: ["pipe", "pipe", "pipe"],
   });
@@ -269,9 +271,17 @@ export async function renderDocument(
       const resolved = resolveFrame(doc, stateName, f);
       renderFrame(ctx, resolved, doc, imageCache);
 
-      // Straight (non-premultiplied) RGBA, matching ffmpeg's `rgba` input.
-      const { data } = ctx.getImageData(0, 0, width, height);
-      const raw = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+      // Overlay mode needs straight alpha so ffmpeg's overlay blends
+      // translucent pixels over the source video. Otherwise ffmpeg drops
+      // alpha on encode, so send premultiplied pixels (a copy from data()),
+      // which leaves translucent areas blended over black.
+      let raw: Buffer;
+      if (overlay) {
+        const { data } = ctx.getImageData(0, 0, width, height);
+        raw = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+      } else {
+        raw = canvas.data();
+      }
       const canWrite = ffmpeg.stdin!.write(raw);
       if (!canWrite) {
         await new Promise<void>((resolve) =>

@@ -512,9 +512,20 @@ export interface WorkspaceProjectEntry {
   hasStoryboard: boolean;
 }
 
+/**
+ * The workspace the workspace-tree UI and its endpoints serve: v1 only. A v2
+ * workspace keeps projects under `projects/<name>/`, which the tree doesn't
+ * model, so studio serves its projects one at a time in project mode and
+ * these endpoints answer 404 (the browser then boots the project editor).
+ */
+function findTreeWorkspace(cwd: string): ReturnType<typeof findWorkspace> {
+  const ws = findWorkspace(cwd);
+  return ws && !isV2Workspace(ws.workspaceDir) ? ws : null;
+}
+
 /** Build the GET /api/workspace response. */
 export function buildWorkspaceInfo(cwd: string): WorkspaceApiResult {
-  const ws = findWorkspace(cwd);
+  const ws = findTreeWorkspace(cwd);
   if (!ws) {
     return {
       status: 404,
@@ -577,7 +588,7 @@ function hasNonManifestAtelierDoc(dir: string): boolean {
  * waiting for the creator to drop something in.
  */
 export function buildActiveProject(cwd: string): WorkspaceApiResult {
-  const ws = findWorkspace(cwd);
+  const ws = findTreeWorkspace(cwd);
   if (!ws) {
     return { status: 404, body: { error: "no workspace found at or above cwd" } };
   }
@@ -599,7 +610,7 @@ export function handleSetActiveProject(
   cwd: string,
   body: unknown,
 ): WorkspaceApiResult {
-  const ws = findWorkspace(cwd);
+  const ws = findTreeWorkspace(cwd);
   if (!ws) {
     return { status: 404, body: { error: "no workspace found at or above cwd" } };
   }
@@ -621,7 +632,7 @@ export function handleSetActiveProject(
 
 /** Build the DELETE /api/workspace/active response. */
 export function handleClearActiveProject(cwd: string): WorkspaceApiResult {
-  const ws = findWorkspace(cwd);
+  const ws = findTreeWorkspace(cwd);
   if (!ws) {
     return { status: 404, body: { error: "no workspace found at or above cwd" } };
   }
@@ -645,7 +656,7 @@ export async function handleCreateProject(
   cwd: string,
   body: unknown,
 ): Promise<WorkspaceApiResult> {
-  const ws = findWorkspace(cwd);
+  const ws = findTreeWorkspace(cwd);
   if (!ws) {
     return { status: 404, body: { error: "no workspace found at or above cwd" } };
   }
@@ -1489,7 +1500,7 @@ export function studioContext(cwd: string): {
       return { kind: "project", workspaceDir: ws.workspaceDir, projectDir: join(v2Projects, projectName) };
     }
     const atContainer = absCwd === ws.workspaceDir || absCwd === v2Projects;
-    if (!atContainer && (isProjectDir(absCwd) || findAtelierFiles(absCwd).length > 0)) {
+    if (!atContainer && isProjectDir(absCwd)) {
       return { kind: "project", workspaceDir: ws.workspaceDir, projectDir: absCwd };
     }
     return { kind: "v2-workspace", workspaceDir: ws.workspaceDir, projects: listDirs(v2Projects) };
@@ -1772,18 +1783,36 @@ export function studioCommand(program: Command): void {
             try { setActiveProject(wsDir, projects[0]); } catch { /* non-fatal */ }
             projectLabel = projects[0];
           }
-        } else if (ctx.kind === "v2-workspace") {
+        } else if (ctx.kind === "v2-workspace" && !(target && (ctx.projects ?? []).includes(target))) {
           const wsDir = ctx.workspaceDir!;
           const projects = ctx.projects ?? [];
+          if (target) {
+            console.error(
+              `atelier studio: project "${target}" not found in ${join(wsDir, "projects")}. ` +
+              `Known: ${projects.length > 0 ? projects.join(", ") : "(none)"}`,
+            );
+            process.exit(1);
+            return;
+          }
           console.log("");
           console.log(`  ${wsDir} is an Atelier v2 workspace; studio opens one project at a time.`);
           if (projects.length > 0) {
+            const hop = relative(resolve(contextCwd), join(wsDir, "projects", projects[0])) || ".";
             console.log(`  Projects: ${projects.join(", ")}`);
-            console.log(`  Run: cd projects/${projects[0]} && atelier studio`);
+            console.log(`  Run: atelier studio ${projects[0]}   (or: cd ${hop} && atelier studio)`);
           } else {
             console.log(`  No projects yet. Create one with: atelier init <name>  (lands in projects/<name>/)`);
           }
           return;
+        } else if (ctx.kind === "v2-workspace") {
+          // `atelier studio <name>` from anywhere in a v2 workspace.
+          serveDir = join(ctx.workspaceDir!, "projects", target!);
+          projectLabel = target;
+          try {
+            workspaceName = findWorkspace(ctx.workspaceDir!)?.manifest.name ?? basename(ctx.workspaceDir!);
+          } catch {
+            workspaceName = basename(ctx.workspaceDir!);
+          }
         } else if (ctx.kind === "project") {
           serveDir = ctx.projectDir!;
           projectLabel = basename(serveDir);

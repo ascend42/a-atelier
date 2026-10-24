@@ -225,7 +225,7 @@ components:
       - workspace
     file: src/lib/learning-mode.ts
   '#workspace-io':
-    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). A v2 manifest (version 2.x, as scaffolded by `atelier workspace`: packs block, no default_mode) is mapped onto the same shape first, with default_mode from the workspace learning-mode.yaml else ambient. writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence) except that an existing v2 manifest is never rewritten in the v1 shape unless { replaceV2: true } (createWorkspace, which only writes over a manifest when forced). A malformed learning-mode.yaml reads as ambient for v2. isV2Workspace(dir) reports the manifest format; projectsDir(dir) is `projects/` for v2 and the root for v1 — `atelier init <name>` inside a workspace creates the project there. Studio's workspace-tree mode is v1-only: in a v2 workspace studioContext opens the project under projects/<name>/ containing cwd (kind project) and returns kind v2-workspace at the root or projects/, where `atelier studio` prints the project list and a cd hint. createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
+    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). A v2 manifest (version 2.x, as scaffolded by `atelier workspace`: packs block, no default_mode) is mapped onto the same shape first, with default_mode from the workspace learning-mode.yaml else ambient. writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence) except that an existing v2 manifest is never rewritten in the v1 shape unless { replaceV2: true } (createWorkspace, which only writes over a manifest when forced). A malformed learning-mode.yaml reads as ambient for v2. isV2Workspace(dir) reports the manifest format; projectsDir(dir) is `projects/` for v2 and the root for v1 — `atelier init <name>` inside a workspace creates the project there. Studio's workspace-tree mode is v1-only: in a v2 workspace studioContext opens the project under projects/<name>/ containing cwd (kind project) and returns kind v2-workspace at the root or projects/, where `atelier studio` prints the project list and a hint relative to cwd; `atelier studio <name>` opens projects/<name>/ from anywhere in it. findTreeWorkspace makes the workspace-tree endpoints (/api/workspace, active, projects) treat a v2 workspace as absent (404), so the browser boots the single-project editor. init skips the advisory manifest refresh for v2. createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
     tags:
       - workspace
       - init
@@ -697,7 +697,7 @@ aspects:
       - packages/cli/src/commands/render.ts:45-50
     enforcement: ffmpeg probe before document load
   pipeline-bgra-rawvideo-pipe:
-    description: The render pipeline pipes @napi-rs/canvas frames to FFmpeg as raw `rgba` rawvideo over stdin (pipe:0) at the document fps — ctx.getImageData emits straight (non-premultiplied) RGBA, which is why ffmpeg input pix_fmt is pinned to rgba (canvas.data() would be premultiplied and darken translucent overlay edges). Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
+    description: The render pipeline pipes @napi-rs/canvas frames to FFmpeg as raw `rgba` rawvideo over stdin (pipe:0) at the document fps, so ffmpeg input pix_fmt is pinned to rgba. Plain renders send canvas.data() (a premultiplied copy: ffmpeg drops alpha on encode, so translucent pixels end up blended over black, as node-canvas did); the two-input overlay mode sends ctx.getImageData (straight alpha) so ffmpeg overlay blends correctly over the source video. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
     tags:
       - ffmpeg
       - pixel-format
@@ -789,8 +789,8 @@ aspects:
       - scaling
       - validation
     anchors:
-      - packages/cli/src/lib/render-image.ts:234-251
-      - packages/cli/src/lib/render-image.ts:286-290
+      - packages/cli/src/lib/render-image.ts:235-252
+      - packages/cli/src/lib/render-image.ts:287-291
     enforcement: scale context, skip when identity
   render-image-refit-after-decode:
     description: Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer's bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.
@@ -799,7 +799,7 @@ aspects:
       - aspect-fit
       - technique
     anchors:
-      - packages/cli/src/lib/render-image.ts:258-273
+      - packages/cli/src/lib/render-image.ts:259-274
       - packages/cli/src/lib/render-image.ts:51-80
     enforcement: refit bounds post-decode
   carousel-no-glob-dependency:
@@ -1178,7 +1178,7 @@ aspects:
       - path-traversal
       - edge-case
     anchors:
-      - packages/cli/src/commands/studio.ts:121-141
+      - packages/cli/src/commands/studio.ts:134-154
     enforcement: resolved-containment prefix check
   recipe-lib-resolution-chain:
     description: resolveRecipePath resolves a bare name through a fixed chain — <projectDir>/.atelier/recipes/ first, then ~/.atelier/recipes/ — across extensions [.recipe.yaml, .recipe.json, .yaml, .yml, .json], project-local winning over the user library. A name that is absolute or contains a path separator skips the chain and loads literally. A miss throws listing every path searched.

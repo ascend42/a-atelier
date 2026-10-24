@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 
 import { scaffoldWorkspace } from "./workspace.js";
 import { createWorkspace, findWorkspace, projectsDir, readWorkspace, writeWorkspace } from "../lib/workspace.js";
-import { studioContext } from "./studio.js";
+import { buildWorkspaceInfo, studioContext } from "./studio.js";
 import { writeLearningMode } from "../lib/learning-mode.js";
 
 // src/commands/ → ../../ = packages/cli ; ../../../../ = repo root
@@ -217,5 +217,20 @@ describe("v2 workspace manifest", () => {
 
     const inProject = studioContext(join(wsDir, "projects/ep1/media"));
     expect(inProject).toMatchObject({ kind: "project", projectDir: join(wsDir, "projects/ep1") });
+  });
+
+  it("workspace-tree endpoints answer 404 in a v2 workspace so the project editor boots", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    mkdirSync(join(wsDir, "projects/ep1/.atelier"), { recursive: true });
+
+    expect(buildWorkspaceInfo(join(wsDir, "projects/ep1")).status).toBe(404);
+    expect(buildWorkspaceInfo(wsDir).status).toBe(404);
+  });
+
+  it("a v2 subfolder outside projects/ with .atelier files is not opened as a project", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    writeFileSync(join(wsDir, "_brand/intro.atelier"), "{}");
+
+    expect(studioContext(join(wsDir, "_brand")).kind).toBe("v2-workspace");
   });
 });
