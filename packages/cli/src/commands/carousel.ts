@@ -97,8 +97,8 @@ function globToRegExp(glob: string): RegExp {
  * overlay_rules applied with currentIndex/totalCount threaded so the page-number
  * overlay renders "i/N".
  *
- * Pure + synchronous (no node-canvas): image bounds use the canvas-extent
- * fallback because natural dimensions aren't known until node-canvas decodes
+ * Pure + synchronous (no canvas): image bounds use the canvas-extent
+ * fallback because natural dimensions aren't known until the rasterizer decodes
  * the file at render time. {@link renderDocumentToPng} re-fits the bounds via
  * `refitImageBounds` once the image is loaded.
  */
@@ -195,7 +195,7 @@ export function carouselCommand(program: Command): void {
       // Resolve the recipe (same chain as other recipe commands).
       let recipe: StudioRecipe;
       try {
-        const loaded = loadRecipe(recipeRef);
+        const loaded = loadRecipe(recipeRef, process.cwd());
         recipe = loaded.recipe;
         console.log(`Loaded recipe ${loaded.path}`);
         for (const w of loaded.warnings) console.log(`  ⚠  ${w}`);

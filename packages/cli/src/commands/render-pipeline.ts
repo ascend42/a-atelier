@@ -8,7 +8,8 @@ import { existsSync } from "node:fs";
 import { dirname, resolve, isAbsolute } from "node:path";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
-import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
+import { renderFrame, type RenderContext } from "@a-company/atelier-canvas";
+import { loadCanvasModule, preloadImages } from "../lib/render-image.js";
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -65,7 +66,7 @@ export async function checkFfmpeg(): Promise<boolean> {
  *
  * When `sourceVideoPath` is provided, ffmpeg gets TWO inputs:
  *   - Input 0: the source video file (decoded photographic frames + audio)
- *   - Input 1: raw BGRA canvas frames on stdin (the caption overlay)
+ *   - Input 1: raw RGBA canvas frames on stdin (the caption overlay)
  *
  * A `[0:v][1:v]overlay` filter composites the canvas on top of the source
  * video at matching timestamps. Source audio is copied through with
@@ -79,6 +80,14 @@ export async function checkFfmpeg(): Promise<boolean> {
  * without any VideoVisual layers (e.g. text-only animations, image
  * carousels).
  */
+/**
+ * True when buildFfmpegArgs uses its two-input overlay mode (canvas frames
+ * composited over a source video). The frame pixel format depends on it too.
+ */
+export function usesSourceOverlay(format: RenderFormat, sourceVideoPath?: string): boolean {
+  return Boolean(sourceVideoPath) && format === "mp4";
+}
+
 export function buildFfmpegArgs(
   width: number,
   height: number,
@@ -87,7 +96,7 @@ export function buildFfmpegArgs(
   output: string,
   sourceVideoPath?: string,
 ): string[] {
-  if (sourceVideoPath && format === "mp4") {
+  if (sourceVideoPath && usesSourceOverlay(format, sourceVideoPath)) {
     // Two-input overlay mode — closes the canvas-only / no-audio gap.
     return [
       "-y",
@@ -96,7 +105,7 @@ export function buildFfmpegArgs(
       // Input 1: canvas overlay frames on stdin. Same dimensions + fps as
       // the doc so the overlay aligns frame-for-frame with input 0.
       "-f", "rawvideo",
-      "-pix_fmt", "bgra",
+      "-pix_fmt", "rgba",
       "-s", `${width}x${height}`,
       "-r", String(fps),
       "-i", "pipe:0",
@@ -136,7 +145,7 @@ export function buildFfmpegArgs(
   const input = [
     "-y",
     "-f", "rawvideo",
-    "-pix_fmt", "bgra",
+    "-pix_fmt", "rgba",
     "-s", `${width}x${height}`,
     "-r", String(fps),
     "-i", "pipe:0",
@@ -157,7 +166,7 @@ export function buildFfmpegArgs(
   // GIF — single-pass palette generation (stdin-compatible)
   return [
     ...input,
-    "-vf", "split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=sierra2_4a",
+    "-vf", "split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=new=1:dither=sierra2_4a",
     "-loop", "0",
     output,
   ];
@@ -190,102 +199,19 @@ export function findPrimaryVideoSource(
   return null;
 }
 
-// ─── Image Pre-loading ───────────────────────────────────────
-
-/**
- * Scan document layers for image visuals, pre-load them with node-canvas
- * loadImage, and return a populated ImageCache ready for rendering.
- */
-async function preloadImages(
-  doc: AtelierDocument,
-  loadImage: (src: string) => Promise<unknown>,
-): Promise<ImageCache> {
-  const sources = new Set<string>();
-
-  for (const layer of doc.layers) {
-    if (layer.visual.type === "image") {
-      const iv = layer.visual as { src?: string; assetId?: string };
-      if (iv.src) {
-        sources.add(iv.src);
-      } else if (iv.assetId && doc.assets?.[iv.assetId]) {
-        sources.add(doc.assets[iv.assetId].src);
-      }
-    }
-  }
-
-  if (sources.size === 0) {
-    return new ImageCache();
-  }
-
-  // Load all images in parallel
-  const preloaded = new Map<string, unknown>();
-  await Promise.all(
-    [...sources].map(async (src) => {
-      try {
-        preloaded.set(src, await loadImage(src));
-      } catch {
-        // Images that fail to load will render as blank
-      }
-    }),
-  );
-
-  // Create ImageCache pre-populated with loaded images.
-  // createImage returns the pre-loaded image and fires onLoad on next tick
-  // so that the ImageCache internal `image` variable is assigned first.
-  const imageCache = new ImageCache({
-    createImage: (src, onLoad, onError) => {
-      const img = preloaded.get(src);
-      if (img) {
-        process.nextTick(onLoad);
-        return img;
-      }
-      process.nextTick(onError);
-      return {};
-    },
-  });
-
-  for (const src of preloaded.keys()) {
-    imageCache.load(src);
-  }
-
-  // Wait for nextTick callbacks to populate the cache
-  await new Promise<void>((resolve) => process.nextTick(resolve));
-
-  return imageCache;
-}
-
 // ─── Main Render Loop ────────────────────────────────────────
 
 /**
  * Render an Atelier document to a video/GIF file via FFmpeg.
- * Dynamically imports `canvas` (node-canvas) — fails with a helpful
- * message if the native dependency is not installed.
+ * Rasterizes via `@napi-rs/canvas` (prebuilt platform binaries, a hard
+ * dependency) — the same rasterizer `export-image` and `still` use, so a
+ * plain `npm install` can render with no native build.
  */
 export async function renderDocument(
   doc: AtelierDocument,
   opts: RenderOptions,
 ): Promise<RenderResult> {
-  // Dynamic import — canvas requires native compilation.
-  // Use a variable to avoid TypeScript resolving the module at compile time.
-  const canvasModuleName = "canvas";
-  let createCanvas: (w: number, h: number) => unknown;
-  let loadImage: (src: string) => Promise<unknown>;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const canvasModule = await import(/* webpackIgnore: true */ canvasModuleName);
-    createCanvas = canvasModule.createCanvas;
-    loadImage = canvasModule.loadImage;
-  } catch {
-    throw new Error(
-      "The 'canvas' package is not installed.\n" +
-      "Install it with:\n" +
-      "  npm install canvas\n" +
-      "Prerequisites vary by OS:\n" +
-      "  macOS:   brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman\n" +
-      "  Ubuntu:  sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev\n" +
-      "See: https://github.com/Automattic/node-canvas#compiling",
-    );
-  }
+  const { createCanvas, loadImage } = await loadCanvasModule();
 
   const { width, height, fps } = doc.canvas;
   const { output, format, states, onProgress } = opts;
@@ -320,11 +246,12 @@ export async function renderDocument(
   }
 
   // Pre-load images before the render loop
-  const imageCache = await preloadImages(doc, loadImage);
+  const { imageCache } = await preloadImages(doc, loadImage);
 
-  // Create node-canvas
-  const canvas = createCanvas(width, height) as { getContext(id: "2d"): unknown; toBuffer(format: "raw"): Buffer };
-  const ctx = canvas.getContext("2d");
+  const canvas = createCanvas(width, height) as ReturnType<typeof createCanvas> & { data(): Buffer };
+  const ctx = canvas.getContext("2d") as unknown as RenderContext & {
+    getImageData(x: number, y: number, w: number, h: number): { data: Uint8ClampedArray };
+  };
 
   // Detect the source video (if any) so ffmpeg can overlay the canvas on
   // top of the decoded source pixels AND copy the source audio track —
@@ -332,6 +259,10 @@ export async function renderDocument(
   const sourceVideoPath = findPrimaryVideoSource(doc, opts.docPath) ?? undefined;
   // Spawn FFmpeg
   const ffmpegArgs = buildFfmpegArgs(width, height, fps, format, output, sourceVideoPath);
+  // An MP4 without a source video drops alpha on encode, so it gets
+  // premultiplied pixels (translucency blended over black, as node-canvas
+  // did). The overlay filter and GIF transparency need straight alpha.
+  const premultiplied = format === "mp4" && !usesSourceOverlay(format, sourceVideoPath);
   const ffmpeg = spawn("ffmpeg", ffmpegArgs, {
     stdio: ["pipe", "pipe", "pipe"],
   });
@@ -348,9 +279,15 @@ export async function renderDocument(
     const duration = doc.states[stateName].duration;
     for (let f = 0; f < duration; f++) {
       const resolved = resolveFrame(doc, stateName, f);
-      renderFrame(ctx as never, resolved, doc, imageCache);
+      renderFrame(ctx, resolved, doc, imageCache);
 
-      const raw = canvas.toBuffer("raw");
+      let raw: Buffer;
+      if (premultiplied) {
+        raw = canvas.data(); // a copy, safe to hand to the stdin queue
+      } else {
+        const { data } = ctx.getImageData(0, 0, width, height);
+        raw = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+      }
       const canWrite = ffmpeg.stdin!.write(raw);
       if (!canWrite) {
         await new Promise<void>((resolve) =>

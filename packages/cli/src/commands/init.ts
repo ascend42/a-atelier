@@ -20,7 +20,9 @@ import {
   findWorkspace,
   hasProjectMarker,
   isValidProjectName,
+  isV2Workspace,
   listProjects,
+  projectsDir,
   readWorkspace,
   writeWorkspace,
 } from "../lib/workspace.js";
@@ -115,7 +117,10 @@ export function initCommand(program: Command): void {
             !projectDir.startsWith("/") &&
             !projectDir.startsWith(".")
           ) {
-            resolvedProjectDir = join(ws.workspaceDir, projectDir);
+            // v2 workspaces keep projects under `projects/<name>/`; a path
+            // that already names projects/ stays relative to the root.
+            const base = /^projects[\\/]/.test(projectDir) ? ws.workspaceDir : projectsDir(ws.workspaceDir);
+            resolvedProjectDir = join(base, projectDir);
           }
           // Inherit default_mode from the workspace UNLESS the creator
           // explicitly passed --mode. Skip the interactive prompt inside a
@@ -138,8 +143,9 @@ export function initCommand(program: Command): void {
 
         // Refresh the workspace manifest's advisory `projects` list to
         // include the newly-initialized project, if cwd was inside a
-        // workspace and the new project landed inside it.
-        if (workspaceCtx) {
+        // workspace and the new project landed inside it. v2 manifests don't
+        // track projects (on-disk `projects/` is the list), so skip them.
+        if (workspaceCtx && !isV2Workspace(workspaceCtx.workspaceDir)) {
           try {
             const projects = listProjects(workspaceCtx.workspaceDir);
             writeWorkspace(workspaceCtx.workspaceDir, {

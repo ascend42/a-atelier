@@ -142,12 +142,13 @@ export function resolveExportDimensions(
 
 /**
  * Build an {@link ImageCache} pre-populated with every ImageVisual source in
- * the document. Mirrors render-pipeline.ts: load each source with
+ * the document — shared by this PNG path and the MP4/GIF render pipeline. Load
+ * each source with
  * `loadImage`, then wire a synchronous-from-cache `createImage` so the renderer
  * resolves images immediately. Returns the cache plus a map of src → loaded
  * image so callers can read natural dimensions.
  */
-async function preloadImages(
+export async function preloadImages(
   doc: AtelierDocument,
   loadImage: (src: string) => Promise<LoadedImage>,
 ): Promise<{

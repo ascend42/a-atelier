@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [1.0.1] — `@a-company/atelier` fixes found after the 1.0.0 release
+
+A fresh `npm i @a-company/atelier` turned up four broken paths. Only `@a-company/atelier` changes; the other 12 packages stay as published.
+
+### Fixed
+
+- **`atelier render` works on a plain install.** The MP4/GIF pipeline still loaded the old `canvas` (node-canvas) package, which isn't installed by default and needs a native build, so every render failed with "The 'canvas' package is not installed". It now uses `@napi-rs/canvas` like `export-image` and `still` (premultiplied frames as before; straight alpha when overlaying a source video). The unused optional `canvas` peer dependency is gone.
+- **`atelier studio` and `atelier init` work in v2 workspaces.** A workspace made by `atelier workspace` (`version: 2.0.0`, a `packs` block, no `default_mode`) failed validation, so studio crashed and init refused to run inside it. The reader now accepts v2 manifests, taking `default_mode` from the workspace's `learning-mode.yaml` (else ambient), and writers no longer rewrite a v2 manifest in the v1 shape. In a v2 workspace, `atelier init <name>` creates `projects/<name>/`, and studio opens one project at a time: `atelier studio <name>`, or run it inside `projects/<name>/`. Elsewhere in the workspace it lists the projects and says how to open one. (Studio's workspace-tree view still covers v1 workspaces only.)
+- **`atelier render --format gif` keeps every frame.** The GIF filter built a palette per frame but applied only the first one, so an animation starting on an empty frame came out blank. `paletteuse` now switches palettes per frame (`new=1`).
+- **New workspaces get a `.gitignore`.** npm renames `.gitignore` to `.npmignore` on publish, so workspaces got a `.npmignore` and raw media and transcripts weren't ignored. The template now ships as `gitignore` and is written as `.gitignore`; re-running `atelier workspace` keeps an existing one.
+- **`atelier carousel <name>` finds project recipes.** It only looked in `~/.atelier/recipes/`, so a recipe made with `atelier recipe new` (saved to `./.atelier/recipes/`) wasn't found. It now checks the current folder first, like the other recipe commands.
+
 ## [Unreleased] — v1.0 creator-flow surface
 
 `@a-company/atelier` 1.0.0 carries "brand mode", "brand mode hardening" and "packaging" below; 0.39.0 carried the next two sections ("design playbook v1" and "design systems per product…").

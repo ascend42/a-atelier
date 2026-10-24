@@ -379,7 +379,7 @@ describe("buildFfmpegArgs", () => {
     expect(args).toContain("-f");
     expect(args).toContain("rawvideo");
     expect(args).toContain("-pix_fmt");
-    expect(args).toContain("bgra");
+    expect(args).toContain("rgba");
     expect(args).toContain("-s");
     expect(args).toContain("1920x1080");
     expect(args).toContain("-r");
@@ -405,6 +405,9 @@ describe("buildFfmpegArgs", () => {
     // GIF-specific
     expect(args).toContain("-vf");
     expect(args).toContain("-loop");
+    // stats_mode=single makes a palette per frame; paletteuse must switch to
+    // each one (new=1) or every frame is quantized to the first frame's palette.
+    expect(args[args.indexOf("-vf") + 1]).toContain("paletteuse=new=1");
     expect(args).toContain("0");
     expect(args[args.length - 1]).toBe("out.gif");
     // Should NOT contain MP4-specific flags

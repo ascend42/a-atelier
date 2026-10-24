@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Atelier: an AI-native animation engine and design/produce studio for Claude Code. CLI, MCP server, and the atelier design and atelier produce skills.",
   "license": "MIT",
   "author": "Matt Canoy (https://github.com/ascend42)",
@@ -55,14 +55,6 @@
     "ws": "^8.20.1",
     "yaml": "^2.7.0",
     "zod": "^3.25.0"
-  },
-  "peerDependencies": {
-    "canvas": ">=2.0.0"
-  },
-  "peerDependenciesMeta": {
-    "canvas": {
-      "optional": true
-    }
   },
   "publishConfig": {
     "access": "public"
