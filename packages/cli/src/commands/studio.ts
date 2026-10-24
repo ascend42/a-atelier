@@ -1499,10 +1499,6 @@ export function studioContext(cwd: string): {
     if (rel && !rel.startsWith("..") && !isAbsolute(rel) && isValidProjectName(projectName)) {
       return { kind: "project", workspaceDir: ws.workspaceDir, projectDir: join(v2Projects, projectName) };
     }
-    const atContainer = absCwd === ws.workspaceDir || absCwd === v2Projects;
-    if (!atContainer && isProjectDir(absCwd)) {
-      return { kind: "project", workspaceDir: ws.workspaceDir, projectDir: absCwd };
-    }
     return { kind: "v2-workspace", workspaceDir: ws.workspaceDir, projects: listDirs(v2Projects) };
   }
 

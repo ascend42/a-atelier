@@ -85,7 +85,7 @@ export async function checkFfmpeg(): Promise<boolean> {
  * composited over a source video). The frame pixel format depends on it too.
  */
 export function usesSourceOverlay(format: RenderFormat, sourceVideoPath?: string): boolean {
-  return sourceVideoPath !== undefined && format === "mp4";
+  return Boolean(sourceVideoPath) && format === "mp4";
 }
 
 export function buildFfmpegArgs(

@@ -117,8 +117,10 @@ export function initCommand(program: Command): void {
             !projectDir.startsWith("/") &&
             !projectDir.startsWith(".")
           ) {
-            // v2 workspaces keep projects under `projects/<name>/`.
-            resolvedProjectDir = join(projectsDir(ws.workspaceDir), projectDir);
+            // v2 workspaces keep projects under `projects/<name>/`; a path
+            // that already names projects/ stays relative to the root.
+            const base = /^projects[\\/]/.test(projectDir) ? ws.workspaceDir : projectsDir(ws.workspaceDir);
+            resolvedProjectDir = join(base, projectDir);
           }
           // Inherit default_mode from the workspace UNLESS the creator
           // explicitly passed --mode. Skip the interactive prompt inside a

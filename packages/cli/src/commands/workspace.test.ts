@@ -237,9 +237,10 @@ describe("v2 workspace manifest", () => {
     expect(buildWorkspaceInfo(wsDir).status).toBe(404);
   });
 
-  it("a v2 subfolder outside projects/ with .atelier files is not opened as a project", () => {
+  it("a v2 subfolder outside projects/ is never opened as a project, even with a .atelier/ dir", () => {
     scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
     writeFileSync(join(wsDir, "_brand/intro.atelier"), "{}");
+    mkdirSync(join(wsDir, "_brand/.atelier"), { recursive: true });
 
     expect(studioContext(join(wsDir, "_brand")).kind).toBe("v2-workspace");
   });
