@@ -15,8 +15,8 @@
  * n:logo-system-by-media-size, n:mark-quality-tests).
  */
 
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { findSystemRoot, productDir, readIndex } from "./design-system.js";
 import { contrastRatio } from "./design-lint.js";
@@ -62,16 +62,27 @@ export const brandGrounds = (c: Record<string, string> = {}): [string, string][]
 /** The first ground (what the sheet shows contrast against). */
 export const brandGround = (c: Record<string, string> = {}): string | undefined => brandGrounds(c)[0]?.[1];
 
+/** Is `abs` inside `dir` (not `dir` itself)? `..draft.svg` is a file name, `../x` is a climb. */
+const inside = (dir: string, abs: string): boolean => {
+  const rel = relative(dir, abs);
+  return rel !== "" && rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
+};
+
 /**
  * A kit file's absolute path, or null when `file` leaves the kit folder
- * (absolute, or climbing out with `..`): brand.yaml is data, not a licence to
- * read or link anywhere on disk.
+ * (absolute, climbing out with `..`, or a symlink that resolves outside):
+ * brand.yaml is data, not a licence to read or link anywhere on disk. A file
+ * that doesn't exist yet passes (the missing-file check reports it).
  */
 export function kitPath(dir: string, file: string): string | null {
   if (typeof file !== "string" || !file || isAbsolute(file)) return null;
   const abs = resolve(dir, file);
-  const rel = relative(resolve(dir), abs);
-  return rel === "" || rel.startsWith("..") || isAbsolute(rel) ? null : abs;
+  if (!inside(resolve(dir), abs)) return null;
+  try {
+    return inside(realpathSync(dir), realpathSync(abs)) ? abs : null;
+  } catch {
+    return abs;
+  }
 }
 
 /** kitPath, and it names a file that exists (not a directory). */
@@ -125,9 +136,9 @@ export function loadBrand(dir: string): Brand | null {
 
 /** An SVG's aspect (width / height) from the root <svg> tag's viewBox, else its unitless or px width and height; null when it can't tell. */
 export function svgAspect(svg: string): number | null {
-  const root = svg.match(/<svg\b[^>]*/i)?.[0];
+  const root = svg.match(/<svg\b(?:"[^"]*"|'[^']*'|[^>"'])*/i)?.[0];
   if (!root) return null;
-  const vb = root.match(/viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i);
+  const vb = root.match(/viewBox\s*=\s*["']\s*[-+\d.eE]+[\s,]+[-+\d.eE]+[\s,]+([\d.eE+]+)[\s,]+([\d.eE+]+)/i);
   if (vb) return Number(vb[2]) ? Number(vb[1]) / Number(vb[2]) : null;
   const dim = (name: string): number | null => {
     const m = root.match(new RegExp(`\\s${name}\\s*=\\s*["']\\s*([\\d.]+)\\s*(px)?\\s*["']`, "i"));
@@ -138,12 +149,15 @@ export function svgAspect(svg: string): number | null {
   return w && h ? w / h : null;
 }
 
-/** Colours an SVG paints with (fill, stroke and stop-color in attributes and styles): hex, rgb()/hsl() and named. none, currentColor, transparent and paint servers don't count. */
+const NAMED_COLORS = new Set(
+  "aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen".split(" "),
+);
+
+/** Colours an SVG paints with (fill, stroke and stop-color in attributes and styles): hex, rgb()/hsl() and CSS named colours. none, currentColor, transparent, var(), paint servers and non-colour keywords (SMIL `freeze`) don't count. */
 export function svgColors(svg: string): string[] {
-  const skip = new Set(["none", "transparent", "currentcolor", "inherit", "url", "context-fill", "context-stroke"]);
-  const found = [...svg.matchAll(/(?:fill|stroke|stop-color)\s*[:=]\s*["']?\s*(#[0-9a-f]{3,8}\b|(?:rgb|hsl)a?\([^)]*\)|[a-z]+)/gi)]
+  const found = [...svg.matchAll(/(?:fill|stroke|stop-color)\s*[:=]\s*["']?\s*(#[0-9a-f]{3,8}\b|(?:rgb|hsl)a?\([^)]*\)|[a-z]+)(?![\w(-])/gi)]
     .map((m) => m[1].toLowerCase().replace(/\s+/g, ""))
-    .filter((c) => !skip.has(c));
+    .filter((c) => c.startsWith("#") || c.includes("(") || NAMED_COLORS.has(c));
   return [...new Set(found)];
 }
 
@@ -186,8 +200,10 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
   if (system.length && !(smallest <= 32)) push("brand-no-small-form", "warn", "no lockup is meant for 32px or smaller: say which one serves favicons and avatars (min_px)");
 
   const c = brand.color ?? {};
-  for (const [key, ground] of brandGrounds(c)) {
-    if (c.ink) {
+  const grounds = brandGrounds(c);
+  grounds.forEach(([key, ground], i) => {
+    // ink is set for the primary ground (paper); a dark background carries reversed ink, which isn't a brand colour to test
+    if (c.ink && i === 0) {
       const r = contrastRatio(c.ink, ground);
       if (r !== null && r < 4.5) push("brand-ink-contrast", "fail", `ink on ${key} is ${r.toFixed(2)}:1, under 4.5:1 for text`);
     }
@@ -195,7 +211,7 @@ export function checkBrand(brand: Brand, dir: string): BrandCheck[] {
       const r = contrastRatio(c.accent, ground);
       if (r !== null && r < 3) push("brand-accent-contrast", "warn", `accent on ${key} is ${r.toFixed(2)}:1; a mark or control in the accent needs 3:1 (WCAG 1.4.11)`);
     }
-  }
+  });
   if (!brand.type || !Object.keys(brand.type).length) push("brand-no-type", "warn", "no typography recorded; the lockups share one type system");
 
   const kept = new Set((brand.nouns?.kept ?? []).map(noun).map((n) => n.toLowerCase()));

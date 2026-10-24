@@ -60,8 +60,9 @@ export function optionLabel(i: number): string {
 /** A relative file path as a URL path: "/" separators, each segment percent-encoded (spaces, #, ? and % in file names). */
 export const urlPath = (p: string): string => p.split(sep === "\\" ? /[\\/]/ : "/").map(encodeURIComponent).join("/");
 
-/** A CSS colour value that is safe to drop into a style attribute, else "transparent": hex, a name, or rgb()/hsl() with plain numbers. */
-export const safeColor = (v: unknown): string => (typeof v === "string" && /^(#[0-9a-f]{3,8}|[a-z]+|(?:rgb|hsl)a?\([\d\s.,%/-]+\))$/i.test(v.trim()) ? v.trim() : "transparent");
+/** A CSS colour value that is safe to drop into a style attribute, else "transparent": hex, a name, or a colour function (rgb, hsl, hwb, lab, lch, oklab, oklch, color) with plain arguments (no var(), url() or nesting). */
+export const safeColor = (v: unknown): string =>
+  typeof v === "string" && /^(#[0-9a-f]{3,8}|[a-z]+|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([\w\s.,%/+-]+\))$/i.test(v.trim()) ? v.trim() : "transparent";
 
 /**
  * A round of options. `files` are paths relative to the page, labelled A, B, C…
@@ -96,6 +97,8 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
   };
   const name = brand.name ?? "Brand";
   const parts: string[] = [BRAND_STYLE];
+  /** An image, or a visible note when the file is outside the brand folder (atelier brand check fails it). */
+  const img = (f: string, alt: string): string => (rel(f) ? `<img src="${esc(rel(f))}" alt="${esc(alt)}">` : `<span class="meta">${esc(f)} is outside the brand folder</span>`);
   const markFile = brand.mark?.file ?? brand.system?.[0]?.file;
   parts.push(`<h1>${esc(name)}</h1>`);
   if (brand.mark?.idea) parts.push(`<p>${esc(brand.mark.idea)}</p>`);
@@ -108,14 +111,14 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
   }
 
   if (markFile) {
-    parts.push(`<h2 id="mark">Mark</h2><div class="grid" style="grid-template-columns:minmax(220px,320px) 1fr;align-items:start"><div class="opt"><div class="big"><img src="${esc(rel(markFile))}" alt="${esc(name)} mark"></div></div><div>${sizeRow(rel(markFile), `${name} mark`, reversedOf(markFile))}<p class="meta">Large, then 64, 32 and 16 px; on dark; in one colour.</p></div></div>`);
+    parts.push(`<h2 id="mark">Mark</h2><div class="grid" style="grid-template-columns:minmax(220px,320px) 1fr;align-items:start"><div class="opt"><div class="big">${img(markFile, `${name} mark`)}</div></div><div>${rel(markFile) ? sizeRow(rel(markFile), `${name} mark`, reversedOf(markFile)) : ""}<p class="meta">Large, then 64, 32 and 16 px; on dark; in one colour.</p></div></div>`);
   }
 
   const system = brand.system ?? [];
   if (system.length) {
     parts.push(`<h2 id="system">Logo system</h2><p class="meta">Small media tell a short story; large media a long one (n:logo-system-by-media-size).</p><div class="chart"><div class="axis">small media → large media</div><div class="lockups">`);
     for (const l of system) {
-      parts.push(`<div class="lockup"><div><b>${esc(l.id)}</b><div class="meta">${esc(l.use ?? "")}</div>${l.min_px ? `<div class="meta">min ${esc(String(l.min_px))}px</div>` : ""}</div><div class="art"><img src="${esc(rel(l.file))}" alt="${esc(name)} ${esc(l.id)}"></div></div>`);
+      parts.push(`<div class="lockup"><div><b>${esc(l.id)}</b><div class="meta">${esc(l.use ?? "")}</div>${l.min_px ? `<div class="meta">min ${esc(String(l.min_px))}px</div>` : ""}</div><div class="art">${img(l.file, `${name} ${l.id}`)}</div></div>`);
     }
     parts.push(`</div><div class="axis">short story → long story</div></div>`);
     if (brand.clearspace) parts.push(`<p><b>Clear space:</b> ${esc(brand.clearspace)}</p>`);
@@ -138,7 +141,7 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
     // A value may carry notes after the family ("Fraunces (wght 420); outlined"); the family is the part before them.
     const family = (v: unknown): string => (typeof v === "string" ? v.split(/[(;,]/)[0].trim() : "");
     const generic = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+|-apple-system)$/i;
-    const families = [...new Set(type.map(([, v]) => family(v)).filter((f) => f && !generic.test(f) && /^[\w .-]+$/.test(f)))];
+    const families = [...new Set(type.map(([, v]) => family(v)).filter((f) => f && !generic.test(f) && /^[\p{L}\p{N} .-]+$/u.test(f)))];
     if (families.length && opts.fonts !== false) parts.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${families.map((f) => `family=${encodeURIComponent(f).replace(/%20/g, "+")}`).join("&")}&display=swap">`);
     parts.push(`<h2 id="type">Type</h2>`);
     for (const [k, v] of type) parts.push(`<div class="card" style="margin-bottom:8px"><div class="meta">${esc(k)} · <span class="mono">${esc(String(v))}</span></div><div style="font-family:${esc(JSON.stringify(family(v) || "system-ui"))},system-ui;font-size:24px">${esc(name)}, made by hand</div></div>`);

@@ -12,12 +12,12 @@ The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI mode
 
 ### Fixed — brand mode hardening (from the PR #19 review of #17/#18)
 
-- **Kit paths stay in the kit**: `brand.yaml` file paths that are absolute or climb out with `..` now fail `atelier brand check` (`brand-path-outside-kit`) and are never read or linked by the sheet; a mark path that is a directory reports a missing file instead of throwing.
-- **No CSS or URL injection on the pages**: colour values go through `safeColor` (hex, name, rgb()/hsl() only), file names are percent-encoded on boards and sheets, and font families are validated before the Google Fonts request. `atelier brand sheet --offline` skips that request.
+- **Kit paths stay in the kit**: `brand.yaml` file paths that are absolute, climb out with `..` or are symlinks resolving outside the folder now fail `atelier brand check` (`brand-path-outside-kit`) and are never read by the check; the sheet shows "outside the brand folder" instead of an image; a mark path that is a directory reports a missing file instead of throwing.
+- **No CSS or URL injection on the pages**: colour values go through `safeColor` (hex, a name, or a colour function with plain arguments; never `var()`, `url()` or `;`), file names are percent-encoded on boards and sheets, and font families are validated before the Google Fonts request. `atelier brand sheet --offline` skips that request.
 - **Reversed mark** gets its own dark ground, so a transparent light mark shows on the sheet.
 - **Option labels** run A…Z, AA…AZ, BA… (they went wrong past 52 options).
-- **SVG checks read the root `<svg>`** for size (px or unitless only, never `%` or a child element) and count named, `rgb()` and `hsl()` colours as well as hex.
-- **Contrast** is checked against every ground (paper, background, surface) and names the one that fails.
+- **SVG checks read the root `<svg>`** for size (px or unitless only, never `%` or a child element) and count CSS named, `rgb()` and `hsl()` colours as well as hex (SMIL keywords and `var()` are not colours).
+- **Contrast**: ink is checked on the primary ground (paper, else background, else surface); the accent on every ground, and the message names which.
 - **Not found** now says where it looked and searched from.
 
 ### Added — brand mode (`atelier design brand`, `atelier brand`)
