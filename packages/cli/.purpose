@@ -225,7 +225,7 @@ components:
       - workspace
     file: src/lib/learning-mode.ts
   '#workspace-io':
-    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). A v2 manifest (version 2.x, as scaffolded by `atelier workspace`: packs block, no default_mode) is mapped onto the same shape first, with default_mode from the workspace learning-mode.yaml else ambient. writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence) except that an existing v2 manifest is never rewritten in the v1 shape unless { replaceV2: true } (createWorkspace, which only writes over a manifest when forced). A malformed learning-mode.yaml reads as ambient for v2. isV2Workspace(dir) reports the manifest format; projectsDir(dir) is `projects/` for v2 and the root for v1 — `atelier init <name>` inside a workspace creates the project there. Studio's workspace-tree mode is v1-only: in a v2 workspace studioContext opens the project under projects/<name>/ containing cwd (kind project) and returns kind v2-workspace at the root or projects/, where `atelier studio` prints the project list and a hint relative to cwd; `atelier studio <name>` opens projects/<name>/ from anywhere in it. findTreeWorkspace makes the workspace-tree endpoints (/api/workspace, active, projects) treat a v2 workspace as absent (404), so the browser boots the single-project editor. init skips the advisory manifest refresh for v2. createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
+    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). A v2 manifest (version 2.x, as scaffolded by `atelier workspace`: packs block, no default_mode) is mapped onto the same shape first, with default_mode from the workspace learning-mode.yaml else ambient. writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence) except that an existing v2 manifest is never rewritten in the v1 shape unless { replaceV2: true } (createWorkspace, which only writes over a manifest when forced). A malformed learning-mode.yaml reads as ambient for v2. isV2Workspace(dir) reports the manifest format; projectsDir(dir) is `projects/` for v2 and the root for v1 — `atelier init <name>` inside a workspace creates the project there. Studio's workspace-tree mode is v1-only: in a v2 workspace studioContext opens the project under projects/<name>/ containing cwd (kind project) and returns kind v2-workspace at the root or projects/, where `atelier studio` prints the project list and a hint relative to cwd; `atelier studio <name>` opens projects/<name>/ from anywhere in it, including from inside another project. findTreeWorkspace makes the workspace-tree endpoints (/api/workspace, active, projects) treat a v2 workspace as absent (404), so the browser boots the single-project editor. init skips the advisory manifest refresh for v2. createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
     tags:
       - workspace
       - init
@@ -271,7 +271,7 @@ components:
       - ^valid-artifact-set
     file: src/commands/artifacts.ts
   '#cli-workspace':
-    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). The template ships `gitignore` without its dot (npm renames a packaged .gitignore to .npmignore) and toScaffoldPath writes it as `.gitignore`. Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, .gitignore, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
+    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). The template ships `gitignore` without its dot (npm renames a packaged .gitignore to .npmignore) and toScaffoldPath writes it as `.gitignore`; it is skip-if-exists so a creator's own ignore rules survive a re-scaffold. Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
     tags:
       - workspace
       - scaffold
@@ -697,14 +697,14 @@ aspects:
       - packages/cli/src/commands/render.ts:45-50
     enforcement: ffmpeg probe before document load
   pipeline-bgra-rawvideo-pipe:
-    description: The render pipeline pipes @napi-rs/canvas frames to FFmpeg as raw `rgba` rawvideo over stdin (pipe:0) at the document fps, so ffmpeg input pix_fmt is pinned to rgba. Plain renders send canvas.data() (a premultiplied copy: ffmpeg drops alpha on encode, so translucent pixels end up blended over black, as node-canvas did); the two-input overlay mode sends ctx.getImageData (straight alpha) so ffmpeg overlay blends correctly over the source video. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
+    description: The render pipeline pipes @napi-rs/canvas frames to FFmpeg as raw `rgba` rawvideo over stdin (pipe:0) at the document fps, so ffmpeg input pix_fmt is pinned to rgba. An MP4 without a source video sends canvas.data() (a premultiplied copy: ffmpeg drops alpha on encode, so translucent pixels end up blended over black, as node-canvas did); the two-input overlay mode (usesSourceOverlay) and GIF send ctx.getImageData (straight alpha) so the overlay filter and GIF transparency come out right. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
     tags:
       - ffmpeg
       - pixel-format
       - core-invariant
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:137-144
-      - packages/cli/src/commands/render-pipeline.ts:334-347
+      - packages/cli/src/commands/render-pipeline.ts:145-152
+      - packages/cli/src/commands/render-pipeline.ts:283-297
     enforcement: rgba rawvideo over stdin + drain backpressure
   pipeline-mp4-even-dimensions:
     description: H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.
@@ -714,17 +714,17 @@ aspects:
       - edge-case
       - fail-fast
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:276-281
-      - packages/cli/src/commands/render-pipeline.ts:146-155
+      - packages/cli/src/commands/render-pipeline.ts:219-224
+      - packages/cli/src/commands/render-pipeline.ts:154-163
     enforcement: reject odd dimensions for mp4
   pipeline-gif-single-pass-palette:
-    description: GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.
+    description: GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse new=1 dither=sierra2_4a; new=1 is required — stats_mode=single emits a palette per frame, and without it every frame is quantized to the first frame's palette, blanking reveals that start empty) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.
     tags:
       - ffmpeg
       - gif
       - technique
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:158-164
+      - packages/cli/src/commands/render-pipeline.ts:166-172
     enforcement: single-pass split palettegen/paletteuse
   pipeline-image-load-failure-blank:
     description: preloadImages (render-image.ts, shared by the PNG path and the MP4/GIF pipeline) loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
@@ -789,8 +789,8 @@ aspects:
       - scaling
       - validation
     anchors:
-      - packages/cli/src/lib/render-image.ts:235-252
-      - packages/cli/src/lib/render-image.ts:287-291
+      - packages/cli/src/lib/render-image.ts:236-253
+      - packages/cli/src/lib/render-image.ts:288-292
     enforcement: scale context, skip when identity
   render-image-refit-after-decode:
     description: Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer's bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.
@@ -799,7 +799,7 @@ aspects:
       - aspect-fit
       - technique
     anchors:
-      - packages/cli/src/lib/render-image.ts:259-274
+      - packages/cli/src/lib/render-image.ts:260-275
       - packages/cli/src/lib/render-image.ts:51-80
     enforcement: refit bounds post-decode
   carousel-no-glob-dependency:

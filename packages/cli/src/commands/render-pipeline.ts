@@ -80,6 +80,14 @@ export async function checkFfmpeg(): Promise<boolean> {
  * without any VideoVisual layers (e.g. text-only animations, image
  * carousels).
  */
+/**
+ * True when buildFfmpegArgs uses its two-input overlay mode (canvas frames
+ * composited over a source video). The frame pixel format depends on it too.
+ */
+export function usesSourceOverlay(format: RenderFormat, sourceVideoPath?: string): boolean {
+  return sourceVideoPath !== undefined && format === "mp4";
+}
+
 export function buildFfmpegArgs(
   width: number,
   height: number,
@@ -88,7 +96,7 @@ export function buildFfmpegArgs(
   output: string,
   sourceVideoPath?: string,
 ): string[] {
-  if (sourceVideoPath && format === "mp4") {
+  if (sourceVideoPath && usesSourceOverlay(format, sourceVideoPath)) {
     // Two-input overlay mode — closes the canvas-only / no-audio gap.
     return [
       "-y",
@@ -158,7 +166,7 @@ export function buildFfmpegArgs(
   // GIF — single-pass palette generation (stdin-compatible)
   return [
     ...input,
-    "-vf", "split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=sierra2_4a",
+    "-vf", "split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=new=1:dither=sierra2_4a",
     "-loop", "0",
     output,
   ];
@@ -251,8 +259,10 @@ export async function renderDocument(
   const sourceVideoPath = findPrimaryVideoSource(doc, opts.docPath) ?? undefined;
   // Spawn FFmpeg
   const ffmpegArgs = buildFfmpegArgs(width, height, fps, format, output, sourceVideoPath);
-  // Same condition buildFfmpegArgs uses for its two-input overlay mode.
-  const overlay = sourceVideoPath !== undefined && format === "mp4";
+  // An MP4 without a source video drops alpha on encode, so it gets
+  // premultiplied pixels (translucency blended over black, as node-canvas
+  // did). The overlay filter and GIF transparency need straight alpha.
+  const premultiplied = format === "mp4" && !usesSourceOverlay(format, sourceVideoPath);
   const ffmpeg = spawn("ffmpeg", ffmpegArgs, {
     stdio: ["pipe", "pipe", "pipe"],
   });
@@ -271,16 +281,12 @@ export async function renderDocument(
       const resolved = resolveFrame(doc, stateName, f);
       renderFrame(ctx, resolved, doc, imageCache);
 
-      // Overlay mode needs straight alpha so ffmpeg's overlay blends
-      // translucent pixels over the source video. Otherwise ffmpeg drops
-      // alpha on encode, so send premultiplied pixels (a copy from data()),
-      // which leaves translucent areas blended over black.
       let raw: Buffer;
-      if (overlay) {
+      if (premultiplied) {
+        raw = canvas.data(); // a copy, safe to hand to the stdin queue
+      } else {
         const { data } = ctx.getImageData(0, 0, width, height);
         raw = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
-      } else {
-        raw = canvas.data();
       }
       const canWrite = ffmpeg.stdin!.write(raw);
       if (!canWrite) {

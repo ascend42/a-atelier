@@ -67,7 +67,6 @@ const TEMPLATED_PATHS = new Set([
   "CLAUDE.md",
   "README.md",
   "SETUP.md",
-  ".gitignore",
   "_packs/README.md",
   "projects/README.md",
   // Shipped reference doc — canonical cascade protocol the personas link to.

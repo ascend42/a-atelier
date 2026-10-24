@@ -146,6 +146,16 @@ describe("scaffoldWorkspace", () => {
     expect(existsSync(join(wsDir, "gitignore"))).toBe(false);
     expect(result.written).toContain(".gitignore");
   });
+
+  it("re-scaffold keeps the creator's own .gitignore", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    writeFileSync(join(wsDir, ".gitignore"), "exports/\n");
+
+    const result = scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    expect(readFileSync(join(wsDir, ".gitignore"), "utf8")).toBe("exports/\n");
+    expect(result.skipped).toContain(".gitignore");
+  });
 });
 
 describe("v2 workspace manifest", () => {

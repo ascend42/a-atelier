@@ -1729,7 +1729,15 @@ export function studioCommand(program: Command): void {
 
         // ─── Detect context (after potential --new creation) ────────────
         const contextCwd = workspaceLaunchDir ?? startCwd;
-        const ctx = studioContext(contextCwd);
+        let ctx = studioContext(contextCwd);
+        // In a v2 workspace, `atelier studio <name>` names a project under
+        // projects/ and wins over the project cwd happens to be inside.
+        if (target && ctx.kind === "project" && ctx.workspaceDir && isV2Workspace(ctx.workspaceDir)) {
+          const v2Projects = listDirs(join(ctx.workspaceDir, "projects"));
+          if (v2Projects.includes(target)) {
+            ctx = { kind: "v2-workspace", workspaceDir: ctx.workspaceDir, projects: v2Projects };
+          }
+        }
 
         // Resolve the directory the studio dev-server should serve.
         let serveDir: string;
