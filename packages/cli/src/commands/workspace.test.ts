@@ -16,6 +16,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { scaffoldWorkspace } from "./workspace.js";
+import { findWorkspace, readWorkspace, writeWorkspace } from "../lib/workspace.js";
+import { writeLearningMode } from "../lib/learning-mode.js";
 
 // src/commands/ → ../../ = packages/cli ; ../../../../ = repo root
 const testDir = dirname(fileURLToPath(import.meta.url));
@@ -133,5 +135,42 @@ describe("scaffoldWorkspace", () => {
     // Templated reference doc is refreshed back to canonical.
     expect(readFileSync(cascade, "utf8")).toContain("Brand cascade");
     expect(result.updated).toContain(".paradigm/personas/_shared/cascade-merge.md");
+  });
+
+  it("writes .gitignore (the template ships it dotless so npm can't rename it)", () => {
+    const result = scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    expect(existsSync(join(wsDir, ".gitignore"))).toBe(true);
+    expect(readFileSync(join(wsDir, ".gitignore"), "utf8")).toContain("projects/*/media/");
+    expect(existsSync(join(wsDir, "gitignore"))).toBe(false);
+    expect(result.written).toContain(".gitignore");
+  });
+});
+
+describe("v2 workspace manifest", () => {
+  it("findWorkspace reads a freshly scaffolded v2 workspace (studio/init no longer crash)", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    const ws = findWorkspace(join(wsDir, "projects"));
+    expect(ws?.workspaceDir).toBe(wsDir);
+    expect(ws?.manifest.name).toBe("testbrand");
+    expect(ws?.manifest.default_mode).toBe("ambient");
+  });
+
+  it("takes default_mode from the workspace learning-mode file", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    writeLearningMode(wsDir, "explicit");
+
+    expect(readWorkspace(wsDir).default_mode).toBe("explicit");
+  });
+
+  it("writeWorkspace leaves a v2 manifest untouched", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    const manifestPath = join(wsDir, "workspace.atelier");
+    const before = readFileSync(manifestPath, "utf8");
+
+    writeWorkspace(wsDir, { ...readWorkspace(wsDir), projects: ["ep1"] });
+
+    expect(readFileSync(manifestPath, "utf8")).toBe(before);
   });
 });

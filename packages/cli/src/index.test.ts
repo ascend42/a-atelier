@@ -379,7 +379,7 @@ describe("buildFfmpegArgs", () => {
     expect(args).toContain("-f");
     expect(args).toContain("rawvideo");
     expect(args).toContain("-pix_fmt");
-    expect(args).toContain("bgra");
+    expect(args).toContain("rgba");
     expect(args).toContain("-s");
     expect(args).toContain("1920x1080");
     expect(args).toContain("-r");

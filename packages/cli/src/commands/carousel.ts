@@ -195,7 +195,7 @@ export function carouselCommand(program: Command): void {
       // Resolve the recipe (same chain as other recipe commands).
       let recipe: StudioRecipe;
       try {
-        const loaded = loadRecipe(recipeRef);
+        const loaded = loadRecipe(recipeRef, process.cwd());
         recipe = loaded.recipe;
         console.log(`Loaded recipe ${loaded.path}`);
         for (const w of loaded.warnings) console.log(`  ⚠  ${w}`);

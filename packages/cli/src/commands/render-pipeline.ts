@@ -8,7 +8,8 @@ import { existsSync } from "node:fs";
 import { dirname, resolve, isAbsolute } from "node:path";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
-import { renderFrame, ImageCache } from "@a-company/atelier-canvas";
+import { renderFrame, ImageCache, type RenderContext } from "@a-company/atelier-canvas";
+import { loadCanvasModule } from "../lib/render-image.js";
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -65,7 +66,7 @@ export async function checkFfmpeg(): Promise<boolean> {
  *
  * When `sourceVideoPath` is provided, ffmpeg gets TWO inputs:
  *   - Input 0: the source video file (decoded photographic frames + audio)
- *   - Input 1: raw BGRA canvas frames on stdin (the caption overlay)
+ *   - Input 1: raw RGBA canvas frames on stdin (the caption overlay)
  *
  * A `[0:v][1:v]overlay` filter composites the canvas on top of the source
  * video at matching timestamps. Source audio is copied through with
@@ -96,7 +97,7 @@ export function buildFfmpegArgs(
       // Input 1: canvas overlay frames on stdin. Same dimensions + fps as
       // the doc so the overlay aligns frame-for-frame with input 0.
       "-f", "rawvideo",
-      "-pix_fmt", "bgra",
+      "-pix_fmt", "rgba",
       "-s", `${width}x${height}`,
       "-r", String(fps),
       "-i", "pipe:0",
@@ -136,7 +137,7 @@ export function buildFfmpegArgs(
   const input = [
     "-y",
     "-f", "rawvideo",
-    "-pix_fmt", "bgra",
+    "-pix_fmt", "rgba",
     "-s", `${width}x${height}`,
     "-r", String(fps),
     "-i", "pipe:0",
@@ -193,8 +194,8 @@ export function findPrimaryVideoSource(
 // ─── Image Pre-loading ───────────────────────────────────────
 
 /**
- * Scan document layers for image visuals, pre-load them with node-canvas
- * loadImage, and return a populated ImageCache ready for rendering.
+ * Scan document layers for image visuals, pre-load them with the canvas
+ * module's loadImage, and return a populated ImageCache ready for rendering.
  */
 async function preloadImages(
   doc: AtelierDocument,
@@ -258,34 +259,15 @@ async function preloadImages(
 
 /**
  * Render an Atelier document to a video/GIF file via FFmpeg.
- * Dynamically imports `canvas` (node-canvas) — fails with a helpful
- * message if the native dependency is not installed.
+ * Rasterizes via `@napi-rs/canvas` (prebuilt platform binaries, a hard
+ * dependency) — the same rasterizer `export-image` and `still` use, so a
+ * plain `npm install` can render with no native build.
  */
 export async function renderDocument(
   doc: AtelierDocument,
   opts: RenderOptions,
 ): Promise<RenderResult> {
-  // Dynamic import — canvas requires native compilation.
-  // Use a variable to avoid TypeScript resolving the module at compile time.
-  const canvasModuleName = "canvas";
-  let createCanvas: (w: number, h: number) => unknown;
-  let loadImage: (src: string) => Promise<unknown>;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const canvasModule = await import(/* webpackIgnore: true */ canvasModuleName);
-    createCanvas = canvasModule.createCanvas;
-    loadImage = canvasModule.loadImage;
-  } catch {
-    throw new Error(
-      "The 'canvas' package is not installed.\n" +
-      "Install it with:\n" +
-      "  npm install canvas\n" +
-      "Prerequisites vary by OS:\n" +
-      "  macOS:   brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman\n" +
-      "  Ubuntu:  sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev\n" +
-      "See: https://github.com/Automattic/node-canvas#compiling",
-    );
-  }
+  const { createCanvas, loadImage } = await loadCanvasModule();
 
   const { width, height, fps } = doc.canvas;
   const { output, format, states, onProgress } = opts;
@@ -322,9 +304,10 @@ export async function renderDocument(
   // Pre-load images before the render loop
   const imageCache = await preloadImages(doc, loadImage);
 
-  // Create node-canvas
-  const canvas = createCanvas(width, height) as { getContext(id: "2d"): unknown; toBuffer(format: "raw"): Buffer };
-  const ctx = canvas.getContext("2d");
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d") as unknown as RenderContext & {
+    getImageData(x: number, y: number, w: number, h: number): { data: Uint8ClampedArray };
+  };
 
   // Detect the source video (if any) so ffmpeg can overlay the canvas on
   // top of the decoded source pixels AND copy the source audio track —
@@ -348,9 +331,11 @@ export async function renderDocument(
     const duration = doc.states[stateName].duration;
     for (let f = 0; f < duration; f++) {
       const resolved = resolveFrame(doc, stateName, f);
-      renderFrame(ctx as never, resolved, doc, imageCache);
+      renderFrame(ctx, resolved, doc, imageCache);
 
-      const raw = canvas.toBuffer("raw");
+      // Straight (non-premultiplied) RGBA, matching ffmpeg's `rgba` input.
+      const { data } = ctx.getImageData(0, 0, width, height);
+      const raw = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
       const canWrite = ffmpeg.stdin!.write(raw);
       if (!canWrite) {
         await new Promise<void>((resolve) =>

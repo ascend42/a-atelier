@@ -11,7 +11,7 @@ related: ["docs/architecture.md", "docs/format-spec.md", "docs/getting-started.m
 
 Atelier lets AI agents create, edit, and preview animations through a structured tool interface, while developers can use the same engine programmatically via a fluent Builder API or command-line tool.
 
-**Version 1.0.0** | 13 packages | 2 apps | [MIT](LICENSE)
+**Version 1.0.1** | 13 packages | 2 apps | [MIT](LICENSE)
 
 ---
 
@@ -370,6 +370,7 @@ states:
 
 | Version | Milestone |
 |---------|-----------|
+| 1.0.1 | Fixes after 1.0.0: `atelier render` on a plain install, studio/init in v2 workspaces, workspace `.gitignore`, carousel project recipes |
 | 1.0.0 | First public release: MIT license, npm package metadata, brand mode (`atelier brand`) with Atelier's own mark and motion showcase |
 | 0.39.0 | Design playbook v1, design systems per product, `atelier check`, the UI review gate |
 | 0.25.1 | Paradigm framework repair: fix .purpose YAML errors, add svg/lottie/types/core coverage |

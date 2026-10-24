@@ -7,7 +7,7 @@ context:
   - Info command outputs document summary
   - Still command resolves a frame and outputs JSON or PNG (PNG rasterized via @napi-rs/canvas — prebuilt binaries, no system libs)
   - export-image + carousel PNG export rasterize via @napi-rs/canvas (prebuilt platform binaries; works on a plain install with no node-gyp / cairo / pango)
-  - Render command produces MP4/GIF via FFmpeg (requires the optional node-canvas peer dep for raw-frame piping + FFmpeg)
+  - Render command produces MP4/GIF via FFmpeg, rasterizing frames with @napi-rs/canvas (works on a plain install; needs only FFmpeg)
 components:
   cli-render-check:
     description: 'atelier render-check <video> [--expect S] [--expect-audio] [--allow-hold a-b] [--max-flat-frames N] [--max-end-hold S] [--max-final-shot share] [--json] — reads a rendered video with ffmpeg (freezedetect, blackdetect, signalstats YDIF, scene cuts, volumedetect) and prints the motion gates: G0 render exists, G2 no dead frames (declared holds exempt), G3 short ending (end hold, last-shot share). Motion density is reported as a question, never a gate; by-eye checks are listed as such. Exit 1 on a failed gate. Iris runs it on every render (atelier-produce step 7); defaults from atelier-produce reference/motion.md, overridable by the brand cascade.'
@@ -73,7 +73,7 @@ components:
       - shared
     file: src/lib/render-image.ts
   '#cli-carousel':
-    description: 'atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe, expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + ''i/N'' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.'
+    description: 'atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe with cwd as the project dir (./.atelier/recipes/ before ~/.atelier/recipes/, same chain as the other recipe commands), expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + ''i/N'' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.'
     tags:
       - export
       - png
@@ -225,7 +225,7 @@ components:
       - workspace
     file: src/lib/learning-mode.ts
   '#workspace-io':
-    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence). createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
+    description: 'workspace.atelier read/write/discovery for the post-core-build Atelier workspace layer (a directory holding multiple content Projects with shared creator-level state). findWorkspace(cwd) walks up from cwd looking for `workspace.atelier`, stops at the filesystem root, returns { workspaceDir, manifest } | null. readWorkspace(dir) reads + parses + Zod-validates via WorkspaceManifestSchema; throws on malformed manifest (loud failure — a workspace is load-bearing). A v2 manifest (version 2.x, as scaffolded by `atelier workspace`: packs block, no default_mode) is mapped onto the same shape first, with default_mode from the workspace learning-mode.yaml else ambient. writeWorkspace(dir, manifest) serializes to YAML and writes; overwrites unconditionally (caller gates on existence) except that an existing v2 manifest is never rewritten in the v1 shape. createWorkspace(dir, { mode, name?, description?, force?, skipParadigmIntegration? }) makes the dir if missing, creates `.atelier/` tree including workspace-level learning-mode.yaml (via writeLearningMode), `.atelier/mind-map/` with creator-facing README (existsSync-guarded so creator edits survive), and an empty `.atelier/recipes/` placeholder. Returns { manifest, paradigmAugmentation? } — when the target dir is Paradigm-initialized (detectParadigm.present=true) AND skipParadigmIntegration is not set, runs #paradigm-augment to weave Atelier into the existing Paradigm scaffold and surfaces the report. Refuses-to-overwrite an existing workspace.atelier unless { force: true }. listProjects(dir) scans `dir/*/project.atelier` (one level deep) and returns sorted basenames — the on-disk truth used to refresh the manifest`s advisory projects[] field. isProjectDir(dir) is the cheap `project.atelier exists at this dir root` predicate. Hand-rolled YAML writer + reader (matched pair, supports scalars + one-level string sequences) — no YAML dep, mirroring the learning-mode.ts convention.'
     tags:
       - workspace
       - init
@@ -271,7 +271,7 @@ components:
       - ^valid-artifact-set
     file: src/commands/artifacts.ts
   '#cli-workspace':
-    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, .gitignore, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
+    description: 'atelier workspace [name] [--here] [--force] — scaffolds a v2 Atelier workspace (the workspace folder IS the brand+project container; the workspace==brand cascade parent). scaffoldWorkspace({ targetDir, workspaceName, force }) recursively walks templates/workspace/ and copies every file into targetDir with {{WORKSPACE_NAME}}/{{ISO_DATE}} token substitution on text files (.md/.yaml/.atelier/.gitignore/.html/.txt/.json). The template ships `gitignore` without its dot (npm renames a packaged .gitignore to .npmignore) and toScaffoldPath writes it as `.gitignore`. Idempotent: files in TEMPLATED_PATHS (workspace.atelier, the three .claude/agents/atelier-{quill,lux,iris}.md persona shims, CLAUDE.md, README.md, SETUP.md, .gitignore, _packs/README.md, projects/README.md, .paradigm/personas/_shared/cascade-merge.md) always refresh on re-run; every other file is skip-if-exists unless --force, so re-scaffold never clobbers creator-authored brand artifacts (_brand/DESIGN.md, SCRIPT.md, STORYBOARD.md, projects/). SETUP.md is the agent-executed onboarding runbook (prereq + verification checklist: Node 22+, Hyperframes via npx, ffmpeg, optional whisper + Paradigm learning loop, workspace integrity, brand-placeholder + font-staging checks); the workspace CLAUDE.md routes a creator "get me set up" request to it. Returns { written, skipped, updated } for the CLI to report. KEY v2 INVARIANT (RETROSPECTIVE-2026-05-28): cascade-merge.md ships into the workspace at .paradigm/personas/_shared/cascade-merge.md (the persona shims + CLAUDE.md link it as a workspace-relative path), but per-persona SKILL files are NOT shipped — the shims reference the global ~/.paradigm/notebooks/{persona}/ registry as canonical (with the dev-repo .paradigm/personas/{persona}/skills/ path noted as an aside), matching the existing shim dependency on ~/.paradigm/agents/*.agent. templatesDir() resolves templates/workspace relative to the running file across both src (ts) and dist layouts. scaffoldWorkspace is exported for direct test coverage (workspace.test.ts).'
     tags:
       - workspace
       - scaffold
@@ -697,15 +697,15 @@ aspects:
       - packages/cli/src/commands/render.ts:45-50
     enforcement: ffmpeg probe before document load
   pipeline-bgra-rawvideo-pipe:
-    description: The render pipeline pipes node-canvas frames to FFmpeg as raw `bgra` rawvideo over stdin (pipe:0) at the document fps — canvas.toBuffer("raw") emits BGRA, which is why ffmpeg input pix_fmt is pinned to bgra. Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
+    description: The render pipeline pipes @napi-rs/canvas frames to FFmpeg as raw `rgba` rawvideo over stdin (pipe:0) at the document fps — ctx.getImageData emits straight (non-premultiplied) RGBA, which is why ffmpeg input pix_fmt is pinned to rgba (canvas.data() would be premultiplied and darken translucent overlay edges). Get the pixel order wrong and colors channel-swap. The render loop honors stdin backpressure by awaiting "drain".
     tags:
       - ffmpeg
       - pixel-format
       - core-invariant
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:136-143
-      - packages/cli/src/commands/render-pipeline.ts:353-359
-    enforcement: bgra rawvideo over stdin + drain backpressure
+      - packages/cli/src/commands/render-pipeline.ts:137-144
+      - packages/cli/src/commands/render-pipeline.ts:334-347
+    enforcement: rgba rawvideo over stdin + drain backpressure
   pipeline-mp4-even-dimensions:
     description: H.264 (libx264 + yuv420p) requires even width AND height, so mp4 renders throw a clear error (suggesting the next even size) when either canvas dimension is odd. GIF has no such constraint. The mp4 arg set also pins crf 18 / preset medium / +faststart.
     tags:
@@ -714,8 +714,8 @@ aspects:
       - edge-case
       - fail-fast
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:294-299
-      - packages/cli/src/commands/render-pipeline.ts:145-154
+      - packages/cli/src/commands/render-pipeline.ts:276-281
+      - packages/cli/src/commands/render-pipeline.ts:146-155
     enforcement: reject odd dimensions for mp4
   pipeline-gif-single-pass-palette:
     description: GIF export uses a SINGLE-PASS palettegen+paletteuse filtergraph (split → palettegen stats_mode=single → paletteuse dither=sierra2_4a) so it stays compatible with the stdin pipe — a normal two-pass palette would need to re-read the input, impossible from a one-shot pipe. loop 0 makes the GIF loop forever.
@@ -724,7 +724,7 @@ aspects:
       - gif
       - technique
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:157-163
+      - packages/cli/src/commands/render-pipeline.ts:158-164
     enforcement: single-pass split palettegen/paletteuse
   pipeline-image-load-failure-blank:
     description: preloadImages loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
@@ -733,8 +733,8 @@ aspects:
       - async
       - edge-case
     anchors:
-      - packages/cli/src/commands/render-pipeline.ts:222-230
-      - packages/cli/src/commands/render-pipeline.ts:235-252
+      - packages/cli/src/commands/render-pipeline.ts:223-231
+      - packages/cli/src/commands/render-pipeline.ts:236-253
     enforcement: swallow per-image load error, nextTick callbacks
   export-svg-validate-state-before-render:
     description: export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.
@@ -765,7 +765,7 @@ aspects:
       - packages/cli/src/commands/export-image.ts:84-100
     enforcement: delegate to render-image, re-export shim
   render-image-napi-canvas-backend:
-    description: PNG rasterization is hard-bound to @napi-rs/canvas (statically imported prebuilt platform binaries — no node-gyp, no cairo/pango), distinct from the MP4 path which dynamically imports the native node-canvas. loadCanvasModule is a thin accessor that only throws CanvasUnavailableError if the platform binary is genuinely absent (corrupt install / unsupported platform) — essentially never in practice.
+    description: PNG rasterization is hard-bound to @napi-rs/canvas (statically imported prebuilt platform binaries — no node-gyp, no cairo/pango), shared with the MP4/GIF render pipeline, which loads it through the same loadCanvasModule. loadCanvasModule is a thin accessor that only throws CanvasUnavailableError if the platform binary is genuinely absent (corrupt install / unsupported platform) — essentially never in practice.
     tags:
       - canvas
       - architecture

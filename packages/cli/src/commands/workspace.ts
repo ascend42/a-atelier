@@ -76,6 +76,15 @@ const TEMPLATED_PATHS = new Set([
   ".paradigm/personas/_shared/cascade-merge.md",
 ]);
 
+/**
+ * Map a template path to its scaffolded path. npm renames any `.gitignore`
+ * inside a published package to `.npmignore`, so the template ships it as
+ * `gitignore` and the dot is restored here.
+ */
+function toScaffoldPath(srcRel: string): string {
+  return basename(srcRel) === "gitignore" ? join(dirname(srcRel), ".gitignore") : srcRel;
+}
+
 export function scaffoldWorkspace(opts: ScaffoldOptions): ScaffoldResult {
   const tmpl = templatesDir();
   const written: string[] = [];
@@ -92,14 +101,15 @@ export function scaffoldWorkspace(opts: ScaffoldOptions): ScaffoldResult {
   // Walk template tree and copy with token substitution. Hidden dirs
   // (`.claude`, etc) need explicit handling because Node's readdirSync
   // includes them by default — we want them.
-  const walk = (rel: string): void => {
-    const srcPath = join(tmpl, rel);
+  const walk = (srcRel: string): void => {
+    const srcPath = join(tmpl, srcRel);
+    const rel = toScaffoldPath(srcRel);
     const dstPath = join(opts.targetDir, rel);
     const st = statSync(srcPath);
     if (st.isDirectory()) {
       mkdirSync(dstPath, { recursive: true });
       for (const entry of readdirSync(srcPath)) {
-        walk(rel ? join(rel, entry) : entry);
+        walk(srcRel ? join(srcRel, entry) : entry);
       }
       return;
     }
