@@ -6,16 +6,16 @@ Format: [major.minor.fix] — based on milestone progression.
 
 ## [Unreleased] — v1.0 creator-flow surface
 
-`@a-company/atelier` 0.40.0 carries "brand mode" and "packaging" below; 0.39.0 carried the next two sections ("design playbook v1" and "design systems per product…").
+`@a-company/atelier` 1.0.0 carries "brand mode", "brand mode hardening" and "packaging" below; 0.39.0 carried the next two sections ("design playbook v1" and "design systems per product…").
 
 The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI model + media-bin pivot + bottom timeline. Built end-to-end by the Paradigm agent roster (Arky architect, Kit builder ×N parallel, Aegis security, Scribe documentor, Rune compliance, Judge reviewer, Probe tester). The pre-v1 arc (twelve strategic decisions, three Paradigm-native content-generation agents Quill/Lux/Iris, workspace concept, Paradigm+Atelier symbiosis, artifact schemas, animation library, mind-map stub, sidecar notes) is folded into this release.
 
-### Changed — packaging for public install (0.40.0)
+### Changed — packaging for public install (1.0.0)
 
 - **MIT license** — `LICENSE` at the root and in every published package; `license`, `author`, `repository` (with `directory`), `homepage` and `bugs` set on all 13 packages so each npm page links back here.
 - **Registry description** — `@a-company/atelier` now describes what it is (engine, MCP server, design and produce skills for Claude Code) instead of "CLI tool — validate, preview, render, info commands", and gains keywords.
 - **README install** — states the Node 20 requirement and the optional ffmpeg/whisper-cli, adds `atelier --version` and `npx @a-company/atelier setup`, drops the stale "needs a release that includes `setup`" note, separates the global install from the clone workflow, and fixes the stale version line.
-- `@a-company/atelier` goes 0.39.0 → 0.40.0 (brand mode). The other 12 packages get a patch bump with no code changes, only so the licence and metadata reach their npm pages.
+- `@a-company/atelier` goes 0.39.0 → 1.0.0 (the first public, licensed release: brand mode plus everything since 0.39.0). The other 12 packages get a patch bump with no code changes, only so the licence and metadata reach their npm pages.
 
 ### Added — brand mode (`atelier design brand`, `atelier brand`)
 
