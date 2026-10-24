@@ -1141,7 +1141,7 @@ aspects:
     anchors:
       - src/commands/studio.ts:2826-2830
       - src/commands/studio.ts:2889-2894
-      - src/commands/studio.ts:3293-3295
+      - src/commands/studio.ts:3293-3299
     enforcement: explicit 127.0.0.1 host bind
   studio-origin-check-bridge-vs-mcp-split:
     description: '^localhost-only: mutating /api/* requests AND the /bridge WS upgrade enforce STRICT same-origin (isAllowedOrigin: a present Origin matching the server''s own loopback), but /mcp uses isAllowedMcpOrigin which TOLERATES a missing Origin — non-browser MCP clients (Claude Desktop) send no Origin and would otherwise 403, while a present-but-foreign Origin (a browser tab on evil.com) is still rejected on both. Every check (REST middleware, /bridge and /mcp upgrades) calls these helpers with boundPort, the port Vite actually bound after listen() — with strictPort:false Vite falls back to the next free port, and checking the requested port would 403 the studio''s own saves.'
@@ -1151,7 +1151,7 @@ aspects:
       - core-invariant
     anchors:
       - src/commands/studio.ts:265-290
-      - src/commands/studio.ts:3307-3324
+      - src/commands/studio.ts:3311-3328
       - src/commands/studio.ts:2903-2920
     enforcement: strict origin for bridge, tolerant for mcp
   studio-ws-upgrade-rechecks-origin:
@@ -1161,7 +1161,7 @@ aspects:
       - websocket
       - core-invariant
     anchors:
-      - src/commands/studio.ts:3307-3324
+      - src/commands/studio.ts:3311-3328
     enforcement: re-run origin check on WS upgrade
   studio-llm-only-broadcast:
     description: 'shouldBroadcastMutation returns true ONLY for source "llm": "human" edits (the browser is already current) and "system" edits (GET-hydration of a just-opened file) are NOT broadcast or re-persisted — otherwise a plain file-open would fire a phantom "agent edited document" toast, a bogus undo entry, and a needless rewrite of the just-read bytes. This is the studio half of the source-tagged-mutation invariant.'

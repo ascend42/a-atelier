@@ -2908,7 +2908,7 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
                 const MUTATING = new Set(["POST", "PUT", "DELETE", "PATCH"]);
 
                 server.middlewares.use((req, res, next) => {
-                  const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${port}`);
+                  const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${boundPort}`);
 
                   if (req.method && MUTATING.has(req.method) && url.pathname.startsWith("/api/")) {
                     const origin = req.headers.origin;
@@ -3292,7 +3292,11 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
 
         await server.listen();
         const address = server.httpServer?.address();
-        if (address && typeof address === "object") boundPort = address.port;
+        if (address && typeof address === "object") {
+          boundPort = address.port;
+        } else {
+          console.warn(`  Warning: couldn't read the bound port; origin checks assume ${port}.`);
+        }
 
         // Mount WebSocket bridge + MCP transport on Vite's HTTP server.
         // ^localhost-only: the connect middleware does NOT run on WS upgrades
@@ -3305,7 +3309,7 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
           const wssMcp = new WebSocketServer({ noServer: true });
 
           httpServer.on("upgrade", (req, socket, head) => {
-            const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${port}`);
+            const url = new URL(req.url ?? "/", `http://${HOSTNAME}:${boundPort}`);
             if (url.pathname !== "/bridge" && url.pathname !== "/mcp") return;
 
             // ^localhost-only Origin check for WS upgrades. /bridge is a real
@@ -3365,6 +3369,9 @@ async function launchStudioServer(opts: LaunchStudioOptions): Promise<void> {
         const url = resolvedUrl;
 
         console.log(`  Server running at: ${url}`);
+        if (boundPort !== port) {
+          console.log(`  (port ${port} was in use; using ${boundPort})`);
+        }
 
         const atelierFiles = findAtelierFiles(cwd);
         console.log(`  Found ${atelierFiles.length} .atelier file(s)`);
