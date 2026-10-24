@@ -1,2 +1,52 @@
-version: "1.0"
-antipatterns: []
+version: '1.0'
+antipatterns:
+  - id: release-001
+    symbols:
+      - '#cli-release'
+    description: Calling a release done on green repo tests or the pnpm-linked global atelier
+    reason: 'Packaging bugs only show in what npm ships: 1.0.0 shipped a broken render, crashing studio/init, and a renamed .gitignore with every test green'
+    alternative: 'Follow P-release-fresh-install-verify: pack, install the tarball and then the published version with npm in an empty folder, drive every user path'
+    added: '2026-10-24T19:33:10.359Z'
+  - id: release-002
+    symbols:
+      - '#cli-workspace'
+    description: Shipping a file named .gitignore inside an npm package (templates)
+    reason: npm renames it to .npmignore on publish, so scaffolds silently lose their ignore rules
+    alternative: Ship it as dotless gitignore and restore the dot when copying (toScaffoldPath)
+    added: '2026-10-24T19:33:10.434Z'
+  - id: cli-001
+    symbols:
+      - '#render-pipeline'
+    description: Making a core command depend on an optional peer dependency or native build
+    reason: atelier render needed node-canvas, which a plain install never has, so render failed for every user
+    alternative: Use a hard dependency with prebuilt binaries (@napi-rs/canvas via loadCanvasModule) on every path that rasterizes
+    added: '2026-10-24T19:33:10.507Z'
+  - id: cli-002
+    symbols:
+      - '#workspace-io'
+    description: Adding a new on-disk format (v2 workspace manifest) while readers still validate only the old one
+    reason: Every reader of the old format crashes on files the new command writes, so studio and init died in fresh v2 workspaces
+    alternative: Have one reader recognise every format it may meet (isV2Manifest/fromV2Manifest), and test the writer's output against every reader
+    added: '2026-10-24T19:33:10.594Z'
+  - id: studio-001
+    symbols:
+      - '#cli-studio'
+      - ^localhost-only
+    description: Checking Origin against the requested port when the server may bind a different one
+    reason: Vite strictPort:false moves to the next free port; checks against the requested port 403 every save and the live bridge
+    alternative: Read the bound port after listen() and route every check through one shared isAllowedOrigin helper
+    added: '2026-10-24T19:33:10.672Z'
+  - id: render-001
+    symbols:
+      - '#render-pipeline'
+    description: palettegen stats_mode=single without paletteuse new=1
+    reason: Every frame is quantized to the first frame's palette, so animations that start empty render as blank GIFs
+    alternative: Use paletteuse=new=1 with per-frame palettes, and look at late frames of rendered output
+    added: '2026-10-24T19:33:10.748Z'
+  - id: purpose-001
+    symbols:
+      - '#cli-studio'
+    description: Refreshing .purpose anchors by applying line offsets
+    reason: Offsets compound and miss moved blocks; studio.ts anchors for security invariants ended up on unrelated code
+    alternative: 'Follow P-purpose-anchor-recompute: recompute each range from the symbol it pins and print it to check'
+    added: '2026-10-24T19:33:10.820Z'

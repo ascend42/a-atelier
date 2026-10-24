@@ -1,0 +1,34 @@
+id: P-purpose-anchor-recompute
+name: Purpose anchor recompute
+description: When an edit shifts lines in a file that .purpose aspects anchor (especially the 3,000+ line studio.ts), recompute every affected anchor from the symbol or code it pins, never by adding a line offset. The Paradigm hook's offset refresh mis-placed anchors, and older studio.ts anchors had drifted onto unrelated code, including three ^localhost-only security invariants.
+trigger:
+  - .purpose anchors
+  - anchor drift
+  - stale purpose
+  - refresh anchors
+  - aspect anchors
+tags:
+  - paradigm
+  - purpose
+  - anchors
+  - drift
+symbols:
+  - "#cli-studio"
+  - ^localhost-only
+steps:
+  - action: run
+    command: git -C <repo> ls-files '*.purpose' | sed 's|^|<repo>/|' | xargs grep -Hn '<file>:'
+    notes: List every anchor into the edited file in EVERY tracked .purpose (root, packages/*, creator/, .claude/ — several can anchor the same code).
+  - action: run
+    command: git show <pre-change-sha>:<file> | sed -n '<a>,<b>p'
+    notes: "See what each anchor covered before the change, and read the aspect description: the description is the source of truth, and old anchors may already be wrong."
+  - action: run
+    command: grep -n '<symbol or distinctive line>' <file>
+    notes: "Find the code the aspect pins (function, constant, handler) in the current file and set the range to cover it fully: docblock through the closing brace, guard through its return."
+  - action: verify
+    notes: Print each new range (sed -n 'a,bp') and check it shows the pinned code. Recheck anchors into every other file the PR changed.
+recorded_from: "a-atelier PR #22 review, 2026-10-24"
+recorded_at: 2026-10-24T19:31:02.218Z
+last_verified: 2026-10-24T19:31:02.218Z
+verified_by: claude-opus-5-5
+status: current

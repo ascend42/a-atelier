@@ -1,0 +1,49 @@
+id: P-release-fresh-install-verify
+name: Release fresh-install verify
+description: "Before a release is called done, prove the PACKED/PUBLISHED CLI works the way a new user gets it: fresh npm install in an empty folder, then drive every user-facing path end to end. Repo tests and the pnpm-linked global `atelier` hide packaging bugs (missing deps, npm-renamed files, workspace: leaks). Born from 1.0.0, where render, studio-in-v2-workspaces, the workspace .gitignore and carousel recipes all shipped broken despite green tests."
+trigger:
+  - release
+  - publish
+  - npm publish
+  - pnpm publish
+  - version bump
+  - smoke test the release
+  - check the latest release
+  - verify release
+tags:
+  - release
+  - npm
+  - packaging
+  - smoke-test
+  - verification
+symbols:
+  - "#cli-release"
+  - "#render-pipeline"
+  - "#cli-workspace"
+  - "#cli-studio"
+steps:
+  - action: run
+    command: cd <repo>/packages/cli && pnpm pack --pack-destination <abs-scratch>/pack
+    notes: Test the tarball BEFORE publishing. The global `atelier` is a pnpm link to the repo's dist and does not reflect what npm ships.
+  - action: verify
+    notes: "tar tzf the tarball: no file named .gitignore (npm renames it to .npmignore — ship templates as dotless `gitignore`); templates, dist and LICENSE present."
+  - action: run
+    command: mkdir -p <abs-scratch>/smoke && cd <abs-scratch>/smoke && npm init -y && npm i <abs-scratch>/pack/<tarball>.tgz
+    notes: "<abs-scratch> must be an ABSOLUTE path outside the repo (e.g. the session scratchpad): a relative path would land inside packages/cli, where the devEngines guard blocks npm and pnpm workspace resolution masks packaging bugs. Use plain npm in an EMPTY folder."
+  - action: verify
+    notes: "Published dependencies resolve to real versions — no workspace:/link:/file: (publish with `pnpm publish`, never `npm publish`). No optional peer is needed for a core command."
+  - action: verify
+    notes: "Drive every user path: --version; validate/info/lint; export-image/export-svg/export-lottie; render to MP4 AND GIF and LOOK at a late frame (blank or tiny output = bug); atelier-mcp initialize + tools/list; setup + doctor with HOME pointed at a scratch dir; workspace → init → studio (root, inside a project, `studio <name>`), checking the HTTP 200 and that a save is not 403; recipe new → carousel; brand check."
+  - action: verify
+    notes: "Run studio with port 4321 already taken: it must still accept saves on the fallback port (origin checks follow the bound port)."
+  - action: run
+    command: npm view @a-company/atelier@<version> version
+    notes: After publish, poll until this prints <version> (the registry can take minutes; an empty result means not live yet). Then repeat the smoke install with `npm i @a-company/atelier@<version>` in a new empty <abs-scratch> folder before tagging.
+  - action: run
+    command: cd <repo> && python3 -c "s=open('CHANGELOG.md').read(); a=s.index('## [<version>]'); b=s.find('\n## [', a+1); b=len(s) if b<0 else b; print(s[a:b].split('\n',1)[1].strip())" > <abs-scratch>/notes.md && git tag -a v<version> <merge-sha> -m '@a-company/atelier <version>' && git push origin v<version> && gh release create v<version> --title '@a-company/atelier <version>' --notes-file <abs-scratch>/notes.md --verify-tag
+    notes: Run from the repo root (earlier steps leave the shell in the scratch folder). Tag the merge commit on main only after the published package passes. -m keeps git tag non-interactive; notes.md holds just this version's CHANGELOG section (headings are `## [<version>]`).
+recorded_from: "a-atelier 1.0.1 / 1.0.2 post-release fixes (PRs #21, #22, #23), 2026-10-24"
+recorded_at: 2026-10-24T19:31:02.218Z
+last_verified: 2026-10-24T19:31:02.218Z
+verified_by: claude-opus-5-5
+status: current
