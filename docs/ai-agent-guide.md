@@ -445,6 +445,6 @@ atelier_export    -> get the YAML output
 Beyond the MCP server, Atelier includes tools for visual editing and export:
 
 - **`@atelier/studio`** -- a browser-based editor widget with canvas preview, YAML viewer, GUI property panels, undo/redo, drag-to-reorder, and export to MP4/WebM/GIF via WebCodecs. Embeddable in any web page.
-- **`atelier render`** (CLI) -- renders animations to MP4 or GIF via FFmpeg and node-canvas. Useful for headless/CI export pipelines.
+- **`atelier render`** (CLI) -- renders animations to MP4 or GIF via FFmpeg and @napi-rs/canvas (no native build). Useful for headless/CI export pipelines.
 
 Both tools consume the same `.atelier` format, so documents authored through MCP can be opened in the studio or rendered from the command line without modification.

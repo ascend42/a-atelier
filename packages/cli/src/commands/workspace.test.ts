@@ -10,13 +10,14 @@
 //      creator-authored artifacts (DESIGN/SCRIPT/STORYBOARD).
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, rmSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { scaffoldWorkspace } from "./workspace.js";
-import { findWorkspace, readWorkspace, writeWorkspace } from "../lib/workspace.js";
+import { createWorkspace, findWorkspace, projectsDir, readWorkspace, writeWorkspace } from "../lib/workspace.js";
+import { studioContext } from "./studio.js";
 import { writeLearningMode } from "../lib/learning-mode.js";
 
 // src/commands/ → ../../ = packages/cli ; ../../../../ = repo root
@@ -172,5 +173,49 @@ describe("v2 workspace manifest", () => {
     writeWorkspace(wsDir, { ...readWorkspace(wsDir), projects: ["ep1"] });
 
     expect(readFileSync(manifestPath, "utf8")).toBe(before);
+  });
+
+  it("a malformed learning-mode.yaml reads as ambient instead of breaking discovery", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    mkdirSync(join(wsDir, ".atelier"), { recursive: true });
+    writeFileSync(join(wsDir, ".atelier/learning-mode.yaml"), "mode: Ambient\n");
+
+    expect(findWorkspace(wsDir)?.manifest.default_mode).toBe("ambient");
+  });
+
+  it("createWorkspace with force replaces a v2 manifest", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+
+    createWorkspace(wsDir, { mode: "explicit", name: "replaced", force: true, skipParadigmIntegration: true });
+
+    const manifest = readWorkspace(wsDir);
+    expect(manifest.name).toBe("replaced");
+    expect(readFileSync(join(wsDir, "workspace.atelier"), "utf8")).not.toContain("2.0.0");
+  });
+
+  it("projectsDir is projects/ for v2 and the root for v1", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    expect(projectsDir(wsDir)).toBe(join(wsDir, "projects"));
+
+    const v1 = mkdtempSync(join(tmpdir(), "atelier-v1-ws-"));
+    try {
+      createWorkspace(v1, { mode: "ambient", skipParadigmIntegration: true });
+      expect(projectsDir(v1)).toBe(v1);
+    } finally {
+      rmSync(v1, { recursive: true, force: true });
+    }
+  });
+
+  it("studio opens one v2 project at a time and hints at the workspace root", () => {
+    scaffoldWorkspace({ targetDir: wsDir, workspaceName: "testbrand", force: false });
+    mkdirSync(join(wsDir, "projects/ep1/media"), { recursive: true });
+
+    const root = studioContext(wsDir);
+    expect(root.kind).toBe("v2-workspace");
+    expect(root.projects).toEqual(["ep1"]);
+    expect(studioContext(join(wsDir, "projects")).kind).toBe("v2-workspace");
+
+    const inProject = studioContext(join(wsDir, "projects/ep1/media"));
+    expect(inProject).toMatchObject({ kind: "project", projectDir: join(wsDir, "projects/ep1") });
   });
 });

@@ -21,6 +21,7 @@ import {
   hasProjectMarker,
   isValidProjectName,
   listProjects,
+  projectsDir,
   readWorkspace,
   writeWorkspace,
 } from "../lib/workspace.js";
@@ -115,7 +116,8 @@ export function initCommand(program: Command): void {
             !projectDir.startsWith("/") &&
             !projectDir.startsWith(".")
           ) {
-            resolvedProjectDir = join(ws.workspaceDir, projectDir);
+            // v2 workspaces keep projects under `projects/<name>/`.
+            resolvedProjectDir = join(projectsDir(ws.workspaceDir), projectDir);
           }
           // Inherit default_mode from the workspace UNLESS the creator
           // explicitly passed --mode. Skip the interactive prompt inside a

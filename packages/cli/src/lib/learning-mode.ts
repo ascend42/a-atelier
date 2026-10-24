@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
-// Forward import — workspace.ts also imports from this module, but only the
-// writer (writeLearningMode), so there is no circular import at the value
-// level. The `findWorkspace` helper is used purely for read-side resolution.
+// Circular import: workspace.ts imports readLearningMode/writeLearningMode
+// from here, and this module imports findWorkspace from there. Safe because
+// both sides only call each other's function declarations at call time,
+// never while the modules load — keep it that way (no top-level calls).
 import { findWorkspace } from "./workspace.js";
 
 /**

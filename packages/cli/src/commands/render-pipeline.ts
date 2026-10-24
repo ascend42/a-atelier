@@ -8,8 +8,8 @@ import { existsSync } from "node:fs";
 import { dirname, resolve, isAbsolute } from "node:path";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
-import { renderFrame, ImageCache, type RenderContext } from "@a-company/atelier-canvas";
-import { loadCanvasModule } from "../lib/render-image.js";
+import { renderFrame, type RenderContext } from "@a-company/atelier-canvas";
+import { loadCanvasModule, preloadImages } from "../lib/render-image.js";
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -191,70 +191,6 @@ export function findPrimaryVideoSource(
   return null;
 }
 
-// ─── Image Pre-loading ───────────────────────────────────────
-
-/**
- * Scan document layers for image visuals, pre-load them with the canvas
- * module's loadImage, and return a populated ImageCache ready for rendering.
- */
-async function preloadImages(
-  doc: AtelierDocument,
-  loadImage: (src: string) => Promise<unknown>,
-): Promise<ImageCache> {
-  const sources = new Set<string>();
-
-  for (const layer of doc.layers) {
-    if (layer.visual.type === "image") {
-      const iv = layer.visual as { src?: string; assetId?: string };
-      if (iv.src) {
-        sources.add(iv.src);
-      } else if (iv.assetId && doc.assets?.[iv.assetId]) {
-        sources.add(doc.assets[iv.assetId].src);
-      }
-    }
-  }
-
-  if (sources.size === 0) {
-    return new ImageCache();
-  }
-
-  // Load all images in parallel
-  const preloaded = new Map<string, unknown>();
-  await Promise.all(
-    [...sources].map(async (src) => {
-      try {
-        preloaded.set(src, await loadImage(src));
-      } catch {
-        // Images that fail to load will render as blank
-      }
-    }),
-  );
-
-  // Create ImageCache pre-populated with loaded images.
-  // createImage returns the pre-loaded image and fires onLoad on next tick
-  // so that the ImageCache internal `image` variable is assigned first.
-  const imageCache = new ImageCache({
-    createImage: (src, onLoad, onError) => {
-      const img = preloaded.get(src);
-      if (img) {
-        process.nextTick(onLoad);
-        return img;
-      }
-      process.nextTick(onError);
-      return {};
-    },
-  });
-
-  for (const src of preloaded.keys()) {
-    imageCache.load(src);
-  }
-
-  // Wait for nextTick callbacks to populate the cache
-  await new Promise<void>((resolve) => process.nextTick(resolve));
-
-  return imageCache;
-}
-
 // ─── Main Render Loop ────────────────────────────────────────
 
 /**
@@ -302,7 +238,7 @@ export async function renderDocument(
   }
 
   // Pre-load images before the render loop
-  const imageCache = await preloadImages(doc, loadImage);
+  const { imageCache } = await preloadImages(doc, loadImage);
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d") as unknown as RenderContext & {

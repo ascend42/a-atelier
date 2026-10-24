@@ -200,7 +200,7 @@ atelier info animation.atelier
 atelier still animation.atelier --state intro --frame 30
 atelier still animation.atelier --state intro --frame 30 --format png -o frame.png
 
-# Render to MP4 or GIF (requires FFmpeg + node-canvas)
+# Render to MP4 or GIF (requires FFmpeg)
 atelier render animation.atelier -o output.mp4
 atelier render animation.atelier -o output.gif -f gif
 
