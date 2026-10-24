@@ -790,7 +790,7 @@ aspects:
       - validation
     anchors:
       - packages/cli/src/lib/render-image.ts:236-253
-      - packages/cli/src/lib/render-image.ts:288-292
+      - packages/cli/src/lib/render-image.ts:287-292
     enforcement: scale context, skip when identity
   render-image-refit-after-decode:
     description: Image natural dimensions are unknown until @napi-rs/canvas decodes the file, so the optional refitImageBounds hook re-fits each ImageVisual layer's bounds/frame AFTER preload (loaded.size > 0) using the now-known natural dims. fitImageToCanvas is a pure aspect-fit (landscape→fit width, portrait→fit height, degenerate→canvas extents) kept local so the server render path imports no browser studio code.
@@ -1151,6 +1151,7 @@ aspects:
     anchors:
       - src/commands/studio.ts:265-290
       - src/commands/studio.ts:3305-3322
+      - src/commands/studio.ts:2899-2919
     enforcement: strict origin for bridge, tolerant for mcp
   studio-ws-upgrade-rechecks-origin:
     description: '^localhost-only: WebSocket upgrade requests bypass connect middleware (Node fires "upgrade" before connect), so the upgrade handler MUST re-run the Origin check before accepting /bridge or /mcp — without it the bridge would be cross-origin-reachable from any tab. A failed check writes a raw 403 and destroys the socket.'
