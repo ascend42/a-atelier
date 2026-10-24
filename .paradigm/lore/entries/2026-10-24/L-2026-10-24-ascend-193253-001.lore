@@ -1,21 +1,21 @@
 id: L-2026-10-24-ascend-193253-001
 type: retro
-timestamp: '2026-10-24T19:32:53.562Z'
+timestamp: 2026-10-24T19:32:53.562Z
 author: ascend
 agent:
   provider: anthropic
   model: claude-opus-5-5
 title: Atelier 1.0.0 shipped broken on a fresh install; fixed in 1.0.1 and 1.0.2
-summary: 'A fresh npm install of the 1.0.0 CLI found render, studio/init in v2 workspaces, the workspace .gitignore and carousel recipes broken despite green tests. Fixed in 1.0.1 (PR #21, four review rounds), .purpose anchors repaired (PR #22), and a studio port-fallback 403 bug fixed in 1.0.2 (PR #23). Release verification is now a protocol.'
+summary: "A fresh npm install of the 1.0.0 CLI found render, studio/init in v2 workspaces, the workspace .gitignore and carousel recipes broken despite green tests. Fixed in 1.0.1 (PR #21, four review rounds), .purpose anchors repaired (PR #22), and a studio port-fallback 403 bug fixed in 1.0.2 (PR #23). Release verification is now a protocol."
 symbols_touched:
-  - '#cli-release'
-  - '#render-pipeline'
-  - '#render-image'
-  - '#workspace-io'
-  - '#cli-workspace'
-  - '#cli-studio'
-  - '#cli-init'
-  - '#cli-carousel'
+  - "#cli-release"
+  - "#render-pipeline"
+  - "#render-image"
+  - "#workspace-io"
+  - "#cli-workspace"
+  - "#cli-studio"
+  - "#cli-init"
+  - "#cli-carousel"
   - ^localhost-only
 files_modified:
   - packages/cli/src/commands/render-pipeline.ts
@@ -36,10 +36,10 @@ files_created:
   - .paradigm/protocols/release-fresh-install-verify.protocol
   - .paradigm/protocols/purpose-anchor-recompute.protocol
 learnings:
-  - 'Green repo tests do not prove a release: smoke-test the packed tarball and the published package from a fresh npm install in an empty folder'
+  - "Green repo tests do not prove a release: smoke-test the packed tarball and the published package from a fresh npm install in an empty folder"
   - The global atelier is a pnpm link to the repo dist and hides packaging bugs
   - npm renames any .gitignore inside a package to .npmignore - ship templates as dotless gitignore
-  - 'Publish with pnpm publish (workspace: deps) and --no-git-checks when only .paradigm state is dirty'
+  - "Publish with pnpm publish (it rewrites workspace: deps). Use --no-git-checks only on main at the merge commit after git status shows nothing dirty outside .paradigm/ and .claude/settings.local.json"
   - A core command must not depend on an optional peer (render needed node-canvas)
   - Two on-disk formats (v1/v2 workspace manifest) need one reader that knows both
   - Origin checks must use the port the server actually bound - Vite strictPort:false moves ports silently

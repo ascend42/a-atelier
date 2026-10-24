@@ -17,10 +17,10 @@ symbols:
   - ^localhost-only
 steps:
   - action: run
-    command: git ls-files '*.purpose' | xargs grep -n '<file>:'
+    command: git -C <repo> ls-files '*.purpose' | sed 's|^|<repo>/|' | xargs grep -Hn '<file>:'
     notes: List every anchor into the edited file in EVERY tracked .purpose (root, packages/*, creator/, .claude/ — several can anchor the same code).
   - action: run
-    command: git show <pre-change-sha>:<file> | sed -n '<a>p;<b>p'
+    command: git show <pre-change-sha>:<file> | sed -n '<a>,<b>p'
     notes: "See what each anchor covered before the change, and read the aspect description: the description is the source of truth, and old anchors may already be wrong."
   - action: run
     command: grep -n '<symbol or distinctive line>' <file>

@@ -85,7 +85,7 @@ components:
       - studio
     file: src/commands/carousel.ts
   '#cli-release':
-    description: 'Release packaging for @a-company/atelier: package.json (version, files, publishConfig, dependencies — workspace: specs are rewritten by `pnpm publish`, never `npm publish`), the templates/ tree that ships in the tarball (dotfiles npm would rename ship dotless, e.g. templates/workspace/gitignore), LICENSE, CHANGELOG and README version history. A release is verified by the fresh-install protocol P-release-fresh-install-verify before it is tagged.'
+    description: 'Release packaging for @a-company/atelier: package.json (version, files, publishConfig, dependencies — workspace: specs are rewritten by `pnpm publish`, never `npm publish`), the templates/ tree that ships in the tarball (dotfiles npm would rename ship dotless, e.g. templates/workspace/gitignore), and LICENSE. The release notes live outside this package, in the repo-root CHANGELOG.md and README.md version history. A release is verified by the fresh-install protocol P-release-fresh-install-verify before it is tagged.'
     tags:
       - release
       - npm
