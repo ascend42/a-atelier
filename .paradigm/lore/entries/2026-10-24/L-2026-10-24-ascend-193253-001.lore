@@ -1,0 +1,103 @@
+id: L-2026-10-24-ascend-193253-001
+type: retro
+timestamp: '2026-10-24T19:32:53.562Z'
+author: ascend
+agent:
+  provider: anthropic
+  model: claude-opus-5-5
+title: Atelier 1.0.0 shipped broken on a fresh install; fixed in 1.0.1 and 1.0.2
+summary: 'A fresh npm install of the 1.0.0 CLI found render, studio/init in v2 workspaces, the workspace .gitignore and carousel recipes broken despite green tests. Fixed in 1.0.1 (PR #21, four review rounds), .purpose anchors repaired (PR #22), and a studio port-fallback 403 bug fixed in 1.0.2 (PR #23). Release verification is now a protocol.'
+symbols_touched:
+  - '#cli-release'
+  - '#render-pipeline'
+  - '#render-image'
+  - '#workspace-io'
+  - '#cli-workspace'
+  - '#cli-studio'
+  - '#cli-init'
+  - '#cli-carousel'
+  - ^localhost-only
+files_modified:
+  - packages/cli/src/commands/render-pipeline.ts
+  - packages/cli/src/lib/render-image.ts
+  - packages/cli/src/lib/workspace.ts
+  - packages/cli/src/commands/workspace.ts
+  - packages/cli/src/commands/studio.ts
+  - packages/cli/src/commands/init.ts
+  - packages/cli/src/commands/carousel.ts
+  - packages/cli/src/lib/learning-mode.ts
+  - packages/cli/package.json
+  - packages/cli/.purpose
+  - .purpose
+  - CHANGELOG.md
+  - README.md
+files_created:
+  - packages/cli/templates/workspace/gitignore
+  - .paradigm/protocols/release-fresh-install-verify.protocol
+  - .paradigm/protocols/purpose-anchor-recompute.protocol
+learnings:
+  - 'Green repo tests do not prove a release: smoke-test the packed tarball and the published package from a fresh npm install in an empty folder'
+  - The global atelier is a pnpm link to the repo dist and hides packaging bugs
+  - npm renames any .gitignore inside a package to .npmignore - ship templates as dotless gitignore
+  - 'Publish with pnpm publish (workspace: deps) and --no-git-checks when only .paradigm state is dirty'
+  - A core command must not depend on an optional peer (render needed node-canvas)
+  - Two on-disk formats (v1/v2 workspace manifest) need one reader that knows both
+  - Origin checks must use the port the server actually bound - Vite strictPort:false moves ports silently
+  - ffmpeg palettegen stats_mode=single needs paletteuse new=1 or every GIF frame uses frame 0's palette
+  - .purpose anchors must be recomputed from the code they pin - offset refreshes drift
+  - Look at rendered output (late frames and file size) - a valid file can still be blank
+  - npm registry can take minutes to show a publish - poll before declaring failure
+tags:
+  - release
+  - retro
+  - npm
+  - packaging
+  - post-release
+  - 1.0.1
+  - 1.0.2
+body: |-
+  ## What went wrong (all in @a-company/atelier 1.0.0)
+  Found by `npm i @a-company/atelier` in an empty folder and driving every command:
+  1. **`atelier render` failed on every install.** The MP4/GIF pipeline still dynamically imported node-canvas (`canvas`), an optional peer that needs a native build. export-image/still had already moved to @napi-rs/canvas; render had not.
+  2. **`atelier studio` / `atelier init` crashed in v2 workspaces.** `atelier workspace` writes a v2 manifest (`version: 2.0.0`, `packs`, no `default_mode`); readWorkspace validated against the v1 schema (`version: "1.0"` literal). Two formats, one strict reader.
+  3. **New workspaces got `.npmignore`, not `.gitignore`.** npm renames packaged `.gitignore` files, so raw media and transcripts would be committed.
+  4. **`atelier carousel <name>` missed project recipes.** It was the only recipe command that didn't pass cwd as the project dir.
+  5. **GIF renders were blank** for animations starting on an empty frame (older than 1.0.0): `palettegen=stats_mode=single` without `paletteuse=new=1`.
+  6. **Studio on a busy port 403'd every save** (older than 1.0.0): Vite `strictPort:false` moved to 4322, but the REST and WS Origin checks compared against 4321. The REST middleware also had its own copy of the origin rule.
+  7. **`.purpose` anchors had drifted**: the hook's offset refresh misplaced one, and studio.ts anchors for three ^localhost-only security aspects pointed at unrelated code.
+
+  ## Fixes
+  - 1.0.1 (PR #21): render through @napi-rs/canvas via loadCanvasModule + shared preloadImages; premultiplied frames for plain MP4, straight alpha for overlay and GIF; `paletteuse=new=1`. v2 manifests read via fromV2Manifest (default_mode from learning-mode.yaml, else ambient); writers never downgrade v2; projectsDir() puts `atelier init` in `projects/<name>/`; studio serves v2 projects one at a time (`atelier studio <name>`, or cwd inside `projects/<name>/`), and findTreeWorkspace makes the v1 tree endpoints 404 for v2. Template shipped as `gitignore` (skip-if-exists). Carousel resolves ./.atelier/recipes first.
+  - PR #22: every studio.ts anchor recomputed from its symbol; root `.purpose` version bumped.
+  - 1.0.2 (PR #23): `boundPort` read from httpServer.address() after listen; every check uses the shared isAllowedOrigin/isAllowedMcpOrigin; a notice when the port moves.
+
+  ## Process
+  Each PR: branch → /code-review → fix → re-review → merge commit; the user runs `pnpm publish`. PR #21 took four review rounds. Round 1 showed the first v2 fix only stopped the crash while sending projects to the wrong place. The user chose the narrow v2 scope (per-project studio) over full v2 tree support. Reviews kept surfacing older bugs (GIF, port), so it pays to keep reviewing until only nits are left. After `pnpm publish` the registry took several minutes to show 1.0.1; poll the registry before calling a publish failed.
+
+  ## Protocols recorded
+  - P-release-fresh-install-verify: pack → inspect tarball → fresh npm install → drive every user path (render MP4+GIF and look at frames, MCP, setup/doctor in a scratch HOME, workspace/init/studio incl. busy port, carousel) → publish with pnpm → poll the registry → re-smoke from npm → tag and release.
+  - P-purpose-anchor-recompute: recompute anchors from the pinned symbol, never by offset; check root and package .purpose.
+
+  ## Still open
+  - If ffmpeg dies early, render can crash on EPIPE or hang waiting for drain (older than 1.0.0).
+  - Relative image srcs resolve against cwd, not the document's folder (older than 1.0.0).
+  - Studio's workspace-tree UI is v1-only; full v2 support is a follow-up.
+  - The MCP server reports serverInfo.version 0.1.0; npm audit flags zod < 4.6.6.
+  - 1.0.0 has no git tag or GitHub release.
+linked_commits:
+  - 8a39d9e
+  - bab61d1
+  - 420f535
+  - 645462f
+  - 1b97928
+  - 914381f
+  - 52805ab
+  - e36d379
+  - 7ff8197
+  - 7e9436c
+  - 281f044
+confidence: 0.9
+git_context:
+  ref: 281f044b607bad3a483007cf36a010b84944178c
+  branch: main
+  dirty: true

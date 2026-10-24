@@ -84,6 +84,14 @@ components:
       - cli
       - studio
     file: src/commands/carousel.ts
+  '#cli-release':
+    description: 'Release packaging for @a-company/atelier: package.json (version, files, publishConfig, dependencies — workspace: specs are rewritten by `pnpm publish`, never `npm publish`), the templates/ tree that ships in the tarball (dotfiles npm would rename ship dotless, e.g. templates/workspace/gitignore), LICENSE, CHANGELOG and README version history. A release is verified by the fresh-install protocol P-release-fresh-install-verify before it is tagged.'
+    tags:
+      - release
+      - npm
+      - packaging
+      - cli
+    file: package.json
   cli-assets:
     description: Assets command — lists all assets in a document with usage info
     file: src/commands/assets.ts
