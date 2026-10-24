@@ -9,11 +9,10 @@
  *                strategy and the rounds that led here.
  */
 
-import { basename, dirname, relative } from "node:path";
-import { existsSync } from "node:fs";
+import { basename, dirname, relative, sep } from "node:path";
 import { esc, page } from "./design-pages.js";
 import { contrastRatio } from "./design-lint.js";
-import { brandGround, type Brand, type BrandCheck } from "./brand.js";
+import { brandGround, kitFileExists, kitPath, type Brand, type BrandCheck } from "./brand.js";
 
 const BRAND_STYLE = `<style>
 .opt{display:flex;flex-direction:column;gap:10px}
@@ -21,7 +20,7 @@ const BRAND_STYLE = `<style>
 .opt .big img{max-width:100%;max-height:100%}
 .sizes{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
 .chip{display:grid;place-items:center;border-radius:6px;border:1px solid var(--line);padding:6px}
-.chip.light{background:#fff}.chip.dark{background:#111}.chip.dark img{filter:brightness(0) invert(1)}
+.chip.light{background:#fff}.chip.dark{background:#111}.chip.dark img{filter:brightness(0) invert(1)}.chip.darkbg{background:#111}
 .onecolour img{filter:grayscale(1) contrast(1.4)}
 .label{font-size:20px;font-weight:700}
 .chart{display:grid;grid-template-columns:auto 1fr auto;gap:0 16px;align-items:stretch}
@@ -39,15 +38,31 @@ const BRAND_STYLE = `<style>
  */
 function sizeRow(src: string, alt: string, reversed?: string): string {
   const dark = reversed
-    ? `<div class="chip" style="padding:0;border:0"><img src="${esc(reversed)}" alt="${esc(alt)} reversed" style="height:44px;width:auto;border-radius:6px"></div>`
+    ? `<div class="chip darkbg" style="padding:0;border:0"><img src="${esc(reversed)}" alt="${esc(alt)} reversed" style="height:44px;width:auto;border-radius:6px"></div>`
     : `<div class="chip dark"><img src="${esc(src)}" alt="${esc(alt)} reversed on dark" style="height:32px;width:auto"></div>`;
   return `<div class="sizes">${[64, 32, 16]
     .map((px) => `<div class="chip light"><img src="${esc(src)}" alt="${esc(alt)} at ${px}px" style="height:${px}px;width:auto"></div>`)
     .join("")}${dark}<div class="chip light onecolour"><img src="${esc(src)}" alt="${esc(alt)} in one colour" style="height:32px;width:auto"></div></div>`;
 }
 
-/** Option labels: A…Z, then AA, AB… */
-export const optionLabel = (i: number): string => (i < 26 ? String.fromCharCode(65 + i) : `A${String.fromCharCode(65 + i - 26)}`);
+/** Option labels, spreadsheet style: A…Z, AA…AZ, BA… */
+export function optionLabel(i: number): string {
+  let n = i + 1;
+  let label = "";
+  while (n > 0) {
+    n--;
+    label = String.fromCharCode(65 + (n % 26)) + label;
+    n = Math.floor(n / 26);
+  }
+  return label;
+}
+
+/** A relative file path as a URL path: "/" separators, each segment percent-encoded (spaces, #, ? and % in file names). */
+export const urlPath = (p: string): string => p.split(sep === "\\" ? /[\\/]/ : "/").map(encodeURIComponent).join("/");
+
+/** A CSS colour value that is safe to drop into a style attribute, else "transparent": hex, a name, or a colour function (rgb, hsl, hwb, lab, lch, oklab, oklch, color) with plain arguments (no var(), url() or nesting). */
+export const safeColor = (v: unknown): string =>
+  typeof v === "string" && /^(#[0-9a-f]{3,8}|[a-z]+|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([\w\s.,%/+-]+\))$/i.test(v.trim()) ? v.trim() : "transparent";
 
 /**
  * A round of options. `files` are paths relative to the page, labelled A, B, C…
@@ -58,7 +73,7 @@ export function boardPage(title: string, files: string[], notes: Record<string, 
     .map((f, i) => {
       const l = optionLabel(i);
       const note = notes[l] ?? notes[basename(f)];
-      return `<div class="card opt"><div class="row"><span class="label">${l}</span><span class="meta mono-name">${esc(basename(f))}</span></div><div class="big"><img src="${esc(f)}" alt="Option ${l}"></div>${sizeRow(f, `Option ${l}`)}${note ? `<div class="meta">${esc(note)}</div>` : ""}</div>`;
+      return `<div class="card opt"><div class="row"><span class="label">${l}</span><span class="meta mono-name">${esc(basename(f))}</span></div><div class="big"><img src="${esc(urlPath(f))}" alt="Option ${l}"></div>${sizeRow(urlPath(f), `Option ${l}`)}${note ? `<div class="meta">${esc(note)}</div>` : ""}</div>`;
     })
     .join("");
   return page(
@@ -70,14 +85,20 @@ export function boardPage(title: string, files: string[], notes: Record<string, 
 const noun = (n: string | { noun: string; why?: string }): string => (typeof n === "string" ? n : `${n.noun}${n.why ? ` (${n.why})` : ""}`);
 
 /** The brand sheet. `dir` is the brand folder; image paths are made relative to `outFile`. */
-export function brandSheet(brand: Brand, dir: string, outFile: string, checks: BrandCheck[] = []): string {
-  const rel = (f: string): string => relative(dirname(outFile), `${dir}/${f}`) || f;
+export function brandSheet(brand: Brand, dir: string, outFile: string, checks: BrandCheck[] = [], opts: { fonts?: boolean } = {}): string {
+  // files outside the kit folder are never linked (the check fails them too)
+  const rel = (f: string): string => {
+    const abs = kitPath(dir, f);
+    return abs === null ? "" : urlPath(relative(dirname(outFile), abs));
+  };
   const reversedOf = (f: string): string | undefined => {
     const r = f.replace(/(\.[a-z]+)$/i, "-reversed$1");
-    return r !== f && existsSync(`${dir}/${r}`) ? rel(r) : undefined;
+    return r !== f && kitFileExists(dir, r) ? rel(r) : undefined;
   };
   const name = brand.name ?? "Brand";
   const parts: string[] = [BRAND_STYLE];
+  /** An image, or a visible note when the file is outside the brand folder (atelier brand check fails it). */
+  const img = (f: string, alt: string): string => (rel(f) ? `<img src="${esc(rel(f))}" alt="${esc(alt)}">` : `<span class="meta">${esc(f)} is outside the brand folder</span>`);
   const markFile = brand.mark?.file ?? brand.system?.[0]?.file;
   parts.push(`<h1>${esc(name)}</h1>`);
   if (brand.mark?.idea) parts.push(`<p>${esc(brand.mark.idea)}</p>`);
@@ -90,14 +111,14 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
   }
 
   if (markFile) {
-    parts.push(`<h2 id="mark">Mark</h2><div class="grid" style="grid-template-columns:minmax(220px,320px) 1fr;align-items:start"><div class="opt"><div class="big"><img src="${esc(rel(markFile))}" alt="${esc(name)} mark"></div></div><div>${sizeRow(rel(markFile), `${name} mark`, reversedOf(markFile))}<p class="meta">Large, then 64, 32 and 16 px; on dark; in one colour.</p></div></div>`);
+    parts.push(`<h2 id="mark">Mark</h2><div class="grid" style="grid-template-columns:minmax(220px,320px) 1fr;align-items:start"><div class="opt"><div class="big">${img(markFile, `${name} mark`)}</div></div><div>${rel(markFile) ? sizeRow(rel(markFile), `${name} mark`, reversedOf(markFile)) : ""}<p class="meta">Large, then 64, 32 and 16 px; on dark; in one colour.</p></div></div>`);
   }
 
   const system = brand.system ?? [];
   if (system.length) {
     parts.push(`<h2 id="system">Logo system</h2><p class="meta">Small media tell a short story; large media a long one (n:logo-system-by-media-size).</p><div class="chart"><div class="axis">small media → large media</div><div class="lockups">`);
     for (const l of system) {
-      parts.push(`<div class="lockup"><div><b>${esc(l.id)}</b><div class="meta">${esc(l.use ?? "")}</div>${l.min_px ? `<div class="meta">min ${esc(String(l.min_px))}px</div>` : ""}</div><div class="art"><img src="${esc(rel(l.file))}" alt="${esc(name)} ${esc(l.id)}"></div></div>`);
+      parts.push(`<div class="lockup"><div><b>${esc(l.id)}</b><div class="meta">${esc(l.use ?? "")}</div>${l.min_px ? `<div class="meta">min ${esc(String(l.min_px))}px</div>` : ""}</div><div class="art">${img(l.file, `${name} ${l.id}`)}</div></div>`);
     }
     parts.push(`</div><div class="axis">short story → long story</div></div>`);
     if (brand.clearspace) parts.push(`<p><b>Clear space:</b> ${esc(brand.clearspace)}</p>`);
@@ -110,7 +131,7 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
     parts.push(`<h2 id="color">Colour</h2><div class="grid">`);
     for (const [k, v] of color) {
       const r = ground && v !== ground ? contrastRatio(v, ground) : null;
-      parts.push(`<div class="card"><div class="swatch" style="--c:${esc(v)}"></div><b>${esc(k)}</b><div class="mono meta">${esc(v)}</div>${r !== null ? `<div class="meta">${r.toFixed(2)}:1 on paper</div>` : ""}</div>`);
+      parts.push(`<div class="card"><div class="swatch" style="--c:${esc(safeColor(v))}"></div><b>${esc(k)}</b><div class="mono meta">${esc(v)}</div>${r !== null ? `<div class="meta">${r.toFixed(2)}:1 on paper</div>` : ""}</div>`);
     }
     parts.push(`</div>`);
   }
@@ -120,8 +141,8 @@ export function brandSheet(brand: Brand, dir: string, outFile: string, checks: B
     // A value may carry notes after the family ("Fraunces (wght 420); outlined"); the family is the part before them.
     const family = (v: unknown): string => (typeof v === "string" ? v.split(/[(;,]/)[0].trim() : "");
     const generic = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+|-apple-system)$/i;
-    const families = [...new Set(type.map(([, v]) => family(v)).filter((f) => f && !generic.test(f)))];
-    if (families.length) parts.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${families.map((f) => `family=${encodeURIComponent(f).replace(/%20/g, "+")}`).join("&")}&display=swap">`);
+    const families = [...new Set(type.map(([, v]) => family(v)).filter((f) => f && !generic.test(f) && /^[\p{L}\p{N} .-]+$/u.test(f)))];
+    if (families.length && opts.fonts !== false) parts.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${families.map((f) => `family=${encodeURIComponent(f).replace(/%20/g, "+")}`).join("&")}&display=swap">`);
     parts.push(`<h2 id="type">Type</h2>`);
     for (const [k, v] of type) parts.push(`<div class="card" style="margin-bottom:8px"><div class="meta">${esc(k)} · <span class="mono">${esc(String(v))}</span></div><div style="font-family:${esc(JSON.stringify(family(v) || "system-ui"))},system-ui;font-size:24px">${esc(name)}, made by hand</div></div>`);
   }

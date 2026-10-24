@@ -22,6 +22,13 @@ function findBrandDir(start: string, product?: string): string | null {
   }
 }
 
+/** Say where we looked, so a wrong folder isn't a mystery, and exit 1. */
+function notFound(start: string, looked: string | null): never {
+  const where = looked ? `no brand.yaml in ${relative(process.cwd(), looked) || "."}` : "no brand folder found";
+  console.error(`  No brand.yaml found (${where}, searched from ${relative(process.cwd(), resolve(start)) || "."}). A brand lives in .atelier/brand/, .atelier/systems/<product>/brand/ or _brand/.`);
+  process.exit(1);
+}
+
 export function brandCommand(program: Command): void {
   const brand = program.command("brand").description("Brand kits: exploration boards, the brand sheet, and checks");
 
@@ -46,7 +53,7 @@ export function brandCommand(program: Command): void {
         process.exit(1);
       }
       const out = resolve(opts.out ?? join(abs, "board.html"));
-      const srcs = files.map((f) => relative(dirname(out), join(abs, f)));
+      const srcs = files.map((f) => relative(dirname(out), join(abs, f)));  // raw paths; boardPage encodes them for the page
       mkdirSync(dirname(out), { recursive: true });
       let notes: Record<string, string> = {};
       if (opts.notes) {
@@ -65,15 +72,13 @@ export function brandCommand(program: Command): void {
     .command("sheet [dir]")
     .description("Render the brand sheet (brand.html) from brand.yaml and marks/")
     .option("--product <id>", "A product's brand in a multi-product repo")
-    .action((dir: string | undefined, opts: { product?: string }) => {
+    .option("--offline", "Don't link Google Fonts; type specimens use the system fonts")
+    .action((dir: string | undefined, opts: { product?: string; offline?: boolean }) => {
       const brandDir = findBrandDir(dir ?? process.cwd(), opts.product);
       const b = brandDir ? loadBrand(brandDir) : null;
-      if (!brandDir || !b) {
-        console.error("  No brand.yaml found (.atelier/brand/, .atelier/systems/<product>/brand/ or _brand/).");
-        process.exit(1);
-      }
+      if (!brandDir || !b) return notFound(dir ?? process.cwd(), brandDir);
       const out = join(brandDir, "brand.html");
-      writeFileSync(out, brandSheet(b, brandDir, out, checkBrand(b, brandDir)));
+      writeFileSync(out, brandSheet(b, brandDir, out, checkBrand(b, brandDir), { fonts: !opts.offline }));
       console.log(`  ${b.name ?? "brand"} → ${relative(process.cwd(), out)}`);
     });
 
@@ -85,10 +90,7 @@ export function brandCommand(program: Command): void {
     .action((dir: string | undefined, opts: { product?: string; json?: boolean }) => {
       const brandDir = findBrandDir(dir ?? process.cwd(), opts.product);
       const b = brandDir ? loadBrand(brandDir) : null;
-      if (!brandDir || !b) {
-        console.error("  No brand.yaml found.");
-        process.exit(1);
-      }
+      if (!brandDir || !b) return notFound(dir ?? process.cwd(), brandDir);
       const checks = checkBrand(b, brandDir);
       const fails = checks.filter((c) => c.severity === "fail").length;
       if (opts.json) console.log(JSON.stringify({ ok: fails === 0, checks }, null, 2));

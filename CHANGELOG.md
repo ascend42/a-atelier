@@ -17,6 +17,16 @@ The **v1.0 arc**: schema lock + multi-clip authoring surface + flat-docs UI mode
 - **README install** — states the Node 20 requirement and the optional ffmpeg/whisper-cli, adds `atelier --version` and `npx @a-company/atelier setup`, drops the stale "needs a release that includes `setup`" note, separates the global install from the clone workflow, and fixes the stale version line.
 - `@a-company/atelier` goes 0.39.0 → 1.0.0 (the first public, licensed release: brand mode plus everything since 0.39.0). The other 12 packages get a patch bump with no code changes, only so the licence and metadata reach their npm pages.
 
+### Fixed — brand mode hardening (from the PR #19 review of #17/#18)
+
+- **Kit paths stay in the kit**: `brand.yaml` file paths that are absolute, climb out with `..` or are symlinks resolving outside the folder now fail `atelier brand check` (`brand-path-outside-kit`) and are never read by the check; the sheet shows "outside the brand folder" instead of an image; a mark path that is a directory reports a missing file instead of throwing.
+- **No CSS or URL injection on the pages**: colour values go through `safeColor` (hex, a name, or a colour function with plain arguments; never `var()`, `url()` or `;`), file names are percent-encoded on boards and sheets, and font families are validated before the Google Fonts request. `atelier brand sheet --offline` skips that request.
+- **Reversed mark** gets its own dark ground, so a transparent light mark shows on the sheet.
+- **Option labels** run A…Z, AA…AZ, BA… (they went wrong past 52 options).
+- **SVG checks read the root `<svg>`** for size (px or unitless only, never `%` or a child element) and count CSS named, `rgb()` and `hsl()` colours as well as hex (SMIL keywords and `var()` are not colours).
+- **Contrast**: ink is checked on the primary ground (paper, else background, else surface); the accent on every ground, and the message names which.
+- **Not found** now says where it looked and searched from.
+
 ### Added — brand mode (`atelier design brand`, `atelier brand`)
 
 Allan Peters's logo process, distilled into the neurons brain (region `design/branding`, 10 neurons) and into the agents.
