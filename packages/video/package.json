@@ -1,10 +1,21 @@
 {
   "name": "@a-company/atelier-video",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publishConfig": {
     "access": "public"
   },
   "description": "Video frame providers and encoding pipeline for Atelier — preview (HTMLVideoElement) and export (WebCodecs) backends",
+  "license": "MIT",
+  "author": "Matt Canoy (https://github.com/ascend42)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascend42/a-atelier.git",
+    "directory": "packages/video"
+  },
+  "homepage": "https://github.com/ascend42/a-atelier#readme",
+  "bugs": {
+    "url": "https://github.com/ascend42/a-atelier/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
