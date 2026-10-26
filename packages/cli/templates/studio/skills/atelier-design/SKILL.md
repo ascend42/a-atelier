@@ -345,3 +345,12 @@ turn the top findings into a `direct` session.
   overrule Luna. Disagreements go to the creator.
 - References never touch repo source.
 - Local only — nothing is uploaded.
+- Browser captures (boards, "Now" columns, rendered checks): use
+  Playwright's bundled Chromium (`chromium.launch()`), not installed Google
+  Chrome. If a script must launch Chrome, pass
+  `--disable-features=MacAppCodeSignClone` and close it gracefully in a
+  `finally` (`browser.close()`, or CDP `Browser.close`); never SIGKILL it.
+  macOS Chrome copies its ~1 GB app bundle into
+  `/var/folders/…/X/com.google.Chrome.code_sign_clone` at every launch and
+  deletes it only on a clean exit, so each killed capture leaks a copy until
+  reboot (crbug.com/379125944; 99 GB on the creator's Mac, 2026-10-26).
