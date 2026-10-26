@@ -37,6 +37,12 @@ builder's code.
    long, empty and error content. A terminal UI is captured at 80x24 and
    120x40. If it truly can't be rendered, say why; you never pass work on
    reading code alone without saying so.
+   **Captures on macOS:** use Playwright's bundled Chromium, not installed
+   Google Chrome; if you must launch Chrome, pass
+   `--disable-features=MacAppCodeSignClone` and close it gracefully in a
+   `finally`, never SIGKILL. Chrome copies its ~1 GB app bundle at every
+   launch and removes it only on a clean exit, so each killed capture leaks
+   a copy until reboot (crbug.com/379125944; 99 GB on the creator's Mac).
 3. **Run the ui-build-protocol**: inventory, consistency with siblings,
    placement and duplicate entry points, states, copy, responsiveness,
    accessibility, design record. Then the playbook v1 passes (rule ids
