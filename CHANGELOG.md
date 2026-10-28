@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [Unreleased] — UI review gate stops looping
+
+### Fixed
+
+- **The UI review gate no longer blocks every turn while Mika's review is in progress.** It only knew "reviewed" or "not reviewed", and its bypass needed three blocks inside one turn, so each new turn blocked again, and a review file still being written failed as incomplete. Launching Mika (`atelier-mika`, or an agent told to act as Mika) after the last UI edit now marks the review as requested (a new `pre` mode on `PreToolUse` `Agent|Task`); until a review with a verdict lands, or for 30 minutes, Stop prints an advisory instead of blocking. A block identical to the previous one (same files, same edits, same problems) is also only an advisory, logged to `bypass.jsonl`; a new UI edit re-arms the gate.
+- **Subagents' worktree edits no longer hold up the main session.** Edits record their git worktree; the session's Stop answers only for edits in its own worktree, and the review only has to name those. Registered on `SubagentStop`, the gate holds a subagent that edited UI in another worktree (or, when Claude Code reports `agent_id`, the subagent's own edits) until their review is saved.
+- **`atelier doctor` checks the gate.** When it's switched on, doctor warns if `~/.atelier/hooks/ui-gate.mjs` is outdated or the gate isn't registered for every event (`PostToolUse`, `PreToolUse`, `Stop`, `SubagentStop`). Existing users: re-run `atelier setup` and add the two new entries from the README.
+
 ## [1.0.2] — `@a-company/atelier` studio on a busy port
 
 ### Fixed

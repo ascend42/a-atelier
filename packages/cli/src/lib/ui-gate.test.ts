@@ -3,6 +3,9 @@
 //   1. Only UI source counts: style/markup anywhere, scripts in UI folders; never tests, builds or scratch space.
 //   2. post briefs once, records the file; stop blocks until a complete review or a waiver is newer than the edits.
 //   3. After MAX_BLOCKS consecutive blocks the turn may end, and the bypass is logged.
+//   4. While a requested Mika review hasn't reached a verdict (up to 30 min), Stop only advises.
+//   5. A block identical to the last one (same files, edits and problems) only advises.
+//   6. Stop owns edits in the session's own worktree; SubagentStop owns edits made in other worktrees.
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, existsSync, readFileSync, utimesSync } from "node:fs";
@@ -11,13 +14,13 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 // @ts-expect-error plain .mjs without types
-import { isUiFile, checkReview } from "../../templates/studio/atelier/hooks/ui-gate.mjs";
+import { isUiFile, checkReview, isMikaRequest } from "../../templates/studio/atelier/hooks/ui-gate.mjs";
 
 const hook = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "templates", "studio", "atelier", "hooks", "ui-gate.mjs");
 let dir: string;
 let repo: string;
 
-function run(mode: "post" | "stop", input: Record<string, unknown>): string {
+function run(mode: "post" | "pre" | "stop", input: Record<string, unknown>): string {
   const r = spawnSync("node", [hook, mode], {
     input: JSON.stringify({ session_id: "s1", transcript_path: join(dir, "proj", "s1.jsonl"), cwd: repo, ...input }),
     env: { ...process.env, ATELIER_UI_GATE_SKIP_ROOTS: "" },
@@ -28,6 +31,16 @@ function run(mode: "post" | "stop", input: Record<string, unknown>): string {
 }
 
 const review = () => join(dir, "proj", "ui-gate", "s1-review.md");
+const stateFile = () => join(dir, "proj", "ui-gate", "s1.json");
+const patchState = (fn: (s: Record<string, any>) => void) => {
+  const s = JSON.parse(readFileSync(stateFile(), "utf8"));
+  fn(s);
+  writeFileSync(stateFile(), JSON.stringify(s));
+};
+const fullReview = (files: string, verdict: string) =>
+  ["Files", "Inventory", "Consistency", "Placement", "States", "Copy", "Responsiveness", "Accessibility", "Rendered", "Verdict"]
+    .map((h) => `## ${h}\n${h === "Files" ? files : h === "Rendered" ? "not rendered: test" : h === "Verdict" ? verdict : "ok"}`)
+    .join("\n");
 const touchLater = (f: string) => utimesSync(f, new Date(Date.now() + 5000), new Date(Date.now() + 5000));
 
 beforeEach(() => {
@@ -109,8 +122,124 @@ describe("hook flow", () => {
 
   it("lets the turn end after repeated blocks and logs the bypass", () => {
     run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
-    for (let i = 0; i < 3; i++) expect(JSON.parse(run("stop", { stop_hook_active: i > 0 })).decision).toBe("block");
+    // Each block differs (the review keeps changing), so none is a repeat.
+    const reviews = ["Waived: no", "## Files\nheader.ts", "## Files\nheader.ts\n## Verdict\nmaybe"];
+    expect(JSON.parse(run("stop", {})).decision).toBe("block");
+    for (let i = 0; i < 2; i++) {
+      writeFileSync(review(), reviews[i]);
+      touchLater(review());
+      expect(JSON.parse(run("stop", { stop_hook_active: true })).decision).toBe("block");
+    }
+    writeFileSync(review(), reviews[2]);
+    touchLater(review());
     expect(run("stop", { stop_hook_active: true })).toBe("");
-    expect(readFileSync(join(dir, "proj", "ui-gate", "bypass.jsonl"), "utf8")).toMatch(/header.ts/);
+    expect(readFileSync(join(dir, "proj", "ui-gate", "bypass.jsonl"), "utf8")).toMatch(/max-blocks/);
+  });
+
+  it("an identical second block becomes advisory, whatever stop_hook_active is", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    expect(JSON.parse(run("stop", {})).decision).toBe("block");
+    const again = JSON.parse(run("stop", { stop_hook_active: false }));
+    expect(again.decision).toBeUndefined();
+    expect(again.systemMessage).toMatch(/advisory/);
+    expect(readFileSync(join(dir, "proj", "ui-gate", "bypass.jsonl"), "utf8")).toMatch(/"repeat"/);
+    // A new UI edit re-arms the gate.
+    patchState((s) => { s.edits[ui()] -= 60_000; s.gates.main.hash = "stale"; });
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    expect(JSON.parse(run("stop", {})).decision).toBe("block");
+  });
+});
+
+describe("review requested", () => {
+  const ui = () => join(repo, "app-gui", "src", "header.ts");
+
+  it("recognises Mika launches only", () => {
+    expect(isMikaRequest({ subagent_type: "atelier-mika", prompt: "review" })).toBe(true);
+    expect(isMikaRequest({ subagent_type: "general-purpose", prompt: "Act as Mika and run her ui-build-protocol" })).toBe(true);
+    expect(isMikaRequest({ subagent_type: "general-purpose", prompt: "Build the header" })).toBe(false);
+    expect(isMikaRequest(undefined)).toBe(false);
+  });
+
+  it("a pending review gives an advisory, even while the review file is half written", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    run("pre", { tool_name: "Agent", tool_input: { subagent_type: "atelier-mika", prompt: "review header.ts" } });
+    const out = JSON.parse(run("stop", {}));
+    expect(out.decision).toBeUndefined();
+    expect(out.systemMessage).toMatch(/requested/);
+    writeFileSync(review(), "## Files\nheader.ts\n## Inventory\n");
+    touchLater(review());
+    expect(JSON.parse(run("stop", {})).systemMessage).toMatch(/requested/);
+  });
+
+  it("ignores a review request made before the last edit", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    patchState((s) => { s.edits[ui()] = Date.now() + 60_000; });
+    run("pre", { tool_name: "Agent", tool_input: { subagent_type: "atelier-mika" } });
+    expect(JSON.parse(run("stop", {})).decision).toBe("block");
+  });
+
+  it("the pending state times out after 30 minutes", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    run("pre", { tool_name: "Task", tool_input: { subagent_type: "atelier-mika" } });
+    patchState((s) => { s.reviewRequestedAt = Date.now() - 31 * 60_000; });
+    expect(JSON.parse(run("stop", {})).decision).toBe("block");
+    expect(JSON.parse(readFileSync(stateFile(), "utf8")).reviewRequestedAt).toBeUndefined();
+  });
+
+  it("a rework verdict still blocks, and again after a re-edit", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    patchState((s) => { s.edits[ui()] = Date.now() - 60_000; });
+    run("pre", { tool_name: "Agent", tool_input: { subagent_type: "atelier-mika" } });
+    patchState((s) => { s.reviewRequestedAt = Date.now() - 30_000; });
+    writeFileSync(review(), fullReview("header.ts", "rework"));
+    const first = JSON.parse(run("stop", {}));
+    expect(first.decision).toBe("block");
+    expect(first.reason).toMatch(/rework/);
+    run("post", { tool_name: "Edit", tool_input: { file_path: ui() } });
+    const second = JSON.parse(run("stop", {}));
+    expect(second.decision).toBe("block");
+    expect(second.reason).toMatch(/header.ts/);
+  });
+});
+
+describe("worktrees", () => {
+  let wt: string;
+  const mainUi = () => join(repo, "app-gui", "src", "header.ts");
+  const wtUi = () => join(wt, "app-gui", "src", "footer.ts");
+
+  beforeEach(() => {
+    wt = join(dir, "repo-wt");
+    mkdirSync(join(wt, "app-gui", "src"), { recursive: true });
+    writeFileSync(join(wt, ".git"), "gitdir: ../repo/.git/worktrees/repo-wt\n");
+  });
+
+  it("a worktree edit is excluded from the main Stop", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: wtUi() } });
+    expect(run("stop", { hook_event_name: "Stop" })).toBe("");
+    run("post", { tool_name: "Edit", tool_input: { file_path: mainUi() } });
+    const out = JSON.parse(run("stop", { hook_event_name: "Stop" }));
+    expect(out.decision).toBe("block");
+    expect(out.reason).toMatch(/header\.ts/);
+    expect(out.reason).not.toMatch(/footer\.ts/);
+    // A review naming only the main file satisfies the main Stop.
+    writeFileSync(review(), fullReview("header.ts", "approved"));
+    touchLater(review());
+    expect(run("stop", { hook_event_name: "Stop" })).toBe("");
+  });
+
+  it("SubagentStop blocks the builder that edited a worktree", () => {
+    run("post", { tool_name: "Edit", tool_input: { file_path: wtUi() } });
+    const out = JSON.parse(run("stop", { hook_event_name: "SubagentStop" }));
+    expect(out.decision).toBe("block");
+    expect(out.reason).toMatch(/footer\.ts/);
+    writeFileSync(review(), fullReview("footer.ts", "approved"));
+    touchLater(review());
+    expect(run("stop", { hook_event_name: "SubagentStop" })).toBe("");
+  });
+
+  it("SubagentStop owns a subagent's own edits when Claude Code names the agent", () => {
+    run("post", { tool_name: "Edit", agent_id: "builder-1", tool_input: { file_path: mainUi() } });
+    expect(run("stop", { hook_event_name: "SubagentStop", agent_id: "explorer-2" })).toBe("");
+    expect(JSON.parse(run("stop", { hook_event_name: "SubagentStop", agent_id: "builder-1" })).decision).toBe("block");
   });
 });

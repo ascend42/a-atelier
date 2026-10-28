@@ -2,14 +2,22 @@
 // Atelier UI gate — a Claude Code hook installed by `atelier setup`.
 //
 //   node ui-gate.mjs post   PostToolUse (Edit|Write|MultiEdit|NotebookEdit)
-//   node ui-gate.mjs stop   Stop
+//   node ui-gate.mjs pre    PreToolUse (Agent|Task)
+//   node ui-gate.mjs stop   Stop and SubagentStop
 //
-// post: when an agent edits a UI file, remember it for the session and tell
-//       the agent (once) how UI work is vetted here: the repo's design record,
-//       an independent review by Mika's ui-build-protocol, rendered checks.
+// post: when an agent edits a UI file, remember it (and the worktree it lives
+//       in) for the session and tell the agent (once) how UI work is vetted
+//       here: the repo's design record, an independent review by Mika's
+//       ui-build-protocol, rendered checks.
+// pre:  when Mika (atelier-mika, or an agent told to act as Mika) is launched
+//       after the last UI edit, mark the review as requested.
 // stop: block the turn from ending while UI files changed since the last
 //       review, until a review (or a one-line waiver) is written to the
-//       session's review file. Blocks only on that one condition.
+//       session's review file. Blocks only on that one condition, and only
+//       for edits it owns: Stop owns the session's own worktree, SubagentStop
+//       owns the edits a subagent made in another worktree. It only advises,
+//       without blocking, while a requested review is still being written
+//       (up to PENDING_MS) and when the same block would repeat word for word.
 //
 // State and the review file live next to the session transcript
 // (~/.claude/projects/<project>/ui-gate/), which sandboxed sessions can write.
@@ -22,6 +30,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync, appendFil
 import { dirname, join, relative, basename, extname, isAbsolute, sep } from "node:path";
 import { homedir } from "node:os";
 import { pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
 
 const STRONG_EXT = new Set([".tsx", ".jsx", ".vue", ".svelte", ".astro", ".css", ".scss", ".sass", ".less", ".html", ".htm"]);
 const WEAK_EXT = new Set([".ts", ".js", ".mjs", ".cjs"]);
@@ -30,6 +39,8 @@ const SKIP_SEGMENT = /^(node_modules|dist|build|out|\.next|\.nuxt|coverage|__tes
 const TEST_FILE = /\.(test|spec|stories)\.[a-z]+$|\.d\.ts$/;
 const HEADINGS = ["Files", "Inventory", "Consistency", "Placement", "States", "Copy", "Responsiveness", "Accessibility", "Rendered", "Verdict"];
 const MAX_BLOCKS = 3;
+const PENDING_MS = 30 * 60 * 1000;
+const MIKA_PROMPT = /atelier-mika|\b(?:act(?:ing)?\s+as|you\s+are|play(?:ing)?)\s+mika\b/i;
 
 function readStdin() {
   try {
@@ -98,7 +109,7 @@ function loadState(file) {
   try {
     return JSON.parse(readFileSync(file, "utf8"));
   } catch {
-    return { edits: {}, briefedAt: 0, blocks: 0 };
+    return { edits: {}, briefedAt: 0 };
   }
 }
 
@@ -134,11 +145,8 @@ function brief(file, reviewPath) {
   ].join("\n");
 }
 
-/** Check a review file against the pending files. Returns a list of problems. Exported for tests. */
-export function checkReview(text, pending, cwd = process.cwd()) {
-  const waiver = text.match(/^\s*Waived:\s*(.+)$/im);
-  if (waiver) return waiver[1].trim().length >= 8 ? [] : ["the waiver needs a reason (`Waived: <why>`)"];
-  const problems = [];
+/** The review's known ## sections, by heading. */
+function reviewSections(text) {
   const sections = {};
   let current = null;
   for (const line of text.split("\n")) {
@@ -148,6 +156,20 @@ export function checkReview(text, pending, cwd = process.cwd()) {
       if (current) sections[current] = "";
     } else if (current) sections[current] += line + "\n";
   }
+  return sections;
+}
+
+/** Has the review reached a verdict (or a waiver)? A review still being written hasn't. */
+function hasVerdict(text) {
+  return /^\s*Waived:/im.test(text) || !!(reviewSections(text).Verdict ?? "").trim();
+}
+
+/** Check a review file against the pending files. Returns a list of problems. Exported for tests. */
+export function checkReview(text, pending, cwd = process.cwd()) {
+  const waiver = text.match(/^\s*Waived:\s*(.+)$/im);
+  if (waiver) return waiver[1].trim().length >= 8 ? [] : ["the waiver needs a reason (`Waived: <why>`)"];
+  const problems = [];
+  const sections = reviewSections(text);
   const missing = HEADINGS.filter((h) => !(h in sections) || !sections[h].trim());
   if (missing.length) problems.push(`empty or missing sections: ${missing.join(", ")}`);
   const unnamed = pending.filter((f) => !text.includes(basename(f)));
@@ -164,6 +186,18 @@ export function checkReview(text, pending, cwd = process.cwd()) {
   return problems;
 }
 
+/** The git worktree (or repo) a path belongs to: the nearest folder holding `.git` (a folder, or a file in a worktree). */
+function worktreeRoot(dir) {
+  return findUp(dir, ".git") ?? dir;
+}
+
+/** Was this Agent launch a request for Mika's review? Exported for tests. */
+export function isMikaRequest(toolInput) {
+  if (!toolInput || typeof toolInput !== "object") return false;
+  if (String(toolInput.subagent_type ?? "").toLowerCase() === "atelier-mika") return true;
+  return MIKA_PROMPT.test(`${toolInput.description ?? ""}\n${toolInput.prompt ?? ""}`);
+}
+
 function post(input) {
   const tool = input.tool_name;
   if (!["Edit", "Write", "MultiEdit", "NotebookEdit"].includes(tool)) return;
@@ -173,6 +207,8 @@ function post(input) {
   const state = loadState(p.state);
   const now = Date.now();
   state.edits[file] = now;
+  (state.roots ??= {})[file] = worktreeRoot(dirname(file));
+  if (input.agent_id) (state.owners ??= {})[file] = String(input.agent_id);
   const reviewedAt = existsSync(p.review) ? statSync(p.review).mtimeMs : 0;
   // Brief once per session, and again when UI edits resume after a review.
   const needsBrief = !state.briefedAt || (reviewedAt && state.briefedAt < reviewedAt);
@@ -183,28 +219,90 @@ function post(input) {
   }
 }
 
+function pre(input) {
+  if (!["Agent", "Task"].includes(input.tool_name) || !isMikaRequest(input.tool_input)) return;
+  const p = paths(input);
+  if (!existsSync(p.state)) return;
+  const state = loadState(p.state);
+  const lastEdit = Math.max(0, ...Object.values(state.edits ?? {}));
+  const now = Date.now();
+  // Only a review launched after the last UI edit can cover it.
+  if (!lastEdit || now < lastEdit) return;
+  saveState(p.state, { ...state, reviewRequestedAt: now });
+}
+
+/** The UI edits this Stop answers for, and the key its block counter lives under. */
+function scope(input, state) {
+  const files = Object.keys(state.edits);
+  const roots = state.roots ?? {};
+  const owners = state.owners ?? {};
+  const home = input.cwd ? worktreeRoot(input.cwd) : null;
+  const elsewhere = (f) => home !== null && roots[f] !== undefined && roots[f] !== home;
+  if (input.hook_event_name === "SubagentStop") {
+    const agent = input.agent_id ? String(input.agent_id) : null;
+    // A subagent owns the edits it made (when Claude Code says who made them),
+    // otherwise the edits made outside the session's own worktree.
+    const mine = agent && files.some((f) => owners[f]) ? files.filter((f) => owners[f] === agent) : files.filter(elsewhere);
+    return { files: mine, key: `sub:${agent ?? "worktrees"}` };
+  }
+  return { files: files.filter((f) => !elsewhere(f)), key: "main" };
+}
+
+function advise(message) {
+  process.stdout.write(JSON.stringify({ systemMessage: message }));
+}
+
 function stop(input) {
   const p = paths(input);
   if (!existsSync(p.state)) return;
   const state = loadState(p.state);
+  const now = Date.now();
+  const { files, key } = scope(input, state);
+  const gates = { ...(state.gates ?? {}) };
+  const gate = gates[key] ?? { blocks: 0, hash: null };
   const reviewedAt = existsSync(p.review) ? statSync(p.review).mtimeMs : 0;
-  const pending = Object.entries(state.edits).filter(([, at]) => at > reviewedAt).map(([f]) => f);
+  const text = reviewedAt ? readFileSync(p.review, "utf8") : "";
+  const pending = files.filter((f) => state.edits[f] > reviewedAt);
   const problems = [];
-  if (reviewedAt) {
-    const text = readFileSync(p.review, "utf8");
-    // A fresh review must cover every UI file changed this session.
-    problems.push(...checkReview(text, pending.length ? Object.keys(state.edits) : [], input.cwd));
+  if (reviewedAt && files.length) {
+    // A fresh review must cover every UI file this Stop owns.
+    problems.push(...checkReview(text, pending.length ? files : [], input.cwd));
   }
+
+  // A requested review is pending until one with a verdict lands after it, or it times out.
+  let requestedAt = state.reviewRequestedAt ?? 0;
+  if (requestedAt) {
+    const verdictLanded = reviewedAt > requestedAt && hasVerdict(text);
+    if (verdictLanded || now - requestedAt > PENDING_MS) requestedAt = 0;
+  }
+  const save = (patch) => saveState(p.state, { ...state, reviewRequestedAt: requestedAt || undefined, gates: { ...gates, [key]: { ...gate, ...patch } }, blocks: undefined });
+
   if (!pending.length && !problems.length) {
-    if (state.blocks) saveState(p.state, { ...state, blocks: 0 });
+    if (gate.blocks || gate.hash || requestedAt !== (state.reviewRequestedAt ?? 0)) save({ blocks: 0, hash: null });
     return;
   }
-  if (input.stop_hook_active && state.blocks >= MAX_BLOCKS) {
-    appendFileSync(join(p.dir, "bypass.jsonl"), JSON.stringify({ at: new Date().toISOString(), session: input.session_id, pending, problems }) + "\n");
-    saveState(p.state, { ...state, blocks: 0 });
+  if (requestedAt) {
+    save({});
+    const mins = Math.max(1, Math.round((now - requestedAt) / 60000));
+    advise(`Atelier UI gate (advisory): Mika's review was requested ${mins} min ago and isn't saved yet; not blocking. Save it to ${p.review} when it lands.`);
     return;
   }
-  saveState(p.state, { ...state, blocks: (state.blocks ?? 0) + 1 });
+  // A new UI edit re-arms the gate; a turn that changed nothing gets the same hash.
+  const lastEdit = Math.max(0, ...pending.map((f) => state.edits[f]));
+  const hash = createHash("sha1").update(JSON.stringify([key, [...pending].sort(), lastEdit, problems])).digest("hex");
+  if (gate.hash === hash) {
+    // Same files, same problems: the agent has already been told exactly this.
+    appendFileSync(join(p.dir, "bypass.jsonl"), JSON.stringify({ at: new Date().toISOString(), session: input.session_id, kind: "repeat", scope: key, pending, problems }) + "\n");
+    save({ blocks: 0 });
+    advise(`Atelier UI gate (advisory): UI review still outstanding for ${(pending.length ? pending : files).join(", ")}; already flagged, not blocking again. Review file: ${p.review}`);
+    return;
+  }
+  if (input.stop_hook_active && gate.blocks >= MAX_BLOCKS) {
+    appendFileSync(join(p.dir, "bypass.jsonl"), JSON.stringify({ at: new Date().toISOString(), session: input.session_id, kind: "max-blocks", scope: key, pending, problems }) + "\n");
+    save({ blocks: 0, hash });
+    return;
+  }
+  save({ blocks: (gate.blocks ?? 0) + 1, hash });
   const reason = [
     pending.length
       ? `Atelier UI gate: UI changed without a review: ${pending.join(", ")}.`
@@ -222,6 +320,7 @@ if (isMain) {
   try {
     const input = readStdin();
     if (process.argv[2] === "post") post(input);
+    else if (process.argv[2] === "pre") pre(input);
     else if (process.argv[2] === "stop") stop(input);
   } catch {
     // A broken gate must never break the session.
