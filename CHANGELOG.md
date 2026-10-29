@@ -16,6 +16,7 @@ Only `@a-company/atelier-hyperframes-adapter` changes. It is versioned on its ow
 
 - **Rendering needs `@hyperframes/producer` installed next to the adapter** (breaking packaging change, hence 0.1.0). `scaffoldHyperframesProject`, `designToCss`, `storyboardToHtml` and `injectAssets` never load it. `runRender` imports it on its first call; without it, it throws `Install @hyperframes/producer@^0.8.214 to render Hyperframes projects ...`.
 - **Targets producer 0.8.** `runRender` drives `createRenderJob` and `executeRenderJob` from producer 0.8.214; their signatures are unchanged from 0.6, and the render config now type-checks without a cast.
+- **No `@a-company/atelier-schema` or `@a-company/atelier-types` dependency.** The adapter never imported either (it reads a loose brand slice, not the schema types), so both are dropped and the adapter has no runtime dependencies. It no longer pulls in zod or yaml, and no longer has to wait for a schema release before it can be published.
 - Installing the producer still brings its 6 upstream advisories. Until Hyperframes moves off `puppeteer ~25.11.0`, an npm `overrides` entry of `"puppeteer": "^25.13.0"` installs producer 0.8.214 at 0 (puppeteer 25.13+ uses a `chromium-bidi` on zod 4).
 
 ### Upgrading

@@ -30,10 +30,6 @@
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
-  "dependencies": {
-    "@a-company/atelier-schema": "workspace:*",
-    "@a-company/atelier-types": "workspace:*"
-  },
   "peerDependencies": {
     "@hyperframes/producer": "^0.8.214"
   },
