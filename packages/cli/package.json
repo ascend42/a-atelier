@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Atelier: an AI-native animation engine and design/produce studio for Claude Code. CLI, MCP server, and the atelier design and atelier produce skills.",
   "license": "MIT",
   "author": "Matt Canoy (https://github.com/ascend42)",

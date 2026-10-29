@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
-## [Unreleased] — UI review gate stops looping
+## [1.0.3] — `@a-company/atelier` UI review gate stops looping
 
 ### Fixed
 
