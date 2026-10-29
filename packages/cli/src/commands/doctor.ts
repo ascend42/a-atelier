@@ -11,6 +11,8 @@
  *   config     ~/.atelier/config.yaml + home studio valid   (warn)
  *   cli        `atelier` on PATH, or a working `cli:`        (warn)
  *   media      ffmpeg / ffprobe / whisper-cli on PATH       (warn — episode runs only)
+ *   ui-gate    opt-in UI review gate: hook current, and when registered in
+ *              ~/.claude/settings.json, registered for every event   (warn)
  *
  * Exit code 1 only when a `fail` check exists, so it's safe in scripts.
  */
@@ -41,6 +43,31 @@ export interface DoctorOptions {
 const CREW = ["luna", "designer", "patrick", "lux", "quill", "iris"];
 const MEDIA_TOOLS = ["ffmpeg", "ffprobe", "whisper-cli"];
 const SETUP_FIX = "atelier setup";
+/** Each ui-gate.mjs mode and the Claude Code hook events it must be registered on. */
+export const UI_GATE_EVENTS: { event: string; mode: string; matcher?: string }[] = [
+  { event: "PostToolUse", mode: "post", matcher: "Edit|Write|MultiEdit|NotebookEdit" },
+  { event: "PreToolUse", mode: "pre", matcher: "Agent|Task" },
+  { event: "Stop", mode: "stop" },
+  { event: "SubagentStop", mode: "stop" },
+];
+
+/** Which UI_GATE_EVENTS ~/.claude/settings.json registers ui-gate.mjs on (by event name). */
+export function uiGateRegistrations(settingsPath: string): Set<string> {
+  const found = new Set<string>();
+  if (!existsSync(settingsPath)) return found;
+  let hooks: Record<string, { hooks?: { command?: string }[] }[]> = {};
+  try {
+    hooks = JSON.parse(readFileSync(settingsPath, "utf8"))?.hooks ?? {};
+  } catch {
+    return found;
+  }
+  for (const { event, mode } of UI_GATE_EVENTS) {
+    const groups = Array.isArray(hooks[event]) ? hooks[event] : [];
+    const re = new RegExp(`ui-gate\\.mjs["']?\\s+${mode}\\b`);
+    if (groups.some((g) => (g.hooks ?? []).some((h) => typeof h.command === "string" && re.test(h.command)))) found.add(event);
+  }
+  return found;
+}
 
 export function runDoctor(opts: DoctorOptions = {}): DoctorCheck[] {
   const homeDir = opts.homeDir ?? homedir();
@@ -165,6 +192,26 @@ export function runDoctor(opts: DoctorOptions = {}): DoctorCheck[] {
         }
       : { id: "media", status: "ok", message: "ffmpeg, ffprobe, whisper-cli found" },
   );
+
+  // ui-gate: opt in, so "not registered" is fine; half registered or stale is not
+  const hookPath = join(homeDir, ".atelier", "hooks", "ui-gate.mjs");
+  const shipped = templateFiles().find((f) => f.folder === "atelier" && f.rel === join("hooks", "ui-gate.mjs"));
+  const registered = uiGateRegistrations(join(homeDir, ".claude", "settings.json"));
+  const missingEvents = UI_GATE_EVENTS.filter((e) => !registered.has(e.event)).map((e) => e.event);
+  if (!registered.size) {
+    checks.push({ id: "ui-gate", status: "ok", message: "UI review gate not switched on (opt in: see the README)" });
+  } else if (!existsSync(hookPath) || (shipped && readFileSync(hookPath, "utf8") !== readFileSync(shipped.abs, "utf8"))) {
+    checks.push({ id: "ui-gate", status: "warn", message: "UI review gate is on, but ~/.atelier/hooks/ui-gate.mjs is missing or outdated", fix: SETUP_FIX });
+  } else if (missingEvents.length) {
+    checks.push({
+      id: "ui-gate",
+      status: "warn",
+      message: `UI review gate is on, but not registered for ${missingEvents.join(", ")}`,
+      fix: "add the missing entries from the README's UI review gate snippet to ~/.claude/settings.json",
+    });
+  } else {
+    checks.push({ id: "ui-gate", status: "ok", message: "UI review gate on and current" });
+  }
 
   return checks;
 }

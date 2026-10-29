@@ -57,6 +57,27 @@ describe("runDoctor", () => {
     expect(byId(runDoctor({ homeDir: home, pathEnv: bin }), "config").status).toBe("warn");
   });
 
+  it("flags a UI gate that is on but registered for only some events", () => {
+    runSetup({ homeDir: home });
+    expect(byId(runDoctor({ homeDir: home, pathEnv: bin }), "ui-gate").status).toBe("ok");
+    const cmd = (mode: string) => [{ type: "command", command: `node "$HOME/.atelier/hooks/ui-gate.mjs" ${mode}` }];
+    const settings = (hooks: Record<string, unknown>) =>
+      writeFileSync(join(home, ".claude", "settings.json"), JSON.stringify({ hooks }));
+    settings({ PostToolUse: [{ matcher: "Edit", hooks: cmd("post") }], Stop: [{ hooks: cmd("stop") }] });
+    const partial = byId(runDoctor({ homeDir: home, pathEnv: bin }), "ui-gate");
+    expect(partial.status).toBe("warn");
+    expect(partial.message).toMatch(/PreToolUse, SubagentStop/);
+    settings({
+      PostToolUse: [{ matcher: "Edit", hooks: cmd("post") }],
+      PreToolUse: [{ matcher: "Agent|Task", hooks: cmd("pre") }],
+      Stop: [{ hooks: cmd("stop") }],
+      SubagentStop: [{ hooks: cmd("stop") }],
+    });
+    expect(byId(runDoctor({ homeDir: home, pathEnv: bin }), "ui-gate").status).toBe("ok");
+    writeFileSync(join(home, ".atelier", "hooks", "ui-gate.mjs"), "old");
+    expect(byId(runDoctor({ homeDir: home, pathEnv: bin }), "ui-gate")).toMatchObject({ status: "warn", fix: "atelier setup" });
+  });
+
   it("checks media tools for episode runs and Node version", () => {
     fakeBins(["ffmpeg", "ffprobe", "whisper-cli", "atelier"]);
     const checks = runDoctor({ homeDir: home, pathEnv: bin, nodeVersion: "18.19.0" });
