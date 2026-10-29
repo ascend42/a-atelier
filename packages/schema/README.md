@@ -24,7 +24,7 @@ Zod validation schemas for the Atelier animation document format. Every type in 
 | Package | Version |
 |---------|---------|
 | `@atelier/types` | `workspace:*` |
-| `zod` | `^3.24.0` |
+| `zod` | `^4.6.7` |
 | `yaml` | `^2.7.0` |
 
 ## Architecture
@@ -288,10 +288,10 @@ const result = validateDocument({ name: "test" });
 // {
 //   success: false,
 //   errors: [
-//     { path: "version", message: "Required" },
-//     { path: "canvas", message: "Required" },
-//     { path: "layers", message: "Required" },
-//     { path: "states", message: "Required" }
+//     { path: "version", message: "Invalid input: expected string, received undefined" },
+//     { path: "canvas", message: "Invalid input: expected object, received undefined" },
+//     { path: "layers", message: "Invalid input: expected array, received undefined" },
+//     { path: "states", message: "Invalid input: expected record, received undefined" }
 //   ]
 // }
 

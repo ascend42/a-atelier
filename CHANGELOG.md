@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [1.0.4] — `@a-company/atelier` installs with 0 vulnerabilities (zod 4)
+
+### Security
+
+- **A fresh `npm i @a-company/atelier` now audits at 0.** 1.0.3 installed zod 3.25.76, which `npm audit --omit=dev` flags 9 times under GHSA-mrhx-c7xc-m3w5 (zod before 4.6.6 can exhaust memory while validating oversized constrained collections; zod 3 has no fix). `@a-company/atelier-schema`, `@a-company/atelier-mcp` and `@a-company/atelier` now require `zod ^4.6.7`, and `@modelcontextprotocol/sdk ^1.32.2` (which accepts zod 4, so the SDK and its `zod-to-json-schema` share the one zod 4 copy).
+
+### Changed
+
+- **zod's own default messages use zod 4 wording.** A missing field now reads `Invalid input: expected string, received undefined` instead of `Required`, and a bad enum value reads `Invalid option: expected one of "a"|"b"` instead of `Invalid enum value. Expected 'a' | 'b', received 'c'`. Atelier's custom messages (colours, units, canvas size, recipes, slot references) and the flat `{ path, message }` shape are unchanged.
+- **Numbers reject `Infinity`.** zod 4's `z.number()` no longer accepts infinite values; whole-number fields already rejected them.
+- **A delta's `from` and `to` must be present.** zod 3 let an object skip a key typed `z.unknown()`; zod 4 requires the key (an explicit `null` still passes). So a delta or preset delta without `from`/`to`, a design variance without `value`, and the MCP tools' `color` fields on gradient stops, strokes and shadows are now rejected instead of being stored half-empty. `@a-company/atelier-types` already declared them required, and every `.atelier` file in the repo still validates as it did under 1.0.3.
+- **MCP tool schemas.** `tools/list` has the same 75 tools and fields. Differences in zod 4's JSON Schema output: `atelier_add_delta` lists `from` and `to` as required (see above), objects that strip unknown keys no longer advertise `additionalProperties: false`, and whole-number fields carry `maximum: 9007199254740991`. Object-typed tool arguments (`fill`, `stroke`, `style`, `recipe`, `bindings`) are declared as string-keyed records, since zod 4 has no one-argument `z.record()`.
+- `@a-company/atelier-schema`'s exported schemas are zod 4 schemas now (minor bump), and `z.unknown()` fields infer as required keys.
+
+### Packages
+
+`@a-company/atelier` 1.0.4, `@a-company/atelier-mcp` 0.27.4, `@a-company/atelier-schema` 0.29.0, `@a-company/atelier-core` 0.26.2, `@a-company/atelier-canvas` 0.26.2, `@a-company/atelier-lottie` 0.25.3, `@a-company/atelier-svg` 0.25.3, `@a-company/atelier-studio` 0.28.3, `@a-company/atelier-react` 0.25.3 and `@a-company/atelier-video` 0.1.2. Only schema, mcp and the CLI change code; the others are republished because their pinned workspace dependencies change, so nothing in the tree still pulls in schema 0.28.1 and zod 3. `@a-company/atelier-types` and `@a-company/atelier-math` stay as published. `@a-company/atelier-hyperframes-adapter` is not republished: its `@hyperframes/producer` 0.6 dependency still audits at 12 high and 1 moderate (puppeteer, extract-zip, and zod 3 through chromium-bidi).
+
 ## [1.0.3] — `@a-company/atelier` UI review gate stops looping
 
 ### Fixed

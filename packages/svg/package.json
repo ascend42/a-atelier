@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier-svg",
-  "version": "0.25.2",
+  "version": "0.25.3",
   "publishConfig": {
     "access": "public"
   },

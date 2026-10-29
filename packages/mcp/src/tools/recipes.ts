@@ -364,7 +364,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       "validation issues). Creates parent directories as needed.",
     {
       path: z.string().describe("Absolute or relative file path to write the recipe to"),
-      recipe: z.record(z.unknown()).optional().describe("Recipe object (will be serialized to YAML)"),
+      recipe: z.record(z.string(), z.unknown()).optional().describe("Recipe object (will be serialized to YAML)"),
       yaml: z.string().optional().describe("Raw YAML text (alternative to `recipe`)"),
     },
     { readOnlyHint: false, destructiveHint: true },
@@ -417,7 +417,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     {
       documentId: z.string().describe("In-store document ID to apply the recipe to"),
       path: z.string().optional().describe("Recipe path or bare name (alternative to `recipe`)"),
-      recipe: z.record(z.unknown()).optional().describe("Recipe object (alternative to `path`)"),
+      recipe: z.record(z.string(), z.unknown()).optional().describe("Recipe object (alternative to `path`)"),
       projectDir: z.string().optional().describe("Project root for name resolution (default: process.cwd())"),
       currentIndex: z.number().int().nonnegative().optional().describe("1-based carousel index for page_number"),
       totalCount: z.number().int().positive().optional().describe("Total carousel size for page_number"),

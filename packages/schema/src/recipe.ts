@@ -57,7 +57,7 @@ function validatePageNumberFormat(
 ): void {
   if (format.length === 0) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: "format must be a non-empty string",
     });
     return;
@@ -67,7 +67,7 @@ function validatePageNumberFormat(
   const close = (format.match(/\}/g) ?? []).length;
   if (open !== close) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: `format has unbalanced braces (${open} '{' vs ${close} '}')`,
     });
     return;
@@ -82,7 +82,7 @@ function validatePageNumberFormat(
     const inner = m[1];
     if (!groupRule.test(inner)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: `format placeholder "{${inner}}" is not recognized — expected {current}, {total}, {current:0Nd}, or {total:0Nd}`,
       });
       return;
@@ -93,7 +93,7 @@ function validatePageNumberFormat(
 
   if (!sawCurrent && !sawTotal) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: "format must contain at least one {current} or {total} placeholder",
     });
   }

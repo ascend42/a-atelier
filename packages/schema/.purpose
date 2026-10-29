@@ -6,6 +6,7 @@ context:
   - Validation errors are flat and human/AI-readable (path + message)
   - YAML parsing uses the yaml package — parseAtelier() and serializeAtelier()
   - Roundtrip tested: parse -> validate -> serialize -> parse matches
+  - Built on zod 4 (^4.6.7; zod 3 is flagged by GHSA-mrhx-c7xc-m3w5). Default messages use zod 4 wording; custom messages are unchanged. A z.unknown() object key (delta/preset from and to, design variance value) is required — matching @atelier/types — where zod 3 let it be omitted
 
 components:
   '#document-schema':

@@ -209,7 +209,7 @@ export function register(server: McpServer, store: DocumentStore): void {
       layerId: z.string().describe("Layer ID"),
       // Text fields
       content: z.string().optional().describe("New text content (text layers only)"),
-      style: z.record(z.unknown()).optional().describe("Partial style update — only provided keys are overwritten (text layers only)"),
+      style: z.record(z.string(), z.unknown()).optional().describe("Partial style update — only provided keys are overwritten (text layers only)"),
       // Image fields
       src: z.string().optional().describe("Image source URL (image layers only)"),
       assetId: z.string().optional().describe("Asset ID reference (image layers only)"),
@@ -239,8 +239,8 @@ export function register(server: McpServer, store: DocumentStore): void {
         })).optional(),
         closed: z.boolean().optional(),
       }).optional().describe("New shape (shape layers only)"),
-      fill: z.record(z.unknown()).optional().describe("New fill definition (shape layers only)"),
-      stroke: z.record(z.unknown()).optional().describe("New stroke definition (shape layers only)"),
+      fill: z.record(z.string(), z.unknown()).optional().describe("New fill definition (shape layers only)"),
+      stroke: z.record(z.string(), z.unknown()).optional().describe("New stroke definition (shape layers only)"),
     },
     { readOnlyHint: false, destructiveHint: false },
     async ({ id, layerId, content, style, src, assetId, sourceRect, spritesheet, frameIndex, shape, fill, stroke }) => {

@@ -62,14 +62,14 @@ export const SlotRefSchema = z.string().superRefine((value, ctx) => {
   const segments = value.split(".");
   if (segments.length < 2) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: `slot reference "${value}" must have at least two segments (<kind>.<open-tail>)`,
     });
     return;
   }
   if (segments.some((s) => s.length === 0)) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: `slot reference "${value}" has an empty segment`,
     });
     return;
@@ -77,13 +77,13 @@ export const SlotRefSchema = z.string().superRefine((value, ctx) => {
   const kindOk = SlotKindSchema.safeParse(segments[0]).success;
   if (!kindOk) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: `slot reference "${value}" has unknown kind "${segments[0]}" — expected one of ${SLOT_KINDS.join(", ")}`,
     });
     return;
   }
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: "custom",
     message: `slot reference "${value}" is malformed`,
   });
 });

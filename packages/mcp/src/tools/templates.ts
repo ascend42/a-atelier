@@ -27,7 +27,7 @@ export function register(server: McpServer, store: DocumentStore): void {
     "Instantiate a template document with variable bindings. Creates a new document in the store.",
     {
       id: z.string().describe("Template document ID"),
-      bindings: z.record(z.unknown()).describe("Variable bindings: { variableName: value }"),
+      bindings: z.record(z.string(), z.unknown()).describe("Variable bindings: { variableName: value }"),
     },
     { readOnlyHint: false, destructiveHint: false },
     async ({ id, bindings }) => {
