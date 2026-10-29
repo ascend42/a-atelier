@@ -1,8 +1,9 @@
-version: 0.0.1
+version: 0.1.0
 description: v2 Atelier renderer bridge — emits Hyperframes projects from DESIGN/SCRIPT/STORYBOARD artifacts + asset bindings, then drives @hyperframes/producer to render MP4/WebM/MOV/PNG-sequence. The replacement for the deprecated packages/canvas + packages/studio + atelier render path.
 context:
   - v2 pivot — see docs/v2-hyperframes-migration.md + TD-2026-05-28-097
   - Wraps Apache 2.0 @hyperframes/producer (HTML/CSS-as-composition framework)
+  - '@hyperframes/producer ^0.8.214 is an optional peer dependency since 0.1.0: its puppeteer ~25.11.0 pin pulls chromium-bidi 17.0.2 + zod 3.25.76 (GHSA-mrhx-c7xc-m3w5), so the adapter alone must install at 0 vulnerabilities. Scaffolding/translation never touches the producer; only #producer-runner loads it, lazily.'
   - Source of truth for the new Hyperframes integration surface
   - Replaces ~28k LOC of v1 composition + render stack with ~3-5k LOC of emitters + thin producer wrapper
 components:
@@ -36,6 +37,6 @@ components:
       - '#asset-injector'
     file: src/scaffolder.ts
   producer-runner:
-    description: Thin wrapper around @hyperframes/producer's createRenderJob + executeRenderJob with Atelier-sensible defaults (MP4 H.264 at quality:high, integer fps converted to Hyperframes rational). Surfaces only the inputs the agent team works with (project dir, output path, dimensions, fps). Exposes progress + abort signal.
+    description: 'Thin wrapper around @hyperframes/producer''s createRenderJob + executeRenderJob with Atelier-sensible defaults (MP4 H.264 at quality:high, integer fps converted to Hyperframes rational). Surfaces only the inputs the agent team works with (project dir, output path, dimensions, fps). Exposes progress + abort signal. Loads the optional peer @hyperframes/producer ^0.8.214 with a dynamic import() on the first runRender call (loadProducer); a missing producer throws "Install @hyperframes/producer@^0.8.214 to render Hyperframes projects", any other load failure is rethrown. Producer types are import type only, so dist never references it statically.'
     file: src/producer-runner.ts
     type: adapter

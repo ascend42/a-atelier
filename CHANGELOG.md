@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [hyperframes-adapter 0.1.0] — `@a-company/atelier-hyperframes-adapter` installs with 0 vulnerabilities (producer is an optional peer)
+
+Only `@a-company/atelier-hyperframes-adapter` changes. It is versioned on its own, outside the `@a-company/atelier` release line.
+
+### Security
+
+- **A fresh `npm i @a-company/atelier-hyperframes-adapter` now audits at 0.** 0.0.2 depended on `@hyperframes/producer ^0.6.52`, which audits at 13 (12 high, 1 moderate: puppeteer, extract-zip, and zod 3 through chromium-bidi). The latest producer, 0.8.214, still audits at 6 high: it and `@hyperframes/engine` pin `puppeteer ~25.11.0`, whose `chromium-bidi` 17.0.2 depends on zod 3.25.76 (GHSA-mrhx-c7xc-m3w5, fixed only in zod 4.6.6+). These are upstream advisories, so the producer is now an optional peer dependency (`^0.8.214`) instead of a dependency.
+
+### Changed
+
+- **Rendering needs `@hyperframes/producer` installed next to the adapter** (breaking packaging change, hence 0.1.0). `scaffoldHyperframesProject`, `designToCss`, `storyboardToHtml` and `injectAssets` never load it. `runRender` imports it on its first call; without it, it throws `Install @hyperframes/producer@^0.8.214 to render Hyperframes projects ...`.
+- **Targets producer 0.8.** `runRender` drives `createRenderJob` and `executeRenderJob` from producer 0.8.214; their signatures are unchanged from 0.6, and the render config now type-checks without a cast.
+- Installing the producer still brings its 6 upstream advisories. Until Hyperframes moves off `puppeteer ~25.11.0`, an npm `overrides` entry of `"puppeteer": "^25.13.0"` installs producer 0.8.214 at 0 (puppeteer 25.13+ uses a `chromium-bidi` on zod 4).
+
+### Upgrading
+
+- If you call `runRender`, add `@hyperframes/producer@^0.8.214` to your own dependencies.
+
 ## [1.0.4] — `@a-company/atelier` installs with 0 vulnerabilities (zod 4)
 
 ### Security
@@ -25,7 +43,7 @@ Format: [major.minor.fix] — based on milestone progression.
 
 ### Packages
 
-`@a-company/atelier` 1.0.4, `@a-company/atelier-mcp` 0.28.0, `@a-company/atelier-schema` 0.29.0, `@a-company/atelier-core` 0.26.2, `@a-company/atelier-canvas` 0.26.2, `@a-company/atelier-lottie` 0.25.3, `@a-company/atelier-svg` 0.25.3, `@a-company/atelier-studio` 0.28.3, `@a-company/atelier-react` 0.25.3 and `@a-company/atelier-video` 0.1.2. Only schema, mcp and the CLI change code; the others are republished because their pinned workspace dependencies change, so nothing in the tree still pulls in schema 0.28.1 and zod 3. `@a-company/atelier-types` and `@a-company/atelier-math` stay as published. `@a-company/atelier-hyperframes-adapter` is not republished: its `@hyperframes/producer` 0.6 dependency still audits at 12 high and 1 moderate (puppeteer, extract-zip, and zod 3 through chromium-bidi).
+`@a-company/atelier` 1.0.4, `@a-company/atelier-mcp` 0.28.0, `@a-company/atelier-schema` 0.29.0, `@a-company/atelier-core` 0.26.2, `@a-company/atelier-canvas` 0.26.2, `@a-company/atelier-lottie` 0.25.3, `@a-company/atelier-svg` 0.25.3, `@a-company/atelier-studio` 0.28.3, `@a-company/atelier-react` 0.25.3 and `@a-company/atelier-video` 0.1.2. Only schema, mcp and the CLI change code; the others are republished because their pinned workspace dependencies change, so nothing in the tree still pulls in schema 0.28.1 and zod 3. `@a-company/atelier-types` and `@a-company/atelier-math` stay as published. `@a-company/atelier-hyperframes-adapter` is not republished: its `@hyperframes/producer` 0.6 dependency still audits at 12 high and 1 moderate (puppeteer, extract-zip, and zod 3 through chromium-bidi). It ships separately as 0.1.0 (above), with the producer as an optional peer.
 
 ## [1.0.3] — `@a-company/atelier` UI review gate stops looping
 

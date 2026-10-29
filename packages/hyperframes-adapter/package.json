@@ -1,6 +1,6 @@
 {
   "name": "@a-company/atelier-hyperframes-adapter",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Atelier v2 adapter — emits Hyperframes projects from DESIGN/SCRIPT/STORYBOARD artifacts + asset bindings",
   "license": "MIT",
   "author": "Matt Canoy (https://github.com/ascend42)",
@@ -32,10 +32,18 @@
   },
   "dependencies": {
     "@a-company/atelier-schema": "workspace:*",
-    "@a-company/atelier-types": "workspace:*",
-    "@hyperframes/producer": "^0.6.52"
+    "@a-company/atelier-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@hyperframes/producer": "^0.8.214"
+  },
+  "peerDependenciesMeta": {
+    "@hyperframes/producer": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@hyperframes/producer": "^0.8.214",
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
