@@ -5,6 +5,8 @@ import {
   validateDelta,
   parseAtelier,
   serializeAtelier,
+  PresetDeltaSchema,
+  DesignVarianceSchema,
 } from "./index.js";
 
 const MINIMAL_DOC = {
@@ -395,5 +397,48 @@ describe("validateDelta — new properties", () => {
       to: 100,
     });
     expect(result.success).toBe(true);
+  });
+});
+
+// zod 4: a z.unknown() object key is required (zod 3 let it be omitted),
+// and z.number() rejects Infinity. Pinned so a future zod bump can't
+// silently loosen either contract.
+describe("zod 4 contract", () => {
+  const delta = { layer: "a", property: "opacity", range: [0, 10] };
+
+  it("rejects a delta missing from/to", () => {
+    const result = validateDelta(delta);
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    const paths = result.errors.map((e) => e.path);
+    expect(paths).toContain("from");
+    expect(paths).toContain("to");
+  });
+
+  it("accepts a delta with from: null", () => {
+    expect(validateDelta({ ...delta, from: null, to: 1 }).success).toBe(true);
+  });
+
+  it("rejects a preset delta missing from/to and accepts from: null", () => {
+    expect(PresetDeltaSchema.safeParse({ property: "opacity" }).success).toBe(false);
+    expect(PresetDeltaSchema.safeParse({ property: "opacity", from: null, to: 1 }).success).toBe(true);
+  });
+
+  it("rejects a design variance missing value", () => {
+    expect(DesignVarianceSchema.safeParse({ field: "palette.accent", reason: "brand refresh" }).success).toBe(false);
+    expect(DesignVarianceSchema.safeParse({ field: "palette.accent", value: "#f00", reason: "brand refresh" }).success).toBe(true);
+  });
+
+  it("rejects Infinity in number fields", () => {
+    const layer = {
+      id: "box",
+      visual: { type: "shape", shape: { type: "rect" } },
+      frame: { x: 0, y: 0 },
+      bounds: { width: 10, height: 10 },
+    };
+    expect(validateLayer(layer).success).toBe(true);
+    expect(validateLayer({ ...layer, rotation: Infinity }).success).toBe(false);
+    expect(validateLayer({ ...layer, frame: { x: -Infinity, y: 0 } }).success).toBe(false);
+    expect(validateDocument({ ...MINIMAL_DOC, canvas: { width: Infinity, height: 1080, fps: 30 } }).success).toBe(false);
   });
 });
