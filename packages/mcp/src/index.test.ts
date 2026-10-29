@@ -238,6 +238,43 @@ describe("MCP Tools", () => {
 
   // ── Tool listing ──────────────────────────────────────────
 
+  it("requires from/to on atelier_add_delta and color on stops, strokes and shadows (zod 4)", async () => {
+    const { tools } = await client.listTools();
+    const schemaOf = (name: string) => tools.find((t) => t.name === name)!.inputSchema as any;
+
+    expect(tools).toHaveLength(75);
+    expect(schemaOf("atelier_add_delta").required).toEqual(expect.arrayContaining(["from", "to"]));
+    expect(schemaOf("atelier_define_preset").properties.deltas.items.required).toEqual(
+      expect.arrayContaining(["from", "to"]),
+    );
+    expect(schemaOf("atelier_set_fill").properties.fill.properties.stops.items.required).toContain("color");
+    expect(schemaOf("atelier_set_stroke").properties.stroke.required).toContain("color");
+    expect(schemaOf("atelier_set_shadow").properties.shadow.anyOf[0].required).toContain("color");
+  });
+
+  it("rejects atelier_add_delta without from/to and accepts from: null", async () => {
+    const created = await callTool(client, "atelier_create", { name: "z4", width: 100, height: 100, fps: 30 });
+    const id = created.id;
+    await callTool(client, "atelier_add_layer", {
+      id, layerId: "box",
+      visual: { type: "shape", shape: { type: "rect" } },
+      x: 0, y: 0, width: 10, height: 10,
+    });
+    await callTool(client, "atelier_add_state", { id, stateName: "intro", duration: 30 });
+
+    const missing = await client.callTool({
+      name: "atelier_add_delta",
+      arguments: { id, stateName: "intro", layer: "box", property: "opacity", range: [0, 10] },
+    });
+    expect(missing.isError).toBe(true);
+
+    const withNull = await callTool(client, "atelier_add_delta", {
+      id, stateName: "intro", layer: "box", property: "opacity", range: [0, 10], from: null, to: 1,
+    });
+    expect(withNull.success).toBe(true);
+  });
+
+
   it("lists all registered tools", async () => {
     const result = await client.listTools();
     const toolNames = result.tools.map(t => t.name);

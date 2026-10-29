@@ -30,8 +30,8 @@ Exposes 27 tools across 8 categories that let an AI agent create, edit, animate,
 | `@atelier/schema` | `workspace:*` |
 | `@atelier/core` | `workspace:*` |
 | `@atelier/canvas` | `workspace:*` |
-| `@modelcontextprotocol/sdk` | `^1.0.0` |
-| `zod` | `^3.25.0` |
+| `@modelcontextprotocol/sdk` | `^1.32.2` |
+| `zod` | `^4.6.7` |
 
 ## Setup
 

@@ -4,6 +4,7 @@ context:
   - This is the primary AI interface — all animation authoring goes through these MCP tools
   - In-memory document store accumulates state across tool calls in a session
   - Tools provide structured error responses from Zod validation for AI-readable feedback
+  - Tool input shapes are zod 4 raw shapes handed to @modelcontextprotocol/sdk ^1.32.2, which validates them and emits tools/list JSON Schema; object-typed arguments use z.record(z.string(), ...) (zod 4 has no one-argument z.record)
   - Preview returns resolved frame data (not rendered image) for AI comprehension
 components:
   mcp-store:

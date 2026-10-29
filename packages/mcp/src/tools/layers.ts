@@ -34,11 +34,11 @@ const VisualInputSchema = z.object({
     })).optional(),
     closed: z.boolean().optional(),
   }).optional(),
-  fill: z.record(z.unknown()).optional(),
-  stroke: z.record(z.unknown()).optional(),
+  fill: z.record(z.string(), z.unknown()).optional(),
+  stroke: z.record(z.string(), z.unknown()).optional(),
   // text visual fields
   content: z.string().optional(),
-  style: z.record(z.unknown()).optional(),
+  style: z.record(z.string(), z.unknown()).optional(),
   // image visual fields
   assetId: z.string().optional(),
   sourceRect: z.object({
