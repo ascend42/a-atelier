@@ -83,6 +83,7 @@ export function exportImageCommand(program: Command): void {
 
       try {
         const buffer = await renderDocumentToPng(doc, {
+          docPath: resolve(file),
           state: options.state,
           frame: frameNumber,
           width,

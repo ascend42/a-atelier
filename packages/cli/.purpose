@@ -72,6 +72,14 @@ components:
       - render
       - shared
     file: src/lib/render-image.ts
+  '#asset-src':
+    description: Where an image or video layer's source lives on disk. resolveAssetSrc looks a relative src up in the .atelier file's folder, then each folder above it (a nested doc like slides/slide-1.atelier written by composeImageProject points at media/<file> in the project root), then the working directory (back-compat for docs written against the cwd); the first that exists wins, otherwise the doc-relative path is returned for the warning. Absolute paths and URL schemes pass through, file: URLs become paths, and without a docPath the src is left as is (carousel's in-memory docs rely on that). warnMissingImages writes one stderr line per image that failed to load. Used by #render-image's preloadImages (export-image, render MP4/GIF, still --format png) and findPrimaryVideoSource.
+    tags:
+      - render
+      - image
+      - paths
+      - shared
+    file: src/lib/asset-src.ts
   '#cli-carousel':
     description: 'atelier carousel <recipe> --inputs <glob> --out-dir <dir> [--width N] [--height N] [--frame N] — batch-compose a folder of images into recipe-overlaid PNGs. Resolves the recipe via loadRecipe with cwd as the project dir (./.atelier/recipes/ before ~/.atelier/recipes/, same chain as the other recipe commands), expands --inputs (directory / literal file / single-segment *-glob, image-ext filtered + sorted; no new glob dep), and for each image i of N builds a fit-to-canvas doc, applies recipe.overlay_rules via applyRecipeToOverlay with currentIndex=i/totalCount=N (handle + ''i/N'' page-number), renders via the shared #render-image path, and writes zero-padded sortable PNGs (NN-basename.png) to --out-dir. composeCarouselFrameDoc is pure/canvas-free (testable without node-canvas); image bounds are re-fit at render time. Errors clearly on missing recipe, empty input glob, unwritable out-dir. Completes the folder-of-images → composed-posts → export-to-destination workflow.'
     tags:
@@ -683,17 +691,15 @@ aspects:
     anchors:
       - packages/cli/src/commands/info.ts:46-62
     enforcement: count off live arrays, guard optionals
-  still-png-via-napi-no-preload:
-    description: still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) but — unlike the export-image / render paths — does NOT pre-load image layers, so ImageVisual layers render blank in a still PNG. JSON is the default format; an unknown --format value is rejected before any work.
+  still-png-via-napi-preload:
+    description: still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) and pre-loads image layers through the shared #render-image preloadImages with the doc's path, so ImageVisual layers render like they do in export-image / render. JSON is the default format; an unknown --format value is rejected before any work.
     tags:
       - png
       - canvas
-      - gotcha
-      - limitation
     anchors:
       - packages/cli/src/commands/still.ts:95-99
-      - packages/cli/src/commands/still.ts:116-126
-    enforcement: validate format then rasterize sans preload
+      - packages/cli/src/commands/still.ts:116-128
+    enforcement: validate format then rasterize with preloaded images
   render-ffmpeg-preflight:
     description: The render command runs checkFfmpeg() (spawns `ffmpeg -version`) BEFORE reading/parsing the document, so a missing FFmpeg fails with install guidance up front rather than after a parse. Output format is inferred from the -o extension (.gif → gif, else mp4) only when --format is omitted.
     tags:
@@ -735,15 +741,15 @@ aspects:
       - packages/cli/src/commands/render-pipeline.ts:166-172
     enforcement: single-pass split palettegen/paletteuse
   pipeline-image-load-failure-blank:
-    description: preloadImages (render-image.ts, shared by the PNG path and the MP4/GIF pipeline) loads every ImageVisual source in parallel and swallows per-source load failures (try/catch with empty catch) — a missing/unreadable image renders blank rather than aborting the whole render. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
+    description: preloadImages (render-image.ts, shared by the PNG path and the MP4/GIF pipeline) resolves each ImageVisual source through #asset-src (relative to the .atelier file when docPath is passed), loads them in parallel, and tolerates per-source load failures — a missing/unreadable image renders blank rather than aborting the whole render, and warnMissingImages names each one on stderr. createImage fires onLoad/onError on process.nextTick so the ImageCache internal slot is assigned before the callback runs.
     tags:
       - tolerance
       - async
       - edge-case
     anchors:
-      - packages/cli/src/lib/render-image.ts:173-182
-      - packages/cli/src/lib/render-image.ts:184-196
-    enforcement: swallow per-image load error, nextTick callbacks
+      - packages/cli/src/lib/render-image.ts:175-187
+      - packages/cli/src/lib/render-image.ts:189-201
+    enforcement: per-image load error renders blank with a stderr warning, nextTick callbacks
   export-svg-validate-state-before-render:
     description: export-svg validates the frame number AND that the requested state exists (listing available states on miss) BEFORE calling renderFrameSVG, so a bad --state / --frame fails with a precise message instead of an opaque renderer error. Output defaults to stdout; -o writes a file.
     tags:
