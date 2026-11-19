@@ -246,7 +246,7 @@ export async function renderDocument(
   }
 
   // Pre-load images before the render loop
-  const { imageCache } = await preloadImages(doc, loadImage);
+  const { imageCache } = await preloadImages(doc, loadImage, opts.docPath);
 
   const canvas = createCanvas(width, height) as ReturnType<typeof createCanvas> & { data(): Buffer };
   const ctx = canvas.getContext("2d") as unknown as RenderContext & {

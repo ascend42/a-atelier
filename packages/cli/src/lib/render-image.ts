@@ -14,6 +14,7 @@
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { resolveAssetSrc, warnMissingImages } from "./asset-src.js";
 
 /** @napi-rs/canvas surface — the subset this module touches. */
 interface NodeCanvas {
@@ -151,6 +152,7 @@ export function resolveExportDimensions(
 export async function preloadImages(
   doc: AtelierDocument,
   loadImage: (src: string) => Promise<LoadedImage>,
+  docPath?: string,
 ): Promise<{
   imageCache: import("@a-company/atelier-canvas").ImageCache;
   loaded: Map<string, LoadedImage>;
@@ -171,15 +173,18 @@ export async function preloadImages(
   }
 
   const preloaded = new Map<string, LoadedImage>();
+  const failed: { src: string; tried: string }[] = [];
   await Promise.all(
     [...sources].map(async (src) => {
+      const path = resolveAssetSrc(src, docPath);
       try {
-        preloaded.set(src, await loadImage(src));
+        preloaded.set(src, await loadImage(path));
       } catch {
-        // Sources that fail to load render blank — same tolerance as render-pipeline.
+        failed.push({ src, tried: path }); // renders blank, with a warning
       }
     }),
   );
+  warnMissingImages(failed);
 
   const imageCache = new ImageCache({
     createImage: (src, onLoad, onError) => {
@@ -207,6 +212,8 @@ export interface RenderToPngOptions {
   width?: number;
   /** Output height override (px). */
   height?: number;
+  /** The .atelier file's path; relative image sources resolve against its folder. */
+  docPath?: string;
   /**
    * Optional hook to adjust each image layer's bounds once natural dimensions
    * are known from the loaded image. Receives the layer src + natural dims and
@@ -254,7 +261,7 @@ export async function renderDocumentToPng(
   const { createCanvas, loadImage } = await loadCanvasModule();
   const { renderFrame } = await import("@a-company/atelier-canvas");
 
-  const { imageCache, loaded } = await preloadImages(doc, loadImage);
+  const { imageCache, loaded } = await preloadImages(doc, loadImage, opts.docPath);
 
   // Re-fit image layers now that natural dims are known (carousel path).
   let renderDoc = doc;
