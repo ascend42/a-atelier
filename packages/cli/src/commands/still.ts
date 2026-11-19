@@ -116,12 +116,14 @@ export function stillCommand(program: Command): void {
             // PNG format — rasterize via @napi-rs/canvas (prebuilt platform
             // binaries; no node-gyp / system libraries, so PNG output works on
             // a plain install).
-            const { createCanvas } = await import("@napi-rs/canvas");
+            const { createCanvas, loadImage } = await import("@napi-rs/canvas");
             const { renderFrame } = await import("@a-company/atelier-canvas");
+            const { preloadImages } = await import("../lib/render-image.js");
+            const { imageCache } = await preloadImages(doc, loadImage, resolve(file));
 
             const cvs = createCanvas(doc.canvas.width, doc.canvas.height);
             const ctx = cvs.getContext("2d");
-            renderFrame(ctx as unknown as import("@a-company/atelier-canvas").RenderContext, resolved, doc);
+            renderFrame(ctx as unknown as import("@a-company/atelier-canvas").RenderContext, resolved, doc, imageCache);
 
             const buffer = cvs.toBuffer("image/png");
             if (options.output) {

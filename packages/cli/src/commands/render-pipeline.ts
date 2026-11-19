@@ -5,11 +5,12 @@
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { dirname, resolve, isAbsolute } from "node:path";
+import { isAbsolute } from "node:path";
 import type { AtelierDocument } from "@a-company/atelier-types";
 import { resolveFrame } from "@a-company/atelier-core";
 import { renderFrame, type RenderContext } from "@a-company/atelier-canvas";
 import { loadCanvasModule, preloadImages } from "../lib/render-image.js";
+import { resolveAssetSrc } from "../lib/asset-src.js";
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -189,12 +190,9 @@ export function findPrimaryVideoSource(
     const v = layer.visual as { src?: string; assetId?: string };
     const src = v.src ?? (v.assetId ? doc.assets?.[v.assetId]?.src : undefined);
     if (!src) continue;
-    if (isAbsolute(src)) {
-      return existsSync(src) ? src : null;
-    }
-    if (!docPath) return null;
-    const absolute = resolve(dirname(docPath), src);
-    return existsSync(absolute) ? absolute : null;
+    if (!docPath && !isAbsolute(src) && !/^file:/i.test(src)) return null;
+    const path = resolveAssetSrc(src, docPath);
+    return isAbsolute(path) && existsSync(path) ? path : null;
   }
   return null;
 }

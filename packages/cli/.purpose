@@ -73,7 +73,7 @@ components:
       - shared
     file: src/lib/render-image.ts
   '#asset-src':
-    description: Where an image layer's source lives on disk. resolveAssetSrc resolves a relative src (on the layer or its asset) against the .atelier file's folder — the same rule findPrimaryVideoSource uses for video — and passes absolute paths, data URLs and http(s) URLs through; without a docPath it leaves the src as is (cwd-relative, the old behaviour, which carousel relies on for its in-memory docs). warnMissingImages writes one stderr line per image that failed to load, naming the src and the path tried. Used by #render-image's preloadImages, so export-image, render (MP4/GIF) and the still path all resolve images the same way.
+    description: Where an image or video layer's source lives on disk. resolveAssetSrc looks a relative src up in the .atelier file's folder, then each folder above it (a nested doc like slides/slide-1.atelier written by composeImageProject points at media/<file> in the project root), then the working directory (back-compat for docs written against the cwd); the first that exists wins, otherwise the doc-relative path is returned for the warning. Absolute paths and URL schemes pass through, file: URLs become paths, and without a docPath the src is left as is (carousel's in-memory docs rely on that). warnMissingImages writes one stderr line per image that failed to load. Used by #render-image's preloadImages (export-image, render MP4/GIF, still --format png) and findPrimaryVideoSource.
     tags:
       - render
       - image
@@ -691,17 +691,15 @@ aspects:
     anchors:
       - packages/cli/src/commands/info.ts:46-62
     enforcement: count off live arrays, guard optionals
-  still-png-via-napi-no-preload:
-    description: still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) but — unlike the export-image / render paths — does NOT pre-load image layers, so ImageVisual layers render blank in a still PNG. JSON is the default format; an unknown --format value is rejected before any work.
+  still-png-via-napi-preload:
+    description: still --format png rasterizes via @napi-rs/canvas (prebuilt binaries, no node-gyp / system libs) and pre-loads image layers through the shared #render-image preloadImages with the doc's path, so ImageVisual layers render like they do in export-image / render. JSON is the default format; an unknown --format value is rejected before any work.
     tags:
       - png
       - canvas
-      - gotcha
-      - limitation
     anchors:
       - packages/cli/src/commands/still.ts:95-99
-      - packages/cli/src/commands/still.ts:116-126
-    enforcement: validate format then rasterize sans preload
+      - packages/cli/src/commands/still.ts:116-128
+    enforcement: validate format then rasterize with preloaded images
   render-ffmpeg-preflight:
     description: The render command runs checkFfmpeg() (spawns `ffmpeg -version`) BEFORE reading/parsing the document, so a missing FFmpeg fails with install guidance up front rather than after a parse. Output format is inferred from the -o extension (.gif → gif, else mp4) only when --format is omitted.
     tags:
