@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 Format: [major.minor.fix] — based on milestone progression.
 
+## [1.0.5] — images with relative paths render from any folder
+
+### Fixed
+
+- **Relative image paths resolve from the document, not from where you ran the command.** `atelier export-image`, `atelier render` (MP4/GIF) and `atelier still --format png` looked up an image layer's relative `src` against the working directory, so running them from anywhere but the document's folder drew the image blank. A relative `src` is now looked up beside the `.atelier` file, then in each folder above it (so a nested doc such as `slides/slide-1.atelier` finds `media/` in the project root), then in the working directory, so documents written against it keep rendering. `file:` URLs are read as paths.
+- **`atelier still --format png` draws image layers.** It never pre-loaded images, so every image rendered blank.
+- **Video sources in nested docs** use the same lookup, so `render` finds `media/` in the project root.
+- **An image that fails to load now says so.** It still renders blank, but a warning names the `src` and the path that was tried.
+
 ## [hyperframes-adapter 0.1.0] — `@a-company/atelier-hyperframes-adapter` installs with 0 vulnerabilities (producer is an optional peer)
 
 Only `@a-company/atelier-hyperframes-adapter` changes. It is versioned on its own, outside the `@a-company/atelier` release line.
